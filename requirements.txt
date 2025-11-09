@@ -1,7 +1,0 @@
-tqdm
-numpy
-pandas
-selenium
-pytest
-sqlalchemy
-chromedriver-autoinstaller

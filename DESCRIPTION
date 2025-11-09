@@ -1,5 +1,4 @@
 Package: flightanalysis
-Type: Package
 Title: Google Flight Analysis and Scraping
 Version: 1.0.0
 Authors@R: person("Kaya", "Celebi", email = "kayacelebi17@gmail.com", 
