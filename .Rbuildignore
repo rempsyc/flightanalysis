@@ -13,3 +13,5 @@
 ^run_tests\.R$
 ^examples$
 ^CONVERSION_SUMMARY\.md$
+^README\.Rmd$
+^tests/test_data/\.access$

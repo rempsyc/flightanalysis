@@ -9,10 +9,11 @@
 #'
 #' @return Invisibly returns NULL
 #' @export
+#' @importFrom utils read.csv write.csv
 #'
 #' @examples
 #' \dontrun{
-#' scrape <- Scrape("JFK", "IST", "2023-07-20", "2023-08-20")
+#' scrape <- Scrape("JFK", "IST", "2025-07-20", "2025-08-20")
 #' # After scraping:
 #' # CacheControl("./cache/", scrape, use_db = FALSE)
 #' }

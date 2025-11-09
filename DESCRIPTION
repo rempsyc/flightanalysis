@@ -13,12 +13,10 @@ LazyData: true
 RoxygenNote: 7.3.3
 Depends: 
     R (>= 3.6.0)
-Imports:
-    methods,
-    utils
 Suggests:
     testthat (>= 3.0.0),
     chromote,
-    progress
+    progress,
+    RSQLite
 URL: https://github.com/rempsyc/flight-analysis
 BugReports: https://github.com/rempsyc/flight-analysis/issues

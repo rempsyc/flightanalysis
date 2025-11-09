@@ -1,5 +1,5 @@
 test_that("check_scrape validates Scrape objects", {
-  scrape <- Scrape("JFK", "IST", "2023-07-20")
+  scrape <- Scrape("JFK", "IST", "2025-07-20")
   expect_true(flightanalysis:::check_scrape(scrape))
 
   not_scrape <- list(a = 1, b = 2)

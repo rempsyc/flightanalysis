@@ -320,7 +320,7 @@ ScrapeObjects <- function(
       }
 
       if (verbose) {
-        cat("✓ Browser ready\n\n")
+        cat("[OK] Browser ready\n\n")
       }
 
       # Scrape each object
@@ -439,7 +439,7 @@ check_chrome_installation <- function(verbose = TRUE) {
     }
   } else {
     if (verbose) {
-      cat("✓ Chrome/Chromium detected\n")
+      cat("[OK] Chrome/Chromium detected\n")
     }
   }
 
@@ -461,13 +461,13 @@ check_internet_connection <- function(verbose = TRUE) {
   if (!connected) {
     if (verbose) {
       cat(
-        "⚠ Could not verify internet connection via curl (may be blocked by firewall)\n"
+        "[!] Could not verify internet connection via curl (may be blocked by firewall)\n"
       )
       cat("  The browser will attempt to connect anyway...\n")
     }
   } else {
     if (verbose) {
-      cat("✓ Internet connection verified\n")
+      cat("[OK] Internet connection verified\n")
     }
   }
 
@@ -588,11 +588,11 @@ scrape_data_chromote <- function(obj, browser, verbose = TRUE) {
     obj$data <- do.call(rbind, results_list)
     rownames(obj$data) <- NULL
     if (verbose) {
-      cat(sprintf("  ✓ Total flights retrieved: %d\n", nrow(obj$data)))
+      cat(sprintf("  [OK] Total flights retrieved: %d\n", nrow(obj$data)))
     }
   } else {
     if (verbose) {
-      cat("  ⚠ No flights retrieved\n")
+      cat("  [!] No flights retrieved\n")
     }
   }
 
@@ -610,7 +610,7 @@ get_results_chromote <- function(url, date, browser, verbose = TRUE) {
     },
     error = function(e) {
       if (verbose) {
-        cat(sprintf("  ✗ Failed to scrape: %s\n", e$message))
+        cat(sprintf("  [X] Failed to scrape: %s\n", e$message))
       } else {
         warning(sprintf("Failed to scrape %s: %s", url, e$message))
       }
@@ -726,7 +726,7 @@ clean_results <- function(result, date, verbose = TRUE) {
 
   if (length(matches) == 0) {
     if (verbose) {
-      cat("  ⚠ No flight time markers found in page content\n")
+      cat("  [!] No flight time markers found in page content\n")
     }
     warning(
       "Could not find any flight data. Page may not have loaded properly or no flights available."
@@ -743,7 +743,7 @@ clean_results <- function(result, date, verbose = TRUE) {
 
   if (length(matches) <= 1) {
     if (verbose) {
-      cat("  ⚠ Not enough flight data to parse\n")
+      cat("  [!] Not enough flight data to parse\n")
     }
     warning("Insufficient flight data found")
     return(list())
@@ -763,7 +763,7 @@ clean_results <- function(result, date, verbose = TRUE) {
       },
       error = function(e) {
         if (verbose) {
-          cat(sprintf("  ⚠ Could not parse flight %d: %s\n", i, e$message))
+          cat(sprintf("  [!] Could not parse flight %d: %s\n", i, e$message))
         }
       }
     )
@@ -773,7 +773,7 @@ clean_results <- function(result, date, verbose = TRUE) {
   flights <- flights[!sapply(flights, is.null)]
 
   if (verbose) {
-    cat(sprintf("  ✓ Successfully parsed %d flights\n", length(flights)))
+    cat(sprintf("  [OK] Successfully parsed %d flights\n", length(flights)))
   }
 
   flights
