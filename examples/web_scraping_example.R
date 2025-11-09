@@ -38,9 +38,9 @@ cat("✓ Package loaded\n\n")
 # Example 1: Simple one-way trip scraping
 cat("Example 1: Scraping a One-Way Trip\n")
 cat("-----------------------------------\n")
-cat("Creating query: JFK -> IST on 2024-07-20\n\n")
+cat("Creating query: JFK -> IST on 2026-07-20\n\n")
 
-scrape_oneway <- Scrape("JFK", "IST", "2024-07-20")
+scrape_oneway <- Scrape("JFK", "IST", "2026-07-20")
 
 cat("Query details:\n")
 print(scrape_oneway)
@@ -111,9 +111,9 @@ cat("\n")
 # Example 2: Round-trip scraping with caching
 cat("Example 2: Round-Trip with Caching\n")
 cat("-----------------------------------\n")
-cat("Creating query: JFK <-> IST (2024-07-20 to 2024-08-05)\n\n")
+cat("Creating query: JFK <-> IST (2026-07-20 to 2026-08-05)\n\n")
 
-scrape_roundtrip <- Scrape("JFK", "IST", "2024-07-20", "2024-08-05")
+scrape_roundtrip <- Scrape("JFK", "IST", "2026-07-20", "2026-08-05")
 
 cat("This example demonstrates:\n")
 cat("  1. Scraping multiple flight segments (outbound + return)\n")

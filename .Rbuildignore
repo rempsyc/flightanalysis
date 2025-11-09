@@ -1,2 +1,15 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^src/google_flight_analysis
+^tests/test_class\.py$
+^tests/__init__\.py$
+^\.github
+^\.circleci
+^pyproject\.toml$
+^pytest\.ini$
+^requirements\.txt$
+^setup\.cfg$
+^README\.html$
+^run_tests\.R$
+^examples$
+^CONVERSION_SUMMARY\.md$

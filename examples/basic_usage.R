@@ -13,14 +13,14 @@ source('R/cache.R')
 # Example 1: One-Way Trip
 cat("Example 1: One-Way Trip\n")
 cat("------------------------\n")
-scrape_oneway <- Scrape("JFK", "IST", "2023-07-20")
+scrape_oneway <- Scrape("JFK", "IST", "2026-07-20")
 print(scrape_oneway)
 cat("\n")
 
 # Example 2: Round-Trip
 cat("Example 2: Round-Trip\n")
 cat("---------------------\n")
-scrape_roundtrip <- Scrape("JFK", "IST", "2023-07-20", "2023-08-20")
+scrape_roundtrip <- Scrape("JFK", "IST", "2026-07-20", "2026-08-20")
 print(scrape_roundtrip)
 cat("\nTrip type:", scrape_roundtrip$type, "\n")
 cat("Origins:", paste(unlist(scrape_roundtrip$origin), collapse = ", "), "\n")
@@ -37,13 +37,13 @@ cat("---------------------------------------------------\n")
 scrape_chain <- Scrape(
   "JFK",
   "IST",
-  "2023-08-20",
+  "2026-08-20",
   "RDU",
   "LGA",
-  "2023-12-25",
+  "2026-12-25",
   "EWR",
   "SFO",
-  "2024-01-20"
+  "2027-01-20"
 )
 print(scrape_chain)
 cat("\n")
@@ -53,13 +53,13 @@ cat("Example 4: Perfect-Chain (Circular trip)\n")
 cat("-----------------------------------------\n")
 scrape_perfect <- Scrape(
   "JFK",
-  "2023-09-20",
+  "2026-09-20",
   "IST",
-  "2023-09-25",
+  "2026-09-25",
   "CDG",
-  "2023-10-10",
+  "2026-10-10",
   "LHR",
-  "2023-11-01",
+  "2026-11-01",
   "JFK"
 )
 print(scrape_perfect)
@@ -69,7 +69,7 @@ cat("\n")
 cat("Example 5: Creating Flight Objects\n")
 cat("-----------------------------------\n")
 flight1 <- Flight(
-  "2023-07-20",
+  "2026-07-20",
   "JFKIST",
   "9:00AM",
   "5:00PM",

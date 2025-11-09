@@ -475,16 +475,29 @@ get_results_chromote <- function(url, date, browser) {
 #' @keywords internal
 make_url_request_chromote <- function(url, browser) {
   # Navigate to URL
-  browser$Page$navigate(url)
+  browser$Page$navigate(url, wait_ = TRUE)
   
-  # Wait for page to load
-  browser$Page$loadEventFired()
+  # Wait for page load event
+  browser$Page$loadEventFired(timeout_ = 10000)
   
-  # Give extra time for dynamic content
-  Sys.sleep(3)
+  # Wait for network to be idle (important for dynamic content)
+  Sys.sleep(2)
   
-  # Get page content
-  results <- get_flight_elements_chromote(browser)
+  # Wait for specific content to appear (retry logic)
+  max_attempts <- 10
+  results <- character(0)
+  
+  for (attempt in 1:max_attempts) {
+    results <- get_flight_elements_chromote(browser)
+    
+    # Check if we have substantial content
+    if (length(results) > 100) {
+      break
+    }
+    
+    # Wait a bit more for content to load
+    Sys.sleep(1)
+  }
   
   if (length(results) <= 100) {
     stop("Page did not load sufficient content. Check your internet connection or verify flights exist for this query.")

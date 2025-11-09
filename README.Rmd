@@ -2,7 +2,9 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This R package provides tools and models for users to analyze, forecast, and collect data regarding flights and prices. This is an R port of the original Python package [google-flight-analysis](https://pypi.org/project/google-flight-analysis/).
+An R package for analyzing, forecasting, and collecting flight data and prices from Google Flights. 
+
+**Credits:** This package is an R implementation inspired by the original Python package [google-flight-analysis](https://github.com/kcelebi/flight-analysis) by Kaya Celebi.
 
 ## Features
 
@@ -41,7 +43,7 @@ The main scraping function that makes up the backbone of most functionalities is
 
 ```r
 # Create a one-way flight query
-scrape <- Scrape("JFK", "IST", "2023-07-20")
+scrape <- Scrape("JFK", "IST", "2025-07-20")
 print(scrape)
 ```
 
@@ -49,7 +51,7 @@ print(scrape)
 
 ```r
 # Create a round-trip flight query
-scrape <- Scrape("JFK", "IST", "2023-07-20", "2023-08-20")
+scrape <- Scrape("JFK", "IST", "2025-07-20", "2025-08-20")
 print(scrape)
 ```
 
@@ -59,7 +61,7 @@ Chain-trips are defined as a sequence of one-way flights that have no direct rel
 
 ```r
 # Chain-trip format: origin, dest, date, origin, dest, date, ...
-scrape <- Scrape("JFK", "IST", "2023-08-20", "RDU", "LGA", "2023-12-25", "EWR", "SFO", "2024-01-20")
+scrape <- Scrape("JFK", "IST", "2025-08-20", "RDU", "LGA", "2025-12-25", "EWR", "SFO", "2026-01-20")
 print(scrape)
 ```
 
@@ -69,7 +71,7 @@ Perfect-chains are defined as a sequence of one-way flights such that the destin
 
 ```r
 # Perfect-chain format: origin, date, origin, date, ..., first_origin
-scrape <- Scrape("JFK", "2023-09-20", "IST", "2023-09-25", "CDG", "2023-10-10", "LHR", "2023-11-01", "JFK")
+scrape <- Scrape("JFK", "2025-09-20", "IST", "2025-09-25", "CDG", "2025-10-10", "LHR", "2025-11-01", "JFK")
 print(scrape)
 ```
 
@@ -92,7 +94,7 @@ Then scrape flight data from Google Flights:
 
 ```r
 # Create a query
-scrape <- Scrape("JFK", "IST", "2023-07-20", "2023-08-20")
+scrape <- Scrape("JFK", "IST", "2026-07-20", "2026-08-20")
 
 # Scrape the data (runs in headless mode by default)
 ScrapeObjects(scrape)
