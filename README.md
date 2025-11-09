@@ -164,13 +164,21 @@ flight <- Flight("2023-07-20", "JFKIST", "9:00AM", "5:00PM",
 
 # Convert flights to data frame
 df <- flights_to_dataframe(list(flight1, flight2, flight3))
+
+# Scrape live data (requires RSelenium package)
+install.packages(c("RSelenium", "wdman", "progress"))
+ScrapeObjects(scrape)  # Automatically handles browser setup
+print(scrape$data)
 ```
 
-For more examples, see `examples/basic_usage.R` or the comprehensive documentation in [README_R.md](README_R.md).
+For more examples, see `examples/basic_usage.R` or the comprehensive documentation in [README.Rmd](README.Rmd).
 
 ## Updates & New Features
 
-**November 2025**: Added full R package implementation with equivalent functionality to the Python version!
+**November 2025**: 
+- ✅ Full R package implementation with equivalent functionality to the Python version!
+- ✅ Complete web scraping with RSelenium - automatic browser setup and data extraction
+- ✅ Headless mode support for server environments
 
 Performing a complete revamp of this package, including new addition to PyPI. Documentation is being updated frequently, contact for any questions.
 

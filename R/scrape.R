@@ -222,13 +222,13 @@ print.Scrape <- function(x, ...) {
 #' Scrape Flight Objects
 #'
 #' @description
-#' This is a placeholder function. The actual web scraping functionality requires
-#' RSelenium and a Chrome driver. Due to the complexity of setting up a headless
-#' browser in this environment, this function returns a message indicating that
-#' web scraping is not yet fully implemented in the R version.
+#' Scrapes flight data from Google Flights using RSelenium. This function will
+#' automatically set up a Chrome browser, navigate to Google Flights URLs, and
+#' extract flight information.
 #'
 #' @param objs A Scrape object or list of Scrape objects
 #' @param deep_copy Logical. If TRUE, returns a copy of the objects
+#' @param headless Logical. If TRUE, runs browser in headless mode (no GUI)
 #'
 #' @return Modified Scrape object(s) with scraped data
 #' @export
@@ -238,30 +238,248 @@ print.Scrape <- function(x, ...) {
 #' scrape <- Scrape("JFK", "IST", "2023-07-20", "2023-08-20")
 #' ScrapeObjects(scrape)
 #' }
-ScrapeObjects <- function(objs, deep_copy = FALSE) {
-  message("Note: Web scraping with RSelenium requires additional setup.")
-  message("This is a placeholder that demonstrates the R package structure.")
-  message("To implement full functionality, you would need to:")
-  message("  1. Install RSelenium package")
-  message("  2. Set up Chrome/Firefox driver")
-  message("  3. Implement the web scraping logic")
+ScrapeObjects <- function(objs, deep_copy = FALSE, headless = TRUE) {
+  # Check if RSelenium is available
+  if (!requireNamespace("RSelenium", quietly = TRUE)) {
+    stop("RSelenium package is required. Install it with: install.packages('RSelenium')")
+  }
   
-  if (!inherits(objs, "Scrape")) {
+  # Ensure objs is a list
+  if (inherits(objs, "Scrape")) {
     objs <- list(objs)
   }
   
-  # Placeholder: In a full implementation, this would:
-  # 1. Initialize RSelenium driver
-  # 2. Navigate to each URL
-  # 3. Extract flight data
-  # 4. Parse and clean the data
-  # 5. Store in the Scrape object's data field
+  # Initialize RSelenium driver
+  cat("Initializing Chrome driver...\n")
   
-  message("\nFor now, returning the object(s) unchanged.")
+  tryCatch({
+    # Try to start Chrome driver with wdman
+    if (requireNamespace("wdman", quietly = TRUE)) {
+      driver <- start_chrome_driver(headless = headless)
+    } else {
+      # Fallback to rsDriver
+      driver <- start_chrome_driver_fallback(headless = headless)
+    }
+    
+    # Scrape each object
+    if (requireNamespace("progress", quietly = TRUE)) {
+      pb <- progress::progress_bar$new(
+        format = "Scraping [:bar] :percent eta: :eta",
+        total = length(objs), clear = FALSE
+      )
+      
+      for (obj in objs) {
+        scrape_data(obj, driver)
+        pb$tick()
+      }
+    } else {
+      cat("Scraping objects...\n")
+      for (i in seq_along(objs)) {
+        cat(sprintf("  Processing %d of %d...\n", i, length(objs)))
+        scrape_data(objs[[i]], driver)
+      }
+    }
+    
+    # Close driver
+    cat("Closing browser...\n")
+    tryCatch({
+      driver$client$close()
+      if (!is.null(driver$server)) {
+        driver$server$stop()
+      }
+    }, error = function(e) {
+      # Ignore errors on close
+    })
+    
+  }, error = function(e) {
+    stop(sprintf("Error during web scraping: %s\n\nMake sure Chrome/Chromium is installed and accessible.", e$message))
+  })
   
   if (deep_copy) {
     return(objs)
   }
   
   invisible(objs)
+}
+
+#' Start Chrome Driver using wdman
+#' @keywords internal
+start_chrome_driver <- function(headless = TRUE) {
+  chrome_driver <- wdman::chrome(check = TRUE)
+  
+  chrome_options <- list(
+    chromeOptions = list(
+      args = if (headless) c('--headless', '--disable-gpu', '--no-sandbox') else c()
+    )
+  )
+  
+  driver <- RSelenium::remoteDriver(
+    browserName = "chrome",
+    port = chrome_driver$port,
+    extraCapabilities = chrome_options
+  )
+  
+  driver$open()
+  driver$maxWindowSize()
+  
+  list(client = driver, server = chrome_driver)
+}
+
+#' Start Chrome Driver fallback method
+#' @keywords internal
+start_chrome_driver_fallback <- function(headless = TRUE) {
+  extra_caps <- list(
+    chromeOptions = list(
+      args = if (headless) c('--headless', '--disable-gpu', '--no-sandbox') else c()
+    )
+  )
+  
+  rD <- RSelenium::rsDriver(
+    browser = "chrome",
+    chromever = "latest",
+    extraCapabilities = extra_caps,
+    verbose = FALSE
+  )
+  
+  rD$client$maxWindowSize()
+  
+  rD
+}
+
+#' Scrape data for a single Scrape object
+#' @keywords internal
+scrape_data <- function(obj, driver) {
+  results_list <- list()
+  
+  for (i in seq_along(obj$url)) {
+    result <- get_results(obj$url[[i]], obj$date[[i]], driver$client)
+    if (!is.null(result) && nrow(result) > 0) {
+      results_list[[i]] <- result
+    }
+  }
+  
+  if (length(results_list) > 0) {
+    obj$data <- do.call(rbind, results_list)
+    rownames(obj$data) <- NULL
+  }
+  
+  invisible(obj)
+}
+
+#' Get results from a single URL
+#' @keywords internal
+get_results <- function(url, date, driver) {
+  tryCatch({
+    results <- make_url_request(url, driver)
+    flights <- clean_results(results, date)
+    flights_to_dataframe(flights)
+  }, error = function(e) {
+    warning(sprintf("Failed to scrape %s: %s", url, e$message))
+    return(data.frame())
+  })
+}
+
+#' Make URL request and wait for content
+#' @keywords internal
+make_url_request <- function(url, driver) {
+  driver$navigate(url)
+  
+  # Wait for page to load - check that we have enough content
+  max_attempts <- 20
+  for (attempt in 1:max_attempts) {
+    Sys.sleep(0.5)
+    results <- get_flight_elements(driver)
+    if (length(results) > 100) {
+      break
+    }
+  }
+  
+  if (length(results) <= 100) {
+    stop("Timeout: Page did not load sufficient content. Check your internet connection or verify flights exist for this query.")
+  }
+  
+  results
+}
+
+#' Get flight elements from page
+#' @keywords internal
+get_flight_elements <- function(driver) {
+  tryCatch({
+    body_element <- driver$findElement(using = "xpath", value = '//body[@id = "yDmH0d"]')
+    text <- body_element$getElementText()[[1]]
+    strsplit(text, "\n")[[1]]
+  }, error = function(e) {
+    character(0)
+  })
+}
+
+#' Clean and parse results from scraped page
+#' @keywords internal
+clean_results <- function(result, date) {
+  # Clean results - remove non-ASCII and strip whitespace
+  res2 <- sapply(result, function(x) {
+    iconv(x, from = "UTF-8", to = "ASCII", sub = "")
+  })
+  res2 <- trimws(res2)
+  
+  # Find section boundaries
+  start_idx <- which(res2 == "Sort by:")
+  if (length(start_idx) == 0) {
+    warning("Could not find 'Sort by:' marker in results")
+    return(list())
+  }
+  start_idx <- start_idx[1] + 1
+  
+  mid_start_idx <- which(res2 == "Price insights")
+  if (length(mid_start_idx) == 0) {
+    mid_start_idx <- length(res2)
+  } else {
+    mid_start_idx <- mid_start_idx[1]
+  }
+  
+  # Find "Other departing flights" or "Other flights"
+  mid_end_idx <- which(res2 == "Other departing flights")
+  if (length(mid_end_idx) == 0) {
+    mid_end_idx <- which(res2 == "Other flights")
+  }
+  if (length(mid_end_idx) == 0) {
+    mid_end_idx <- mid_start_idx + 1
+  } else {
+    mid_end_idx <- mid_end_idx[1] + 1
+  }
+  
+  # Find end marker
+  end_idx <- which(grepl("more flights$", res2))
+  if (length(end_idx) == 0) {
+    end_idx <- length(res2)
+  } else {
+    end_idx <- end_idx[1]
+  }
+  
+  # Extract flight data section
+  res3 <- c(res2[start_idx:(mid_start_idx-1)], res2[mid_end_idx:(end_idx-1)])
+  
+  # Find flight time markers (entries ending with AM or PM, or with + offset)
+  is_time_marker <- function(x) {
+    if (nchar(x) <= 2) return(FALSE)
+    has_colon <- grepl(":", x)
+    ends_ampm <- grepl("(AM|PM)$", x)
+    has_plus <- substr(x, nchar(x)-1, nchar(x)-1) == "+"
+    return(has_colon && (ends_ampm || has_plus))
+  }
+  
+  matches <- which(sapply(res3, is_time_marker))
+  # Take every other match (departure times, not arrival times shown separately)
+  matches <- matches[seq(1, length(matches), by = 2)]
+  
+  # Create Flight objects from matched sections
+  flights <- list()
+  for (i in seq_along(matches[-length(matches)])) {
+    start <- matches[i]
+    end <- matches[i + 1] - 1
+    flight_data <- res3[start:end]
+    flights[[i]] <- Flight(date, flight_data)
+  }
+  
+  flights
 }

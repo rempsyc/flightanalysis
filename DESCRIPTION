@@ -18,6 +18,9 @@ Imports:
     methods,
     utils
 Suggests:
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    RSelenium,
+    wdman,
+    progress
 URL: https://github.com/rempsyc/flight-analysis
 BugReports: https://github.com/rempsyc/flight-analysis/issues

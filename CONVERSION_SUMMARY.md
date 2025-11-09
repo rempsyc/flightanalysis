@@ -37,7 +37,10 @@ The Python package `google-flight-analysis` has been successfully converted to R
 - ✅ Validate date formats (YYYY-MM-DD)
 - ✅ Generate Google Flights URLs
 - ✅ Print methods for display
-- ✅ ScrapeObjects() placeholder (requires RSelenium setup)
+- ✅ **ScrapeObjects() with full RSelenium web scraping implementation**
+- ✅ **Automatic Chrome driver setup**
+- ✅ **Page parsing and flight data extraction**
+- ✅ **Headless browser support**
 
 #### Cache Control (`R/cache.R`)
 - ✅ Cache flight data to CSV files
@@ -193,10 +196,19 @@ Success rate: 100.0%
 ✅ Print methods  
 ✅ Complete test coverage  
 ✅ Example scripts  
+✅ **Full web scraping with RSelenium**  
+✅ **Automatic browser driver setup**  
+✅ **Headless mode support**  
 
-## What Requires User Setup
+## Package Dependencies
 
-⚠️ **Web Scraping**: Users need to install RSelenium and configure browser drivers to use live scraping functionality. The structure and API are in place.
+To use web scraping functionality, install these packages:
+
+```r
+install.packages(c("RSelenium", "wdman", "progress"))
+```
+
+The package will automatically handle Chrome driver setup and browser automation.
 
 ## Verification Commands
 
