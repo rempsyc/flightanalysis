@@ -4,9 +4,9 @@
 #' flightanalysis: Google Flight Analysis and Scraping
 #'
 #' @description
-#' This package provides tools and models for users to analyze, forecast, and 
+#' This package provides tools and models for users to analyze, forecast, and
 #' collect data regarding flights and prices. Current features include:
-#' 
+#'
 #' \itemize{
 #'   \item Detailed scraping and querying tools for Google Flights
 #'   \item Ability to store data locally or to SQL tables
@@ -30,6 +30,6 @@
 #'   \item \strong{Perfect-chain}: Sequence where each destination becomes the next origin
 #' }
 #'
-#' @docType package
+#' @docType _PACKAGE
 #' @name flightanalysis-package
 NULL
