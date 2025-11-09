@@ -644,7 +644,8 @@ clean_results <- function(result, date, verbose = TRUE) {
     flight_data <- res2[start:end]
     
     tryCatch({
-      flights[[i]] <- Flight(date, flight_data)
+      # Use do.call to unpack the vector so each element becomes a separate argument
+      flights[[i]] <- do.call(Flight, c(list(date), as.list(flight_data)))
     }, error = function(e) {
       if (verbose) {
         cat(sprintf("  ⚠ Could not parse flight %d: %s\n", i, e$message))
