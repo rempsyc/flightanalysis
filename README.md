@@ -5,6 +5,8 @@
 
 # Flight Analysis
 
+**Now available in both Python and R!**
+
 This project provides tools and models for users to analyze, forecast, and collect data regarding flights and prices. There are currently many features in initial stages and in development. The current features (as of 5/25/2023) are:
 
 - Detailed scraping and querying tools for Google Flights
@@ -19,7 +21,12 @@ The features in development are:
 
 ## Table of Contents
 - [Overview](#Overview)
+- [Installation](#installation)
+  - [Python Installation](#python-installation)
+  - [R Installation](#r-installation)
 - [Usage](#usage)
+  - [Python Usage](#python-usage)
+  - [R Usage](#r-usage)
 - [Updates & New Features](#updates-&-new-features)
 - [Real Usage](#real-usage) 😄
 
@@ -28,9 +35,9 @@ The features in development are:
 
 Flight price calculation can either use newly scraped data (scrapes upon running it) or cached data that reports a price-change confidence determined by a trained model. Currently, many features of this application are in development.
 
-## Usage
+## Installation
 
-The web scraping tool is currently functional only for scraping round trip flights for a given origin, destination, and date range. It can be easily used in a script or a jupyter notebook.
+### Python Installation
 
 Note that the following packages are **absolutely required** as dependencies:
 - tqdm
@@ -38,13 +45,38 @@ Note that the following packages are **absolutely required** as dependencies:
 - pandas
 - numpy
 
-You can easily install this by running either installing the Python package `google-flight-analysis`:
+You can easily install this by installing the Python package `google-flight-analysis`:
 
 	pip install google-flight-analysis
 
 or forking/cloning this repository. Upon doing so, make sure to install the dependencies and update ChromeDriver to match your Google Chrome version.
 
 	pip install -r requirements.txt
+
+### R Installation
+
+The R package is available in this repository. To use it:
+
+1. Clone this repository
+2. In R, source the package files or install from GitHub:
+
+```r
+# Option 1: Source files directly
+source('R/flight.R')
+source('R/scrape.R')
+source('R/cache.R')
+
+# Option 2: Install from GitHub (requires devtools)
+devtools::install_github("rempsyc/flight-analysis")
+```
+
+See [README_R.md](README_R.md) for detailed R documentation.
+
+## Usage
+
+### Python Usage
+
+The web scraping tool is currently functional only for scraping round trip flights for a given origin, destination, and date range. It can be easily used in a script or a jupyter notebook.
 
 
 The main scraping function that makes up the backbone of most other functionalities is `Scrape()`. It serves also as a data object, preserving the flight information as well as meta-data from your query. For Python package users, import as follows:
@@ -103,7 +135,42 @@ You can read more about the different type of trips in the documentation. Scrape
 1. The objects being added are the same type of trip (one-way, round-trip, etc)
 2. The objects being added are either both unqueried or both queried
 
+### R Usage
+
+The R version provides similar functionality with R-native syntax:
+
+```r
+# Load the package
+source('R/flight.R')
+source('R/scrape.R')
+source('R/cache.R')
+
+# One-way trip
+scrape <- Scrape("JFK", "IST", "2023-07-20")
+print(scrape)
+
+# Round-trip
+scrape <- Scrape("JFK", "IST", "2023-07-20", "2023-08-20")
+
+# Chain-trip
+scrape <- Scrape("JFK", "IST", "2023-08-20", "RDU", "LGA", "2023-12-25")
+
+# Perfect-chain
+scrape <- Scrape("JFK", "2023-09-20", "IST", "2023-09-25", "CDG", "2023-10-10", "JFK")
+
+# Create a Flight object
+flight <- Flight("2023-07-20", "JFKIST", "9:00AM", "5:00PM", 
+                 "8 hr 0 min", "Nonstop", "150 kg CO2", "10% emissions", "$450")
+
+# Convert flights to data frame
+df <- flights_to_dataframe(list(flight1, flight2, flight3))
+```
+
+For more examples, see `examples/basic_usage.R` or the comprehensive documentation in [README_R.md](README_R.md).
+
 ## Updates & New Features
+
+**November 2025**: Added full R package implementation with equivalent functionality to the Python version!
 
 Performing a complete revamp of this package, including new addition to PyPI. Documentation is being updated frequently, contact for any questions.
 
