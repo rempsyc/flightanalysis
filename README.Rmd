@@ -184,7 +184,7 @@ This R package maintains the core functionality of the Python version but with R
 
 ## Development Status
 
-This is an initial R port of the Python package. The core data structures and API are implemented. Web scraping functionality with RSelenium requires additional configuration in the user's environment.
+This is an initial R port of the Python package. The core data structures and API are implemented. Web scraping functionality is fully implemented using the chromote package via the ScrapeObjects function in R/scrape.R.
 
 ## License
 
