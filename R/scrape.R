@@ -16,13 +16,13 @@
 #' @examples
 #' \dontrun{
 #' # One-way trip
-#' scrape1 <- Scrape("JFK", "IST", "2023-07-20")
+#' scrape1 <- Scrape("JFK", "BOS", "2025-12-20")
 #'
 #' # Round-trip
-#' scrape2 <- Scrape("JFK", "IST", "2023-07-20", "2023-08-20")
+#' scrape2 <- Scrape("JFK", "YUL", "2025-12-20", "2025-12-25")
 #'
 #' # Chain-trip
-#' scrape3 <- Scrape("JFK", "IST", "2023-08-20", "RDU", "LGA", "2023-12-25")
+#' scrape3 <- Scrape("JFK", "YYZ", "2025-12-20", "RDU", "LGA", "2025-12-25")
 #' }
 Scrape <- function(...) {
   args <- list(...)
@@ -257,13 +257,13 @@ print.Scrape <- function(x, ...) {
 #' @param headless Logical. If TRUE, runs browser in headless mode (no GUI, default)
 #' @param verbose Logical. If TRUE, shows detailed progress information (default)
 #'
-#' @return Modified Scrape object(s) with scraped data. **Important:** You must 
+#' @return Modified Scrape object(s) with scraped data. **Important:** You must
 #'   capture the return value to get the scraped data: `scrape <- ScrapeObjects(scrape)`
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' scrape <- Scrape("JFK", "IST", "2023-07-20", "2023-08-20")
+#' scrape <- Scrape("JFK", "IST", "2025-12-20", "2025-12-25")
 #' scrape <- ScrapeObjects(scrape)  # Capture the return value!
 #' print(scrape$data)
 #' }
@@ -289,7 +289,7 @@ ScrapeObjects <- function(
 
   # Track if input was a single Scrape object
   single_object <- inherits(objs, "Scrape")
-  
+
   # Ensure objs is a list
   if (single_object) {
     objs <- list(objs)
@@ -332,7 +332,11 @@ ScrapeObjects <- function(
         )
 
         for (i in seq_along(objs)) {
-          objs[[i]] <- scrape_data_chromote(objs[[i]], browser, verbose = verbose)
+          objs[[i]] <- scrape_data_chromote(
+            objs[[i]],
+            browser,
+            verbose = verbose
+          )
           pb$tick()
         }
       } else {
@@ -343,7 +347,11 @@ ScrapeObjects <- function(
           if (verbose) {
             cat(sprintf("\n[%d/%d] Processing query...\n", i, length(objs)))
           }
-          objs[[i]] <- scrape_data_chromote(objs[[i]], browser, verbose = verbose)
+          objs[[i]] <- scrape_data_chromote(
+            objs[[i]],
+            browser,
+            verbose = verbose
+          )
         }
       }
 
@@ -377,7 +385,7 @@ ScrapeObjects <- function(
   } else {
     result <- objs
   }
-  
+
   if (deep_copy) {
     return(result)
   }

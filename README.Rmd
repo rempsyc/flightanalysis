@@ -125,7 +125,7 @@ chromote eliminates common RSelenium issues:
 
 ```r
 # Create a Flight object
-flight <- Flight("2023-07-20", "JFKIST", "9:00AM", "5:00PM", 
+flight <- Flight("2025-12-25", "JFKIST", "9:00AM", "5:00PM", 
                  "8 hr 0 min", "Nonstop", "150 kg CO2", "10% emissions", "$450")
 
 # Convert multiple flights to a data frame

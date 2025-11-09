@@ -89,7 +89,7 @@ cat("\n")
 cat("Example 6: Converting Multiple Flights to DataFrame\n")
 cat("----------------------------------------------------\n")
 flight2 <- Flight(
-  "2023-07-21",
+  "2025-12-21",
   "ISTCDG",
   "10:30AM",
   "2:15PM",
@@ -100,7 +100,7 @@ flight2 <- Flight(
   "$280"
 )
 flight3 <- Flight(
-  "2023-07-22",
+  "2025-12-22",
   "CDGLHR",
   "8:00AM",
   "9:30AM",
@@ -137,7 +137,11 @@ cat("  CacheControl('./cache/', scrape_object, use_db = FALSE)\n\n")
 cat("To cache flight data to SQLite database:\n")
 cat("  CacheControl('./flights.db', scrape_object, use_db = TRUE)\n\n")
 cat("Note: Caching requires that the Scrape object has data.\n")
-cat("      Use ScrapeObjects() to populate the data field (requires chromote).\n")
-cat("      Example: scrape <- ScrapeObjects(scrape)  # Must capture return value!\n\n")
+cat(
+  "      Use ScrapeObjects() to populate the data field (requires chromote).\n"
+)
+cat(
+  "      Example: scrape <- ScrapeObjects(scrape)  # Must capture return value!\n\n"
+)
 
 cat("=== Examples completed successfully! ===\n")

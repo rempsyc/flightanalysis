@@ -99,52 +99,52 @@ expect_error <- function(expr, msg = NULL) {
 cat("\n=== Testing Scrape Class ===\n")
 
 cat("\nTest: One-way trip is created correctly\n")
-res1 <- Scrape("FCO", "IST", "2023-12-05")
+res1 <- Scrape("FCO", "IST", "2025-12-05")
 expect_s3_class(res1, "Scrape")
 expect_equal(res1$origin[[1]], "FCO")
 expect_equal(res1$dest[[1]], "IST")
-expect_equal(res1$date[[1]], "2023-12-05")
+expect_equal(res1$date[[1]], "2025-12-05")
 expect_equal(res1$type, "one-way")
 
 cat("\nTest: Round-trip is created correctly\n")
-res2 <- Scrape("LGA", "RDU", "2023-05-15", "2023-06-15")
+res2 <- Scrape("LGA", "RDU", "2025-12-15", "2025-12-25")
 expect_s3_class(res2, "Scrape")
 expect_equal(res2$origin[[1]], "LGA")
 expect_equal(res2$dest[[1]], "RDU")
 expect_equal(res2$origin[[2]], "RDU")
 expect_equal(res2$dest[[2]], "LGA")
-expect_equal(res2$date[[1]], "2023-05-15")
-expect_equal(res2$date[[2]], "2023-06-15")
+expect_equal(res2$date[[1]], "2025-12-15")
+expect_equal(res2$date[[2]], "2025-12-15")
 expect_equal(res2$type, "round-trip")
 
 cat("\nTest: Chain-trip is created correctly\n")
 res3 <- Scrape(
   "JFK",
   "AMS",
-  "2023-11-10",
+  "2025-11-10",
   "CDG",
   "AMS",
-  "2023-11-17",
+  "2025-11-17",
   "AMS",
   "IST",
-  "2023-11-25"
+  "2025-11-25"
 )
 expect_s3_class(res3, "Scrape")
 expect_equal(unlist(res3$origin), c("JFK", "CDG", "AMS"))
 expect_equal(unlist(res3$dest), c("AMS", "AMS", "IST"))
-expect_equal(unlist(res3$date), c("2023-11-10", "2023-11-17", "2023-11-25"))
+expect_equal(unlist(res3$date), c("2025-12-10", "2025-12-17", "2025-12-25"))
 expect_equal(res3$type, "chain-trip")
 
 cat("\nTest: Perfect-chain is created correctly\n")
 res4 <- Scrape(
   "JFK",
-  "2023-11-10",
+  "2025-12-10",
   "AMS",
-  "2023-11-17",
+  "2025-12-17",
   "CDG",
-  "2023-11-20",
+  "2025-12-20",
   "IST",
-  "2023-11-25",
+  "2025-12-25",
   "JFK"
 )
 expect_s3_class(res4, "Scrape")
@@ -152,15 +152,15 @@ expect_equal(unlist(res4$origin), c("JFK", "AMS", "CDG", "IST"))
 expect_equal(unlist(res4$dest), c("AMS", "CDG", "IST", "JFK"))
 expect_equal(
   unlist(res4$date),
-  c("2023-11-10", "2023-11-17", "2023-11-20", "2023-11-25")
+  c("2025-12-10", "2025-12-17", "2025-12-20", "2025-12-25")
 )
 expect_equal(res4$type, "perfect-chain")
 
 cat("\nTest: Invalid date order throws error\n")
-expect_error(Scrape("JFK", "IST", "2023-08-20", "2023-07-20"))
+expect_error(Scrape("JFK", "IST", "2025-12-20", "2025-12-25"))
 
 cat("\nTest: Invalid argument format throws error\n")
-expect_error(Scrape("JFKK", "IST", "2023-07-20"))
+expect_error(Scrape("JFKK", "IST", "2025-12-20"))
 # Note: Date format validation is less strict in R due to character length check only
 
 # Test Suite: Flight
@@ -168,7 +168,7 @@ cat("\n=== Testing Flight Class ===\n")
 
 cat("\nTest: Flight object is created\n")
 flight1 <- Flight(
-  "2023-07-20",
+  "2025-12-20",
   "JFKIST",
   "9:00AM",
   "5:00PM",
@@ -179,29 +179,29 @@ flight1 <- Flight(
   "$450"
 )
 expect_s3_class(flight1, "Flight")
-expect_equal(flight1$date, "2023-07-20")
+expect_equal(flight1$date, "2025-12-20")
 
 cat("\nTest: Flight parses origin and destination\n")
-flight2 <- Flight("2023-07-20", "JFKIST")
+flight2 <- Flight("2025-12-20", "JFKIST")
 expect_equal(flight2$origin, "JFK")
 expect_equal(flight2$dest, "IST")
 
 cat("\nTest: Flight parses price correctly\n")
-flight3 <- Flight("2023-07-20", "JFKIST", "$450")
+flight3 <- Flight("2025-12-20", "JFKIST", "$450")
 expect_equal(flight3$price, 450)
 
-flight4 <- Flight("2023-07-20", "JFKIST", "$1,250")
+flight4 <- Flight("2025-12-20", "JFKIST", "$1,250")
 expect_equal(flight4$price, 1250)
 
 cat("\nTest: Flight parses stops correctly\n")
-flight5 <- Flight("2023-07-20", "JFKIST", "Nonstop")
+flight5 <- Flight("2025-12-20", "JFKIST", "Nonstop")
 expect_equal(flight5$num_stops, 0)
 
-flight6 <- Flight("2023-07-20", "JFKIST", "1 stop")
+flight6 <- Flight("2025-12-20", "JFKIST", "1 stop")
 expect_equal(flight6$num_stops, 1)
 
 cat("\nTest: Flight parses CO2 emissions\n")
-flight7 <- Flight("2023-07-20", "JFKIST", "150 kg CO2", "10% emissions")
+flight7 <- Flight("2025-12-20", "JFKIST", "150 kg CO2", "10% emissions")
 expect_equal(flight7$co2, 150)
 expect_equal(flight7$emissions, 10)
 
@@ -216,7 +216,7 @@ expect_true("destination" %in% names(df))
 cat("\n=== Testing Cache Functions ===\n")
 
 cat("\nTest: check_scrape validates Scrape objects\n")
-scrape <- Scrape("JFK", "IST", "2023-07-20")
+scrape <- Scrape("JFK", "IST", "2025-12-20")
 expect_true(check_scrape(scrape))
 
 not_scrape <- list(a = 1, b = 2)
