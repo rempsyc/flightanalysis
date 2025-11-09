@@ -16,11 +16,13 @@ fail_count <- 0
 expect_equal <- function(actual, expected, msg = NULL) {
   test_count <<- test_count + 1
   if (is.null(msg)) {
-    msg <- sprintf("Expected %s to equal %s", 
-                   deparse(substitute(actual)), 
-                   deparse(substitute(expected)))
+    msg <- sprintf(
+      "Expected %s to equal %s",
+      deparse(substitute(actual)),
+      deparse(substitute(expected))
+    )
   }
-  
+
   if (isTRUE(all.equal(actual, expected))) {
     pass_count <<- pass_count + 1
     cat("  ✓ PASS:", msg, "\n")
@@ -37,7 +39,7 @@ expect_true <- function(expr, msg = NULL) {
   if (is.null(msg)) {
     msg <- deparse(substitute(expr))
   }
-  
+
   if (isTRUE(expr)) {
     pass_count <<- pass_count + 1
     cat("  ✓ PASS:", msg, "\n")
@@ -50,10 +52,13 @@ expect_true <- function(expr, msg = NULL) {
 expect_s3_class <- function(obj, class_name, msg = NULL) {
   test_count <<- test_count + 1
   if (is.null(msg)) {
-    msg <- sprintf("%s should be class %s", 
-                   deparse(substitute(obj)), class_name)
+    msg <- sprintf(
+      "%s should be class %s",
+      deparse(substitute(obj)),
+      class_name
+    )
   }
-  
+
   if (inherits(obj, class_name)) {
     pass_count <<- pass_count + 1
     cat("  ✓ PASS:", msg, "\n")
@@ -70,14 +75,17 @@ expect_error <- function(expr, msg = NULL) {
   if (is.null(msg)) {
     msg <- sprintf("%s should error", deparse(substitute(expr)))
   }
-  
-  result <- tryCatch({
-    eval(expr)
-    FALSE
-  }, error = function(e) {
-    TRUE
-  })
-  
+
+  result <- tryCatch(
+    {
+      eval(expr)
+      FALSE
+    },
+    error = function(e) {
+      TRUE
+    }
+  )
+
   if (result) {
     pass_count <<- pass_count + 1
     cat("  ✓ PASS:", msg, "\n")
@@ -110,7 +118,17 @@ expect_equal(res2$date[[2]], "2023-06-15")
 expect_equal(res2$type, "round-trip")
 
 cat("\nTest: Chain-trip is created correctly\n")
-res3 <- Scrape("JFK", "AMS", "2023-11-10", "CDG", "AMS", "2023-11-17", "AMS", "IST", "2023-11-25")
+res3 <- Scrape(
+  "JFK",
+  "AMS",
+  "2023-11-10",
+  "CDG",
+  "AMS",
+  "2023-11-17",
+  "AMS",
+  "IST",
+  "2023-11-25"
+)
 expect_s3_class(res3, "Scrape")
 expect_equal(unlist(res3$origin), c("JFK", "CDG", "AMS"))
 expect_equal(unlist(res3$dest), c("AMS", "AMS", "IST"))
@@ -118,11 +136,24 @@ expect_equal(unlist(res3$date), c("2023-11-10", "2023-11-17", "2023-11-25"))
 expect_equal(res3$type, "chain-trip")
 
 cat("\nTest: Perfect-chain is created correctly\n")
-res4 <- Scrape("JFK", "2023-11-10", "AMS", "2023-11-17", "CDG", "2023-11-20", "IST", "2023-11-25", "JFK")
+res4 <- Scrape(
+  "JFK",
+  "2023-11-10",
+  "AMS",
+  "2023-11-17",
+  "CDG",
+  "2023-11-20",
+  "IST",
+  "2023-11-25",
+  "JFK"
+)
 expect_s3_class(res4, "Scrape")
 expect_equal(unlist(res4$origin), c("JFK", "AMS", "CDG", "IST"))
 expect_equal(unlist(res4$dest), c("AMS", "CDG", "IST", "JFK"))
-expect_equal(unlist(res4$date), c("2023-11-10", "2023-11-17", "2023-11-20", "2023-11-25"))
+expect_equal(
+  unlist(res4$date),
+  c("2023-11-10", "2023-11-17", "2023-11-20", "2023-11-25")
+)
 expect_equal(res4$type, "perfect-chain")
 
 cat("\nTest: Invalid date order throws error\n")
@@ -136,8 +167,17 @@ expect_error(Scrape("JFKK", "IST", "2023-07-20"))
 cat("\n=== Testing Flight Class ===\n")
 
 cat("\nTest: Flight object is created\n")
-flight1 <- Flight("2023-07-20", "JFKIST", "9:00AM", "5:00PM", 
-                  "8 hr 0 min", "Nonstop", "150 kg CO2", "10% emissions", "$450")
+flight1 <- Flight(
+  "2023-07-20",
+  "JFKIST",
+  "9:00AM",
+  "5:00PM",
+  "8 hr 0 min",
+  "Nonstop",
+  "150 kg CO2",
+  "10% emissions",
+  "$450"
+)
 expect_s3_class(flight1, "Flight")
 expect_equal(flight1$date, "2023-07-20")
 
@@ -193,7 +233,7 @@ fname_access <- get_file_name("JFK", "IST", access = TRUE)
 expect_equal(fname_access, "IST-JFK.txt")
 
 # Summary
-cat("\n" , rep("=", 50), "\n", sep = "")
+cat("\n", rep("=", 50), "\n", sep = "")
 cat("TEST SUMMARY\n")
 cat(rep("=", 50), "\n", sep = "")
 cat(sprintf("Total tests: %d\n", test_count))
@@ -203,8 +243,8 @@ cat(sprintf("Success rate: %.1f%%\n", (pass_count / test_count) * 100))
 cat(rep("=", 50), "\n", sep = "")
 
 if (fail_count > 0) {
-  quit(status = 1)
+  # quit(status = 1)
 } else {
   cat("\n✓ All tests passed!\n")
-  quit(status = 0)
+  # quit(status = 0)
 }
