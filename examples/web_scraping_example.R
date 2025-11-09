@@ -35,7 +35,7 @@ print(scrape_oneway)
 cat("\n")
 
 cat("Now scraping live data from Google Flights...\n")
-cat("(This will open a Chrome browser temporarily)\n\n")
+cat("(Pre-flight checks and driver initialization will run automatically)\n\n")
 
 tryCatch({
   ScrapeObjects(scrape_oneway, headless = TRUE)

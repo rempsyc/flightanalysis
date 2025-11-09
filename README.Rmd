@@ -99,11 +99,22 @@ ScrapeObjects(scrape, headless = TRUE)
 ```
 
 The `ScrapeObjects()` function will:
-1. Automatically set up Chrome/Chromium browser
-2. Navigate to Google Flights URLs
-3. Extract flight information
-4. Parse prices, times, airlines, stops, and emissions
-5. Store results in the Scrape object's `data` field
+1. **Run pre-flight checks** - Verify Chrome installation and internet connectivity
+2. **Automatically set up Chrome driver** - Multiple fallback methods for reliability
+3. **Navigate to Google Flights URLs** - With proper wait times for page loading
+4. **Extract flight information** - Parse prices, times, airlines, stops, and emissions
+5. **Store results** - Save data in the Scrape object's `data` field
+6. **Handle errors gracefully** - Provide detailed troubleshooting tips if issues occur
+
+**Error Handling & Troubleshooting:**
+
+If you encounter errors, the function will automatically:
+- Detect if Chrome/Chromium is installed
+- Check internet connectivity
+- Try multiple driver initialization methods (rsDriver and wdman)
+- Verify driver connections before scraping
+- Provide detailed error messages with troubleshooting steps
+- Clean up resources even if errors occur
 
 ### Working with Flight Objects
 

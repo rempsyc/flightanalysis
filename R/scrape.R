@@ -249,17 +249,27 @@ ScrapeObjects <- function(objs, deep_copy = FALSE, headless = TRUE) {
     objs <- list(objs)
   }
   
+  # Pre-flight checks
+  cat("Running pre-flight checks...\n")
+  check_chrome_installation()
+  check_internet_connection()
+  
   # Initialize RSelenium driver
   cat("Initializing Chrome driver...\n")
+  driver <- NULL
   
   tryCatch({
-    # Try to start Chrome driver with wdman
-    if (requireNamespace("wdman", quietly = TRUE)) {
-      driver <- start_chrome_driver(headless = headless)
-    } else {
-      # Fallback to rsDriver
-      driver <- start_chrome_driver_fallback(headless = headless)
+    # Try multiple driver initialization methods
+    driver <- initialize_chrome_driver(headless = headless)
+    
+    if (is.null(driver)) {
+      stop("Failed to initialize Chrome driver. Please check Chrome installation and permissions.")
     }
+    
+    # Verify driver is working
+    cat("Verifying driver connection...\n")
+    verify_driver_connection(driver$client)
+    cat("✓ Driver ready\n\n")
     
     # Scrape each object
     if (requireNamespace("progress", quietly = TRUE)) {
@@ -282,17 +292,21 @@ ScrapeObjects <- function(objs, deep_copy = FALSE, headless = TRUE) {
     
     # Close driver
     cat("Closing browser...\n")
-    tryCatch({
-      driver$client$close()
-      if (!is.null(driver$server)) {
-        driver$server$stop()
-      }
-    }, error = function(e) {
-      # Ignore errors on close
-    })
+    close_driver_safely(driver)
     
   }, error = function(e) {
-    stop(sprintf("Error during web scraping: %s\n\nMake sure Chrome/Chromium is installed and accessible.", e$message))
+    # Try to close driver if it was initialized
+    if (!is.null(driver)) {
+      tryCatch(close_driver_safely(driver), error = function(e2) {})
+    }
+    
+    # Provide detailed error message
+    error_msg <- sprintf(
+      "Error during web scraping: %s\n\nTroubleshooting:\n%s",
+      e$message,
+      get_troubleshooting_tips()
+    )
+    stop(error_msg, call. = FALSE)
   })
   
   if (deep_copy) {
@@ -302,14 +316,172 @@ ScrapeObjects <- function(objs, deep_copy = FALSE, headless = TRUE) {
   invisible(objs)
 }
 
+#' Check if Chrome/Chromium is installed
+#' @keywords internal
+check_chrome_installation <- function() {
+  # Check common Chrome locations
+  chrome_paths <- c(
+    "/usr/bin/google-chrome",
+    "/usr/bin/chromium",
+    "/usr/bin/chromium-browser",
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "C:/Program Files/Google/Chrome/Application/chrome.exe",
+    "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe"
+  )
+  
+  chrome_found <- any(file.exists(chrome_paths))
+  
+  # Also check if chrome/chromium is in PATH
+  if (!chrome_found) {
+    chrome_in_path <- tryCatch({
+      system2("which", c("google-chrome", "chromium", "chromium-browser"), 
+              stdout = TRUE, stderr = FALSE)
+      TRUE
+    }, error = function(e) FALSE, warning = function(w) FALSE)
+    
+    chrome_found <- chrome_in_path
+  }
+  
+  if (!chrome_found) {
+    warning("Chrome/Chromium not found in common locations. If scraping fails, please install Chrome or Chromium.")
+  } else {
+    cat("✓ Chrome/Chromium detected\n")
+  }
+  
+  invisible(chrome_found)
+}
+
+#' Check internet connection
+#' @keywords internal
+check_internet_connection <- function() {
+  connected <- tryCatch({
+    con <- url("https://www.google.com", open = "rb", timeout = 5)
+    close(con)
+    TRUE
+  }, error = function(e) FALSE)
+  
+  if (!connected) {
+    warning("Could not connect to Google. Please check your internet connection.")
+  } else {
+    cat("✓ Internet connection verified\n")
+  }
+  
+  invisible(connected)
+}
+
+#' Initialize Chrome driver with multiple fallback methods
+#' @keywords internal
+initialize_chrome_driver <- function(headless = TRUE) {
+  driver <- NULL
+  errors <- list()
+  
+  # Method 1: Try rsDriver (most reliable)
+  cat("  Trying rsDriver method...\n")
+  driver <- tryCatch({
+    start_chrome_driver_rsdriver(headless = headless)
+  }, error = function(e) {
+    errors[[1]] <<- paste("rsDriver:", e$message)
+    NULL
+  })
+  
+  if (!is.null(driver)) {
+    cat("  ✓ rsDriver method successful\n")
+    return(driver)
+  }
+  
+  # Method 2: Try wdman with remoteDriver
+  if (requireNamespace("wdman", quietly = TRUE)) {
+    cat("  Trying wdman method...\n")
+    driver <- tryCatch({
+      start_chrome_driver_wdman(headless = headless)
+    }, error = function(e) {
+      errors[[2]] <<- paste("wdman:", e$message)
+      NULL
+    })
+    
+    if (!is.null(driver)) {
+      cat("  ✓ wdman method successful\n")
+      return(driver)
+    }
+  }
+  
+  # If all methods failed, provide detailed error
+  if (is.null(driver)) {
+    error_details <- paste(unlist(errors), collapse = "\n  - ")
+    stop(sprintf(
+      "Failed to initialize Chrome driver. Errors encountered:\n  - %s\n\nPlease ensure:\n  1. Chrome/Chromium is installed\n  2. You have write permissions in the working directory\n  3. No other Chrome instances are using the debugging port",
+      error_details
+    ), call. = FALSE)
+  }
+  
+  driver
+}
+
+#' Start Chrome Driver using rsDriver
+#' @keywords internal
+start_chrome_driver_rsdriver <- function(headless = TRUE) {
+  chrome_args <- c('--disable-dev-shm-usage', '--no-sandbox')
+  if (headless) {
+    chrome_args <- c(chrome_args, '--headless', '--disable-gpu')
+  }
+  
+  extra_caps <- list(
+    chromeOptions = list(
+      args = chrome_args,
+      prefs = list(
+        "profile.default_content_setting_values.notifications" = 2
+      )
+    )
+  )
+  
+  # Use a random port to avoid conflicts
+  port <- as.integer(4444 + sample(1:1000, 1))
+  
+  rD <- RSelenium::rsDriver(
+    browser = "chrome",
+    chromever = "latest",
+    extraCapabilities = extra_caps,
+    port = port,
+    verbose = FALSE,
+    check = TRUE
+  )
+  
+  # Wait a bit for driver to initialize
+  Sys.sleep(2)
+  
+  # Verify connection
+  tryCatch({
+    rD$client$maxWindowSize()
+  }, error = function(e) {
+    # Try to close and throw error
+    tryCatch(rD$server$stop(), error = function(e2) {})
+    stop("Failed to connect to Chrome driver: ", e$message)
+  })
+  
+  list(client = rD$client, server = rD$server)
+}
+
 #' Start Chrome Driver using wdman
 #' @keywords internal
-start_chrome_driver <- function(headless = TRUE) {
-  chrome_driver <- wdman::chrome(check = TRUE)
+start_chrome_driver_wdman <- function(headless = TRUE) {
+  chrome_driver <- wdman::chrome(
+    check = TRUE,
+    verbose = FALSE
+  )
+  
+  # Verify port is valid
+  if (is.null(chrome_driver$port) || !is.numeric(chrome_driver$port)) {
+    stop("Chrome driver failed to initialize with a valid port")
+  }
+  
+  chrome_args <- c('--disable-dev-shm-usage', '--no-sandbox')
+  if (headless) {
+    chrome_args <- c(chrome_args, '--headless', '--disable-gpu')
+  }
   
   chrome_options <- list(
     chromeOptions = list(
-      args = if (headless) c('--headless', '--disable-gpu', '--no-sandbox') else c()
+      args = chrome_args
     )
   )
   
@@ -319,31 +491,83 @@ start_chrome_driver <- function(headless = TRUE) {
     extraCapabilities = chrome_options
   )
   
+  # Try to open connection
   driver$open()
-  driver$maxWindowSize()
+  Sys.sleep(1)
+  
+  # Verify connection
+  tryCatch({
+    driver$maxWindowSize()
+  }, error = function(e) {
+    # Clean up
+    tryCatch(driver$close(), error = function(e2) {})
+    tryCatch(chrome_driver$stop(), error = function(e2) {})
+    stop("Failed to connect to Chrome driver: ", e$message)
+  })
   
   list(client = driver, server = chrome_driver)
 }
 
-#' Start Chrome Driver fallback method
+#' Verify driver connection
 #' @keywords internal
-start_chrome_driver_fallback <- function(headless = TRUE) {
-  extra_caps <- list(
-    chromeOptions = list(
-      args = if (headless) c('--headless', '--disable-gpu', '--no-sandbox') else c()
-    )
+verify_driver_connection <- function(driver) {
+  tryCatch({
+    # Try to get current URL
+    driver$getCurrentUrl()
+    TRUE
+  }, error = function(e) {
+    stop("Driver initialized but not responding. This may be a permissions issue.", call. = FALSE)
+  })
+}
+
+#' Close driver safely
+#' @keywords internal
+close_driver_safely <- function(driver) {
+  if (is.null(driver)) return(invisible(NULL))
+  
+  tryCatch({
+    if (!is.null(driver$client)) {
+      driver$client$close()
+    }
+  }, error = function(e) {
+    # Ignore close errors
+  })
+  
+  tryCatch({
+    if (!is.null(driver$server)) {
+      driver$server$stop()
+    }
+  }, error = function(e) {
+    # Ignore stop errors
+  })
+  
+  invisible(NULL)
+}
+
+#' Get troubleshooting tips
+#' @keywords internal
+get_troubleshooting_tips <- function() {
+  tips <- c(
+    "1. Verify Chrome/Chromium is installed:",
+    "   - Ubuntu/Debian: sudo apt-get install chromium-browser",
+    "   - macOS: brew install --cask google-chrome",
+    "   - Windows: Download from https://www.google.com/chrome/",
+    "",
+    "2. Check write permissions in your working directory:",
+    sprintf("   - Current directory: %s", getwd()),
+    "   - RSelenium needs to download/run driver files",
+    "",
+    "3. Close any existing Chrome instances that may conflict",
+    "",
+    "4. Try running with headless = FALSE to see browser activity:",
+    "   ScrapeObjects(scrape, headless = FALSE)",
+    "",
+    "5. Check if ports 4444-5444 are available (not blocked by firewall)",
+    "",
+    "6. Update RSelenium and wdman packages:",
+    "   install.packages(c('RSelenium', 'wdman'))"
   )
-  
-  rD <- RSelenium::rsDriver(
-    browser = "chrome",
-    chromever = "latest",
-    extraCapabilities = extra_caps,
-    verbose = FALSE
-  )
-  
-  rD$client$maxWindowSize()
-  
-  rD
+  paste(tips, collapse = "\n")
 }
 
 #' Scrape data for a single Scrape object

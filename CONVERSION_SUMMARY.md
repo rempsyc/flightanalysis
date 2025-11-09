@@ -38,9 +38,13 @@ The Python package `google-flight-analysis` has been successfully converted to R
 - ✅ Generate Google Flights URLs
 - ✅ Print methods for display
 - ✅ **ScrapeObjects() with full RSelenium web scraping implementation**
-- ✅ **Automatic Chrome driver setup**
+- ✅ **Automatic Chrome driver setup with multiple fallback methods**
+- ✅ **Pre-flight checks (Chrome detection, internet connectivity)**
 - ✅ **Page parsing and flight data extraction**
 - ✅ **Headless browser support**
+- ✅ **Robust error handling with detailed troubleshooting**
+- ✅ **Driver connection verification**
+- ✅ **Safe resource cleanup**
 
 #### Cache Control (`R/cache.R`)
 - ✅ Cache flight data to CSV files
