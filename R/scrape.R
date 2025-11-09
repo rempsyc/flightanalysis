@@ -325,8 +325,8 @@ ScrapeObjects <- function(
           clear = FALSE
         )
 
-        for (obj in objs) {
-          scrape_data_chromote(obj, browser, verbose = verbose)
+        for (i in seq_along(objs)) {
+          objs[[i]] <- scrape_data_chromote(objs[[i]], browser, verbose = verbose)
           pb$tick()
         }
       } else {
@@ -337,7 +337,7 @@ ScrapeObjects <- function(
           if (verbose) {
             cat(sprintf("\n[%d/%d] Processing query...\n", i, length(objs)))
           }
-          scrape_data_chromote(objs[[i]], browser, verbose = verbose)
+          objs[[i]] <- scrape_data_chromote(objs[[i]], browser, verbose = verbose)
         }
       }
 
