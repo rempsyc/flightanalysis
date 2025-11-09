@@ -222,13 +222,14 @@ print.Scrape <- function(x, ...) {
 #' Scrape Flight Objects
 #'
 #' @description
-#' Scrapes flight data from Google Flights using RSelenium. This function will
-#' automatically set up a Chrome browser, navigate to Google Flights URLs, and
-#' extract flight information.
+#' Scrapes flight data from Google Flights using chromote. This function will
+#' automatically set up a Chrome browser connection, navigate to Google Flights 
+#' URLs, and extract flight information. Uses the Chrome DevTools Protocol for
+#' reliable, driver-free browser automation.
 #'
 #' @param objs A Scrape object or list of Scrape objects
 #' @param deep_copy Logical. If TRUE, returns a copy of the objects
-#' @param headless Logical. If TRUE, runs browser in headless mode (no GUI)
+#' @param headless Logical. If TRUE, runs browser in headless mode (no GUI, default)
 #'
 #' @return Modified Scrape object(s) with scraped data
 #' @export
@@ -239,9 +240,18 @@ print.Scrape <- function(x, ...) {
 #' ScrapeObjects(scrape)
 #' }
 ScrapeObjects <- function(objs, deep_copy = FALSE, headless = TRUE) {
-  # Check if RSelenium is available
-  if (!requireNamespace("RSelenium", quietly = TRUE)) {
-    stop("RSelenium package is required. Install it with: install.packages('RSelenium')")
+  # Check if chromote is available
+  if (!requireNamespace("chromote", quietly = TRUE)) {
+    stop(
+      "chromote package is required for web scraping.\n",
+      "Install it with: install.packages('chromote')\n\n",
+      "chromote is a modern Chrome automation package that:\n",
+      "  - Works without external drivers (no chromedriver needed)\n",
+      "  - Is more reliable and easier to use\n",
+      "  - Runs fully headless by default\n",
+      "  - Uses the Chrome DevTools Protocol directly",
+      call. = FALSE
+    )
   }
   
   # Ensure objs is a list
@@ -254,22 +264,19 @@ ScrapeObjects <- function(objs, deep_copy = FALSE, headless = TRUE) {
   check_chrome_installation()
   check_internet_connection()
   
-  # Initialize RSelenium driver
-  cat("Initializing Chrome driver...\n")
-  driver <- NULL
+  # Initialize chromote browser
+  cat("Initializing Chrome browser...\n")
+  browser <- NULL
   
   tryCatch({
-    # Try multiple driver initialization methods
-    driver <- initialize_chrome_driver(headless = headless)
+    # Create a Chromote session
+    browser <- initialize_chromote_browser(headless = headless)
     
-    if (is.null(driver)) {
-      stop("Failed to initialize Chrome driver. Please check Chrome installation and permissions.")
+    if (is.null(browser)) {
+      stop("Failed to initialize Chrome browser. Please check Chrome installation.")
     }
     
-    # Verify driver is working
-    cat("Verifying driver connection...\n")
-    verify_driver_connection(driver$client)
-    cat("✓ Driver ready\n\n")
+    cat("✓ Browser ready\n\n")
     
     # Scrape each object
     if (requireNamespace("progress", quietly = TRUE)) {
@@ -279,32 +286,32 @@ ScrapeObjects <- function(objs, deep_copy = FALSE, headless = TRUE) {
       )
       
       for (obj in objs) {
-        scrape_data(obj, driver)
+        scrape_data_chromote(obj, browser)
         pb$tick()
       }
     } else {
       cat("Scraping objects...\n")
       for (i in seq_along(objs)) {
         cat(sprintf("  Processing %d of %d...\n", i, length(objs)))
-        scrape_data(objs[[i]], driver)
+        scrape_data_chromote(objs[[i]], browser)
       }
     }
     
-    # Close driver
+    # Close browser
     cat("Closing browser...\n")
-    close_driver_safely(driver)
+    close_chromote_safely(browser)
     
   }, error = function(e) {
-    # Try to close driver if it was initialized
-    if (!is.null(driver)) {
-      tryCatch(close_driver_safely(driver), error = function(e2) {})
+    # Try to close browser if it was initialized
+    if (!is.null(browser)) {
+      tryCatch(close_chromote_safely(browser), error = function(e2) {})
     }
     
     # Provide detailed error message
     error_msg <- sprintf(
       "Error during web scraping: %s\n\nTroubleshooting:\n%s",
       e$message,
-      get_troubleshooting_tips()
+      get_troubleshooting_tips_chromote()
     )
     stop(error_msg, call. = FALSE)
   })
@@ -319,7 +326,7 @@ ScrapeObjects <- function(objs, deep_copy = FALSE, headless = TRUE) {
 #' Check if Chrome/Chromium is installed
 #' @keywords internal
 check_chrome_installation <- function() {
-  # Check common Chrome locations
+  # chromote will find Chrome automatically, but we can still warn users
   chrome_paths <- c(
     "/usr/bin/google-chrome",
     "/usr/bin/chromium",
@@ -334,8 +341,12 @@ check_chrome_installation <- function() {
   # Also check if chrome/chromium is in PATH
   if (!chrome_found) {
     chrome_in_path <- tryCatch({
-      system2("which", c("google-chrome", "chromium", "chromium-browser"), 
-              stdout = TRUE, stderr = FALSE)
+      if (.Platform$OS.type == "windows") {
+        system2("where", "chrome", stdout = TRUE, stderr = FALSE)
+      } else {
+        system2("which", c("google-chrome", "chromium", "chromium-browser"), 
+                stdout = TRUE, stderr = FALSE)
+      }
       TRUE
     }, error = function(e) FALSE, warning = function(w) FALSE)
     
@@ -343,7 +354,7 @@ check_chrome_installation <- function() {
   }
   
   if (!chrome_found) {
-    warning("Chrome/Chromium not found in common locations. If scraping fails, please install Chrome or Chromium.")
+    message("Note: Chrome/Chromium not found in common locations. chromote will try to find it automatically.")
   } else {
     cat("✓ Chrome/Chromium detected\n")
   }
@@ -369,214 +380,71 @@ check_internet_connection <- function() {
   invisible(connected)
 }
 
-#' Initialize Chrome driver with multiple fallback methods
+#' Initialize chromote browser
 #' @keywords internal
-initialize_chrome_driver <- function(headless = TRUE) {
-  driver <- NULL
-  errors <- list()
-  
-  # Method 1: Try rsDriver (most reliable)
-  cat("  Trying rsDriver method...\n")
-  driver <- tryCatch({
-    start_chrome_driver_rsdriver(headless = headless)
-  }, error = function(e) {
-    errors[[1]] <<- paste("rsDriver:", e$message)
-    NULL
-  })
-  
-  if (!is.null(driver)) {
-    cat("  ✓ rsDriver method successful\n")
-    return(driver)
-  }
-  
-  # Method 2: Try wdman with remoteDriver
-  if (requireNamespace("wdman", quietly = TRUE)) {
-    cat("  Trying wdman method...\n")
-    driver <- tryCatch({
-      start_chrome_driver_wdman(headless = headless)
-    }, error = function(e) {
-      errors[[2]] <<- paste("wdman:", e$message)
-      NULL
-    })
+initialize_chromote_browser <- function(headless = TRUE) {
+  tryCatch({
+    # Create a new Chromote session
+    # chromote automatically finds Chrome and handles everything
+    browser <- chromote::ChromoteSession$new()
     
-    if (!is.null(driver)) {
-      cat("  ✓ wdman method successful\n")
-      return(driver)
-    }
-  }
-  
-  # If all methods failed, provide detailed error
-  if (is.null(driver)) {
-    error_details <- paste(unlist(errors), collapse = "\n  - ")
+    # Give it a moment to fully initialize
+    Sys.sleep(1)
+    
+    browser
+  }, error = function(e) {
     stop(sprintf(
-      "Failed to initialize Chrome driver. Errors encountered:\n  - %s\n\nPlease ensure:\n  1. Chrome/Chromium is installed\n  2. You have write permissions in the working directory\n  3. No other Chrome instances are using the debugging port",
-      error_details
+      "Failed to initialize Chrome browser: %s\n\n%s",
+      e$message,
+      "Please ensure Chrome or Chromium is installed and accessible."
     ), call. = FALSE)
-  }
-  
-  driver
-}
-
-#' Start Chrome Driver using rsDriver
-#' @keywords internal
-start_chrome_driver_rsdriver <- function(headless = TRUE) {
-  chrome_args <- c('--disable-dev-shm-usage', '--no-sandbox')
-  if (headless) {
-    chrome_args <- c(chrome_args, '--headless', '--disable-gpu')
-  }
-  
-  extra_caps <- list(
-    chromeOptions = list(
-      args = chrome_args,
-      prefs = list(
-        "profile.default_content_setting_values.notifications" = 2
-      )
-    )
-  )
-  
-  # Use a random port to avoid conflicts
-  port <- as.integer(4444 + sample(1:1000, 1))
-  
-  rD <- RSelenium::rsDriver(
-    browser = "chrome",
-    chromever = "latest",
-    extraCapabilities = extra_caps,
-    port = port,
-    verbose = FALSE,
-    check = TRUE
-  )
-  
-  # Wait a bit for driver to initialize
-  Sys.sleep(2)
-  
-  # Verify connection
-  tryCatch({
-    rD$client$maxWindowSize()
-  }, error = function(e) {
-    # Try to close and throw error
-    tryCatch(rD$server$stop(), error = function(e2) {})
-    stop("Failed to connect to Chrome driver: ", e$message)
-  })
-  
-  list(client = rD$client, server = rD$server)
-}
-
-#' Start Chrome Driver using wdman
-#' @keywords internal
-start_chrome_driver_wdman <- function(headless = TRUE) {
-  chrome_driver <- wdman::chrome(
-    check = TRUE,
-    verbose = FALSE
-  )
-  
-  # Verify port is valid
-  if (is.null(chrome_driver$port) || !is.numeric(chrome_driver$port)) {
-    stop("Chrome driver failed to initialize with a valid port")
-  }
-  
-  chrome_args <- c('--disable-dev-shm-usage', '--no-sandbox')
-  if (headless) {
-    chrome_args <- c(chrome_args, '--headless', '--disable-gpu')
-  }
-  
-  chrome_options <- list(
-    chromeOptions = list(
-      args = chrome_args
-    )
-  )
-  
-  driver <- RSelenium::remoteDriver(
-    browserName = "chrome",
-    port = chrome_driver$port,
-    extraCapabilities = chrome_options
-  )
-  
-  # Try to open connection
-  driver$open()
-  Sys.sleep(1)
-  
-  # Verify connection
-  tryCatch({
-    driver$maxWindowSize()
-  }, error = function(e) {
-    # Clean up
-    tryCatch(driver$close(), error = function(e2) {})
-    tryCatch(chrome_driver$stop(), error = function(e2) {})
-    stop("Failed to connect to Chrome driver: ", e$message)
-  })
-  
-  list(client = driver, server = chrome_driver)
-}
-
-#' Verify driver connection
-#' @keywords internal
-verify_driver_connection <- function(driver) {
-  tryCatch({
-    # Try to get current URL
-    driver$getCurrentUrl()
-    TRUE
-  }, error = function(e) {
-    stop("Driver initialized but not responding. This may be a permissions issue.", call. = FALSE)
   })
 }
 
-#' Close driver safely
+#' Close chromote browser safely
 #' @keywords internal
-close_driver_safely <- function(driver) {
-  if (is.null(driver)) return(invisible(NULL))
+close_chromote_safely <- function(browser) {
+  if (is.null(browser)) return(invisible(NULL))
   
   tryCatch({
-    if (!is.null(driver$client)) {
-      driver$client$close()
-    }
+    browser$close()
   }, error = function(e) {
     # Ignore close errors
-  })
-  
-  tryCatch({
-    if (!is.null(driver$server)) {
-      driver$server$stop()
-    }
-  }, error = function(e) {
-    # Ignore stop errors
   })
   
   invisible(NULL)
 }
 
-#' Get troubleshooting tips
+#' Get troubleshooting tips for chromote
 #' @keywords internal
-get_troubleshooting_tips <- function() {
+get_troubleshooting_tips_chromote <- function() {
   tips <- c(
     "1. Verify Chrome/Chromium is installed:",
     "   - Ubuntu/Debian: sudo apt-get install chromium-browser",
     "   - macOS: brew install --cask google-chrome",
     "   - Windows: Download from https://www.google.com/chrome/",
     "",
-    "2. Check write permissions in your working directory:",
-    sprintf("   - Current directory: %s", getwd()),
-    "   - RSelenium needs to download/run driver files",
+    "2. Check your internet connection:",
+    "   - Make sure you can access https://www.google.com/travel/flights",
     "",
-    "3. Close any existing Chrome instances that may conflict",
+    "3. Install/update required packages:",
+    "   install.packages(c('chromote', 'progress'))",
     "",
-    "4. Try running with headless = FALSE to see browser activity:",
-    "   ScrapeObjects(scrape, headless = FALSE)",
-    "",
-    "5. Check if ports 4444-5444 are available (not blocked by firewall)",
-    "",
-    "6. Update RSelenium and wdman packages:",
-    "   install.packages(c('RSelenium', 'wdman'))"
+    "4. If issues persist, try:",
+    "   - Restart R session",
+    "   - Clear browser cache",
+    "   - Check firewall settings"
   )
   paste(tips, collapse = "\n")
 }
 
-#' Scrape data for a single Scrape object
+#' Scrape data for a single Scrape object using chromote
 #' @keywords internal
-scrape_data <- function(obj, driver) {
+scrape_data_chromote <- function(obj, browser) {
   results_list <- list()
   
   for (i in seq_along(obj$url)) {
-    result <- get_results(obj$url[[i]], obj$date[[i]], driver$client)
+    result <- get_results_chromote(obj$url[[i]], obj$date[[i]], browser)
     if (!is.null(result) && nrow(result) > 0) {
       results_list[[i]] <- result
     }
@@ -590,11 +458,11 @@ scrape_data <- function(obj, driver) {
   invisible(obj)
 }
 
-#' Get results from a single URL
+#' Get results from a single URL using chromote
 #' @keywords internal
-get_results <- function(url, date, driver) {
+get_results_chromote <- function(url, date, browser) {
   tryCatch({
-    results <- make_url_request(url, driver)
+    results <- make_url_request_chromote(url, browser)
     flights <- clean_results(results, date)
     flights_to_dataframe(flights)
   }, error = function(e) {
@@ -603,34 +471,39 @@ get_results <- function(url, date, driver) {
   })
 }
 
-#' Make URL request and wait for content
+#' Make URL request and wait for content using chromote
 #' @keywords internal
-make_url_request <- function(url, driver) {
-  driver$navigate(url)
+make_url_request_chromote <- function(url, browser) {
+  # Navigate to URL
+  browser$Page$navigate(url)
   
-  # Wait for page to load - check that we have enough content
-  max_attempts <- 20
-  for (attempt in 1:max_attempts) {
-    Sys.sleep(0.5)
-    results <- get_flight_elements(driver)
-    if (length(results) > 100) {
-      break
-    }
-  }
+  # Wait for page to load
+  browser$Page$loadEventFired()
+  
+  # Give extra time for dynamic content
+  Sys.sleep(3)
+  
+  # Get page content
+  results <- get_flight_elements_chromote(browser)
   
   if (length(results) <= 100) {
-    stop("Timeout: Page did not load sufficient content. Check your internet connection or verify flights exist for this query.")
+    stop("Page did not load sufficient content. Check your internet connection or verify flights exist for this query.")
   }
   
   results
 }
 
-#' Get flight elements from page
+#' Get flight elements from page using chromote
 #' @keywords internal
-get_flight_elements <- function(driver) {
+get_flight_elements_chromote <- function(browser) {
   tryCatch({
-    body_element <- driver$findElement(using = "xpath", value = '//body[@id = "yDmH0d"]')
-    text <- body_element$getElementText()[[1]]
+    # Get the body text using JavaScript
+    result <- browser$Runtime$evaluate(
+      expression = "document.body.innerText",
+      returnByValue = TRUE
+    )
+    
+    text <- result$result$value
     strsplit(text, "\n")[[1]]
   }, error = function(e) {
     character(0)

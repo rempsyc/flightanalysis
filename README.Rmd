@@ -75,11 +75,18 @@ print(scrape)
 
 ### Scraping Data
 
-The package now includes full web scraping functionality using RSelenium! First, install the required packages:
+The package now includes full web scraping functionality using **chromote**! First, install the required packages:
 
 ```r
-install.packages(c("RSelenium", "wdman", "progress"))
+install.packages(c("chromote", "progress"))
 ```
+
+**Why chromote?**
+- ✅ No external driver files needed (uses Chrome DevTools Protocol directly)
+- ✅ More reliable - no driver version mismatches or port conflicts
+- ✅ Simpler installation - just install the R package
+- ✅ Works on all platforms (Windows, macOS, Linux)
+- ✅ Fully headless by default
 
 Then scrape flight data from Google Flights:
 
@@ -87,34 +94,30 @@ Then scrape flight data from Google Flights:
 # Create a query
 scrape <- Scrape("JFK", "IST", "2023-07-20", "2023-08-20")
 
-# Scrape the data (this will open a Chrome browser)
+# Scrape the data (runs in headless mode by default)
 ScrapeObjects(scrape)
 
 # View the scraped data
 print(scrape$data)
 head(scrape$data)
-
-# For headless scraping (no browser window)
-ScrapeObjects(scrape, headless = TRUE)
 ```
 
 The `ScrapeObjects()` function will:
 1. **Run pre-flight checks** - Verify Chrome installation and internet connectivity
-2. **Automatically set up Chrome driver** - Multiple fallback methods for reliability
+2. **Automatically connect to Chrome** - Using Chrome DevTools Protocol (no drivers!)
 3. **Navigate to Google Flights URLs** - With proper wait times for page loading
 4. **Extract flight information** - Parse prices, times, airlines, stops, and emissions
 5. **Store results** - Save data in the Scrape object's `data` field
 6. **Handle errors gracefully** - Provide detailed troubleshooting tips if issues occur
 
-**Error Handling & Troubleshooting:**
+**Advantages over RSelenium:**
 
-If you encounter errors, the function will automatically:
-- Detect if Chrome/Chromium is installed
-- Check internet connectivity
-- Try multiple driver initialization methods (rsDriver and wdman)
-- Verify driver connections before scraping
-- Provide detailed error messages with troubleshooting steps
-- Clean up resources even if errors occur
+chromote eliminates common RSelenium issues:
+- ❌ No more "invalid assignment for reference class field 'port'" errors
+- ❌ No more driver download/installation problems
+- ❌ No more version compatibility issues
+- ❌ No more port conflicts
+- ✅ Just install chromote and it works!
 
 ### Working with Flight Objects
 

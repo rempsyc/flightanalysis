@@ -6,7 +6,7 @@
 cat("=== Flight Analysis R Package - Web Scraping Example ===\n\n")
 
 # Check if required packages are installed
-required_packages <- c("RSelenium", "wdman", "progress")
+required_packages <- c("chromote", "progress")
 missing_packages <- required_packages[
   !sapply(required_packages, requireNamespace, quietly = TRUE)
 ]
@@ -23,6 +23,7 @@ if (length(missing_packages) > 0) {
     "'))\n\n",
     sep = ""
   )
+  cat("Note: chromote requires Chrome or Chromium to be installed.\n")
   cat("This example will not run without these packages.\n")
   quit(status = 1)
 }
