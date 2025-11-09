@@ -114,7 +114,7 @@ expect_equal(res2$dest[[1]], "RDU")
 expect_equal(res2$origin[[2]], "RDU")
 expect_equal(res2$dest[[2]], "LGA")
 expect_equal(res2$date[[1]], "2025-12-15")
-expect_equal(res2$date[[2]], "2025-12-15")
+expect_equal(res2$date[[2]], "2025-12-25")
 expect_equal(res2$type, "round-trip")
 
 cat("\nTest: Chain-trip is created correctly\n")
