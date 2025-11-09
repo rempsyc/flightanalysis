@@ -67,7 +67,7 @@ df <- flights_to_dataframe(list(flight1, flight2, flight3))
 
 # Scrape live data (requires chromote package)
 install.packages(c("chromote", "progress"))
-ScrapeObjects(scrape)  # No drivers needed - uses Chrome directly!
+scrape <- ScrapeObjects(scrape)  # Must capture return value! Uses Chrome directly - no drivers!
 print(scrape$data)
 ```
 

@@ -137,8 +137,7 @@ cat("  CacheControl('./cache/', scrape_object, use_db = FALSE)\n\n")
 cat("To cache flight data to SQLite database:\n")
 cat("  CacheControl('./flights.db', scrape_object, use_db = TRUE)\n\n")
 cat("Note: Caching requires that the Scrape object has data.\n")
-cat(
-  "      Use ScrapeObjects() to populate the data field (requires RSelenium).\n\n"
-)
+cat("      Use ScrapeObjects() to populate the data field (requires chromote).\n")
+cat("      Example: scrape <- ScrapeObjects(scrape)  # Must capture return value!\n\n")
 
 cat("=== Examples completed successfully! ===\n")

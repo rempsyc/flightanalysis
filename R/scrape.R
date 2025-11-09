@@ -255,14 +255,17 @@ print.Scrape <- function(x, ...) {
 #' @param objs A Scrape object or list of Scrape objects
 #' @param deep_copy Logical. If TRUE, returns a copy of the objects
 #' @param headless Logical. If TRUE, runs browser in headless mode (no GUI, default)
+#' @param verbose Logical. If TRUE, shows detailed progress information (default)
 #'
-#' @return Modified Scrape object(s) with scraped data
+#' @return Modified Scrape object(s) with scraped data. **Important:** You must 
+#'   capture the return value to get the scraped data: `scrape <- ScrapeObjects(scrape)`
 #' @export
 #'
 #' @examples
 #' \dontrun{
 #' scrape <- Scrape("JFK", "IST", "2023-07-20", "2023-08-20")
-#' ScrapeObjects(scrape)
+#' scrape <- ScrapeObjects(scrape)  # Capture the return value!
+#' print(scrape$data)
 #' }
 ScrapeObjects <- function(
   objs,
@@ -284,8 +287,11 @@ ScrapeObjects <- function(
     )
   }
 
+  # Track if input was a single Scrape object
+  single_object <- inherits(objs, "Scrape")
+  
   # Ensure objs is a list
-  if (inherits(objs, "Scrape")) {
+  if (single_object) {
     objs <- list(objs)
   }
 
@@ -363,11 +369,20 @@ ScrapeObjects <- function(
     }
   )
 
+  # Return the result
+  # If a single Scrape object was passed in, return just that object
+  # Otherwise return the list
+  if (single_object) {
+    result <- objs[[1]]
+  } else {
+    result <- objs
+  }
+  
   if (deep_copy) {
-    return(objs)
+    return(result)
   }
 
-  invisible(objs)
+  invisible(result)
 }
 
 #' Check if Chrome/Chromium is installed
