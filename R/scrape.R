@@ -53,6 +53,24 @@ set_properties <- function(scrape, args) {
   n_args <- length(args)
   date_format <- "%Y-%m-%d"
   
+  # Helper function to validate date format
+  validate_date <- function(date_str, arg_name = "Date") {
+    if (!(nchar(date_str) == 10 && is.character(date_str))) {
+      stop(sprintf("%s must be in YYYY-MM-DD format", arg_name))
+    }
+    # Try to parse the date
+    parsed_date <- tryCatch({
+      as.Date(date_str, date_format)
+    }, error = function(e) {
+      stop(sprintf("%s '%s' is not a valid date in YYYY-MM-DD format", arg_name, date_str))
+    })
+    # Check if parsed successfully
+    if (is.na(parsed_date)) {
+      stop(sprintf("%s '%s' is not a valid date in YYYY-MM-DD format", arg_name, date_str))
+    }
+    return(parsed_date)
+  }
+  
   # One-way trip (3 arguments)
   if (n_args == 3) {
     if (!(nchar(args[[1]]) == 3 && is.character(args[[1]]))) {
@@ -61,9 +79,7 @@ set_properties <- function(scrape, args) {
     if (!(nchar(args[[2]]) == 3 && is.character(args[[2]]))) {
       stop("Destination must be 3-character string")
     }
-    if (!(nchar(args[[3]]) == 10 && is.character(args[[3]]))) {
-      stop("Date must be in YYYY-MM-DD format")
-    }
+    validate_date(args[[3]], "Date")
     
     scrape$origin <- list(args[[1]])
     scrape$dest <- list(args[[2]])
@@ -79,15 +95,9 @@ set_properties <- function(scrape, args) {
     if (!(nchar(args[[2]]) == 3 && is.character(args[[2]]))) {
       stop("Destination must be 3-character string")
     }
-    if (!(nchar(args[[3]]) == 10 && is.character(args[[3]]))) {
-      stop("Date leave must be in YYYY-MM-DD format")
-    }
-    if (!(nchar(args[[4]]) == 10 && is.character(args[[4]]))) {
-      stop("Date return must be in YYYY-MM-DD format")
-    }
+    date1 <- validate_date(args[[3]], "Date leave")
+    date2 <- validate_date(args[[4]], "Date return")
     
-    date1 <- as.Date(args[[3]], date_format)
-    date2 <- as.Date(args[[4]], date_format)
     if (!(date1 < date2)) {
       stop("Dates must be in increasing order")
     }
@@ -112,13 +122,10 @@ set_properties <- function(scrape, args) {
       if (!(nchar(args[[i+1]]) == 3 && is.character(args[[i+1]]))) {
         stop(sprintf("Argument %d must be 3-character string", i+1))
       }
-      if (!(nchar(args[[i+2]]) == 10 && is.character(args[[i+2]]))) {
-        stop(sprintf("Argument %d must be in YYYY-MM-DD format", i+2))
-      }
+      curr_date <- validate_date(args[[i+2]], sprintf("Argument %d (date)", i+2))
       
       if (length(scrape$date) > 0) {
         prev_date <- as.Date(scrape$date[[length(scrape$date)]], date_format)
-        curr_date <- as.Date(args[[i+2]], date_format)
         if (!(prev_date < curr_date)) {
           stop("Dates must be in increasing order")
         }
@@ -138,9 +145,7 @@ set_properties <- function(scrape, args) {
     if (!(nchar(args[[1]]) == 3 && is.character(args[[1]]))) {
       stop("First argument must be 3-character string")
     }
-    if (!(nchar(args[[2]]) == 10 && is.character(args[[2]]))) {
-      stop("Second argument must be in YYYY-MM-DD format")
-    }
+    validate_date(args[[2]], "Second argument (date)")
     
     scrape$origin <- list(args[[1]])
     scrape$dest <- list()
@@ -150,12 +155,9 @@ set_properties <- function(scrape, args) {
       if (!(nchar(args[[i]]) == 3 && is.character(args[[i]]))) {
         stop(sprintf("Argument %d must be 3-character string", i))
       }
-      if (!(nchar(args[[i+1]]) == 10 && is.character(args[[i+1]]))) {
-        stop(sprintf("Argument %d must be in YYYY-MM-DD format", i+1))
-      }
+      curr_date <- validate_date(args[[i+1]], sprintf("Argument %d (date)", i+1))
       
       prev_date <- as.Date(scrape$date[[length(scrape$date)]], date_format)
-      curr_date <- as.Date(args[[i+1]], date_format)
       if (!(prev_date < curr_date)) {
         stop("Dates must be in increasing order")
       }
@@ -239,7 +241,7 @@ print.Scrape <- function(x, ...) {
 #' scrape <- Scrape("JFK", "IST", "2023-07-20", "2023-08-20")
 #' ScrapeObjects(scrape)
 #' }
-ScrapeObjects <- function(objs, deep_copy = FALSE, headless = TRUE) {
+ScrapeObjects <- function(objs, deep_copy = FALSE, headless = TRUE, verbose = TRUE) {
   # Check if chromote is available
   if (!requireNamespace("chromote", quietly = TRUE)) {
     stop(
@@ -260,12 +262,16 @@ ScrapeObjects <- function(objs, deep_copy = FALSE, headless = TRUE) {
   }
   
   # Pre-flight checks
-  cat("Running pre-flight checks...\n")
-  check_chrome_installation()
-  check_internet_connection()
+  if (verbose) {
+    cat("Running pre-flight checks...\n")
+  }
+  check_chrome_installation(verbose = verbose)
+  check_internet_connection(verbose = verbose)
   
   # Initialize chromote browser
-  cat("Initializing Chrome browser...\n")
+  if (verbose) {
+    cat("Initializing Chrome browser...\n")
+  }
   browser <- NULL
   
   tryCatch({
@@ -276,29 +282,37 @@ ScrapeObjects <- function(objs, deep_copy = FALSE, headless = TRUE) {
       stop("Failed to initialize Chrome browser. Please check Chrome installation.")
     }
     
-    cat("✓ Browser ready\n\n")
+    if (verbose) {
+      cat("✓ Browser ready\n\n")
+    }
     
     # Scrape each object
-    if (requireNamespace("progress", quietly = TRUE)) {
+    if (requireNamespace("progress", quietly = TRUE) && !verbose) {
       pb <- progress::progress_bar$new(
         format = "Scraping [:bar] :percent eta: :eta",
         total = length(objs), clear = FALSE
       )
       
       for (obj in objs) {
-        scrape_data_chromote(obj, browser)
+        scrape_data_chromote(obj, browser, verbose = verbose)
         pb$tick()
       }
     } else {
-      cat("Scraping objects...\n")
+      if (verbose) {
+        cat(sprintf("Scraping %d object(s)...\n", length(objs)))
+      }
       for (i in seq_along(objs)) {
-        cat(sprintf("  Processing %d of %d...\n", i, length(objs)))
-        scrape_data_chromote(objs[[i]], browser)
+        if (verbose) {
+          cat(sprintf("\n[%d/%d] Processing query...\n", i, length(objs)))
+        }
+        scrape_data_chromote(objs[[i]], browser, verbose = verbose)
       }
     }
     
     # Close browser
-    cat("Closing browser...\n")
+    if (verbose) {
+      cat("\nClosing browser...\n")
+    }
     close_chromote_safely(browser)
     
   }, error = function(e) {
@@ -325,7 +339,7 @@ ScrapeObjects <- function(objs, deep_copy = FALSE, headless = TRUE) {
 
 #' Check if Chrome/Chromium is installed
 #' @keywords internal
-check_chrome_installation <- function() {
+check_chrome_installation <- function(verbose = TRUE) {
   # chromote will find Chrome automatically, but we can still warn users
   chrome_paths <- c(
     "/usr/bin/google-chrome",
@@ -354,9 +368,13 @@ check_chrome_installation <- function() {
   }
   
   if (!chrome_found) {
-    message("Note: Chrome/Chromium not found in common locations. chromote will try to find it automatically.")
+    if (verbose) {
+      message("Note: Chrome/Chromium not found in common locations. chromote will try to find it automatically.")
+    }
   } else {
-    cat("✓ Chrome/Chromium detected\n")
+    if (verbose) {
+      cat("✓ Chrome/Chromium detected\n")
+    }
   }
   
   invisible(chrome_found)
@@ -364,7 +382,7 @@ check_chrome_installation <- function() {
 
 #' Check internet connection
 #' @keywords internal
-check_internet_connection <- function() {
+check_internet_connection <- function(verbose = TRUE) {
   connected <- tryCatch({
     con <- url("https://www.google.com", open = "rb", timeout = 5)
     close(con)
@@ -372,9 +390,14 @@ check_internet_connection <- function() {
   }, error = function(e) FALSE)
   
   if (!connected) {
-    warning("Could not connect to Google. Please check your internet connection.")
+    if (verbose) {
+      cat("⚠ Could not verify internet connection via curl (may be blocked by firewall)\n")
+      cat("  The browser will attempt to connect anyway...\n")
+    }
   } else {
-    cat("✓ Internet connection verified\n")
+    if (verbose) {
+      cat("✓ Internet connection verified\n")
+    }
   }
   
   invisible(connected)
@@ -440,11 +463,26 @@ get_troubleshooting_tips_chromote <- function() {
 
 #' Scrape data for a single Scrape object using chromote
 #' @keywords internal
-scrape_data_chromote <- function(obj, browser) {
+scrape_data_chromote <- function(obj, browser, verbose = TRUE) {
   results_list <- list()
   
+  if (verbose && length(obj$url) > 1) {
+    cat(sprintf("  Query has %d segment(s)\n", length(obj$url)))
+  }
+  
   for (i in seq_along(obj$url)) {
-    result <- get_results_chromote(obj$url[[i]], obj$date[[i]], browser)
+    if (verbose) {
+      if (length(obj$url) > 1) {
+        cat(sprintf("  Segment %d/%d: %s -> %s on %s\n", 
+                    i, length(obj$url), 
+                    obj$origin[[i]], obj$dest[[i]], obj$date[[i]]))
+      } else {
+        cat(sprintf("  Route: %s -> %s on %s\n", 
+                    obj$origin[[i]], obj$dest[[i]], obj$date[[i]]))
+      }
+    }
+    
+    result <- get_results_chromote(obj$url[[i]], obj$date[[i]], browser, verbose = verbose)
     if (!is.null(result) && nrow(result) > 0) {
       results_list[[i]] <- result
     }
@@ -453,6 +491,13 @@ scrape_data_chromote <- function(obj, browser) {
   if (length(results_list) > 0) {
     obj$data <- do.call(rbind, results_list)
     rownames(obj$data) <- NULL
+    if (verbose) {
+      cat(sprintf("  ✓ Total flights retrieved: %d\n", nrow(obj$data)))
+    }
+  } else {
+    if (verbose) {
+      cat("  ⚠ No flights retrieved\n")
+    }
   }
   
   invisible(obj)
@@ -460,25 +505,37 @@ scrape_data_chromote <- function(obj, browser) {
 
 #' Get results from a single URL using chromote
 #' @keywords internal
-get_results_chromote <- function(url, date, browser) {
+get_results_chromote <- function(url, date, browser, verbose = TRUE) {
   tryCatch({
-    results <- make_url_request_chromote(url, browser)
-    flights <- clean_results(results, date)
+    results <- make_url_request_chromote(url, browser, verbose = verbose)
+    flights <- clean_results(results, date, verbose = verbose)
     flights_to_dataframe(flights)
   }, error = function(e) {
-    warning(sprintf("Failed to scrape %s: %s", url, e$message))
+    if (verbose) {
+      cat(sprintf("  ✗ Failed to scrape: %s\n", e$message))
+    } else {
+      warning(sprintf("Failed to scrape %s: %s", url, e$message))
+    }
     return(data.frame())
   })
 }
 
 #' Make URL request and wait for content using chromote
 #' @keywords internal
-make_url_request_chromote <- function(url, browser) {
+make_url_request_chromote <- function(url, browser, verbose = TRUE) {
+  if (verbose) {
+    cat(sprintf("  Navigating to Google Flights...\n"))
+  }
+  
   # Navigate to URL
   browser$Page$navigate(url, wait_ = TRUE)
   
   # Wait for page load event
   browser$Page$loadEventFired(timeout_ = 10000)
+  
+  if (verbose) {
+    cat("  Waiting for page content to load...\n")
+  }
   
   # Wait for network to be idle (important for dynamic content)
   Sys.sleep(2)
@@ -489,6 +546,10 @@ make_url_request_chromote <- function(url, browser) {
   
   for (attempt in 1:max_attempts) {
     results <- get_flight_elements_chromote(browser)
+    
+    if (verbose && attempt > 1) {
+      cat(sprintf("  Attempt %d/%d: %d lines retrieved\n", attempt, max_attempts, length(results)))
+    }
     
     # Check if we have substantial content
     if (length(results) > 100) {
@@ -501,6 +562,10 @@ make_url_request_chromote <- function(url, browser) {
   
   if (length(results) <= 100) {
     stop("Page did not load sufficient content. Check your internet connection or verify flights exist for this query.")
+  }
+  
+  if (verbose) {
+    cat(sprintf("  Retrieved %d lines of page content\n", length(results)))
   }
   
   results
@@ -525,51 +590,19 @@ get_flight_elements_chromote <- function(browser) {
 
 #' Clean and parse results from scraped page
 #' @keywords internal
-clean_results <- function(result, date) {
+clean_results <- function(result, date, verbose = TRUE) {
+  if (verbose) {
+    cat(sprintf("  Parsing %d lines of content...\n", length(result)))
+  }
+  
   # Clean results - remove non-ASCII and strip whitespace
   res2 <- sapply(result, function(x) {
     iconv(x, from = "UTF-8", to = "ASCII", sub = "")
   })
   res2 <- trimws(res2)
   
-  # Find section boundaries
-  start_idx <- which(res2 == "Sort by:")
-  if (length(start_idx) == 0) {
-    warning("Could not find 'Sort by:' marker in results")
-    return(list())
-  }
-  start_idx <- start_idx[1] + 1
-  
-  mid_start_idx <- which(res2 == "Price insights")
-  if (length(mid_start_idx) == 0) {
-    mid_start_idx <- length(res2)
-  } else {
-    mid_start_idx <- mid_start_idx[1]
-  }
-  
-  # Find "Other departing flights" or "Other flights"
-  mid_end_idx <- which(res2 == "Other departing flights")
-  if (length(mid_end_idx) == 0) {
-    mid_end_idx <- which(res2 == "Other flights")
-  }
-  if (length(mid_end_idx) == 0) {
-    mid_end_idx <- mid_start_idx + 1
-  } else {
-    mid_end_idx <- mid_end_idx[1] + 1
-  }
-  
-  # Find end marker
-  end_idx <- which(grepl("more flights$", res2))
-  if (length(end_idx) == 0) {
-    end_idx <- length(res2)
-  } else {
-    end_idx <- end_idx[1]
-  }
-  
-  # Extract flight data section
-  res3 <- c(res2[start_idx:(mid_start_idx-1)], res2[mid_end_idx:(end_idx-1)])
-  
   # Find flight time markers (entries ending with AM or PM, or with + offset)
+  # These are more stable than UI text markers
   is_time_marker <- function(x) {
     if (nchar(x) <= 2) return(FALSE)
     has_colon <- grepl(":", x)
@@ -578,17 +611,52 @@ clean_results <- function(result, date) {
     return(has_colon && (ends_ampm || has_plus))
   }
   
-  matches <- which(sapply(res3, is_time_marker))
+  matches <- which(sapply(res2, is_time_marker))
+  
+  if (length(matches) == 0) {
+    if (verbose) {
+      cat("  ⚠ No flight time markers found in page content\n")
+    }
+    warning("Could not find any flight data. Page may not have loaded properly or no flights available.")
+    return(list())
+  }
+  
+  if (verbose) {
+    cat(sprintf("  Found %d potential flight time markers\n", length(matches)))
+  }
+  
   # Take every other match (departure times, not arrival times shown separately)
   matches <- matches[seq(1, length(matches), by = 2)]
+  
+  if (length(matches) <= 1) {
+    if (verbose) {
+      cat("  ⚠ Not enough flight data to parse\n")
+    }
+    warning("Insufficient flight data found")
+    return(list())
+  }
   
   # Create Flight objects from matched sections
   flights <- list()
   for (i in seq_along(matches[-length(matches)])) {
     start <- matches[i]
     end <- matches[i + 1] - 1
-    flight_data <- res3[start:end]
-    flights[[i]] <- Flight(date, flight_data)
+    flight_data <- res2[start:end]
+    
+    tryCatch({
+      flights[[i]] <- Flight(date, flight_data)
+    }, error = function(e) {
+      if (verbose) {
+        cat(sprintf("  ⚠ Could not parse flight %d: %s\n", i, e$message))
+      }
+    })
+  }
+  
+  # Remove NULL entries (failed parses)
+  flights <- flights[!sapply(flights, is.null)]
+  
+  if (verbose) {
+    cat(sprintf("  ✓ Successfully parsed %d flights\n", length(flights)))
   }
   
   flights
