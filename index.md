@@ -35,8 +35,21 @@ devtools::install_github("rempsyc/flightanalysis")
 ``` R
 ## Using GitHub PAT from the git credential store.
 
-## Skipping install of 'flightanalysis' from a github remote, the SHA1 (4f4dc0b5) has not changed since last install.
-##   Use `force = TRUE` to force installation
+## Downloading GitHub repo rempsyc/flightanalysis@HEAD
+
+## ── R CMD build ─────────────────────────────────────────────────────────────────
+##          checking for file 'C:\Users\there\AppData\Local\Temp\RtmpUbeWk7\remotesb0bc439a3fa6\rempsyc-flightanalysis-42cffe0/DESCRIPTION' ...  ✔  checking for file 'C:\Users\there\AppData\Local\Temp\RtmpUbeWk7\remotesb0bc439a3fa6\rempsyc-flightanalysis-42cffe0/DESCRIPTION' (505ms)
+##       ─  preparing 'flightanalysis':
+##    checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
+##       ─  checking for LF line-endings in source and make files and shell scripts (464ms)
+##   ─  checking for empty or unneeded directories
+##      Omitted 'LazyData' from DESCRIPTION
+##       ─  building 'flightanalysis_1.0.0.tar.gz'
+##      
+## 
+
+## Installing package into 'C:/Users/there/AppData/Local/R/win-library/4.5'
+## (as 'lib' is unspecified)
 ```
 
 ## Usage
@@ -159,17 +172,41 @@ scrape <- ScrapeObjects(scrape)
 ##   Segment 1/2: JFK -> IST on 2025-12-20
 ##   Navigating to Google Flights...
 ##   Waiting for page content to load...
-##   Retrieved 165 lines of page content
-##   Parsing 165 lines of content...
-##   Found 20 potential flight time markers
-##   [OK] Successfully parsed 9 flights
+##   Retrieved 154 lines of page content
+##   Parsing 154 lines of content...
+##   Found 18 potential flight time markers
+##   Time markers at indices: 35, 37, 46, 48, 57, 59, 67, 69, 88, 90, 99, 101, 110, 112, 121, 123, 132, 134
+##   Time marker values: 3:00 PM, 8:35 PM, 8:05 AM, 11:05 AM, 7:30 PM, 10:25 PM, 3:15 PM, 6:10 PM, 6:50 PM, 10:15 AM+1
+##   After filtering: 9 markers (indices: 35, 46, 57, 67, 88)
+##   Flight 1 data (range 35-45, 11 elements, has_times=TRUE): 3:00 PM |  | 8:35 PM...
+##   Time elements found: 3:00 PM, 8:35 PM
+##   Flight 1 parsed: 2 times captured (dep=OK, arr=OK)
+##   Flight 2 data (range 46-56, 11 elements, has_times=TRUE): 8:05 AM |  | 11:05 AM...
+##   Time elements found: 8:05 AM, 11:05 AM
+##   Flight 2 parsed: 2 times captured (dep=OK, arr=OK)
+##   Flight 3 data (range 57-66, 10 elements, has_times=TRUE): 7:30 PM |  | 10:25 PM...
+##   Time elements found: 7:30 PM, 10:25 PM
+##   Flight 3 parsed: 2 times captured (dep=OK, arr=OK)
+##   [OK] Successfully parsed 8 flights
 ##   Segment 2/2: IST -> JFK on 2026-01-05
 ##   Navigating to Google Flights...
 ##   Waiting for page content to load...
-##   Retrieved 164 lines of page content
-##   Parsing 164 lines of content...
-##   Found 20 potential flight time markers
-##   [OK] Successfully parsed 9 flights
+##   Retrieved 175 lines of page content
+##   Parsing 175 lines of content...
+##   Found 22 potential flight time markers
+##   Time markers at indices: 35, 37, 46, 48, 56, 58, 77, 79, 88, 90, 99, 101, 110, 112, 121, 123, 132, 134, 143, 145, 153, 155
+##   Time marker values: 12:45 PM, 1:00 PM+1, 12:20 AM, 6:10 PM, 8:05 PM, 2:05 PM+1, 12:45 PM, 5:50 PM+1, 3:55 PM, 5:55 PM+1
+##   After filtering: 11 markers (indices: 35, 46, 56, 77, 88)
+##   Flight 1 data (range 35-45, 11 elements, has_times=TRUE): 12:45 PM |  | 1:00 PM+1...
+##   Time elements found: 12:45 PM
+##   Flight 1 parsed: 2 times captured (dep=OK, arr=OK)
+##   Flight 2 data (range 46-55, 10 elements, has_times=TRUE): 12:20 AM |  | 6:10 PM...
+##   Time elements found: 12:20 AM, 6:10 PM
+##   Flight 2 parsed: 2 times captured (dep=OK, arr=OK)
+##   Flight 3 data (range 56-76, 21 elements, has_times=TRUE): 8:05 PM |  | 2:05 PM+1...
+##   Time elements found: 8:05 PM
+##   Flight 3 parsed: 2 times captured (dep=OK, arr=OK)
+##   [OK] Successfully parsed 10 flights
 ##   [OK] Total flights retrieved: 18
 ## 
 ## Closing browser...
@@ -181,34 +218,27 @@ head(scrape$data)
 ```
 
 ``` R
-##   departure_datetime arrival_datetime origin destination
-## 1               <NA>             <NA>    IST         JFK
-## 2               <NA>             <NA>    IST         JFK
-## 3               <NA>             <NA>    IST         JFK
-## 4               <NA>             <NA>    IST         JFK
-## 5               <NA>             <NA>    IST         JFK
-## 6               <NA>             <NA>    IST         JFK
-##                                             airlines  travel_time price
-## 1                                        593 kg CO2e 13 hr 35 min   551
-## 2 Avoids as much CO2e as 7,731 trees absorb in a day        11 hr   648
-## 3                                        479 kg CO2e 10 hr 55 min   648
-## 4                                      Other flights 10 hr 55 min   668
-## 5                                        715 kg CO2e 23 hr 25 min   552
-## 6                                        717 kg CO2e 34 hr 10 min   574
-##   num_stops         layover         access_date co2_emission_kg
-## 1         1 1 hr 15 min WAW 2025-11-09 23:59:30              NA
-## 2         0            <NA> 2025-11-09 23:59:30              NA
-## 3         0            <NA> 2025-11-09 23:59:30              NA
-## 4         0            <NA> 2025-11-09 23:59:30              NA
-## 5         1 9 hr 25 min CAI 2025-11-09 23:59:30              NA
-## 6         1 19 hr 5 min AMM 2025-11-09 23:59:30              NA
-##   emission_diff_pct
-## 1                18
-## 2               -25
-## 3                 0
-## 4                 0
-## 5                42
-## 6                43
+##    departure_datetime    arrival_datetime origin destination         airlines
+## 1 2025-12-20 15:00:00 2025-12-20 20:35:00    IST         JFK              LOT
+## 2 2025-12-20 08:05:00 2025-12-20 11:05:00    IST         JFK Turkish Airlines
+## 3 2025-12-20 19:30:00 2025-12-20 22:25:00    IST         JFK Turkish Airlines
+## 4 2025-12-20 15:15:00 2025-12-20 18:10:00    IST         JFK      Price graph
+## 5 2025-12-20 18:50:00 2025-12-21 10:15:00    IST         JFK         EgyptAir
+## 6 2025-12-20 14:05:00 2025-12-21 16:15:00    IST         JFK  Royal Jordanian
+##    travel_time price num_stops         layover         access_date
+## 1 13 hr 35 min   551         1 1 hr 15 min WAW 2025-11-10 10:54:59
+## 2        11 hr   648         0            <NA> 2025-11-10 10:54:59
+## 3 10 hr 55 min   648         0            <NA> 2025-11-10 10:54:59
+## 4 10 hr 55 min   668         0            <NA> 2025-11-10 10:54:59
+## 5 23 hr 25 min   552         1 9 hr 25 min CAI 2025-11-10 10:54:59
+## 6 34 hr 10 min   574         1 19 hr 5 min AMM 2025-11-10 10:54:59
+##   co2_emission_kg emission_diff_pct
+## 1             593                18
+## 2             375               -25
+## 3             479                 0
+## 4             479                 0
+## 5             715                42
+## 6             717                43
 ```
 
 The
@@ -253,9 +283,9 @@ df
 ## 2 2025-12-26 10:00:00 2025-12-26 14:00:00    IST         CDG       NA
 ## 3 2025-12-27 11:00:00 2025-12-27 13:00:00    CDG         JFK       NA
 ##   travel_time price num_stops layover         access_date co2_emission_kg
-## 1  8 hr 0 min   450         0      NA 2025-11-09 23:59:33             150
-## 2  4 hr 0 min   300         0      NA 2025-11-09 23:59:33             100
-## 3  8 hr 0 min   500         1      NA 2025-11-09 23:59:33             200
+## 1  8 hr 0 min   450         0      NA 2025-11-10 10:55:03             150
+## 2  4 hr 0 min   300         0      NA 2025-11-10 10:55:03             100
+## 3  8 hr 0 min   500         1      NA 2025-11-10 10:55:03             200
 ##   emission_diff_pct
 ## 1                10
 ## 2                 5
@@ -287,7 +317,7 @@ flightanalysis/
 │       └── test-scrape.R
 ├── DESCRIPTION              # Package metadata
 ├── NAMESPACE               # Package exports
-└── README_R.md             # This file
+└── README.Rmd             # This file
 ```
 
 ## Differences from Python Version

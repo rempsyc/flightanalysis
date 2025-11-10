@@ -76,8 +76,21 @@
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"rempsyc/flightanalysis"</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="do">## Using GitHub PAT from the git credential store.</span></span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="do">## Skipping install of 'flightanalysis' from a github remote, the SHA1 (4f4dc0b5) has not changed since last install.</span></span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="do">##   Use `force = TRUE` to force installation</span></span></code></pre></div>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="do">## Downloading GitHub repo rempsyc/flightanalysis@HEAD</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="do">## ── R CMD build ─────────────────────────────────────────────────────────────────</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="do">##          checking for file 'C:\Users\there\AppData\Local\Temp\RtmpUbeWk7\remotesb0bc439a3fa6\rempsyc-flightanalysis-42cffe0/DESCRIPTION' ...  ✔  checking for file 'C:\Users\there\AppData\Local\Temp\RtmpUbeWk7\remotesb0bc439a3fa6\rempsyc-flightanalysis-42cffe0/DESCRIPTION' (505ms)</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="do">##       ─  preparing 'flightanalysis':</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="do">##    checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="do">##       ─  checking for LF line-endings in source and make files and shell scripts (464ms)</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="do">##   ─  checking for empty or unneeded directories</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="do">##      Omitted 'LazyData' from DESCRIPTION</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="do">##       ─  building 'flightanalysis_1.0.0.tar.gz'</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="do">##      </span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="do">## Installing package into 'C:/Users/there/AppData/Local/R/win-library/4.5'</span></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="do">## (as 'lib' is unspecified)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
@@ -170,51 +183,68 @@
 <span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a><span class="do">##   Segment 1/2: JFK -&gt; IST on 2025-12-20</span></span>
 <span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a><span class="do">##   Navigating to Google Flights...</span></span>
 <span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a><span class="do">##   Waiting for page content to load...</span></span>
-<span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a><span class="do">##   Retrieved 165 lines of page content</span></span>
-<span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a><span class="do">##   Parsing 165 lines of content...</span></span>
-<span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a><span class="do">##   Found 20 potential flight time markers</span></span>
-<span id="cb13-17"><a href="#cb13-17" tabindex="-1"></a><span class="do">##   [OK] Successfully parsed 9 flights</span></span>
-<span id="cb13-18"><a href="#cb13-18" tabindex="-1"></a><span class="do">##   Segment 2/2: IST -&gt; JFK on 2026-01-05</span></span>
-<span id="cb13-19"><a href="#cb13-19" tabindex="-1"></a><span class="do">##   Navigating to Google Flights...</span></span>
-<span id="cb13-20"><a href="#cb13-20" tabindex="-1"></a><span class="do">##   Waiting for page content to load...</span></span>
-<span id="cb13-21"><a href="#cb13-21" tabindex="-1"></a><span class="do">##   Retrieved 164 lines of page content</span></span>
-<span id="cb13-22"><a href="#cb13-22" tabindex="-1"></a><span class="do">##   Parsing 164 lines of content...</span></span>
-<span id="cb13-23"><a href="#cb13-23" tabindex="-1"></a><span class="do">##   Found 20 potential flight time markers</span></span>
-<span id="cb13-24"><a href="#cb13-24" tabindex="-1"></a><span class="do">##   [OK] Successfully parsed 9 flights</span></span>
-<span id="cb13-25"><a href="#cb13-25" tabindex="-1"></a><span class="do">##   [OK] Total flights retrieved: 18</span></span>
-<span id="cb13-26"><a href="#cb13-26" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb13-27"><a href="#cb13-27" tabindex="-1"></a><span class="do">## Closing browser...</span></span></code></pre></div>
+<span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a><span class="do">##   Retrieved 154 lines of page content</span></span>
+<span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a><span class="do">##   Parsing 154 lines of content...</span></span>
+<span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a><span class="do">##   Found 18 potential flight time markers</span></span>
+<span id="cb13-17"><a href="#cb13-17" tabindex="-1"></a><span class="do">##   Time markers at indices: 35, 37, 46, 48, 57, 59, 67, 69, 88, 90, 99, 101, 110, 112, 121, 123, 132, 134</span></span>
+<span id="cb13-18"><a href="#cb13-18" tabindex="-1"></a><span class="do">##   Time marker values: 3:00 PM, 8:35 PM, 8:05 AM, 11:05 AM, 7:30 PM, 10:25 PM, 3:15 PM, 6:10 PM, 6:50 PM, 10:15 AM+1</span></span>
+<span id="cb13-19"><a href="#cb13-19" tabindex="-1"></a><span class="do">##   After filtering: 9 markers (indices: 35, 46, 57, 67, 88)</span></span>
+<span id="cb13-20"><a href="#cb13-20" tabindex="-1"></a><span class="do">##   Flight 1 data (range 35-45, 11 elements, has_times=TRUE): 3:00 PM |  | 8:35 PM...</span></span>
+<span id="cb13-21"><a href="#cb13-21" tabindex="-1"></a><span class="do">##   Time elements found: 3:00 PM, 8:35 PM</span></span>
+<span id="cb13-22"><a href="#cb13-22" tabindex="-1"></a><span class="do">##   Flight 1 parsed: 2 times captured (dep=OK, arr=OK)</span></span>
+<span id="cb13-23"><a href="#cb13-23" tabindex="-1"></a><span class="do">##   Flight 2 data (range 46-56, 11 elements, has_times=TRUE): 8:05 AM |  | 11:05 AM...</span></span>
+<span id="cb13-24"><a href="#cb13-24" tabindex="-1"></a><span class="do">##   Time elements found: 8:05 AM, 11:05 AM</span></span>
+<span id="cb13-25"><a href="#cb13-25" tabindex="-1"></a><span class="do">##   Flight 2 parsed: 2 times captured (dep=OK, arr=OK)</span></span>
+<span id="cb13-26"><a href="#cb13-26" tabindex="-1"></a><span class="do">##   Flight 3 data (range 57-66, 10 elements, has_times=TRUE): 7:30 PM |  | 10:25 PM...</span></span>
+<span id="cb13-27"><a href="#cb13-27" tabindex="-1"></a><span class="do">##   Time elements found: 7:30 PM, 10:25 PM</span></span>
+<span id="cb13-28"><a href="#cb13-28" tabindex="-1"></a><span class="do">##   Flight 3 parsed: 2 times captured (dep=OK, arr=OK)</span></span>
+<span id="cb13-29"><a href="#cb13-29" tabindex="-1"></a><span class="do">##   [OK] Successfully parsed 8 flights</span></span>
+<span id="cb13-30"><a href="#cb13-30" tabindex="-1"></a><span class="do">##   Segment 2/2: IST -&gt; JFK on 2026-01-05</span></span>
+<span id="cb13-31"><a href="#cb13-31" tabindex="-1"></a><span class="do">##   Navigating to Google Flights...</span></span>
+<span id="cb13-32"><a href="#cb13-32" tabindex="-1"></a><span class="do">##   Waiting for page content to load...</span></span>
+<span id="cb13-33"><a href="#cb13-33" tabindex="-1"></a><span class="do">##   Retrieved 175 lines of page content</span></span>
+<span id="cb13-34"><a href="#cb13-34" tabindex="-1"></a><span class="do">##   Parsing 175 lines of content...</span></span>
+<span id="cb13-35"><a href="#cb13-35" tabindex="-1"></a><span class="do">##   Found 22 potential flight time markers</span></span>
+<span id="cb13-36"><a href="#cb13-36" tabindex="-1"></a><span class="do">##   Time markers at indices: 35, 37, 46, 48, 56, 58, 77, 79, 88, 90, 99, 101, 110, 112, 121, 123, 132, 134, 143, 145, 153, 155</span></span>
+<span id="cb13-37"><a href="#cb13-37" tabindex="-1"></a><span class="do">##   Time marker values: 12:45 PM, 1:00 PM+1, 12:20 AM, 6:10 PM, 8:05 PM, 2:05 PM+1, 12:45 PM, 5:50 PM+1, 3:55 PM, 5:55 PM+1</span></span>
+<span id="cb13-38"><a href="#cb13-38" tabindex="-1"></a><span class="do">##   After filtering: 11 markers (indices: 35, 46, 56, 77, 88)</span></span>
+<span id="cb13-39"><a href="#cb13-39" tabindex="-1"></a><span class="do">##   Flight 1 data (range 35-45, 11 elements, has_times=TRUE): 12:45 PM |  | 1:00 PM+1...</span></span>
+<span id="cb13-40"><a href="#cb13-40" tabindex="-1"></a><span class="do">##   Time elements found: 12:45 PM</span></span>
+<span id="cb13-41"><a href="#cb13-41" tabindex="-1"></a><span class="do">##   Flight 1 parsed: 2 times captured (dep=OK, arr=OK)</span></span>
+<span id="cb13-42"><a href="#cb13-42" tabindex="-1"></a><span class="do">##   Flight 2 data (range 46-55, 10 elements, has_times=TRUE): 12:20 AM |  | 6:10 PM...</span></span>
+<span id="cb13-43"><a href="#cb13-43" tabindex="-1"></a><span class="do">##   Time elements found: 12:20 AM, 6:10 PM</span></span>
+<span id="cb13-44"><a href="#cb13-44" tabindex="-1"></a><span class="do">##   Flight 2 parsed: 2 times captured (dep=OK, arr=OK)</span></span>
+<span id="cb13-45"><a href="#cb13-45" tabindex="-1"></a><span class="do">##   Flight 3 data (range 56-76, 21 elements, has_times=TRUE): 8:05 PM |  | 2:05 PM+1...</span></span>
+<span id="cb13-46"><a href="#cb13-46" tabindex="-1"></a><span class="do">##   Time elements found: 8:05 PM</span></span>
+<span id="cb13-47"><a href="#cb13-47" tabindex="-1"></a><span class="do">##   Flight 3 parsed: 2 times captured (dep=OK, arr=OK)</span></span>
+<span id="cb13-48"><a href="#cb13-48" tabindex="-1"></a><span class="do">##   [OK] Successfully parsed 10 flights</span></span>
+<span id="cb13-49"><a href="#cb13-49" tabindex="-1"></a><span class="do">##   [OK] Total flights retrieved: 18</span></span>
+<span id="cb13-50"><a href="#cb13-50" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb13-51"><a href="#cb13-51" tabindex="-1"></a><span class="do">## Closing browser...</span></span></code></pre></div>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># View the scraped data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">scrape</span><span class="op">$</span><span class="va">data</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb15"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="do">##   departure_datetime arrival_datetime origin destination</span></span>
-<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="do">## 1               &lt;NA&gt;             &lt;NA&gt;    IST         JFK</span></span>
-<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="do">## 2               &lt;NA&gt;             &lt;NA&gt;    IST         JFK</span></span>
-<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="do">## 3               &lt;NA&gt;             &lt;NA&gt;    IST         JFK</span></span>
-<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a><span class="do">## 4               &lt;NA&gt;             &lt;NA&gt;    IST         JFK</span></span>
-<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a><span class="do">## 5               &lt;NA&gt;             &lt;NA&gt;    IST         JFK</span></span>
-<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a><span class="do">## 6               &lt;NA&gt;             &lt;NA&gt;    IST         JFK</span></span>
-<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a><span class="do">##                                             airlines  travel_time price</span></span>
-<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a><span class="do">## 1                                        593 kg CO2e 13 hr 35 min   551</span></span>
-<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a><span class="do">## 2 Avoids as much CO2e as 7,731 trees absorb in a day        11 hr   648</span></span>
-<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a><span class="do">## 3                                        479 kg CO2e 10 hr 55 min   648</span></span>
-<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a><span class="do">## 4                                      Other flights 10 hr 55 min   668</span></span>
-<span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a><span class="do">## 5                                        715 kg CO2e 23 hr 25 min   552</span></span>
-<span id="cb15-14"><a href="#cb15-14" tabindex="-1"></a><span class="do">## 6                                        717 kg CO2e 34 hr 10 min   574</span></span>
-<span id="cb15-15"><a href="#cb15-15" tabindex="-1"></a><span class="do">##   num_stops         layover         access_date co2_emission_kg</span></span>
-<span id="cb15-16"><a href="#cb15-16" tabindex="-1"></a><span class="do">## 1         1 1 hr 15 min WAW 2025-11-09 23:59:30              NA</span></span>
-<span id="cb15-17"><a href="#cb15-17" tabindex="-1"></a><span class="do">## 2         0            &lt;NA&gt; 2025-11-09 23:59:30              NA</span></span>
-<span id="cb15-18"><a href="#cb15-18" tabindex="-1"></a><span class="do">## 3         0            &lt;NA&gt; 2025-11-09 23:59:30              NA</span></span>
-<span id="cb15-19"><a href="#cb15-19" tabindex="-1"></a><span class="do">## 4         0            &lt;NA&gt; 2025-11-09 23:59:30              NA</span></span>
-<span id="cb15-20"><a href="#cb15-20" tabindex="-1"></a><span class="do">## 5         1 9 hr 25 min CAI 2025-11-09 23:59:30              NA</span></span>
-<span id="cb15-21"><a href="#cb15-21" tabindex="-1"></a><span class="do">## 6         1 19 hr 5 min AMM 2025-11-09 23:59:30              NA</span></span>
-<span id="cb15-22"><a href="#cb15-22" tabindex="-1"></a><span class="do">##   emission_diff_pct</span></span>
-<span id="cb15-23"><a href="#cb15-23" tabindex="-1"></a><span class="do">## 1                18</span></span>
-<span id="cb15-24"><a href="#cb15-24" tabindex="-1"></a><span class="do">## 2               -25</span></span>
-<span id="cb15-25"><a href="#cb15-25" tabindex="-1"></a><span class="do">## 3                 0</span></span>
-<span id="cb15-26"><a href="#cb15-26" tabindex="-1"></a><span class="do">## 4                 0</span></span>
-<span id="cb15-27"><a href="#cb15-27" tabindex="-1"></a><span class="do">## 5                42</span></span>
-<span id="cb15-28"><a href="#cb15-28" tabindex="-1"></a><span class="do">## 6                43</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="do">##    departure_datetime    arrival_datetime origin destination         airlines</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="do">## 1 2025-12-20 15:00:00 2025-12-20 20:35:00    IST         JFK              LOT</span></span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="do">## 2 2025-12-20 08:05:00 2025-12-20 11:05:00    IST         JFK Turkish Airlines</span></span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="do">## 3 2025-12-20 19:30:00 2025-12-20 22:25:00    IST         JFK Turkish Airlines</span></span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a><span class="do">## 4 2025-12-20 15:15:00 2025-12-20 18:10:00    IST         JFK      Price graph</span></span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a><span class="do">## 5 2025-12-20 18:50:00 2025-12-21 10:15:00    IST         JFK         EgyptAir</span></span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a><span class="do">## 6 2025-12-20 14:05:00 2025-12-21 16:15:00    IST         JFK  Royal Jordanian</span></span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a><span class="do">##    travel_time price num_stops         layover         access_date</span></span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a><span class="do">## 1 13 hr 35 min   551         1 1 hr 15 min WAW 2025-11-10 10:54:59</span></span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a><span class="do">## 2        11 hr   648         0            &lt;NA&gt; 2025-11-10 10:54:59</span></span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a><span class="do">## 3 10 hr 55 min   648         0            &lt;NA&gt; 2025-11-10 10:54:59</span></span>
+<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a><span class="do">## 4 10 hr 55 min   668         0            &lt;NA&gt; 2025-11-10 10:54:59</span></span>
+<span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a><span class="do">## 5 23 hr 25 min   552         1 9 hr 25 min CAI 2025-11-10 10:54:59</span></span>
+<span id="cb15-14"><a href="#cb15-14" tabindex="-1"></a><span class="do">## 6 34 hr 10 min   574         1 19 hr 5 min AMM 2025-11-10 10:54:59</span></span>
+<span id="cb15-15"><a href="#cb15-15" tabindex="-1"></a><span class="do">##   co2_emission_kg emission_diff_pct</span></span>
+<span id="cb15-16"><a href="#cb15-16" tabindex="-1"></a><span class="do">## 1             593                18</span></span>
+<span id="cb15-17"><a href="#cb15-17" tabindex="-1"></a><span class="do">## 2             375               -25</span></span>
+<span id="cb15-18"><a href="#cb15-18" tabindex="-1"></a><span class="do">## 3             479                 0</span></span>
+<span id="cb15-19"><a href="#cb15-19" tabindex="-1"></a><span class="do">## 4             479                 0</span></span>
+<span id="cb15-20"><a href="#cb15-20" tabindex="-1"></a><span class="do">## 5             715                42</span></span>
+<span id="cb15-21"><a href="#cb15-21" tabindex="-1"></a><span class="do">## 6             717                43</span></span></code></pre></div>
 <p>The <code><a href="reference/ScrapeObjects.html">ScrapeObjects()</a></code> function will: 1. <strong>Run pre-flight checks</strong> - Verify Chrome installation and internet connectivity 2. <strong>Automatically connect to Chrome</strong> - Using Chrome DevTools Protocol (no drivers!) 3. <strong>Navigate to Google Flights URLs</strong> - With proper wait times for page loading 4. <strong>Extract flight information</strong> - Parse prices, times, airlines, stops, and emissions 5. <strong>Store results</strong> - Save data in the Scrape object’s <code>data</code> field 6. <strong>Handle errors gracefully</strong> - Provide detailed troubleshooting tips if issues occur</p>
 <p><strong>Advantages over RSelenium:</strong></p>
 <p>chromote eliminates common RSelenium issues: - ❌ No more “invalid assignment for reference class field ‘port’” errors - ❌ No more driver download/installation problems - ❌ No more version compatibility issues - ❌ No more port conflicts - ✅ Just install chromote and it works!</p>
@@ -240,9 +270,9 @@
 <span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="do">## 2 2025-12-26 10:00:00 2025-12-26 14:00:00    IST         CDG       NA</span></span>
 <span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="do">## 3 2025-12-27 11:00:00 2025-12-27 13:00:00    CDG         JFK       NA</span></span>
 <span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a><span class="do">##   travel_time price num_stops layover         access_date co2_emission_kg</span></span>
-<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a><span class="do">## 1  8 hr 0 min   450         0      NA 2025-11-09 23:59:33             150</span></span>
-<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a><span class="do">## 2  4 hr 0 min   300         0      NA 2025-11-09 23:59:33             100</span></span>
-<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a><span class="do">## 3  8 hr 0 min   500         1      NA 2025-11-09 23:59:33             200</span></span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a><span class="do">## 1  8 hr 0 min   450         0      NA 2025-11-10 10:55:03             150</span></span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a><span class="do">## 2  4 hr 0 min   300         0      NA 2025-11-10 10:55:03             100</span></span>
+<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a><span class="do">## 3  8 hr 0 min   500         1      NA 2025-11-10 10:55:03             200</span></span>
 <span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a><span class="do">##   emission_diff_pct</span></span>
 <span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a><span class="do">## 1                10</span></span>
 <span id="cb17-11"><a href="#cb17-11" tabindex="-1"></a><span class="do">## 2                 5</span></span>
@@ -278,7 +308,7 @@
 <span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a>│       └── test<span class="sc">-</span>scrape.R</span>
 <span id="cb18-10"><a href="#cb18-10" tabindex="-1"></a>├── DESCRIPTION              <span class="co"># Package metadata</span></span>
 <span id="cb18-11"><a href="#cb18-11" tabindex="-1"></a>├── NAMESPACE               <span class="co"># Package exports</span></span>
-<span id="cb18-12"><a href="#cb18-12" tabindex="-1"></a>└── README_R.md             <span class="co"># This file</span></span></code></pre></div>
+<span id="cb18-12"><a href="#cb18-12" tabindex="-1"></a>└── README.Rmd             <span class="co"># This file</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="differences-from-python-version">Differences from Python Version<a class="anchor" aria-label="anchor" href="#differences-from-python-version"></a>
