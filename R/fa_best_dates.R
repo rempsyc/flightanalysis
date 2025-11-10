@@ -5,8 +5,10 @@
 #' across all routes. This helps quickly identify the best travel dates
 #' when planning a flexible trip.
 #'
-#' @param results A data frame with columns: Date and Price. Typically created
-#'   after scraping with fa_create_date_range_scrape() and ScrapeObjects().
+#' @param results Either:
+#'   - A data frame with columns: Date and Price
+#'   - A list of Scrape objects (from fa_create_date_range_scrape with multiple origins)
+#'   - A single Scrape object (from fa_create_date_range_scrape with single origin)
 #' @param n Integer. Number of best dates to return. Default is 10.
 #' @param by Character. How to calculate best dates: "mean" (average price
 #'   across routes), "median", or "min" (lowest price on that date).
@@ -20,17 +22,31 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Create and scrape
-#' scrape <- fa_create_date_range_scrape(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
-#' scrape <- ScrapeObjects(scrape)
+#' # Option 1: Pass list of Scrape objects directly
+#' scrapes <- fa_create_date_range_scrape(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
+#' for (code in names(scrapes)) {
+#'   scrapes[[code]] <- ScrapeObjects(scrapes[[code]])
+#' }
+#' best_dates <- fa_best_dates(scrapes, n = 5, by = "mean")
 #' 
-#' # Extract best dates from results
-#' best_dates <- fa_best_dates(results, n = 5, by = "mean")
-#' print(best_dates)
+#' # Option 2: Pass processed data frame
+#' best_dates <- fa_best_dates(my_data_frame, n = 5, by = "mean")
 #' }
 fa_best_dates <- function(results, n = 10, by = "mean") {
-  if (!is.data.frame(results)) {
-    stop("results must be a data frame")
+  # Handle different input types
+  if (is.list(results) && !is.data.frame(results)) {
+    # Check if it's a list of Scrape objects
+    if (all(sapply(results, function(x) inherits(x, "Scrape")))) {
+      # Extract and combine data from list of Scrape objects
+      results <- extract_data_from_scrapes(results)
+    } else {
+      stop("results must be a data frame, a Scrape object, or a list of Scrape objects")
+    }
+  } else if (inherits(results, "Scrape")) {
+    # Single Scrape object
+    results <- extract_data_from_scrapes(list(results))
+  } else if (!is.data.frame(results)) {
+    stop("results must be a data frame, a Scrape object, or a list of Scrape objects")
   }
 
   required_cols <- c("Date", "Price")

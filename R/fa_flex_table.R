@@ -5,9 +5,10 @@
 #' with an average price column. This is useful for visualizing price
 #' patterns across multiple dates and comparing different origin airports.
 #'
-#' @param results A data frame with columns: City, Airport, Date, Price, and
-#'   optionally Comment. Typically created after scraping with fa_create_date_range_scrape()
-#'   and ScrapeObjects(), then processing the results.
+#' @param results Either:
+#'   - A data frame with columns: City, Airport, Date, Price, and optionally Comment
+#'   - A list of Scrape objects (from fa_create_date_range_scrape with multiple origins)
+#'   - A single Scrape object (from fa_create_date_range_scrape with single origin)
 #' @param include_comment Logical. If TRUE and Comment column exists, includes
 #'   it in the output. Default is TRUE.
 #' @param currency_symbol Character. Currency symbol to use for formatting.
@@ -22,14 +23,15 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Create and scrape
-#' scrape <- fa_create_date_range_scrape(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
-#' scrape <- ScrapeObjects(scrape)
+#' # Option 1: Pass list of Scrape objects directly
+#' scrapes <- fa_create_date_range_scrape(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
+#' for (code in names(scrapes)) {
+#'   scrapes[[code]] <- ScrapeObjects(scrapes[[code]])
+#' }
+#' summary_table <- fa_flex_table(scrapes)
 #' 
-#' # Process and create summary table
-#' # (Add City and Date columns to scrape$data as needed)
-#' summary_table <- fa_flex_table(results)
-#' print(summary_table)
+#' # Option 2: Pass processed data frame
+#' summary_table <- fa_flex_table(my_data_frame)
 #' }
 fa_flex_table <- function(
   results,
@@ -37,8 +39,20 @@ fa_flex_table <- function(
   currency_symbol = "$",
   round_prices = TRUE
 ) {
-  if (!is.data.frame(results)) {
-    stop("results must be a data frame")
+  # Handle different input types
+  if (is.list(results) && !is.data.frame(results)) {
+    # Check if it's a list of Scrape objects
+    if (all(sapply(results, function(x) inherits(x, "Scrape")))) {
+      # Extract and combine data from list of Scrape objects
+      results <- extract_data_from_scrapes(results)
+    } else {
+      stop("results must be a data frame, a Scrape object, or a list of Scrape objects")
+    }
+  } else if (inherits(results, "Scrape")) {
+    # Single Scrape object
+    results <- extract_data_from_scrapes(list(results))
+  } else if (!is.data.frame(results)) {
+    stop("results must be a data frame, a Scrape object, or a list of Scrape objects")
   }
 
   required_cols <- c("City", "Airport", "Date", "Price")

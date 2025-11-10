@@ -317,42 +317,29 @@ scrapes <- fa_create_date_range_scrape(
 )
 
 # Step 2: Scrape each origin
-all_results <- list()
 for (origin_code in names(scrapes)) {
   scrapes[[origin_code]] <- ScrapeObjects(scrapes[[origin_code]], verbose = TRUE)
-  
-  # Filter placeholder rows
-  data <- filter_placeholder_rows(scrapes[[origin_code]]$data)
-  
-  # Add origin info
-  data$Airport <- origin_code
-  data$Date <- as.character(as.Date(data$departure_datetime))
-  
-  all_results[[origin_code]] <- data
 }
 
-# Combine all results
-combined_data <- do.call(rbind, all_results)
-
-# Step 3: Add City information and analyze
-# Match airport codes to cities from routes data frame
-combined_data$City <- routes$City[match(combined_data$Airport, routes$Airport)]
+# Step 3: Analyze directly with list of Scrape objects
+# fa_flex_table and fa_best_dates now accept lists of Scrape objects directly!
 
 # Create wide summary table (City × Date with Average Price)
-summary_table <- fa_flex_table(combined_data)
+summary_table <- fa_flex_table(scrapes)
 print(summary_table)
 
 # Find the top 10 cheapest dates
-best_dates <- fa_best_dates(combined_data, n = 10, by = "mean")
+best_dates <- fa_best_dates(scrapes, n = 10, by = "mean")
 print(best_dates)
 ```
 
 **Key Features:**
 - **Per-origin Scrape objects**: Each origin gets its own chain-trip Scrape object (required due to strict date ordering in chain-trips)
-- **Simple workflow**: (1) Create list of Scrape objects with `fa_create_date_range_scrape()`, (2) Scrape each with `ScrapeObjects()`
+- **Simple workflow**: (1) Create list of Scrape objects with `fa_create_date_range_scrape()`, (2) Scrape each with `ScrapeObjects()`, (3) Pass directly to analysis functions
+- **Direct Scrape object support**: `fa_flex_table()` and `fa_best_dates()` accept lists of Scrape objects directly - no manual data processing needed!
 - Search multiple origin airports and dates efficiently
 - Automatically leverages existing chain-trip functionality
-- Filter functions available for cleaning and analyzing results
+- Automatic filtering of placeholder rows
 - Create wide summary tables for easy price comparison
 - Identify cheapest travel dates automatically
 - Optional currency formatting with the `scales` package

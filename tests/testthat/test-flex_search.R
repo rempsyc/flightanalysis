@@ -217,3 +217,113 @@ test_that("fa_create_date_range_scrape validates inputs", {
     "date_min must be before or equal to date_max"
   )
 })
+
+test_that("extract_data_from_scrapes processes Scrape objects correctly", {
+  # Create mock Scrape objects with data
+  scrape1 <- list(
+    data = data.frame(
+      departure_datetime = as.POSIXct(c("2025-12-18 10:00:00", "2025-12-19 11:00:00")),
+      destination = c("BOM", "BOM"),
+      airlines = c("Air India", "Emirates"),
+      price = c(500, 550),
+      stringsAsFactors = FALSE
+    )
+  )
+  class(scrape1) <- "Scrape"
+  
+  scrape2 <- list(
+    data = data.frame(
+      departure_datetime = as.POSIXct(c("2025-12-18 12:00:00", "2025-12-19 13:00:00")),
+      destination = c("DEL", "DEL"),
+      airlines = c("Vistara", "IndiGo"),
+      price = c(450, 480),
+      stringsAsFactors = FALSE
+    )
+  )
+  class(scrape2) <- "Scrape"
+  
+  scrapes <- list(BOM = scrape1, DEL = scrape2)
+  
+  # Extract data
+  result <- flightanalysis:::extract_data_from_scrapes(scrapes)
+  
+  # Check structure
+  expect_true(is.data.frame(result))
+  expect_true(all(c("City", "Airport", "Date", "Price") %in% names(result)))
+  expect_equal(nrow(result), 4)
+  expect_equal(unique(result$Airport), c("BOM", "DEL"))
+})
+
+test_that("fa_flex_table accepts list of Scrape objects", {
+  # Create mock Scrape objects
+  scrape1 <- list(
+    data = data.frame(
+      departure_datetime = as.POSIXct(c("2025-12-18 10:00:00", "2025-12-19 11:00:00")),
+      destination = c("BOM", "BOM"),
+      airlines = c("Air India", "Emirates"),
+      price = c(500, 550),
+      stringsAsFactors = FALSE
+    )
+  )
+  class(scrape1) <- "Scrape"
+  
+  scrape2 <- list(
+    data = data.frame(
+      departure_datetime = as.POSIXct(c("2025-12-18 12:00:00", "2025-12-19 13:00:00")),
+      destination = c("DEL", "DEL"),
+      airlines = c("Vistara", "IndiGo"),
+      price = c(450, 480),
+      stringsAsFactors = FALSE
+    )
+  )
+  class(scrape2) <- "Scrape"
+  
+  scrapes <- list(BOM = scrape1, DEL = scrape2)
+  
+  # Create table directly from Scrape objects
+  table <- fa_flex_table(scrapes, round_prices = TRUE)
+  
+  # Check structure
+  expect_true(is.data.frame(table))
+  expect_true("City" %in% names(table))
+  expect_true("Airport" %in% names(table))
+  expect_true("Average_Price" %in% names(table))
+  expect_equal(nrow(table), 2) # One row per airport
+})
+
+test_that("fa_best_dates accepts list of Scrape objects", {
+  # Create mock Scrape objects
+  scrape1 <- list(
+    data = data.frame(
+      departure_datetime = as.POSIXct(c("2025-12-18 10:00:00", "2025-12-19 11:00:00")),
+      destination = c("BOM", "BOM"),
+      airlines = c("Air India", "Emirates"),
+      price = c(500, 550),
+      stringsAsFactors = FALSE
+    )
+  )
+  class(scrape1) <- "Scrape"
+  
+  scrape2 <- list(
+    data = data.frame(
+      departure_datetime = as.POSIXct(c("2025-12-18 12:00:00", "2025-12-19 13:00:00")),
+      destination = c("DEL", "DEL"),
+      airlines = c("Vistara", "IndiGo"),
+      price = c(450, 480),
+      stringsAsFactors = FALSE
+    )
+  )
+  class(scrape2) <- "Scrape"
+  
+  scrapes <- list(BOM = scrape1, DEL = scrape2)
+  
+  # Get best dates directly from Scrape objects
+  best <- fa_best_dates(scrapes, n = 2, by = "mean")
+  
+  # Check structure
+  expect_true(is.data.frame(best))
+  expect_true("Date" %in% names(best))
+  expect_true("Price" %in% names(best))
+  expect_true("N_Routes" %in% names(best))
+  expect_equal(nrow(best), 2)
+})

@@ -36,21 +36,22 @@ dates <- seq(as.Date("2025-12-18"), as.Date("2026-01-05"), by = "day")
 # Note: This will take time to run as it scrapes live data
 # Uncomment the following lines to run the actual scraping
 
-# Step 1: Create Scrape object with all route-date combinations
-# scrape <- fa_create_date_range_scrape(
+# Step 1: Create Scrape objects (one per origin)
+# scrapes <- fa_create_date_range_scrape(
 #   origin = routes$Airport,
 #   dest = "JFK",
 #   date_min = min(dates),
 #   date_max = max(dates)
 # )
 # 
-# # Step 2: Scrape using existing ScrapeObjects function
-# scrape <- ScrapeObjects(scrape, verbose = TRUE)
+# # Step 2: Scrape each origin
+# for (code in names(scrapes)) {
+#   scrapes[[code]] <- ScrapeObjects(scrapes[[code]], verbose = TRUE)
+# }
 # 
-# # Step 3: Filter placeholder rows
-# scrape$data <- filter_placeholder_rows(scrape$data)
-# 
-# # Process results as needed for fa_flex_table() and fa_best_dates()
+# # Step 3: Analyze directly - fa_flex_table and fa_best_dates accept lists of Scrape objects!
+# summary_table <- fa_flex_table(scrapes)
+# best_dates <- fa_best_dates(scrapes, n = 10, by = "mean")
 
 # For demonstration purposes, create mock results
 set.seed(123)
