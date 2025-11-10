@@ -162,7 +162,7 @@ flightanalysis/
 │       └── test-scrape.R
 ├── DESCRIPTION              # Package metadata
 ├── NAMESPACE               # Package exports
-└── README_R.md             # This file
+└── README.Rmd             # This file
 ```
 
 ## Differences from Python Version
