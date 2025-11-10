@@ -46,127 +46,272 @@
   </div>
 </nav><div class="container template-home">
 <div class="row">
-  <main id="main" class="col-md-9">
-<div class="section level1">
+  <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header">
 <img src="logo.png" class="logo" alt=""><h1 id="flight-analysis---r-package">Flight Analysis - R Package<a class="anchor" aria-label="anchor" href="#flight-analysis---r-package"></a>
 </h1>
 </div>
+<p><a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></p>
 <p>An R package for analyzing, forecasting, and collecting flight data and prices from Google Flights.</p>
-<p><strong>Credits:</strong> This is an R implementation inspired by the original <a href="https://github.com/celebi-pkg/flightanalysis" class="external-link">Python package</a> by Kaya Celebi.</p>
+<p><strong>Credits:</strong> This package is an R implementation inspired by the original Python package <a href="https://github.com/celebi-pkg/flight-analysis" class="external-link">google-flight-analysis</a> by Kaya Celebi.</p>
 <div class="section level2">
 <h2 id="features">Features<a class="anchor" aria-label="anchor" href="#features"></a>
 </h2>
+<p>Current features include:</p>
 <ul>
-<li>Detailed scraping and querying tools for Google Flights using chromote</li>
-<li>Ability to store data locally or to SQL tables</li>
+<li>Detailed scraping and querying tools for Google Flights</li>
+<li>Base analytical tools/methods for price forecasting/summary</li>
 <li>Support for multiple trip types: one-way, round-trip, chain-trip, and perfect-chain</li>
-<li>Driver-free web scraping using Chrome DevTools Protocol</li>
 </ul>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>Install from GitHub:</p>
+<p>You can install the development version of flightanalysis from GitHub:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Install devtools if you haven't already</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
+<span><span class="co"># install.packages("devtools")</span></span>
 <span></span>
 <span><span class="co"># Install flightanalysis</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"rempsyc/flightanalysis"</span><span class="op">)</span></span></code></pre></div>
-<p>Or source files directly:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">'R/flight.R'</span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">'R/scrape.R'</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="do">## Using GitHub PAT from the git credential store.</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="do">## Skipping install of 'flightanalysis' from a github remote, the SHA1 (4f4dc0b5) has not changed since last install.</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="do">##   Use `force = TRUE` to force installation</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h2>
-<p>The R version provides similar functionality with R-native syntax:</p>
+<div class="section level3">
+<h3 id="loading-the-package">Loading the Package<a class="anchor" aria-label="anchor" href="#loading-the-package"></a>
+</h3>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Load the package</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rempsyc/flightanalysis" class="external-link">flightanalysis</a></span><span class="op">)</span></span>
-<span><span class="co"># Or source files directly:</span></span>
-<span><span class="co"># source('R/flight.R')</span></span>
-<span><span class="co"># source('R/scrape.R')</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rempsyc/flightanalysis" class="external-link">flightanalysis</a></span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="creating-flight-queries">Creating Flight Queries<a class="anchor" aria-label="anchor" href="#creating-flight-queries"></a>
+</h3>
+<p>The main scraping function that makes up the backbone of most functionalities is <code><a href="reference/Scrape.html">Scrape()</a></code>. It serves as a data object, preserving the flight information as well as meta-data from your query.</p>
+<div class="section level4">
+<h4 id="one-way-trip">One-Way Trip<a class="anchor" aria-label="anchor" href="#one-way-trip"></a>
+</h4>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Create a one-way flight query</span></span>
+<span><span class="va">scrape</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/Scrape.html">Scrape</a></span><span class="op">(</span><span class="st">"JFK"</span>, <span class="st">"IST"</span>, <span class="st">"2025-07-20"</span><span class="op">)</span></span>
+<span><span class="va">scrape</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="do">## Scrape( {Query Not Yet Used}</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="do">## 2025-07-20: JFK --&gt; IST</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="do">## )</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="round-trip">Round-Trip<a class="anchor" aria-label="anchor" href="#round-trip"></a>
+</h4>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Create a round-trip flight query</span></span>
+<span><span class="va">scrape</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/Scrape.html">Scrape</a></span><span class="op">(</span><span class="st">"JFK"</span>, <span class="st">"IST"</span>, <span class="st">"2025-07-20"</span>, <span class="st">"2025-08-20"</span><span class="op">)</span></span>
+<span><span class="va">scrape</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="do">## Scrape( {Query Not Yet Used}</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="do">## 2025-07-20: JFK --&gt; IST</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="do">## 2025-08-20: IST --&gt; JFK</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="do">## )</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="chain-trip">Chain-Trip<a class="anchor" aria-label="anchor" href="#chain-trip"></a>
+</h4>
+<p>Chain-trips are defined as a sequence of one-way flights that have no direct relation to each other, other than being in chronological order.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Chain-trip format: origin, dest, date, origin, dest, date, ...</span></span>
+<span><span class="va">scrape</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/Scrape.html">Scrape</a></span><span class="op">(</span><span class="st">"JFK"</span>, <span class="st">"IST"</span>, <span class="st">"2025-08-20"</span>, <span class="st">"RDU"</span>, <span class="st">"LGA"</span>, <span class="st">"2025-12-25"</span>, <span class="st">"EWR"</span>, <span class="st">"SFO"</span>, <span class="st">"2026-01-20"</span><span class="op">)</span></span>
+<span><span class="va">scrape</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="do">## Scrape( {Query Not Yet Used}</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="do">## 2025-08-20: JFK --&gt; IST</span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="do">## 2025-12-25: RDU --&gt; LGA</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="do">## 2026-01-20: EWR --&gt; SFO</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="do">## )</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="perfect-chain">Perfect-Chain<a class="anchor" aria-label="anchor" href="#perfect-chain"></a>
+</h4>
+<p>Perfect-chains are defined as a sequence of one-way flights such that the destination of the previous flight is the origin of the next, and the origin of the chain is the final destination (a cycle).</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Perfect-chain format: origin, date, origin, date, ..., first_origin</span></span>
+<span><span class="va">scrape</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/Scrape.html">Scrape</a></span><span class="op">(</span><span class="st">"JFK"</span>, <span class="st">"2025-09-20"</span>, <span class="st">"IST"</span>, <span class="st">"2025-09-25"</span>, <span class="st">"CDG"</span>, <span class="st">"2025-10-10"</span>, <span class="st">"LHR"</span>, <span class="st">"2025-11-01"</span>, <span class="st">"JFK"</span><span class="op">)</span></span>
+<span><span class="va">scrape</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="do">## Scrape( {Query Not Yet Used}</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="do">## 2025-09-20: JFK --&gt; IST</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="do">## 2025-09-25: IST --&gt; CDG</span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="do">## 2025-10-10: CDG --&gt; LHR</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="do">## 2025-11-01: LHR --&gt; JFK</span></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="do">## )</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level3">
+<h3 id="scraping-data">Scraping Data<a class="anchor" aria-label="anchor" href="#scraping-data"></a>
+</h3>
+<p>The package now includes full web scraping functionality using <strong>chromote</strong>!</p>
+<p><strong>Why chromote?</strong> - ✅ No external driver files needed (uses Chrome DevTools Protocol directly) - ✅ More reliable - no driver version mismatches or port conflicts - ✅ Simpler installation - just install the R package - ✅ Works on all platforms (Windows, macOS, Linux) - ✅ Fully headless by default</p>
+<p>Then scrape flight data from Google Flights:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Create a query</span></span>
+<span><span class="va">scrape</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/Scrape.html">Scrape</a></span><span class="op">(</span><span class="st">"JFK"</span>, <span class="st">"IST"</span>, <span class="st">"2025-12-20"</span>, <span class="st">"2026-01-05"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># One-way trip</span></span>
-<span><span class="va">scrape</span> <span class="op">&lt;-</span> <span class="fu">Scrape</span><span class="op">(</span><span class="st">"JFK"</span>, <span class="st">"IST"</span>, <span class="st">"2026-07-20"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">scrape</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Round-trip</span></span>
-<span><span class="va">scrape</span> <span class="op">&lt;-</span> <span class="fu">Scrape</span><span class="op">(</span><span class="st">"JFK"</span>, <span class="st">"IST"</span>, <span class="st">"2026-07-20"</span>, <span class="st">"2026-08-20"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Chain-trip</span></span>
-<span><span class="va">scrape</span> <span class="op">&lt;-</span> <span class="fu">Scrape</span><span class="op">(</span><span class="st">"JFK"</span>, <span class="st">"IST"</span>, <span class="st">"2026-08-20"</span>, <span class="st">"RDU"</span>, <span class="st">"LGA"</span>, <span class="st">"2026-12-25"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Perfect-chain</span></span>
-<span><span class="va">scrape</span> <span class="op">&lt;-</span> <span class="fu">Scrape</span><span class="op">(</span><span class="st">"JFK"</span>, <span class="st">"2026-09-20"</span>, <span class="st">"IST"</span>, <span class="st">"2026-09-25"</span>, <span class="st">"CDG"</span>, <span class="st">"2026-10-10"</span>, <span class="st">"JFK"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Create Flight objects</span></span>
-<span><span class="va">flight1</span> <span class="op">&lt;-</span> <span class="fu">Flight</span><span class="op">(</span><span class="st">"2026-07-20"</span>, <span class="st">"JFKIST"</span>, <span class="st">"9:00AM"</span>, <span class="st">"5:00PM"</span>, </span>
+<span><span class="co"># Scrape the data (runs in headless mode by default)</span></span>
+<span><span class="va">scrape</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ScrapeObjects.html">ScrapeObjects</a></span><span class="op">(</span><span class="va">scrape</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="do">## Running pre-flight checks...</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="do">## [OK] Chrome/Chromium detected</span></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="do">## [OK] Internet connection verified</span></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="do">## Initializing Chrome browser...</span></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="do">## [OK] Browser ready</span></span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a><span class="do">## Scraping 1 object(s)...</span></span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a><span class="do">## [1/1] Processing query...</span></span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a><span class="do">##   Query has 2 segment(s)</span></span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a><span class="do">##   Segment 1/2: JFK -&gt; IST on 2025-12-20</span></span>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a><span class="do">##   Navigating to Google Flights...</span></span>
+<span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a><span class="do">##   Waiting for page content to load...</span></span>
+<span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a><span class="do">##   Retrieved 165 lines of page content</span></span>
+<span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a><span class="do">##   Parsing 165 lines of content...</span></span>
+<span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a><span class="do">##   Found 20 potential flight time markers</span></span>
+<span id="cb13-17"><a href="#cb13-17" tabindex="-1"></a><span class="do">##   [OK] Successfully parsed 9 flights</span></span>
+<span id="cb13-18"><a href="#cb13-18" tabindex="-1"></a><span class="do">##   Segment 2/2: IST -&gt; JFK on 2026-01-05</span></span>
+<span id="cb13-19"><a href="#cb13-19" tabindex="-1"></a><span class="do">##   Navigating to Google Flights...</span></span>
+<span id="cb13-20"><a href="#cb13-20" tabindex="-1"></a><span class="do">##   Waiting for page content to load...</span></span>
+<span id="cb13-21"><a href="#cb13-21" tabindex="-1"></a><span class="do">##   Retrieved 164 lines of page content</span></span>
+<span id="cb13-22"><a href="#cb13-22" tabindex="-1"></a><span class="do">##   Parsing 164 lines of content...</span></span>
+<span id="cb13-23"><a href="#cb13-23" tabindex="-1"></a><span class="do">##   Found 20 potential flight time markers</span></span>
+<span id="cb13-24"><a href="#cb13-24" tabindex="-1"></a><span class="do">##   [OK] Successfully parsed 9 flights</span></span>
+<span id="cb13-25"><a href="#cb13-25" tabindex="-1"></a><span class="do">##   [OK] Total flights retrieved: 18</span></span>
+<span id="cb13-26"><a href="#cb13-26" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb13-27"><a href="#cb13-27" tabindex="-1"></a><span class="do">## Closing browser...</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># View the scraped data</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">scrape</span><span class="op">$</span><span class="va">data</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="do">##   departure_datetime arrival_datetime origin destination</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="do">## 1               &lt;NA&gt;             &lt;NA&gt;    IST         JFK</span></span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="do">## 2               &lt;NA&gt;             &lt;NA&gt;    IST         JFK</span></span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="do">## 3               &lt;NA&gt;             &lt;NA&gt;    IST         JFK</span></span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a><span class="do">## 4               &lt;NA&gt;             &lt;NA&gt;    IST         JFK</span></span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a><span class="do">## 5               &lt;NA&gt;             &lt;NA&gt;    IST         JFK</span></span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a><span class="do">## 6               &lt;NA&gt;             &lt;NA&gt;    IST         JFK</span></span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a><span class="do">##                                             airlines  travel_time price</span></span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a><span class="do">## 1                                        593 kg CO2e 13 hr 35 min   551</span></span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a><span class="do">## 2 Avoids as much CO2e as 7,731 trees absorb in a day        11 hr   648</span></span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a><span class="do">## 3                                        479 kg CO2e 10 hr 55 min   648</span></span>
+<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a><span class="do">## 4                                      Other flights 10 hr 55 min   668</span></span>
+<span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a><span class="do">## 5                                        715 kg CO2e 23 hr 25 min   552</span></span>
+<span id="cb15-14"><a href="#cb15-14" tabindex="-1"></a><span class="do">## 6                                        717 kg CO2e 34 hr 10 min   574</span></span>
+<span id="cb15-15"><a href="#cb15-15" tabindex="-1"></a><span class="do">##   num_stops         layover         access_date co2_emission_kg</span></span>
+<span id="cb15-16"><a href="#cb15-16" tabindex="-1"></a><span class="do">## 1         1 1 hr 15 min WAW 2025-11-09 23:59:30              NA</span></span>
+<span id="cb15-17"><a href="#cb15-17" tabindex="-1"></a><span class="do">## 2         0            &lt;NA&gt; 2025-11-09 23:59:30              NA</span></span>
+<span id="cb15-18"><a href="#cb15-18" tabindex="-1"></a><span class="do">## 3         0            &lt;NA&gt; 2025-11-09 23:59:30              NA</span></span>
+<span id="cb15-19"><a href="#cb15-19" tabindex="-1"></a><span class="do">## 4         0            &lt;NA&gt; 2025-11-09 23:59:30              NA</span></span>
+<span id="cb15-20"><a href="#cb15-20" tabindex="-1"></a><span class="do">## 5         1 9 hr 25 min CAI 2025-11-09 23:59:30              NA</span></span>
+<span id="cb15-21"><a href="#cb15-21" tabindex="-1"></a><span class="do">## 6         1 19 hr 5 min AMM 2025-11-09 23:59:30              NA</span></span>
+<span id="cb15-22"><a href="#cb15-22" tabindex="-1"></a><span class="do">##   emission_diff_pct</span></span>
+<span id="cb15-23"><a href="#cb15-23" tabindex="-1"></a><span class="do">## 1                18</span></span>
+<span id="cb15-24"><a href="#cb15-24" tabindex="-1"></a><span class="do">## 2               -25</span></span>
+<span id="cb15-25"><a href="#cb15-25" tabindex="-1"></a><span class="do">## 3                 0</span></span>
+<span id="cb15-26"><a href="#cb15-26" tabindex="-1"></a><span class="do">## 4                 0</span></span>
+<span id="cb15-27"><a href="#cb15-27" tabindex="-1"></a><span class="do">## 5                42</span></span>
+<span id="cb15-28"><a href="#cb15-28" tabindex="-1"></a><span class="do">## 6                43</span></span></code></pre></div>
+<p>The <code><a href="reference/ScrapeObjects.html">ScrapeObjects()</a></code> function will: 1. <strong>Run pre-flight checks</strong> - Verify Chrome installation and internet connectivity 2. <strong>Automatically connect to Chrome</strong> - Using Chrome DevTools Protocol (no drivers!) 3. <strong>Navigate to Google Flights URLs</strong> - With proper wait times for page loading 4. <strong>Extract flight information</strong> - Parse prices, times, airlines, stops, and emissions 5. <strong>Store results</strong> - Save data in the Scrape object’s <code>data</code> field 6. <strong>Handle errors gracefully</strong> - Provide detailed troubleshooting tips if issues occur</p>
+<p><strong>Advantages over RSelenium:</strong></p>
+<p>chromote eliminates common RSelenium issues: - ❌ No more “invalid assignment for reference class field ‘port’” errors - ❌ No more driver download/installation problems - ❌ No more version compatibility issues - ❌ No more port conflicts - ✅ Just install chromote and it works!</p>
+</div>
+<div class="section level3">
+<h3 id="working-with-flight-objects">Working with Flight Objects<a class="anchor" aria-label="anchor" href="#working-with-flight-objects"></a>
+</h3>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Create Flight objects</span></span>
+<span><span class="va">flight1</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/Flight.html">Flight</a></span><span class="op">(</span><span class="st">"2025-12-25"</span>, <span class="st">"JFKIST"</span>, <span class="st">"9:00AM"</span>, <span class="st">"5:00PM"</span>, </span>
 <span>                  <span class="st">"8 hr 0 min"</span>, <span class="st">"Nonstop"</span>, <span class="st">"150 kg CO2"</span>, <span class="st">"10% emissions"</span>, <span class="st">"$450"</span><span class="op">)</span></span>
-<span><span class="va">flight2</span> <span class="op">&lt;-</span> <span class="fu">Flight</span><span class="op">(</span><span class="st">"2026-07-21"</span>, <span class="st">"ISTCDG"</span>, <span class="st">"10:00AM"</span>, <span class="st">"2:00PM"</span>, </span>
+<span><span class="va">flight2</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/Flight.html">Flight</a></span><span class="op">(</span><span class="st">"2025-12-26"</span>, <span class="st">"ISTCDG"</span>, <span class="st">"10:00AM"</span>, <span class="st">"2:00PM"</span>, </span>
 <span>                  <span class="st">"4 hr 0 min"</span>, <span class="st">"Nonstop"</span>, <span class="st">"100 kg CO2"</span>, <span class="st">"5% emissions"</span>, <span class="st">"$300"</span><span class="op">)</span></span>
-<span><span class="va">flight3</span> <span class="op">&lt;-</span> <span class="fu">Flight</span><span class="op">(</span><span class="st">"2026-07-22"</span>, <span class="st">"CDGJFK"</span>, <span class="st">"11:00AM"</span>, <span class="st">"1:00PM"</span>, </span>
+<span><span class="va">flight3</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/Flight.html">Flight</a></span><span class="op">(</span><span class="st">"2025-12-27"</span>, <span class="st">"CDGJFK"</span>, <span class="st">"11:00AM"</span>, <span class="st">"1:00PM"</span>, </span>
 <span>                  <span class="st">"8 hr 0 min"</span>, <span class="st">"1 stop"</span>, <span class="st">"200 kg CO2"</span>, <span class="st">"15% emissions"</span>, <span class="st">"$500"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Convert flights to data frame</span></span>
-<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">flights_to_dataframe</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">flight1</span>, <span class="va">flight2</span>, <span class="va">flight3</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Scrape live data (requires chromote package)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"chromote"</span>, <span class="st">"progress"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">scrape</span> <span class="op">&lt;-</span> <span class="fu">ScrapeObjects</span><span class="op">(</span><span class="va">scrape</span><span class="op">)</span>  <span class="co"># Must capture return value! Uses Chrome directly - no drivers!</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">scrape</span><span class="op">$</span><span class="va">data</span><span class="op">)</span></span></code></pre></div>
-<p>For more examples and detailed documentation, see <a href="README.Rmd">README.Rmd</a>.</p>
+<span><span class="co"># Convert multiple flights to a data frame</span></span>
+<span><span class="va">flights</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">flight1</span>, <span class="va">flight2</span>, <span class="va">flight3</span><span class="op">)</span></span>
+<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/flights_to_dataframe.html">flights_to_dataframe</a></span><span class="op">(</span><span class="va">flights</span><span class="op">)</span></span>
+<span><span class="va">df</span></span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="do">##    departure_datetime    arrival_datetime origin destination airlines</span></span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="do">## 1 2025-12-25 09:00:00 2025-12-25 17:00:00    JFK         IST       NA</span></span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="do">## 2 2025-12-26 10:00:00 2025-12-26 14:00:00    IST         CDG       NA</span></span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="do">## 3 2025-12-27 11:00:00 2025-12-27 13:00:00    CDG         JFK       NA</span></span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a><span class="do">##   travel_time price num_stops layover         access_date co2_emission_kg</span></span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a><span class="do">## 1  8 hr 0 min   450         0      NA 2025-11-09 23:59:33             150</span></span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a><span class="do">## 2  4 hr 0 min   300         0      NA 2025-11-09 23:59:33             100</span></span>
+<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a><span class="do">## 3  8 hr 0 min   500         1      NA 2025-11-09 23:59:33             200</span></span>
+<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a><span class="do">##   emission_diff_pct</span></span>
+<span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a><span class="do">## 1                10</span></span>
+<span id="cb17-11"><a href="#cb17-11" tabindex="-1"></a><span class="do">## 2                 5</span></span>
+<span id="cb17-12"><a href="#cb17-12" tabindex="-1"></a><span class="do">## 3                15</span></span></code></pre></div>
+</div>
 </div>
 <div class="section level2">
-<h2 id="updates--new-features">Updates &amp; New Features<a class="anchor" aria-label="anchor" href="#updates--new-features"></a>
+<h2 id="trip-types">Trip Types<a class="anchor" aria-label="anchor" href="#trip-types"></a>
 </h2>
-<p><strong>November 2025</strong>: - ✅ Full R package implementation with equivalent functionality to the Python version! - ✅ Complete web scraping with <strong>chromote</strong> - driver-free browser automation - ✅ No more driver installation/compatibility issues - uses Chrome DevTools Protocol directly - ✅ Headless mode support for server environments</p>
-<p>Performing a complete revamp of this package, including new addition to PyPI. Documentation is being updated frequently, contact for any questions.</p>
-<!--
-## Cache Data
-
-The caching system for this application is mainly designed to make the loading of data more efficient. For the moment, this component of the application hasn't been designed well for the public to easily use so I would suggest that most people leave it alone, or fork the repository and modify some of the functions to create folders in the destinations that they would prefer. The key caching functions are:
-
-- `cache_data`
-- `load_cached`
-- `iterative_caching`
-- `clean_cache`
-- `cache_condition`
-- `check_cached`
-
-All of these functions are clearly documented in the `scraping.py` file.
--->
-<!--## To Do
-
-- [x] Scrape data and clean it
-- [x] Testing for scraping
-- [x] Add scraping docs
-- [ ] Split Airlines
-- [ ] Add day of week as a feature
-- [ ] Support for Day of booking!! ("Delayed by x hr")
-- [ ] Detail most common airports and automatically cache
-- [ ] Algorithm to check over multiple days and return summary
-- [x] Determine caching method: wait for request and cache? periodically cache?
-- [ ] Model for observing change in flight price
-    - Predict how much it'll maybe change
-- [ ] UI for showing flights that are 'perfect' to constraint / flights that are close to constraints, etc
-- [ ] Caching/storing data, uses predictive model to estimate how good this is
-
--->
-</div>
-<div class="section level2">
-<h2 id="real-usage">Real Usage<a class="anchor" aria-label="anchor" href="#real-usage"></a>
-</h2>
-<p>Here are some great flights I was able to find and actually booked when planning my travel/vacations:</p>
+<p>The package supports multiple trip types:</p>
 <ul>
-<li>NYC ➡️ AMS (May 9), AMS ➡️ IST (May 12), IST ➡️ NYC (May 23) | Trip Total: $611 as of March 7, 2022</li>
+<li>
+<strong>One-way</strong>: Single flight from origin to destination</li>
+<li>
+<strong>Round-trip</strong>: Flight to destination and return</li>
+<li>
+<strong>Chain-trip</strong>: Sequence of unrelated one-way flights in chronological order</li>
+<li>
+<strong>Perfect-chain</strong>: Sequence where each destination becomes the next origin, forming a cycle</li>
 </ul>
 </div>
+<div class="section level2">
+<h2 id="package-structure">Package Structure<a class="anchor" aria-label="anchor" href="#package-structure"></a>
+</h2>
+<div class="sourceCode" id="cb18"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>flightanalysis<span class="sc">/</span></span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>├── R<span class="sc">/</span></span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>│   ├── flight.R             <span class="co"># Flight class and methods</span></span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a>│   ├── scrape.R             <span class="co"># Scrape class and methods</span></span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a>│   └── flightanalysis<span class="sc">-</span>package.R  <span class="co"># Package documentation</span></span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a>├── tests<span class="sc">/</span></span>
+<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a>│   └── testthat<span class="sc">/</span>            <span class="co"># Test files</span></span>
+<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a>│       ├── test<span class="sc">-</span>flight.R</span>
+<span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a>│       └── test<span class="sc">-</span>scrape.R</span>
+<span id="cb18-10"><a href="#cb18-10" tabindex="-1"></a>├── DESCRIPTION              <span class="co"># Package metadata</span></span>
+<span id="cb18-11"><a href="#cb18-11" tabindex="-1"></a>├── NAMESPACE               <span class="co"># Package exports</span></span>
+<span id="cb18-12"><a href="#cb18-12" tabindex="-1"></a>└── README_R.md             <span class="co"># This file</span></span></code></pre></div>
 </div>
-
+<div class="section level2">
+<h2 id="differences-from-python-version">Differences from Python Version<a class="anchor" aria-label="anchor" href="#differences-from-python-version"></a>
+</h2>
+<p>This R package maintains the core functionality of the Python version but with R-specific implementations:</p>
+<ul>
+<li>Uses S3 classes instead of Python classes</li>
+<li>chromote instead of Python’s selenium</li>
+<li>Base R data frames instead of pandas</li>
+<li>Native R date/time handling instead of Python’s datetime</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="development-status">Development Status<a class="anchor" aria-label="anchor" href="#development-status"></a>
+</h2>
+<p>This is a complete R port of the Python package. The core data structures and API are fully implemented. Web scraping functionality uses chromote (Chrome DevTools Protocol), which provides driver-free browser automation without the configuration overhead of RSelenium.</p>
+</div>
+<div class="section level2">
+<h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
+</h2>
+<p>MIT License</p>
+</div>
+<div class="section level2">
+<h2 id="original-python-package">Original Python Package<a class="anchor" aria-label="anchor" href="#original-python-package"></a>
+</h2>
+<p>This is a port of the <a href="https://github.com/celebi-pkg/flight-analysis" class="external-link">google-flight-analysis</a> Python package by Kaya Celebi.</p>
+</div>
+<div class="section level2">
+<h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
+</h2>
+<p>Contributions are welcome! Please feel free to submit a Pull Request.</p>
+</div>
+</div>
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
@@ -199,12 +344,7 @@ All of these functions are clearly documented in the `scraping.py` file.
 </ul>
 </div>
 
-<div class="dev-status">
-<h2 data-toc-skip>Dev status</h2>
-<ul class="list-unstyled">
-<li><a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></li>
-</ul>
-</div>
+
 
   </aside>
 </div>
