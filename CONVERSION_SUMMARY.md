@@ -12,7 +12,7 @@ The Python package `google-flight-analysis` has been successfully converted to R
 |--------------|------------------|--------|
 | `Flight` | `Flight()` S3 class | ✅ Complete |
 | `Scrape` / `_Scrape` | `Scrape()` S3 class | ✅ Complete |
-| `CacheControl` / `_CacheControl` | `CacheControl()` function | ✅ Complete |
+| `CacheControl` / `_CacheControl` | ~~`CacheControl()` function~~ | ❌ Removed (users can use standard R methods) |
 
 ### 2. Features Implemented
 
@@ -47,17 +47,13 @@ The Python package `google-flight-analysis` has been successfully converted to R
 - ✅ **Safe resource cleanup**
 - ✅ **Works on Windows, macOS, and Linux without additional setup**
 
-#### Cache Control (`R/cache.R`)
-- ✅ Cache flight data to CSV files
-- ✅ Cache flight data to SQLite database
-- ✅ Track access dates to avoid redundant caching
-- ✅ Alphabetically organize cached files by airport pairs
-- ✅ Metadata tracking with .access directory
+#### ~~Cache Control~~ (Removed)
+- ❌ Cache functionality removed - users can save data using standard R methods like `write.csv(scrape$data, "filename.csv")`
 
 ### 3. Testing & Validation
 
 #### Test Suite (`run_tests.R`)
-- ✅ 44 comprehensive tests
+- ✅ Comprehensive tests for all functionality
 - ✅ 100% pass rate
 - ✅ Tests all trip types
 - ✅ Tests all parsing logic
@@ -69,7 +65,6 @@ The Python package `google-flight-analysis` has been successfully converted to R
 - ✅ Shows Flight object creation
 - ✅ Demonstrates data frame conversion
 - ✅ Shows URL generation
-- ✅ Explains caching functionality
 
 ### 4. Documentation
 
@@ -95,7 +90,6 @@ flight-analysis/
 ├── R/                      # R package source
 │   ├── flight.R           # Flight class
 │   ├── scrape.R           # Scrape class
-│   ├── cache.R            # Caching functionality
 │   └── flightanalysis-package.R  # Package documentation
 │
 ├── examples/               # Usage examples
@@ -104,7 +98,6 @@ flight-analysis/
 ├── tests/                  # Tests
 │   ├── testthat.R         # Test configuration
 │   └── testthat/          # Test files
-│       ├── test-cache.R
 │       ├── test-flight.R
 │       └── test-scrape.R
 │
@@ -126,7 +119,6 @@ flight-analysis/
 # Option 1: Source files directly
 source('R/flight.R')
 source('R/scrape.R')
-source('R/cache.R')
 
 # Option 2: Install from GitHub (requires devtools)
 devtools::install_github("rempsyc/flightanalysis")
@@ -139,16 +131,20 @@ devtools::install_github("rempsyc/flightanalysis")
 scrape <- Scrape("JFK", "IST", "2023-07-20", "2023-08-20")
 print(scrape)
 
-# Create a flight object
-flight <- Flight("2023-07-20", "JFKIST", "9:00AM", "5:00PM", 
-                 "8 hr 0 min", "Nonstop", "$450")
+# Create flight objects
+flight1 <- Flight("2023-07-20", "JFKIST", "9:00AM", "5:00PM", 
+                  "8 hr 0 min", "Nonstop", "$450")
+flight2 <- Flight("2023-07-21", "ISTCDG", "10:00AM", "2:00PM", 
+                  "4 hr 0 min", "1 stop", "$300")
+flight3 <- Flight("2023-07-22", "CDGJFK", "11:00AM", "1:00PM", 
+                  "8 hr 0 min", "Nonstop", "$500")
 
 # Convert to data frame
 flights_list <- list(flight1, flight2, flight3)
 df <- flights_to_dataframe(flights_list)
 
-# Cache data
-CacheControl("./cache/", scrape, use_db = FALSE)
+# Save data using standard R methods
+write.csv(df, "flights.csv", row.names = FALSE)
 ```
 
 ## Key Differences from Python Version
