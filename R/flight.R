@@ -90,8 +90,8 @@ classify_arg <- function(flight, arg) {
     } else {
       as.integer(strsplit(arg, " ")[[1]][1])
     }
-  } else if (grepl("CO2$", arg) && is.null(flight$co2)) {
-    # Check for CO2
+  } else if (grepl("kg CO2e?$", arg) && is.null(flight$co2)) {
+    # Check for CO2 (matches both "kg CO2" and "kg CO2e")
     flight$co2 <- as.integer(strsplit(arg, " ")[[1]][1])
   } else if (grepl("emissions$", arg) && is.null(flight$emissions)) {
     # Check for emissions
@@ -102,8 +102,16 @@ classify_arg <- function(flight, arg) {
       as.integer(gsub("%", "", emission_val))
     }
   } else if (grepl("\\$", arg) && is.null(flight$price)) {
-    # Check for price
+    # Check for price with dollar sign
     flight$price <- as.integer(gsub("[\\$,]", "", arg))
+  } else if (
+    grepl("^[0-9,]+$", arg) &&
+      is.null(flight$price) &&
+      !is.null(flight$flight_time)
+  ) {
+    # Check for price without dollar sign (but only if flight time already parsed)
+    # This helps ensure we're getting the price field, not some other number
+    flight$price <- as.integer(gsub(",", "", arg))
   } else if (
     nchar(arg) == 6 &&
       arg == toupper(arg) &&
@@ -122,9 +130,13 @@ classify_arg <- function(flight, arg) {
   } else if (
     nchar(arg) > 0 &&
       arg != "Separate tickets booked together" &&
-      arg != "Change of airport"
+      arg != "Change of airport" &&
+      !grepl("CO2e?", arg) &&
+      !grepl("trees? absorb", arg) &&
+      !grepl("Other flights?", arg) &&
+      !grepl("Avoids", arg)
   ) {
-    # Check for airline
+    # Check for airline (but filter out CO2-related text and "Other flights")
     val <- strsplit(arg, ",")[[1]]
     val <- sapply(val, function(elem) strsplit(elem, "Operated")[[1]][1])
     flight$airline <- paste(val, collapse = ",")
