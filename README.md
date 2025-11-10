@@ -132,6 +132,9 @@ print(best_dates)
 - ✅ Complete web scraping with **chromote** - driver-free browser automation
 - ✅ No more driver installation/compatibility issues - uses Chrome DevTools Protocol directly
 - ✅ Headless mode support for server environments
+- ✅ **NEW:** Flexible date search with `fa_scrape_best_oneway()` for searching multiple airports and dates
+- ✅ **NEW:** Wide summary tables with `fa_flex_table()` for easy price comparison
+- ✅ **NEW:** Best date identification with `fa_best_dates()` for finding cheapest travel dates
 
 Performing a complete revamp of this package, including new addition to PyPI. Documentation is being updated frequently, contact for any questions.
 
