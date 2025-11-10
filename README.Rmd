@@ -4,7 +4,7 @@
 
 An R package for analyzing, forecasting, and collecting flight data and prices from Google Flights. 
 
-**Credits:** This package is an R implementation inspired by the original Python package [google-flight-analysis](https://github.com/kcelebi/flight-analysis) by Kaya Celebi.
+**Credits:** This package is an R implementation inspired by the original Python package [google-flight-analysis](https://github.com/celebi-pkg/flight-analysis) by Kaya Celebi.
 
 ## Features
 
@@ -192,7 +192,7 @@ MIT License
 
 ## Original Python Package
 
-This is a port of the [google-flight-analysis](https://github.com/kcelebi/flight-analysis) Python package by Kaya Celebi.
+This is a port of the [google-flight-analysis](https://github.com/celebi-pkg/flight-analysis) Python package by Kaya Celebi.
 
 ## Contributing
 
