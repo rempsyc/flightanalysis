@@ -3,12 +3,13 @@
 Scrapes flight data from Google Flights using chromote. This function
 will automatically set up a Chrome browser connection, navigate to
 Google Flights URLs, and extract flight information. Uses the Chrome
-DevTools Protocol for reliable, driver-free browser automation.
+DevTools Protocol for reliable, driver-free browser automation. The
+browser runs in headless mode by default (no visible GUI).
 
 ## Usage
 
 ``` r
-ScrapeObjects(objs, deep_copy = FALSE, headless = TRUE, verbose = TRUE)
+ScrapeObjects(objs, verbose = TRUE)
 ```
 
 ## Arguments
@@ -16,14 +17,6 @@ ScrapeObjects(objs, deep_copy = FALSE, headless = TRUE, verbose = TRUE)
 - objs:
 
   A Scrape object or list of Scrape objects
-
-- deep_copy:
-
-  Logical. If TRUE, returns a copy of the objects
-
-- headless:
-
-  Logical. If TRUE, runs browser in headless mode (no GUI, default)
 
 - verbose:
 

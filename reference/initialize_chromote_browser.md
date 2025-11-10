@@ -5,5 +5,5 @@ Initialize chromote browser
 ## Usage
 
 ``` r
-initialize_chromote_browser(headless = TRUE)
+initialize_chromote_browser()
 ```
