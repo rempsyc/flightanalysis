@@ -9,7 +9,7 @@
 #'
 #' \itemize{
 #'   \item Detailed scraping and querying tools for Google Flights
-#'   \item Ability to store data locally or to SQL tables
+#'   \item Support for multiple trip types (one-way, round-trip, chain, perfect-chain)
 #'   \item Base analytical tools/methods for price forecasting/summary
 #' }
 #'
@@ -18,7 +18,7 @@
 #'   \item{\code{\link{Scrape}}}{Create a flight query object}
 #'   \item{\code{\link{ScrapeObjects}}}{Execute flight queries (requires chromote)}
 #'   \item{\code{\link{Flight}}}{Create a flight data object}
-#'   \item{\code{\link{CacheControl}}}{Cache flight data to disk or database}
+#'   \item{\code{\link{flights_to_dataframe}}}{Convert Flight objects to data frame}
 #' }
 #'
 #' @section Trip Types:
