@@ -210,7 +210,7 @@ Success rate: 100.0%
 To use web scraping functionality, install these packages:
 
 ```r
-install.packages(c("RSelenium", "wdman", "progress"))
+install.packages(c("chromote", "progress"))
 ```
 
 The package will automatically handle Chrome driver setup and browser automation.
