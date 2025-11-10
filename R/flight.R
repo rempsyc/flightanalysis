@@ -65,7 +65,8 @@ classify_arg <- function(flight, arg) {
   # Check for arrival or departure time
   # Support both uppercase (AM/PM) and lowercase (am/pm) formats
   if (
-    (grepl("AM", arg, ignore.case = TRUE) || grepl("PM", arg, ignore.case = TRUE)) &&
+    (grepl("AM", arg, ignore.case = TRUE) ||
+      grepl("PM", arg, ignore.case = TRUE)) &&
       length(flight$times) < 2 &&
       grepl(":", arg)
   ) {
@@ -80,23 +81,28 @@ classify_arg <- function(flight, arg) {
     parsed_time <- tryCatch(
       {
         # Try uppercase AM/PM first
-        strptime(datetime_str, "%Y-%m-%d %I:%M%p")
+        strptime(datetime_str, "%Y-%m-%d %I:%M %p")
       },
       error = function(e) NULL
     )
-    
+
     # If that fails, try lowercase am/pm
     if (is.null(parsed_time) || is.na(parsed_time)) {
       parsed_time <- tryCatch(
         {
           # Convert to uppercase for parsing
-          datetime_str_upper <- gsub("am", "AM", gsub("pm", "PM", datetime_str, ignore.case = TRUE), ignore.case = TRUE)
-          strptime(datetime_str_upper, "%Y-%m-%d %I:%M%p")
+          datetime_str_upper <- gsub(
+            "am",
+            "AM",
+            gsub("pm", "PM", datetime_str, ignore.case = TRUE),
+            ignore.case = TRUE
+          )
+          strptime(datetime_str_upper, "%Y-%m-%d %I:%M %p")
         },
         error = function(e) NULL
       )
     }
-    
+
     # If we successfully parsed a time, add it
     if (!is.null(parsed_time) && !is.na(parsed_time)) {
       parsed_time <- as.POSIXct(parsed_time) + (delta_days * 24 * 3600)
