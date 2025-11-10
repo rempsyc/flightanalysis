@@ -178,13 +178,13 @@ flightanalysis/
 This R package maintains the core functionality of the Python version but with R-specific implementations:
 
 - Uses S3 classes instead of Python classes
-- RSelenium instead of Python's selenium
+- chromote instead of Python's selenium
 - Base R data frames instead of pandas
 - Native R date/time handling instead of Python's datetime
 
 ## Development Status
 
-This is an initial R port of the Python package. The core data structures and API are implemented. Web scraping functionality is fully implemented using the chromote package via the ScrapeObjects function in R/scrape.R.
+This is a complete R port of the Python package. The core data structures and API are fully implemented. Web scraping functionality uses chromote (Chrome DevTools Protocol), which provides driver-free browser automation without the configuration overhead of RSelenium.
 
 ## License
 

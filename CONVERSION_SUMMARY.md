@@ -165,13 +165,14 @@ CacheControl("./cache/", scrape, use_db = FALSE)
 - **Properties**: Python `@property` → R getter/setter pattern
 - **Methods**: Python `self.method()` → R `object$field`
 
-### 3. Web Scraping Note
-The `ScrapeObjects()` function is implemented as a documented placeholder that explains requirements. Full implementation would need:
-1. RSelenium package
-2. Chrome/Firefox driver setup
-3. Browser automation logic
+### 3. Web Scraping Implementation
+The `ScrapeObjects()` function is fully implemented using the chromote package. Implementation details:
+1. Uses Chrome DevTools Protocol (no external drivers needed)
+2. Automatic browser setup and connection
+3. Complete page scraping and data extraction logic
+4. Supports headless mode and verbose output
 
-This was intentionally left as a placeholder to maintain minimal changes while providing a complete package structure that users can extend.
+This provides a modern, driver-free web scraping solution that eliminates the common issues associated with Selenium-based approaches.
 
 ## Testing Results
 
