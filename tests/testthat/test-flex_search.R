@@ -125,10 +125,10 @@ test_that("fa_best_dates works with different aggregation methods", {
   expect_equal(best_min$Price[1], 300) # min of 300, 400, 500
 })
 
-test_that("fa_create_date_range_scrape creates valid Scrape object", {
-  # Create Scrape object
+test_that("fa_create_date_range_scrape creates valid Scrape object for single origin", {
+  # Single origin - should return one Scrape object
   scrape <- fa_create_date_range_scrape(
-    origin = c("BOM", "DEL"),
+    origin = "BOM",
     dest = "JFK",
     date_min = "2025-12-18",
     date_max = "2025-12-20"
@@ -140,28 +140,57 @@ test_that("fa_create_date_range_scrape creates valid Scrape object", {
   # Check type
   expect_equal(scrape$type, "chain-trip")
 
-  # Should have 2 airports × 3 dates = 6 segments
-  expect_equal(length(scrape$origin), 6)
-  expect_equal(length(scrape$dest), 6)
-  expect_equal(length(scrape$date), 6)
+  # Should have 3 dates for 1 airport = 3 segments
+  expect_equal(length(scrape$origin), 3)
+  expect_equal(length(scrape$dest), 3)
+  expect_equal(length(scrape$date), 3)
 
   # All destinations should be JFK
   expect_true(all(unlist(scrape$dest) == "JFK"))
 
-  # Origins should be BOM and DEL
-  expect_true(all(unlist(scrape$origin) %in% c("BOM", "DEL")))
+  # All origins should be BOM
+  expect_true(all(unlist(scrape$origin) == "BOM"))
   
-  # Dates should be in increasing order for each origin
-  # BOM entries should come first, then DEL entries
-  origins <- unlist(scrape$origin)
+  # Dates should be in increasing order
   dates <- unlist(scrape$date)
+  expect_true(all(dates == sort(dates)))
+})
+
+test_that("fa_create_date_range_scrape creates list for multiple origins", {
+  # Multiple origins - should return list of Scrape objects
+  scrapes <- fa_create_date_range_scrape(
+    origin = c("BOM", "DEL"),
+    dest = "JFK",
+    date_min = "2025-12-18",
+    date_max = "2025-12-20"
+  )
+
+  # Check it's a list
+  expect_true(is.list(scrapes))
+  expect_equal(length(scrapes), 2)
+  expect_equal(names(scrapes), c("BOM", "DEL"))
+
+  # Check each element is a Scrape object
+  expect_s3_class(scrapes$BOM, "Scrape")
+  expect_s3_class(scrapes$DEL, "Scrape")
+
+  # Check BOM scrape
+  expect_equal(scrapes$BOM$type, "chain-trip")
+  expect_equal(length(scrapes$BOM$origin), 3)  # 3 dates
+  expect_true(all(unlist(scrapes$BOM$origin) == "BOM"))
+  expect_true(all(unlist(scrapes$BOM$dest) == "JFK"))
   
-  # Check BOM dates are increasing
-  bom_dates <- dates[origins == "BOM"]
+  # Check DEL scrape
+  expect_equal(scrapes$DEL$type, "chain-trip")
+  expect_equal(length(scrapes$DEL$origin), 3)  # 3 dates
+  expect_true(all(unlist(scrapes$DEL$origin) == "DEL"))
+  expect_true(all(unlist(scrapes$DEL$dest) == "JFK"))
+  
+  # Dates should be in increasing order for each
+  bom_dates <- unlist(scrapes$BOM$date)
   expect_true(all(bom_dates == sort(bom_dates)))
   
-  # Check DEL dates are increasing
-  del_dates <- dates[origins == "DEL"]
+  del_dates <- unlist(scrapes$DEL$date)
   expect_true(all(del_dates == sort(del_dates)))
 })
 

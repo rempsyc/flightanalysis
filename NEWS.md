@@ -3,10 +3,12 @@
 ## New Features
 
 * Added `fa_create_date_range_scrape()` function for creating flexible date range Scrape objects. This function:
-  - Creates a chain-trip Scrape object from multiple origin airports and date range
-  - Generates all permutations without scraping (use with `ScrapeObjects()`)
-  - Reduces browser initialization overhead by batching all queries
+  - Creates chain-trip Scrape objects from origin airports and date range
+  - For single origin: returns one Scrape object
+  - For multiple origins: returns a named list of Scrape objects (one per origin)
+  - Generates all date permutations without scraping (use with `ScrapeObjects()`)
   - Parameter `origin` (not `airports`) for consistency with original Python package
+  - Each origin gets its own Scrape object to satisfy chain-trip's strictly increasing date requirement
 
 * Added `fa_flex_table()` function for creating wide summary tables. This function:
   - Reshapes results into City × Date format
