@@ -125,6 +125,57 @@ test_that("fa_best_dates works with different aggregation methods", {
   expect_equal(best_min$Price[1], 300) # min of 300, 400, 500
 })
 
+test_that("fa_create_date_range_scrape creates valid Scrape object", {
+  # Create Scrape object
+  scrape <- fa_create_date_range_scrape(
+    airports = c("BOM", "DEL"),
+    dest = "JFK",
+    date_min = "2025-12-18",
+    date_max = "2025-12-20"
+  )
+
+  # Check it's a Scrape object
+  expect_s3_class(scrape, "Scrape")
+
+  # Check type
+  expect_equal(scrape$type, "chain-trip")
+
+  # Should have 2 airports × 3 dates = 6 segments
+  expect_equal(length(scrape$origin), 6)
+  expect_equal(length(scrape$dest), 6)
+  expect_equal(length(scrape$date), 6)
+
+  # All destinations should be JFK
+  expect_true(all(unlist(scrape$dest) == "JFK"))
+
+  # Origins should alternate between BOM and DEL
+  expect_true(all(unlist(scrape$origin) %in% c("BOM", "DEL")))
+})
+
+test_that("fa_create_date_range_scrape validates inputs", {
+  # Invalid airport code
+  expect_error(
+    fa_create_date_range_scrape(
+      airports = c("BO"),
+      dest = "JFK",
+      date_min = "2025-12-18",
+      date_max = "2025-12-20"
+    ),
+    "All airport codes must be 3 characters"
+  )
+
+  # Invalid date order
+  expect_error(
+    fa_create_date_range_scrape(
+      airports = "BOM",
+      dest = "JFK",
+      date_min = "2025-12-20",
+      date_max = "2025-12-18"
+    ),
+    "date_min must be before or equal to date_max"
+  )
+})
+
 test_that("fa_scrape_best_oneway validates inputs", {
   # Missing required columns
   bad_routes <- data.frame(

@@ -100,11 +100,11 @@ routes <- tribble(
 dates <- seq(as.Date("2025-12-18"), as.Date("2026-01-05"), by = "day")
 
 # Scrape cheapest flights per day across all routes and dates
+# This creates a chain-trip Scrape object and uses ScrapeObjects() internally
 results <- fa_scrape_best_oneway(
   routes = routes,
   dates = dates,
   keep_offers = FALSE,  # Only keep cheapest per day
-  pause = 3,            # Wait 3 seconds between requests
   verbose = TRUE
 )
 
@@ -118,12 +118,31 @@ print(best_dates)
 ```
 
 **Key Features:**
+- **Efficient batching**: Creates a single chain-trip Scrape object, reducing browser initialization overhead
+- **Two-step workflow**: (1) Create Scrape object with `fa_create_date_range_scrape()`, (2) Scrape with `ScrapeObjects()`, (3) Analyze with filter functions
 - Search multiple airports and dates in one function call
 - Automatically filters out placeholder rows ("Price graph", "Price unavailable")
 - Create wide summary tables for easy price comparison
 - Identify cheapest travel dates automatically
-- Built-in rate limiting to be respectful of Google Flights
 - Optional currency formatting with the `scales` package
+
+**Advanced Usage:**
+```r
+# For more control, create Scrape object separately
+scrape <- fa_create_date_range_scrape(
+  airports = c("BOM", "DEL", "VNS"),
+  dest = "JFK",
+  date_min = "2025-12-18",
+  date_max = "2026-01-05"
+)
+
+# Then scrape when ready
+scrape <- ScrapeObjects(scrape, verbose = TRUE)
+
+# Filter and analyze the results
+results <- scrape$data
+# ... apply custom filters or use fa_flex_table(), fa_best_dates()
+```
 
 ## Updates & New Features
 

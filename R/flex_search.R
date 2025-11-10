@@ -1,10 +1,103 @@
+#' Create Flexible Date Range Scrape Object
+#'
+#' @description
+#' Creates a chain-trip Scrape object for multiple airports and date range.
+#' This is a helper function that generates all permutations of airports and dates
+#' without actually scraping. The resulting Scrape object can be passed to
+#' ScrapeObjects() to perform the actual scraping in a single batch request.
+#'
+#' @param airports Character vector of 3-letter airport codes to search from.
+#' @param dest Character. 3-letter destination airport code.
+#' @param date_min Character or Date. Start date in "YYYY-MM-DD" format.
+#' @param date_max Character or Date. End date in "YYYY-MM-DD" format.
+#'
+#' @return A Scrape object of type "chain-trip" containing all route-date combinations.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Create Scrape object for multiple airports over date range
+#' scrape <- fa_create_date_range_scrape(
+#'   airports = c("BOM", "DEL", "VNS"),
+#'   dest = "JFK",
+#'   date_min = "2025-12-18",
+#'   date_max = "2026-01-05"
+#' )
+#'
+#' # Then scrape using existing ScrapeObjects function
+#' scrape <- ScrapeObjects(scrape, verbose = TRUE)
+#' print(scrape$data)
+#' }
+fa_create_date_range_scrape <- function(airports, dest, date_min, date_max) {
+  # Validate inputs
+  if (!is.character(airports) || length(airports) == 0) {
+    stop("airports must be a non-empty character vector")
+  }
+
+  if (any(nchar(airports) != 3)) {
+    stop("All airport codes must be 3 characters")
+  }
+
+  if (!is.character(dest) || length(dest) != 1 || nchar(dest) != 3) {
+    stop("dest must be a single 3-character string")
+  }
+
+  # Convert dates to Date objects if needed
+  if (is.character(date_min)) {
+    date_min <- as.Date(date_min)
+  }
+  if (is.character(date_max)) {
+    date_max <- as.Date(date_max)
+  }
+
+  if (!inherits(date_min, "Date") || !inherits(date_max, "Date")) {
+    stop("date_min and date_max must be Date objects or character strings in YYYY-MM-DD format")
+  }
+
+  if (date_min > date_max) {
+    stop("date_min must be before or equal to date_max")
+  }
+
+  # Generate date sequence
+  dates <- seq(date_min, date_max, by = "day")
+  dates_char <- format(dates, "%Y-%m-%d")
+
+  # Generate all combinations (airports × dates)
+  combinations <- expand.grid(
+    airport = airports,
+    date = dates_char,
+    stringsAsFactors = FALSE
+  )
+
+  # Sort by date first, then airport for logical ordering
+  combinations <- combinations[order(combinations$date, combinations$airport), ]
+
+  # Build chain-trip arguments: origin1, dest1, date1, origin2, dest2, date2, ...
+  args <- list()
+  for (i in seq_len(nrow(combinations))) {
+    args <- c(args, list(
+      as.character(combinations$airport[i]),
+      dest,
+      combinations$date[i]
+    ))
+  }
+
+  # Create Scrape object using do.call
+  scrape <- do.call(Scrape, args)
+
+  return(scrape)
+}
+
 #' Scrape Best One-Way Flights Across Multiple Dates and Routes
 #'
 #' @description
-#' Scrapes Google Flights for the cheapest one-way flights per day across
-#' multiple origin-destination pairs and a range of dates. This function is
-#' designed for flexible travel planning where you want to compare prices
-#' across different airports and dates.
+#' Scrapes Google Flights for flights across multiple origin-destination pairs
+#' and a range of dates. This function creates a chain-trip Scrape object with
+#' all permutations and then uses ScrapeObjects() to scrape them in a single
+#' batch request, reducing browser initialization overhead.
+#'
+#' After scraping, you can filter the results using keep_offers parameter.
 #'
 #' @param routes A data frame with columns: City, Airport, Dest, and optionally Comment.
 #'   Each row represents an origin airport to search from.
@@ -12,16 +105,12 @@
 #'   to search across.
 #' @param keep_offers Logical. If TRUE, stores all flight offers in a list-column.
 #'   If FALSE (default), only keeps the cheapest offer per day. Default is FALSE.
-#' @param pause Numeric. Number of seconds to pause between scraping requests for
-#'   rate limiting. Default is 2 seconds.
 #' @param headless Logical. If TRUE, runs browser in headless mode (no GUI, default).
 #' @param verbose Logical. If TRUE, shows detailed progress information (default).
-#' @param currency_format Logical. If TRUE and scales package is available, formats
-#'   prices with currency symbols. Default is FALSE.
 #'
 #' @return A data frame with columns: City, Airport, Dest, Date, Price, and
 #'   optionally Comment and Offers (if keep_offers=TRUE). Each row represents
-#'   the cheapest flight for a given route and date combination.
+#'   the cheapest flight (or all offers) for a given route and date combination.
 #'
 #' @export
 #'
@@ -36,16 +125,18 @@
 #' )
 #' dates <- seq(as.Date("2025-12-18"), as.Date("2026-01-05"), by = "day")
 #'
-#' results <- fa_scrape_best_oneway(routes, dates, pause = 3, verbose = TRUE)
+#' # Scrape all routes and dates
+#' results <- fa_scrape_best_oneway(routes, dates, verbose = TRUE)
+#'
+#' # Or keep all offers for detailed analysis
+#' results_full <- fa_scrape_best_oneway(routes, dates, keep_offers = TRUE)
 #' }
 fa_scrape_best_oneway <- function(
   routes,
   dates,
   keep_offers = FALSE,
-  pause = 2,
   headless = TRUE,
-  verbose = TRUE,
-  currency_format = FALSE
+  verbose = TRUE
 ) {
   # Validate inputs
   if (!is.data.frame(routes)) {
@@ -60,175 +151,66 @@ fa_scrape_best_oneway <- function(
     ))
   }
 
+  # Check that all routes have the same destination
+  if (length(unique(routes$Dest)) > 1) {
+    stop("All routes must have the same destination. Use fa_create_date_range_scrape() for custom combinations.")
+  }
+
+  dest <- routes$Dest[1]
+
   # Convert dates to Date objects if they're character strings
   if (is.character(dates)) {
     dates <- as.Date(dates)
   }
 
-  # Convert Date objects to character strings in YYYY-MM-DD format
-  dates_char <- format(dates, "%Y-%m-%d")
-
   if (verbose) {
     cat(sprintf(
-      "Searching %d routes across %d dates (%d total queries)...\n",
+      "Creating Scrape object for %d routes across %d dates (%d total queries)...\n",
       nrow(routes),
       length(dates),
       nrow(routes) * length(dates)
     ))
   }
 
-  # Create all combinations of routes and dates
-  combinations <- expand.grid(
-    route_idx = seq_len(nrow(routes)),
-    date_idx = seq_len(length(dates)),
-    stringsAsFactors = FALSE
+  # Create Scrape object using the helper function
+  scrape <- fa_create_date_range_scrape(
+    airports = routes$Airport,
+    dest = dest,
+    date_min = min(dates),
+    date_max = max(dates)
   )
-
-  # Pre-allocate results list
-  results_list <- vector("list", nrow(combinations))
-
-  # Initialize chromote browser once for all scraping
-  browser <- NULL
-
-  tryCatch(
-    {
-      browser <- initialize_chromote_browser(headless = headless)
-
-      if (is.null(browser)) {
-        stop("Failed to initialize Chrome browser")
-      }
-
-      # Iterate through all combinations
-      for (i in seq_len(nrow(combinations))) {
-        route_idx <- combinations$route_idx[i]
-        date_idx <- combinations$date_idx[i]
-
-        origin <- routes$Airport[route_idx]
-        dest <- routes$Dest[route_idx]
-        city <- routes$City[route_idx]
-        date <- dates_char[date_idx]
-
-        if (verbose) {
-          cat(sprintf(
-            "[%d/%d] %s (%s) -> %s on %s\n",
-            i,
-            nrow(combinations),
-            city,
-            origin,
-            dest,
-            date
-          ))
-        }
-
-        # Create Scrape object
-        scrape_obj <- tryCatch(
-          {
-            Scrape(origin, dest, date)
-          },
-          error = function(e) {
-            if (verbose) {
-              cat(sprintf("  [!] Error creating Scrape object: %s\n", e$message))
-            }
-            return(NULL)
-          }
-        )
-
-        if (!is.null(scrape_obj)) {
-          # Scrape data using existing browser
-          scrape_obj <- tryCatch(
-            {
-              scrape_data_chromote(scrape_obj, browser, verbose = FALSE)
-            },
-            error = function(e) {
-              if (verbose) {
-                cat(sprintf("  [!] Error scraping: %s\n", e$message))
-              }
-              scrape_obj$data <- data.frame()
-              scrape_obj
-            }
-          )
-
-          # Filter out placeholder rows
-          if (nrow(scrape_obj$data) > 0) {
-            scrape_obj$data <- filter_placeholder_rows(scrape_obj$data)
-          }
-
-          # Extract cheapest flight or store all offers
-          if (nrow(scrape_obj$data) > 0) {
-            if (keep_offers) {
-              # Store all offers
-              results_list[[i]] <- data.frame(
-                City = city,
-                Airport = origin,
-                Dest = dest,
-                Date = date,
-                Price = min(scrape_obj$data$price, na.rm = TRUE),
-                Offers = I(list(scrape_obj$data)),
-                stringsAsFactors = FALSE
-              )
-            } else {
-              # Only keep cheapest
-              min_price_idx <- which.min(scrape_obj$data$price)
-              results_list[[i]] <- data.frame(
-                City = city,
-                Airport = origin,
-                Dest = dest,
-                Date = date,
-                Price = scrape_obj$data$price[min_price_idx],
-                stringsAsFactors = FALSE
-              )
-            }
-
-            if (verbose) {
-              cat(sprintf(
-                "  [OK] Found %d flights, cheapest: $%d\n",
-                nrow(scrape_obj$data),
-                results_list[[i]]$Price
-              ))
-            }
-          } else {
-            if (verbose) {
-              cat("  [!] No valid flights found\n")
-            }
-          }
-        }
-
-        # Rate limiting
-        if (i < nrow(combinations)) {
-          Sys.sleep(pause)
-        }
-      }
-
-      # Close browser
-      close_chromote_safely(browser)
-    },
-    error = function(e) {
-      if (!is.null(browser)) {
-        tryCatch(close_chromote_safely(browser), error = function(e2) {})
-      }
-      stop(sprintf("Error during scraping: %s", e$message), call. = FALSE)
-    }
-  )
-
-  # Combine results
-  results <- do.call(rbind, results_list[!sapply(results_list, is.null)])
-
-  # Add Comment column if it exists in routes
-  if ("Comment" %in% names(routes)) {
-    results$Comment <- routes$Comment[match(
-      paste(results$City, results$Airport),
-      paste(routes$City, routes$Airport)
-    )]
-  }
-
-  # Format currency if requested
-  if (currency_format && requireNamespace("scales", quietly = TRUE)) {
-    results$Price_Formatted <- scales::dollar(results$Price)
-  }
 
   if (verbose) {
-    cat(sprintf("\n[DONE] Retrieved %d results\n", nrow(results)))
+    cat("Scraping flights using ScrapeObjects()...\n")
   }
+
+  # Use existing ScrapeObjects function to scrape
+  scrape <- ScrapeObjects(scrape, headless = headless, verbose = verbose)
+
+  # Filter out placeholder rows
+  if (nrow(scrape$data) > 0) {
+    scrape$data <- filter_placeholder_rows(scrape$data)
+  }
+
+  if (nrow(scrape$data) == 0) {
+    warning("No valid flight data retrieved")
+    return(data.frame(
+      City = character(),
+      Airport = character(),
+      Dest = character(),
+      Date = character(),
+      Price = numeric(),
+      stringsAsFactors = FALSE
+    ))
+  }
+
+  # Process results to match expected format
+  results <- process_scrape_results(
+    scrape_data = scrape$data,
+    routes = routes,
+    keep_offers = keep_offers,
+    verbose = verbose
+  )
 
   return(results)
 }
@@ -269,6 +251,111 @@ filter_placeholder_rows <- function(data) {
   }
 
   return(data[keep_rows, , drop = FALSE])
+}
+
+#' Process Scrape Results into Summary Format
+#'
+#' @description
+#' Processes the raw scraped data into the desired summary format,
+#' optionally keeping all offers or just the cheapest per route-date.
+#'
+#' @param scrape_data Data frame from scrape$data
+#' @param routes Original routes data frame
+#' @param keep_offers Logical, whether to keep all offers
+#' @param verbose Logical, show progress
+#'
+#' @return Processed data frame
+#'
+#' @keywords internal
+process_scrape_results <- function(scrape_data, routes, keep_offers, verbose) {
+  # Extract date from departure_datetime
+  scrape_data$Date <- as.character(as.Date(scrape_data$departure_datetime))
+
+  # The origin and destination columns in scrape_data are swapped
+  # (Google Flights returns destination as origin for our queries)
+  # So we need to map based on destination field
+  scrape_data$Airport <- scrape_data$destination
+  scrape_data$Dest <- scrape_data$origin
+
+  # Create results list
+  results_list <- list()
+
+  # Group by Airport and Date
+  unique_combinations <- unique(scrape_data[, c("Airport", "Date")])
+
+  for (i in seq_len(nrow(unique_combinations))) {
+    airport <- unique_combinations$Airport[i]
+    date <- unique_combinations$Date[i]
+
+    # Get all flights for this combination
+    flights <- scrape_data[
+      scrape_data$Airport == airport & scrape_data$Date == date,
+    ]
+
+    if (nrow(flights) == 0) next
+
+    # Get city and dest from routes
+    route_info <- routes[routes$Airport == airport, ]
+    if (nrow(route_info) == 0) {
+      city <- airport
+      dest <- flights$Dest[1]
+    } else {
+      city <- route_info$City[1]
+      dest <- route_info$Dest[1]
+    }
+
+    if (keep_offers) {
+      # Store all offers
+      results_list[[length(results_list) + 1]] <- data.frame(
+        City = city,
+        Airport = airport,
+        Dest = dest,
+        Date = date,
+        Price = min(flights$price, na.rm = TRUE),
+        Offers = I(list(flights)),
+        stringsAsFactors = FALSE
+      )
+    } else {
+      # Only keep cheapest
+      min_price_idx <- which.min(flights$price)
+      results_list[[length(results_list) + 1]] <- data.frame(
+        City = city,
+        Airport = airport,
+        Dest = dest,
+        Date = date,
+        Price = flights$price[min_price_idx],
+        stringsAsFactors = FALSE
+      )
+    }
+  }
+
+  # Combine results
+  if (length(results_list) == 0) {
+    return(data.frame(
+      City = character(),
+      Airport = character(),
+      Dest = character(),
+      Date = character(),
+      Price = numeric(),
+      stringsAsFactors = FALSE
+    ))
+  }
+
+  results <- do.call(rbind, results_list)
+
+  # Add Comment column if it exists in routes
+  if ("Comment" %in% names(routes)) {
+    results$Comment <- routes$Comment[match(
+      results$Airport,
+      routes$Airport
+    )]
+  }
+
+  if (verbose) {
+    cat(sprintf("[OK] Processed %d route-date combinations\n", nrow(results)))
+  }
+
+  return(results)
 }
 
 #' Create Flexible Date Summary Table
