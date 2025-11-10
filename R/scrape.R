@@ -712,12 +712,13 @@ clean_results <- function(result, date, verbose = TRUE) {
 
   # Find flight time markers (entries ending with AM or PM, or with + offset)
   # These are more stable than UI text markers
+  # Support both uppercase (AM/PM) and lowercase (am/pm) formats
   is_time_marker <- function(x) {
     if (nchar(x) <= 2) {
       return(FALSE)
     }
     has_colon <- grepl(":", x)
-    ends_ampm <- grepl("(AM|PM)$", x)
+    ends_ampm <- grepl("(AM|PM|am|pm)$", x)
     has_plus <- substr(x, nchar(x) - 1, nchar(x) - 1) == "+"
     return(has_colon && (ends_ampm || has_plus))
   }

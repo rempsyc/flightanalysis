@@ -72,3 +72,30 @@ test_that("Flight with both times and new CO2e format", {
   expect_false(is.null(flight$time_leave))
   expect_false(is.null(flight$time_arrive))
 })
+
+test_that("Flight parses lowercase am/pm times", {
+  flight <- Flight(
+    "2025-07-20",
+    "JFKIST",
+    "9:00am",
+    "5:00pm",
+    "Turkish Airlines"
+  )
+  
+  expect_false(is.null(flight$time_leave))
+  expect_false(is.null(flight$time_arrive))
+  expect_equal(format(flight$time_leave, "%H:%M"), "09:00")
+  expect_equal(format(flight$time_arrive, "%H:%M"), "17:00")
+})
+
+test_that("Flight parses mixed case Am/Pm times", {
+  flight <- Flight(
+    "2025-07-20",
+    "JFKIST",
+    "9:00Am",
+    "5:00Pm"
+  )
+  
+  expect_false(is.null(flight$time_leave))
+  expect_false(is.null(flight$time_arrive))
+})
