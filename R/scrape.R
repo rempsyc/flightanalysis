@@ -737,10 +737,21 @@ clean_results <- function(result, date, verbose = TRUE) {
 
   if (verbose) {
     cat(sprintf("  Found %d potential flight time markers\n", length(matches)))
+    # Debug: Show what the time markers actually are
+    if (length(matches) > 0 && length(matches) <= 30) {
+      cat(sprintf("  Time markers at indices: %s\n", paste(matches, collapse=", ")))
+      cat(sprintf("  Time marker values: %s\n", paste(res2[head(matches, 10)], collapse=", ")))
+    }
   }
 
   # Take every other match (departure times, not arrival times shown separately)
   matches <- matches[seq(1, length(matches), by = 2)]
+  
+  if (verbose && length(matches) > 0) {
+    cat(sprintf("  After filtering: %d markers (indices: %s)\n", 
+                length(matches), 
+                paste(head(matches, 5), collapse=", ")))
+  }
 
   if (length(matches) <= 1) {
     if (verbose) {
@@ -756,6 +767,14 @@ clean_results <- function(result, date, verbose = TRUE) {
     start <- matches[i]
     end <- matches[i + 1] - 1
     flight_data <- res2[start:end]
+
+    # Debug: Show first few elements of flight data and check for times
+    if (verbose && i <= 3) {
+      has_times <- any(grepl("(AM|PM|am|pm)$", flight_data) & grepl(":", flight_data))
+      cat(sprintf("  Flight %d data (range %d-%d, %d elements, has_times=%s): %s...\n", 
+                  i, start, end, length(flight_data), has_times,
+                  paste(head(flight_data, 3), collapse=" | ")))
+    }
 
     tryCatch(
       {
