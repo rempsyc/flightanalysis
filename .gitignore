@@ -21,3 +21,4 @@ src/google_flight_analysis/dev.py
 man/*.Rd
 flightanalysis_1.0.0.tar.gz
 README.html
+docs

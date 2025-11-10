@@ -18,5 +18,5 @@ Suggests:
     chromote,
     progress,
     RSQLite
-URL: https://github.com/rempsyc/flightanalysis
+URL: https://github.com/rempsyc/flightanalysis, https://rempsyc.github.io/flightanalysis/
 BugReports: https://github.com/rempsyc/flightanalysis/issues

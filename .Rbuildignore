@@ -16,3 +16,7 @@
 ^README\.Rmd$
 ^tests/test_data/\.access$
 ^LICENSE\.md$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$
