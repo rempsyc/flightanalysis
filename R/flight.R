@@ -59,8 +59,8 @@ parse_args <- function(flight, args) {
 #' Safe integer conversion that returns NA without warnings
 #'
 #' @description
-#' Safely converts a character string to an integer by validating the input 
-#' format before conversion. Returns NA_integer_ for invalid inputs without 
+#' Safely converts a character string to an integer by validating the input
+#' format before conversion. Returns NA_integer_ for invalid inputs without
 #' generating warnings, unlike the base as.integer() function.
 #'
 #' @param x Character string to convert to integer
@@ -208,7 +208,6 @@ classify_arg <- function(flight, arg) {
 #' Print method for Flight objects
 #' @param x A Flight object
 #' @param ... Additional arguments (ignored)
-#' @export
 print.Flight <- function(x, ...) {
   cat(sprintf("Flight(id:%d, %s-->%s on %s)\n", x$id, x$origin, x$dest, x$date))
   invisible(x)

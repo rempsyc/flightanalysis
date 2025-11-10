@@ -13,8 +13,8 @@ safe_as_integer(x)
 An integer value, or NA_integer_ if the input cannot be safely converted
 }
 \description{
-Safely converts a character string to an integer by validating the input 
-format before conversion. Returns NA_integer_ for invalid inputs without 
+Safely converts a character string to an integer by validating the input
+format before conversion. Returns NA_integer_ for invalid inputs without
 generating warnings, unlike the base as.integer() function.
 }
 \keyword{internal}
