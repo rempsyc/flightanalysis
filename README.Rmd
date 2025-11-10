@@ -11,7 +11,6 @@ An R package for analyzing, forecasting, and collecting flight data and prices f
 Current features include:
 
 - Detailed scraping and querying tools for Google Flights
-- Ability to store data locally or to SQL tables
 - Base analytical tools/methods for price forecasting/summary
 - Support for multiple trip types: one-way, round-trip, chain-trip, and perfect-chain
 
