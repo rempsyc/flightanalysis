@@ -235,7 +235,7 @@ R -e "source('R/scrape.R'); s <- Scrape('JFK', 'IST', '2023-07-20'); print(s)"
 1. **Use the package**: Source the R files or install via devtools
 2. **Run examples**: Check `examples/basic_usage.R` for usage patterns
 3. **Read documentation**: See `README_R.md` for detailed docs
-4. **Optional**: Set up RSelenium for live web scraping
+4. **Optional**: Set up chromote for live web scraping
 
 ## Conclusion
 
