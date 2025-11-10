@@ -307,16 +307,26 @@ routes <- tribble(
 # Define date range
 dates <- seq(as.Date("2025-12-18"), as.Date("2026-01-05"), by = "day")
 
-# Scrape cheapest flights per day across all routes and dates
-# This creates a chain-trip Scrape object and uses ScrapeObjects() internally
-results <- fa_scrape_best_oneway(
-  routes = routes,
-  dates = dates,
-  keep_offers = FALSE,  # Only keep cheapest per day
-  verbose = TRUE
+# Step 1: Create Scrape object for all routes and dates
+scrape <- fa_create_date_range_scrape(
+  origin = routes$Airport,  # c("BOM", "DEL", "VNS", "PAT", "GAY")
+  dest = "JFK",
+  date_min = min(dates),
+  date_max = max(dates)
 )
 
+# Step 2: Scrape using existing ScrapeObjects function
+scrape <- ScrapeObjects(scrape, verbose = TRUE)
+
+# Step 3: Filter placeholder rows
+scrape$data <- filter_placeholder_rows(scrape$data)
+
+# Step 4: Process and analyze results
+# Extract date and format data as needed
+scrape$data$Date <- as.character(as.Date(scrape$data$departure_datetime))
+
 # Create wide summary table (City × Date with Average Price)
+# Note: You may need to add City information by matching Airport codes
 summary_table <- fa_flex_table(results)
 print(summary_table)
 
@@ -327,27 +337,29 @@ print(best_dates)
 
 **Key Features:**
 - **Efficient batching**: Creates a single chain-trip Scrape object, reducing browser initialization overhead
-- **Two-step workflow**: (1) Create Scrape object with `fa_create_date_range_scrape()`, (2) Scrape with `ScrapeObjects()`, (3) Analyze with filter functions
-- Search multiple airports and dates in one function call
-- Automatically filters out placeholder rows ("Price graph", "Price unavailable")
+- **Simple two-step workflow**: (1) Create Scrape object with `fa_create_date_range_scrape()`, (2) Scrape with `ScrapeObjects()`
+- Search multiple origin airports and dates in one batch
+- Automatically leverages existing chain-trip functionality
+- Filter functions available for cleaning and analyzing results
 - Create wide summary tables for easy price comparison
 - Identify cheapest travel dates automatically
 - Optional currency formatting with the `scales` package
 
-**Advanced Usage:**
+**Basic Workflow:**
 ```r
-# For more control, create Scrape object separately
+# Step 1: Create Scrape object (no scraping yet)
 scrape <- fa_create_date_range_scrape(
-  airports = c("BOM", "DEL", "VNS"),
+  origin = c("BOM", "DEL", "VNS"),
   dest = "JFK",
   date_min = "2025-12-18",
   date_max = "2026-01-05"
 )
 
-# Then scrape when ready
+# Step 2: Scrape when ready
 scrape <- ScrapeObjects(scrape, verbose = TRUE)
 
-# Filter and analyze the results
+# Step 3: Filter and analyze
+scrape$data <- filter_placeholder_rows(scrape$data)
 results <- scrape$data
 # ... apply custom filters or use fa_flex_table(), fa_best_dates()
 ```

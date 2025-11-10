@@ -128,7 +128,7 @@ test_that("fa_best_dates works with different aggregation methods", {
 test_that("fa_create_date_range_scrape creates valid Scrape object", {
   # Create Scrape object
   scrape <- fa_create_date_range_scrape(
-    airports = c("BOM", "DEL"),
+    origin = c("BOM", "DEL"),
     dest = "JFK",
     date_min = "2025-12-18",
     date_max = "2025-12-20"
@@ -148,15 +148,28 @@ test_that("fa_create_date_range_scrape creates valid Scrape object", {
   # All destinations should be JFK
   expect_true(all(unlist(scrape$dest) == "JFK"))
 
-  # Origins should alternate between BOM and DEL
+  # Origins should be BOM and DEL
   expect_true(all(unlist(scrape$origin) %in% c("BOM", "DEL")))
+  
+  # Dates should be in increasing order for each origin
+  # BOM entries should come first, then DEL entries
+  origins <- unlist(scrape$origin)
+  dates <- unlist(scrape$date)
+  
+  # Check BOM dates are increasing
+  bom_dates <- dates[origins == "BOM"]
+  expect_true(all(bom_dates == sort(bom_dates)))
+  
+  # Check DEL dates are increasing
+  del_dates <- dates[origins == "DEL"]
+  expect_true(all(del_dates == sort(del_dates)))
 })
 
 test_that("fa_create_date_range_scrape validates inputs", {
   # Invalid airport code
   expect_error(
     fa_create_date_range_scrape(
-      airports = c("BO"),
+      origin = c("BO"),
       dest = "JFK",
       date_min = "2025-12-18",
       date_max = "2025-12-20"
@@ -167,30 +180,11 @@ test_that("fa_create_date_range_scrape validates inputs", {
   # Invalid date order
   expect_error(
     fa_create_date_range_scrape(
-      airports = "BOM",
+      origin = "BOM",
       dest = "JFK",
       date_min = "2025-12-20",
       date_max = "2025-12-18"
     ),
     "date_min must be before or equal to date_max"
-  )
-})
-
-test_that("fa_scrape_best_oneway validates inputs", {
-  # Missing required columns
-  bad_routes <- data.frame(
-    City = "Mumbai",
-    Airport = "BOM"
-  )
-
-  expect_error(
-    fa_scrape_best_oneway(bad_routes, "2025-12-18"),
-    "routes must contain columns"
-  )
-
-  # Not a data frame
-  expect_error(
-    fa_scrape_best_oneway(list(), "2025-12-18"),
-    "routes must be a data frame"
   )
 })

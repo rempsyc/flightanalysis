@@ -32,27 +32,25 @@ if (requireNamespace("tibble", quietly = TRUE)) {
 # Define date range
 dates <- seq(as.Date("2025-12-18"), as.Date("2026-01-05"), by = "day")
 
-# Example 1: Scrape cheapest flights per day
+# Example 1: Scrape flights across multiple routes and dates
 # Note: This will take time to run as it scrapes live data
 # Uncomment the following lines to run the actual scraping
 
-# Method 1: Use convenience function (creates Scrape object and scrapes)
-# results <- fa_scrape_best_oneway(
-#   routes = routes,
-#   dates = dates,
-#   keep_offers = FALSE,  # Only keep cheapest per day
-#   verbose = TRUE
-# )
-
-# Method 2: Create Scrape object separately for more control
+# Step 1: Create Scrape object with all route-date combinations
 # scrape <- fa_create_date_range_scrape(
-#   airports = routes$Airport,
+#   origin = routes$Airport,
 #   dest = "JFK",
 #   date_min = min(dates),
 #   date_max = max(dates)
 # )
+# 
+# # Step 2: Scrape using existing ScrapeObjects function
 # scrape <- ScrapeObjects(scrape, verbose = TRUE)
-# # Then process results with fa_flex_table(), fa_best_dates(), etc.
+# 
+# # Step 3: Filter placeholder rows
+# scrape$data <- filter_placeholder_rows(scrape$data)
+# 
+# # Process results as needed for fa_flex_table() and fa_best_dates()
 
 # For demonstration purposes, create mock results
 set.seed(123)

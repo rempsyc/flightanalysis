@@ -3,16 +3,10 @@
 ## New Features
 
 * Added `fa_create_date_range_scrape()` function for creating flexible date range Scrape objects. This function:
-  - Creates a chain-trip Scrape object from multiple airports and date range
+  - Creates a chain-trip Scrape object from multiple origin airports and date range
   - Generates all permutations without scraping (use with `ScrapeObjects()`)
   - Reduces browser initialization overhead by batching all queries
-
-* Added `fa_scrape_best_oneway()` function for scraping cheapest flights across multiple dates and airports. This function:
-  - Uses `fa_create_date_range_scrape()` to create batch Scrape object
-  - Calls `ScrapeObjects()` to scrape all queries in one browser session
-  - Returns only the cheapest offer per day (or all offers with `keep_offers=TRUE`)
-  - Filters out placeholder rows like "Price graph" and "Price unavailable"
-  - Supports verbose progress reporting
+  - Parameter `origin` (not `airports`) for consistency with original Python package
 
 * Added `fa_flex_table()` function for creating wide summary tables. This function:
   - Reshapes results into City × Date format
