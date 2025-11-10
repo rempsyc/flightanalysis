@@ -16,7 +16,7 @@
 #' @section Main Functions:
 #' \describe{
 #'   \item{\code{\link{Scrape}}}{Create a flight query object}
-#'   \item{\code{\link{ScrapeObjects}}}{Execute flight queries (requires RSelenium)}
+#'   \item{\code{\link{ScrapeObjects}}}{Execute flight queries (requires chromote)}
 #'   \item{\code{\link{Flight}}}{Create a flight data object}
 #'   \item{\code{\link{CacheControl}}}{Cache flight data to disk or database}
 #' }
