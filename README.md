@@ -12,6 +12,9 @@ An R package for analyzing, forecasting, and collecting flight data and prices f
 - Ability to store data locally or to SQL tables
 - Support for multiple trip types: one-way, round-trip, chain-trip, and perfect-chain
 - Driver-free web scraping using Chrome DevTools Protocol
+- **NEW:** Flexible date search across multiple airports and date ranges
+- **NEW:** Summary tables showing prices by city and date with average calculations
+- **NEW:** Automatic identification of cheapest travel dates
 
 ## Installation
 
@@ -74,6 +77,53 @@ print(scrape$data)
 ```
 
 For more examples and detailed documentation, see [README.Rmd](README.Rmd).
+
+## Flexible Date Search (NEW!)
+
+The package now supports flexible date search across multiple airports and dates, making it easy to find the cheapest flights when you have flexibility in your travel plans.
+
+```r
+library(flightanalysis)
+library(tibble)  # optional, for better data frame display
+
+# Define routes to search
+routes <- tribble(
+  ~City,      ~Airport, ~Dest, ~Comment,
+  "Mumbai",   "BOM",    "JFK", "Original flight",
+  "Delhi",    "DEL",    "JFK", "",
+  "Varanasi", "VNS",    "JFK", "",
+  "Patna",    "PAT",    "JFK", "",
+  "Gaya",     "GAY",    "JFK", ""
+)
+
+# Define date range
+dates <- seq(as.Date("2025-12-18"), as.Date("2026-01-05"), by = "day")
+
+# Scrape cheapest flights per day across all routes and dates
+results <- fa_scrape_best_oneway(
+  routes = routes,
+  dates = dates,
+  keep_offers = FALSE,  # Only keep cheapest per day
+  pause = 3,            # Wait 3 seconds between requests
+  verbose = TRUE
+)
+
+# Create wide summary table (City × Date with Average Price)
+summary_table <- fa_flex_table(results)
+print(summary_table)
+
+# Find the top 10 cheapest dates
+best_dates <- fa_best_dates(results, n = 10, by = "mean")
+print(best_dates)
+```
+
+**Key Features:**
+- Search multiple airports and dates in one function call
+- Automatically filters out placeholder rows ("Price graph", "Price unavailable")
+- Create wide summary tables for easy price comparison
+- Identify cheapest travel dates automatically
+- Built-in rate limiting to be respectful of Google Flights
+- Optional currency formatting with the `scales` package
 
 ## Updates & New Features
 

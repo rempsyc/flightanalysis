@@ -20,6 +20,8 @@ Suggests:
     testthat (>= 3.0.0),
     chromote,
     progress,
-    RSQLite
+    RSQLite,
+    scales,
+    tibble
 URL: https://github.com/rempsyc/flightanalysis, https://rempsyc.github.io/flightanalysis/
 BugReports: https://github.com/rempsyc/flightanalysis/issues
