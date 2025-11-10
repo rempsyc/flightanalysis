@@ -24,7 +24,7 @@ You can install the development version of flightanalysis from GitHub:
 install.packages("devtools")
 
 # Install flightanalysis
-devtools::install_github("rempsyc/flight-analysis")
+devtools::install_github("rempsyc/flightanalysis")
 ```
 
 ## Usage

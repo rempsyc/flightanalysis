@@ -129,7 +129,7 @@ source('R/scrape.R')
 source('R/cache.R')
 
 # Option 2: Install from GitHub (requires devtools)
-devtools::install_github("rempsyc/flight-analysis")
+devtools::install_github("rempsyc/flightanalysis")
 ```
 
 ### Basic Usage
