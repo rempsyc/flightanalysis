@@ -73,3 +73,42 @@ test_that("Print method works for Flight", {
   expect_output(print(flight), "Flight")
   expect_output(print(flight), "JFK-->IST")
 })
+
+test_that("Flight parses without coercion warnings", {
+  # Test that parsing various flight data doesn't produce warnings about NAs
+  # Using expect_silent which fails if there are any warnings
+  expect_silent({
+    flight <- Flight(
+      "2025-07-20",
+      "JFKIST",
+      "9:00AM",
+      "5:00PM",
+      "8 hr 0 min",
+      "Nonstop",
+      "150 kg CO2",
+      "10% emissions",
+      "$450",
+      "Some airline text",
+      "Random garbage",
+      "More text"
+    )
+  })
+})
+
+test_that("Flight parses invalid numeric data without coercion warnings", {
+  # Test that invalid data that can't be coerced doesn't produce warnings
+  # The suppressWarnings in classify_arg should prevent "NAs introduced by coercion"
+  expect_silent({
+    flight <- Flight(
+      "2025-07-20",
+      "JFKIST",
+      "Invalid price $ABC",
+      "XYZ kg CO2",
+      "??% emissions"
+    )
+  })
+  
+  # Values should be NA when invalid
+  flight2 <- Flight("2025-07-20", "JFKIST", "$ABC")
+  expect_true(is.na(flight2$price) || is.null(flight2$price))
+})
