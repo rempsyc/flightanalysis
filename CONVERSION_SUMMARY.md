@@ -201,7 +201,7 @@ Success rate: 100.0%
 ✅ Print methods  
 ✅ Complete test coverage  
 ✅ Example scripts  
-✅ **Full web scraping with RSelenium**  
+✅ **Full web scraping with chromote**  
 ✅ **Automatic browser driver setup**  
 ✅ **Headless mode support**  
 
