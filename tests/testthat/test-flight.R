@@ -97,7 +97,7 @@ test_that("Flight parses without coercion warnings", {
 
 test_that("Flight parses invalid numeric data without coercion warnings", {
   # Test that invalid data that can't be coerced doesn't produce warnings
-  # The suppressWarnings in classify_arg should prevent "NAs introduced by coercion"
+  # The safe_as_integer helper validates input before conversion
   expect_silent({
     flight <- Flight(
       "2025-07-20",

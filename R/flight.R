@@ -56,6 +56,21 @@ parse_args <- function(flight, args) {
   return(flight)
 }
 
+#' Safe integer conversion that returns NA without warnings
+#'
+#' @param x Character string to convert to integer
+#' @keywords internal
+safe_as_integer <- function(x) {
+  # Check if the string contains only digits, commas, and optional leading/trailing spaces
+  if (is.na(x) || !grepl("^\\s*[0-9,]+\\s*$", x)) {
+    return(NA_integer_)
+  }
+  # Remove commas and convert
+  result <- as.integer(gsub(",", "", trimws(x)))
+  # Return NA if conversion failed, otherwise return the result
+  if (is.na(result)) NA_integer_ else result
+}
+
 #' Classify Flight Argument
 #'
 #' @param flight Flight object being constructed
@@ -113,22 +128,22 @@ classify_arg <- function(flight, arg) {
     flight$num_stops <- if (arg == "Nonstop") {
       0
     } else {
-      suppressWarnings(as.integer(strsplit(arg, " ")[[1]][1]))
+      safe_as_integer(strsplit(arg, " ")[[1]][1])
     }
   } else if (grepl("kg CO2e?$", arg) && is.null(flight$co2)) {
     # Check for CO2 (matches both "kg CO2" and "kg CO2e")
-    flight$co2 <- suppressWarnings(as.integer(strsplit(arg, " ")[[1]][1]))
+    flight$co2 <- safe_as_integer(strsplit(arg, " ")[[1]][1])
   } else if (grepl("emissions$", arg) && is.null(flight$emissions)) {
     # Check for emissions
     emission_val <- strsplit(arg, " ")[[1]][1]
     flight$emissions <- if (emission_val == "Avg") {
       0
     } else {
-      suppressWarnings(as.integer(gsub("%", "", emission_val)))
+      safe_as_integer(gsub("%", "", emission_val))
     }
   } else if (grepl("\\$", arg) && is.null(flight$price)) {
     # Check for price with dollar sign
-    flight$price <- suppressWarnings(as.integer(gsub("[\\$,]", "", arg)))
+    flight$price <- safe_as_integer(gsub("[\\$,]", "", arg))
   } else if (
     grepl("^[0-9,]+$", arg) &&
       is.null(flight$price) &&
@@ -136,7 +151,7 @@ classify_arg <- function(flight, arg) {
   ) {
     # Check for price without dollar sign (but only if flight time already parsed)
     # This helps ensure we're getting the price field, not some other number
-    flight$price <- suppressWarnings(as.integer(gsub(",", "", arg)))
+    flight$price <- safe_as_integer(arg)
   } else if (
     nchar(arg) == 6 &&
       arg == toupper(arg) &&
