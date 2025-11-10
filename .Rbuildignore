@@ -20,3 +20,4 @@
 ^docs$
 ^pkgdown$
 ^\.github$
+^flightanalysis\.Rproj$
