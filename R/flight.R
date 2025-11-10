@@ -161,12 +161,17 @@ classify_arg <- function(flight, arg) {
     nchar(arg) > 0 &&
       arg != "Separate tickets booked together" &&
       arg != "Change of airport" &&
-      !grepl("CO2e?", arg) &&
-      !grepl("trees? absorb", arg) &&
-      !grepl("Other flights?", arg) &&
-      !grepl("Avoids", arg)
+      !grepl("CO2e?", arg, ignore.case = TRUE) &&
+      !grepl("carbon", arg, ignore.case = TRUE) &&
+      !grepl("emission", arg, ignore.case = TRUE) &&
+      !grepl("tree", arg, ignore.case = TRUE) &&
+      !grepl("absorb", arg, ignore.case = TRUE) &&
+      !grepl("Other flight", arg, ignore.case = TRUE) &&
+      !grepl("Avoid", arg, ignore.case = TRUE) &&
+      !grepl("kg ", arg) &&
+      !grepl("typical for this route", arg, ignore.case = TRUE)
   ) {
-    # Check for airline (but filter out CO2-related text and "Other flights")
+    # Check for airline (but filter out CO2-related text and environmental messages)
     val <- strsplit(arg, ",")[[1]]
     val <- sapply(val, function(elem) strsplit(elem, "Operated")[[1]][1])
     flight$airline <- paste(val, collapse = ",")
