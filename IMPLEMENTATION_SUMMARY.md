@@ -18,9 +18,29 @@ Users needed the ability to:
 
 ## Solution
 
-Three new exported functions were added to provide an intuitive workflow:
+**Note:** The implementation was refactored based on user feedback. See `REFACTORING_SUMMARY.md` for details on the architectural changes.
 
-### 1. `fa_scrape_best_oneway(routes, dates, ...)`
+Four new exported functions were added to provide an intuitive workflow:
+
+### 1. `fa_create_date_range_scrape(airports, dest, date_min, date_max)`
+
+**Purpose**: Helper function to create chain-trip Scrape object with flexible parameters
+
+**Parameters**:
+- `airports`: Character vector of 3-letter airport codes
+- `dest`: Character, single 3-letter destination code
+- `date_min`: Start date (Date or character in "YYYY-MM-DD")
+- `date_max`: End date (Date or character in "YYYY-MM-DD")
+
+**Features**:
+- Generates all airport × date combinations
+- Creates chain-trip Scrape object WITHOUT scraping
+- Returns Scrape object ready to pass to `ScrapeObjects()`
+- Leverages existing chain-trip functionality
+
+**Returns**: Scrape object of type "chain-trip"
+
+### 2. `fa_scrape_best_oneway(routes, dates, ...)`
 
 **Purpose**: Main scraping function for multiple routes and dates
 
@@ -28,22 +48,19 @@ Three new exported functions were added to provide an intuitive workflow:
 - `routes`: Data frame with columns City, Airport, Dest (+ optional Comment)
 - `dates`: Vector of dates (Date objects or character strings)
 - `keep_offers`: Logical, store all offers or only cheapest (default: FALSE)
-- `pause`: Rate limiting delay in seconds (default: 2)
 - `headless`: Run browser in headless mode (default: TRUE)
 - `verbose`: Show progress information (default: TRUE)
-- `currency_format`: Format prices with currency (default: FALSE)
 
 **Features**:
-- Creates all route × date combinations automatically
-- Initializes browser once for efficiency
+- Uses `fa_create_date_range_scrape()` to create batch Scrape object
+- Calls `ScrapeObjects()` to scrape all queries in one browser session
 - Filters placeholder rows automatically
-- Handles errors gracefully (continues on failure)
-- Built-in rate limiting
+- Processes results into user-friendly format
 - Comprehensive error messages
 
 **Returns**: Data frame with columns: City, Airport, Dest, Date, Price, and optionally Comment and Offers
 
-### 2. `fa_flex_table(results, ...)`
+### 3. `fa_flex_table(results, ...)`
 
 **Purpose**: Create wide summary table for easy comparison
 
@@ -62,7 +79,7 @@ Three new exported functions were added to provide an intuitive workflow:
 
 **Returns**: Wide data frame with City, Airport, [Comment], date columns, and Average_Price
 
-### 3. `fa_best_dates(results, n, by)`
+### 4. `fa_best_dates(results, n, by)`
 
 **Purpose**: Identify cheapest travel dates
 
@@ -91,20 +108,31 @@ Removes placeholder entries from scraped data:
 
 Case-insensitive matching for robustness.
 
+### `process_scrape_results(scrape_data, routes, keep_offers, verbose)`
+
+Processes raw scraped data into user-friendly format:
+- Extracts dates from departure_datetime
+- Maps airport codes to city names
+- Groups by airport-date combinations
+- Extracts cheapest price or stores all offers
+- Formats into expected data structure
+
 ## File Changes
 
 ### New Files
 
-1. **R/flex_search.R** (490 lines)
+1. **R/flex_search.R** (470 lines)
    - All new functions with comprehensive roxygen2 documentation
-   - Internal helper function for filtering
+   - Internal helper functions for filtering and processing
+   - Refactored to use chain-trip approach
 
-2. **tests/testthat/test-flex_search.R** (145 lines)
-   - 7 test cases covering:
+2. **tests/testthat/test-flex_search.R** (165 lines)
+   - 9 test cases covering:
      - Placeholder filtering
      - Wide table creation
      - Best date identification
      - Different aggregation methods
+     - Helper function validation
      - Input validation
      - Edge cases
 
@@ -133,7 +161,7 @@ Case-insensitive matching for robustness.
    - Added `scales` and `tibble` to Suggests
 
 2. **NAMESPACE**
-   - Exported 3 new functions
+   - Exported 4 new functions (added fa_create_date_range_scrape)
 
 3. **R/flightanalysis-package.R**
    - Updated package documentation
@@ -142,13 +170,19 @@ Case-insensitive matching for robustness.
 4. **README.md**
    - Added "Flexible Date Search (NEW!)" section
    - Updated features list
-   - Added comprehensive example
+   - Added examples for both convenience and separated workflows
    - Updated release notes
+
+5. **REFACTORING_SUMMARY.md** (new file)
+   - Detailed explanation of architectural changes
+   - Comparison of before/after approaches
+   - Migration guide for users
 
 ## Design Decisions
 
 ### Why These Function Names?
 
+- `fa_create_date_range_scrape()`: Clear purpose - creates Scrape object for date range
 - `fa_scrape_best_oneway()`: Clear that it's flight analysis (fa_), scrapes data, finds best prices, one-way trips
 - `fa_flex_table()`: Indicates flexible date table output
 - `fa_best_dates()`: Simple, self-explanatory
@@ -159,11 +193,12 @@ Case-insensitive matching for robustness.
 - Package can work without tidyverse
 - More portable and lighter weight
 
-### Why Initialize Browser Once?
+### Why Use Chain-Trip Approach?
 
-- Significant performance improvement (avoid repeated browser startup)
-- More efficient resource usage
-- Faster execution for large datasets
+- Leverages existing tested functionality (no duplicate code)
+- Single browser session for all queries (more efficient)
+- Separates query definition from scraping (better design)
+- Allows users to inspect/modify Scrape object before scraping
 
 ### Why Filter Placeholders Automatically?
 
