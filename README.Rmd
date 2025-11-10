@@ -19,9 +19,9 @@ Current features include:
 
 You can install the development version of flightanalysis from GitHub:
 
-```r
+```{r}
 # Install devtools if you haven't already
-install.packages("devtools")
+# install.packages("devtools")
 
 # Install flightanalysis
 devtools::install_github("rempsyc/flightanalysis")
@@ -31,7 +31,7 @@ devtools::install_github("rempsyc/flightanalysis")
 
 ### Loading the Package
 
-```r
+```{r}
 library(flightanalysis)
 ```
 
@@ -41,47 +41,43 @@ The main scraping function that makes up the backbone of most functionalities is
 
 #### One-Way Trip
 
-```r
+```{r}
 # Create a one-way flight query
 scrape <- Scrape("JFK", "IST", "2025-07-20")
-print(scrape)
+scrape
 ```
 
 #### Round-Trip
 
-```r
+```{r}
 # Create a round-trip flight query
 scrape <- Scrape("JFK", "IST", "2025-07-20", "2025-08-20")
-print(scrape)
+scrape
 ```
 
 #### Chain-Trip
 
 Chain-trips are defined as a sequence of one-way flights that have no direct relation to each other, other than being in chronological order.
 
-```r
+```{r}
 # Chain-trip format: origin, dest, date, origin, dest, date, ...
 scrape <- Scrape("JFK", "IST", "2025-08-20", "RDU", "LGA", "2025-12-25", "EWR", "SFO", "2026-01-20")
-print(scrape)
+scrape
 ```
 
 #### Perfect-Chain
 
 Perfect-chains are defined as a sequence of one-way flights such that the destination of the previous flight is the origin of the next, and the origin of the chain is the final destination (a cycle).
 
-```r
+```{r}
 # Perfect-chain format: origin, date, origin, date, ..., first_origin
 scrape <- Scrape("JFK", "2025-09-20", "IST", "2025-09-25", "CDG", "2025-10-10", "LHR", "2025-11-01", "JFK")
-print(scrape)
+scrape
 ```
 
 ### Scraping Data
 
-The package now includes full web scraping functionality using **chromote**! First, install the required packages:
-
-```r
-install.packages(c("chromote", "progress"))
-```
+The package now includes full web scraping functionality using **chromote**!
 
 **Why chromote?**
 - ✅ No external driver files needed (uses Chrome DevTools Protocol directly)
@@ -92,15 +88,14 @@ install.packages(c("chromote", "progress"))
 
 Then scrape flight data from Google Flights:
 
-```r
+```{r}
 # Create a query
-scrape <- Scrape("JFK", "IST", "2026-07-20", "2026-08-20")
+scrape <- Scrape("JFK", "IST", "2025-12-20", "2026-01-05")
 
 # Scrape the data (runs in headless mode by default)
-ScrapeObjects(scrape)
+scrape <- ScrapeObjects(scrape)
 
 # View the scraped data
-print(scrape$data)
 head(scrape$data)
 ```
 
@@ -123,7 +118,7 @@ chromote eliminates common RSelenium issues:
 
 ### Working with Flight Objects
 
-```r
+```{r}
 # Create a Flight object
 flight <- Flight("2025-12-25", "JFKIST", "9:00AM", "5:00PM", 
                  "8 hr 0 min", "Nonstop", "150 kg CO2", "10% emissions", "$450")
@@ -137,7 +132,7 @@ df <- flights_to_dataframe(flights)
 
 Store flight data locally or in a SQLite database:
 
-```r
+```{r}
 # Cache to CSV files
 CacheControl("./cache/", scrape, use_db = FALSE)
 

@@ -264,8 +264,8 @@ print.Scrape <- function(x, ...) {
 #' @examples
 #' \dontrun{
 #' scrape <- Scrape("JFK", "IST", "2025-12-20", "2025-12-25")
-#' scrape <- ScrapeObjects(scrape)  # Capture the return value!
-#' print(scrape$data)
+#' scrape <- ScrapeObjects(scrape)
+#' scrape$data
 #' }
 ScrapeObjects <- function(
   objs,
