@@ -161,7 +161,7 @@ classify_arg <- function(flight, arg) {
       !grepl("emission", arg, ignore.case = TRUE) &&
       !grepl("tree", arg, ignore.case = TRUE) &&
       !grepl("absorb", arg, ignore.case = TRUE) &&
-      !grepl("Other flight", arg, ignore.case = TRUE) &&
+      !grepl("Other flights?", arg, ignore.case = TRUE) &&
       !grepl("Avoid", arg, ignore.case = TRUE) &&
       !grepl("kg ", arg) &&
       !grepl("typical for this route", arg, ignore.case = TRUE)
