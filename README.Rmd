@@ -1,3 +1,8 @@
+---
+output: 
+  github_document
+---
+
 # Flight Analysis - R Package
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -129,6 +134,7 @@ flight3 <- Flight("2025-12-27", "CDGJFK", "11:00AM", "1:00PM",
 # Convert multiple flights to a data frame
 flights <- list(flight1, flight2, flight3)
 df <- flights_to_dataframe(flights)
+df
 ```
 
 
@@ -156,7 +162,7 @@ flightanalysis/
 │       └── test-scrape.R
 ├── DESCRIPTION              # Package metadata
 ├── NAMESPACE               # Package exports
-└── README_R.md             # This file
+└── README.Rmd             # This file
 ```
 
 ## Differences from Python Version

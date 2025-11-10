@@ -56,6 +56,28 @@ parse_args <- function(flight, args) {
   return(flight)
 }
 
+#' Safe integer conversion that returns NA without warnings
+#'
+#' @description
+#' Safely converts a character string to an integer by validating the input 
+#' format before conversion. Returns NA_integer_ for invalid inputs without 
+#' generating warnings, unlike the base as.integer() function.
+#'
+#' @param x Character string to convert to integer
+#' @return An integer value, or NA_integer_ if the input cannot be safely converted
+#' @keywords internal
+safe_as_integer <- function(x) {
+  # Check if the string contains only digits, commas, and optional leading/trailing spaces
+  # Require at least one digit to avoid empty string conversion warnings
+  if (is.na(x) || !grepl("^\\s*[0-9,]*[0-9][0-9,]*\\s*$", x)) {
+    return(NA_integer_)
+  }
+  # Remove commas and convert
+  result <- as.integer(gsub(",", "", trimws(x)))
+  # Return NA if conversion failed, otherwise return the result
+  if (is.na(result)) NA_integer_ else result
+}
+
 #' Classify Flight Argument
 #'
 #' @param flight Flight object being constructed
@@ -63,8 +85,10 @@ parse_args <- function(flight, args) {
 #' @keywords internal
 classify_arg <- function(flight, arg) {
   # Check for arrival or departure time
+  # Support both uppercase (AM/PM) and lowercase (am/pm) formats
   if (
-    (grepl("AM", arg) || grepl("PM", arg)) &&
+    (grepl("AM", arg, ignore.case = TRUE) ||
+      grepl("PM", arg, ignore.case = TRUE)) &&
       length(flight$times) < 2 &&
       grepl(":", arg)
   ) {
@@ -75,9 +99,32 @@ classify_arg <- function(flight, arg) {
     }
 
     datetime_str <- paste(flight$date, arg)
-    parsed_time <- strptime(datetime_str, "%Y-%m-%d %I:%M%p")
-    parsed_time <- as.POSIXct(parsed_time) + (delta_days * 24 * 3600)
-    flight$times <- c(flight$times, list(parsed_time))
+    # Try multiple time format patterns
+    parsed_time <- tryCatch(
+      {
+        # Try uppercase AM/PM first
+        strptime(datetime_str, "%Y-%m-%d %I:%M %p")
+      },
+      error = function(e) NULL
+    )
+
+    # If that fails, try lowercase am/pm
+    if (is.null(parsed_time) || is.na(parsed_time)) {
+      parsed_time <- tryCatch(
+        {
+          # Convert to uppercase for parsing
+          datetime_str_upper <- toupper(datetime_str)
+          strptime(datetime_str_upper, "%Y-%m-%d %I:%M %p")
+        },
+        error = function(e) NULL
+      )
+    }
+
+    # If we successfully parsed a time, add it
+    if (!is.null(parsed_time) && !is.na(parsed_time)) {
+      parsed_time <- as.POSIXct(parsed_time) + (delta_days * 24 * 3600)
+      flight$times <- c(flight$times, list(parsed_time))
+    }
   } else if (
     (grepl("hr", arg) || grepl("min", arg)) && is.null(flight$flight_time)
   ) {
@@ -88,22 +135,30 @@ classify_arg <- function(flight, arg) {
     flight$num_stops <- if (arg == "Nonstop") {
       0
     } else {
-      as.integer(strsplit(arg, " ")[[1]][1])
+      safe_as_integer(strsplit(arg, " ")[[1]][1])
     }
-  } else if (grepl("CO2$", arg) && is.null(flight$co2)) {
-    # Check for CO2
-    flight$co2 <- as.integer(strsplit(arg, " ")[[1]][1])
+  } else if (grepl("kg CO2e?$", arg) && is.null(flight$co2)) {
+    # Check for CO2 (matches both "kg CO2" and "kg CO2e")
+    flight$co2 <- safe_as_integer(strsplit(arg, " ")[[1]][1])
   } else if (grepl("emissions$", arg) && is.null(flight$emissions)) {
     # Check for emissions
     emission_val <- strsplit(arg, " ")[[1]][1]
     flight$emissions <- if (emission_val == "Avg") {
       0
     } else {
-      as.integer(gsub("%", "", emission_val))
+      safe_as_integer(gsub("%", "", emission_val))
     }
   } else if (grepl("\\$", arg) && is.null(flight$price)) {
-    # Check for price
-    flight$price <- as.integer(gsub("[\\$,]", "", arg))
+    # Check for price with dollar sign
+    flight$price <- safe_as_integer(gsub("[\\$,]", "", arg))
+  } else if (
+    grepl("^[0-9,]+$", arg) &&
+      is.null(flight$price) &&
+      !is.null(flight$flight_time)
+  ) {
+    # Check for price without dollar sign (but only if flight time already parsed)
+    # This helps ensure we're getting the price field, not some other number
+    flight$price <- safe_as_integer(arg)
   } else if (
     nchar(arg) == 6 &&
       arg == toupper(arg) &&
@@ -122,9 +177,18 @@ classify_arg <- function(flight, arg) {
   } else if (
     nchar(arg) > 0 &&
       arg != "Separate tickets booked together" &&
-      arg != "Change of airport"
+      arg != "Change of airport" &&
+      !grepl("CO2e?", arg, ignore.case = TRUE) &&
+      !grepl("carbon", arg, ignore.case = TRUE) &&
+      !grepl("emission", arg, ignore.case = TRUE) &&
+      !grepl("tree", arg, ignore.case = TRUE) &&
+      !grepl("absorb", arg, ignore.case = TRUE) &&
+      !grepl("Other flights?", arg, ignore.case = TRUE) &&
+      !grepl("Avoid", arg, ignore.case = TRUE) &&
+      !grepl("kg ", arg) &&
+      !grepl("typical for this route", arg, ignore.case = TRUE)
   ) {
-    # Check for airline
+    # Check for airline (but filter out CO2-related text and environmental messages)
     val <- strsplit(arg, ",")[[1]]
     val <- sapply(val, function(elem) strsplit(elem, "Operated")[[1]][1])
     flight$airline <- paste(val, collapse = ",")
