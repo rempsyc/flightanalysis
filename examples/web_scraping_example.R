@@ -51,7 +51,7 @@ cat("(Pre-flight checks and driver initialization will run automatically)\n\n")
 tryCatch(
   {
     # IMPORTANT: Must capture the return value!
-    scrape_oneway <- ScrapeObjects(scrape_oneway, headless = TRUE)
+    scrape_oneway <- ScrapeObjects(scrape_oneway)
 
     if (nrow(scrape_oneway$data) > 0) {
       cat("\n✓ Successfully scraped", nrow(scrape_oneway$data), "flights!\n\n")
@@ -102,7 +102,6 @@ tryCatch(
     cat("  1. Make sure Chrome/Chromium is installed\n")
     cat("  2. Check your internet connection\n")
     cat("  3. Verify that Google Flights is accessible\n")
-    cat("  4. Try running with headless = FALSE to see what's happening\n")
   }
 )
 
@@ -123,7 +122,7 @@ tryCatch(
   {
     cat("Scraping (this may take a moment for 2 segments)...\n")
     # IMPORTANT: Must capture the return value!
-    scrape_roundtrip <- ScrapeObjects(scrape_roundtrip, headless = TRUE)
+    scrape_roundtrip <- ScrapeObjects(scrape_roundtrip)
 
     if (nrow(scrape_roundtrip$data) > 0) {
       cat(
@@ -160,6 +159,6 @@ cat(
   "  • Use realistic future dates (Google Flights typically shows ~6-12 months ahead)\n"
 )
 cat("  • Be patient - scraping can take 10-30 seconds per flight segment\n")
-cat("  • Use headless = FALSE if you want to watch the scraping process\n")
+cat("  • The browser runs in headless mode (no visible GUI) by default\n")
 cat("  • Save your results using write.csv() or other data export methods\n")
 cat("  • Respect Google's terms of service and rate limits\n")

@@ -4,14 +4,10 @@
 \alias{ScrapeObjects}
 \title{Scrape Flight Objects}
 \usage{
-ScrapeObjects(objs, deep_copy = FALSE, headless = TRUE, verbose = TRUE)
+ScrapeObjects(objs, verbose = TRUE)
 }
 \arguments{
 \item{objs}{A Scrape object or list of Scrape objects}
-
-\item{deep_copy}{Logical. If TRUE, returns a copy of the objects}
-
-\item{headless}{Logical. If TRUE, runs browser in headless mode (no GUI, default)}
 
 \item{verbose}{Logical. If TRUE, shows detailed progress information (default)}
 }
@@ -23,7 +19,8 @@ Modified Scrape object(s) with scraped data. **Important:** You must
 Scrapes flight data from Google Flights using chromote. This function will
 automatically set up a Chrome browser connection, navigate to Google Flights
 URLs, and extract flight information. Uses the Chrome DevTools Protocol for
-reliable, driver-free browser automation.
+reliable, driver-free browser automation. The browser runs in headless mode
+by default (no visible GUI).
 }
 \examples{
 \dontrun{
