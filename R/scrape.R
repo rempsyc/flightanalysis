@@ -214,8 +214,8 @@ make_url <- function(origins, dests, dates) {
   for (i in seq_along(dates)) {
     url <- sprintf(
       "https://www.google.com/travel/flights?hl=en&q=Flights%%20to%%20%s%%20from%%20%s%%20on%%20%s%%20oneway",
-      origins[[i]],
       dests[[i]],
+      origins[[i]],
       dates[[i]]
     )
     urls <- c(urls, url)

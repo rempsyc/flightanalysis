@@ -88,22 +88,22 @@ classify_arg <- function(flight, arg) {
     flight$num_stops <- if (arg == "Nonstop") {
       0
     } else {
-      as.integer(strsplit(arg, " ")[[1]][1])
+      suppressWarnings(as.integer(strsplit(arg, " ")[[1]][1]))
     }
   } else if (grepl("CO2$", arg) && is.null(flight$co2)) {
     # Check for CO2
-    flight$co2 <- as.integer(strsplit(arg, " ")[[1]][1])
+    flight$co2 <- suppressWarnings(as.integer(strsplit(arg, " ")[[1]][1]))
   } else if (grepl("emissions$", arg) && is.null(flight$emissions)) {
     # Check for emissions
     emission_val <- strsplit(arg, " ")[[1]][1]
     flight$emissions <- if (emission_val == "Avg") {
       0
     } else {
-      as.integer(gsub("%", "", emission_val))
+      suppressWarnings(as.integer(gsub("%", "", emission_val)))
     }
   } else if (grepl("\\$", arg) && is.null(flight$price)) {
     # Check for price
-    flight$price <- as.integer(gsub("[\\$,]", "", arg))
+    flight$price <- suppressWarnings(as.integer(gsub("[\\$,]", "", arg)))
   } else if (
     nchar(arg) == 6 &&
       arg == toupper(arg) &&
