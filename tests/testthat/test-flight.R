@@ -107,7 +107,7 @@ test_that("Flight parses invalid numeric data without coercion warnings", {
       "??% emissions"
     )
   })
-  
+
   # Values should be NA when invalid
   flight2 <- Flight("2025-07-20", "JFKIST", "$ABC")
   expect_true(is.na(flight2$price) || is.null(flight2$price))

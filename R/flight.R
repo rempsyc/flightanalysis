@@ -115,8 +115,8 @@ classify_arg <- function(flight, arg) {
     } else {
       suppressWarnings(as.integer(strsplit(arg, " ")[[1]][1]))
     }
-  } else if (grepl("CO2$", arg) && is.null(flight$co2)) {
-    # Check for CO2
+  } else if (grepl("kg CO2e?$", arg) && is.null(flight$co2)) {
+    # Check for CO2 (matches both "kg CO2" and "kg CO2e")
     flight$co2 <- suppressWarnings(as.integer(strsplit(arg, " ")[[1]][1]))
   } else if (grepl("emissions$", arg) && is.null(flight$emissions)) {
     # Check for emissions
@@ -127,7 +127,7 @@ classify_arg <- function(flight, arg) {
       suppressWarnings(as.integer(gsub("%", "", emission_val)))
     }
   } else if (grepl("\\$", arg) && is.null(flight$price)) {
-    # Check for price
+    # Check for price with dollar sign
     flight$price <- suppressWarnings(as.integer(gsub("[\\$,]", "", arg)))
   } else if (
     grepl("^[0-9,]+$", arg) &&
@@ -136,7 +136,7 @@ classify_arg <- function(flight, arg) {
   ) {
     # Check for price without dollar sign (but only if flight time already parsed)
     # This helps ensure we're getting the price field, not some other number
-    flight$price <- as.integer(gsub(",", "", arg))
+    flight$price <- suppressWarnings(as.integer(gsub(",", "", arg)))
   } else if (
     nchar(arg) == 6 &&
       arg == toupper(arg) &&
