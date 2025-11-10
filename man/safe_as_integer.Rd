@@ -9,7 +9,12 @@ safe_as_integer(x)
 \arguments{
 \item{x}{Character string to convert to integer}
 }
+\value{
+An integer value, or NA_integer_ if the input cannot be safely converted
+}
 \description{
-Safe integer conversion that returns NA without warnings
+Safely converts a character string to an integer by validating the input 
+format before conversion. Returns NA_integer_ for invalid inputs without 
+generating warnings, unlike the base as.integer() function.
 }
 \keyword{internal}

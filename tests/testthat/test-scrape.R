@@ -87,31 +87,24 @@ test_that("URL generation has correct origin and destination order", {
 
   # Chain-trip with multiple segments (issue example)
   res2 <- Scrape("VNS", "JFK", "2025-12-20", "PAT", "JFK", "2025-12-25")
+  expect_s3_class(res2, "Scrape")
   expect_equal(res2$type, "chain-trip")
+  expect_equal(length(res2$origin), 2)
+  expect_equal(length(res2$dest), 2)
+  
+  # Verify origin/destination arrays
   expect_equal(unlist(res2$origin), c("VNS", "PAT"))
   expect_equal(unlist(res2$dest), c("JFK", "JFK"))
 
-  # First segment: VNS to JFK
-  expect_true(grepl("Flights%20to%20JFK%20from%20VNS", res2$url[[1]]))
-  # Second segment: PAT to JFK
-  expect_true(grepl("Flights%20to%20JFK%20from%20PAT", res2$url[[2]]))
-})
-
-test_that("Chain-trip respects order of airports", {
-  res <- Scrape("VNS", "JFK", "2025-12-20", "PAT", "JFK", "2025-12-25")
-
-  expect_s3_class(res, "Scrape")
-  expect_equal(res$type, "chain-trip")
-  expect_equal(length(res$origin), 2)
-  expect_equal(length(res$dest), 2)
-
   # First segment: VNS -> JFK on 2025-12-20
-  expect_equal(res$origin[[1]], "VNS")
-  expect_equal(res$dest[[1]], "JFK")
-  expect_equal(res$date[[1]], "2025-12-20")
+  expect_equal(res2$origin[[1]], "VNS")
+  expect_equal(res2$dest[[1]], "JFK")
+  expect_equal(res2$date[[1]], "2025-12-20")
+  expect_true(grepl("Flights%20to%20JFK%20from%20VNS", res2$url[[1]]))
 
   # Second segment: PAT -> JFK on 2025-12-25
-  expect_equal(res$origin[[2]], "PAT")
-  expect_equal(res$dest[[2]], "JFK")
-  expect_equal(res$date[[2]], "2025-12-25")
+  expect_equal(res2$origin[[2]], "PAT")
+  expect_equal(res2$dest[[2]], "JFK")
+  expect_equal(res2$date[[2]], "2025-12-25")
+  expect_true(grepl("Flights%20to%20JFK%20from%20PAT", res2$url[[2]]))
 })

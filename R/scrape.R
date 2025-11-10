@@ -250,11 +250,10 @@ print.Scrape <- function(x, ...) {
 #' Scrapes flight data from Google Flights using chromote. This function will
 #' automatically set up a Chrome browser connection, navigate to Google Flights
 #' URLs, and extract flight information. Uses the Chrome DevTools Protocol for
-#' reliable, driver-free browser automation.
+#' reliable, driver-free browser automation. The browser runs in headless mode
+#' by default (no visible GUI).
 #'
 #' @param objs A Scrape object or list of Scrape objects
-#' @param deep_copy Logical. If TRUE, returns a copy of the objects
-#' @param headless Logical. If TRUE, runs browser in headless mode (no GUI, default)
 #' @param verbose Logical. If TRUE, shows detailed progress information (default)
 #'
 #' @return Modified Scrape object(s) with scraped data. **Important:** You must
@@ -269,8 +268,6 @@ print.Scrape <- function(x, ...) {
 #' }
 ScrapeObjects <- function(
   objs,
-  deep_copy = FALSE,
-  headless = TRUE,
   verbose = TRUE
 ) {
   # Check if chromote is available
@@ -311,7 +308,7 @@ ScrapeObjects <- function(
   tryCatch(
     {
       # Create a Chromote session
-      browser <- initialize_chromote_browser(headless = headless)
+      browser <- initialize_chromote_browser()
 
       if (is.null(browser)) {
         stop(
@@ -381,16 +378,10 @@ ScrapeObjects <- function(
   # If a single Scrape object was passed in, return just that object
   # Otherwise return the list
   if (single_object) {
-    result <- objs[[1]]
+    return(objs[[1]])
   } else {
-    result <- objs
+    return(objs)
   }
-
-  if (deep_copy) {
-    return(result)
-  }
-
-  invisible(result)
 }
 
 #' Check if Chrome/Chromium is installed
@@ -476,11 +467,12 @@ check_internet_connection <- function(verbose = TRUE) {
 
 #' Initialize chromote browser
 #' @keywords internal
-initialize_chromote_browser <- function(headless = TRUE) {
+initialize_chromote_browser <- function() {
   tryCatch(
     {
       # Create a new Chromote session
       # chromote automatically finds Chrome and handles everything
+      # Runs in headless mode by default
       browser <- chromote::ChromoteSession$new()
 
       # Give it a moment to fully initialize

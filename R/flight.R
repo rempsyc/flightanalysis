@@ -58,11 +58,18 @@ parse_args <- function(flight, args) {
 
 #' Safe integer conversion that returns NA without warnings
 #'
+#' @description
+#' Safely converts a character string to an integer by validating the input 
+#' format before conversion. Returns NA_integer_ for invalid inputs without 
+#' generating warnings, unlike the base as.integer() function.
+#'
 #' @param x Character string to convert to integer
+#' @return An integer value, or NA_integer_ if the input cannot be safely converted
 #' @keywords internal
 safe_as_integer <- function(x) {
   # Check if the string contains only digits, commas, and optional leading/trailing spaces
-  if (is.na(x) || !grepl("^\\s*[0-9,]+\\s*$", x)) {
+  # Require at least one digit to avoid empty string conversion warnings
+  if (is.na(x) || !grepl("^\\s*[0-9,]*[0-9][0-9,]*\\s*$", x)) {
     return(NA_integer_)
   }
   # Remove commas and convert
