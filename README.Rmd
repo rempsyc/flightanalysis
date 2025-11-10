@@ -11,7 +11,6 @@ An R package for analyzing, forecasting, and collecting flight data and prices f
 Current features include:
 
 - Detailed scraping and querying tools for Google Flights
-- Ability to store data locally or to SQL tables
 - Base analytical tools/methods for price forecasting/summary
 - Support for multiple trip types: one-way, round-trip, chain-trip, and perfect-chain
 
@@ -119,26 +118,20 @@ chromote eliminates common RSelenium issues:
 ### Working with Flight Objects
 
 ```{r}
-# Create a Flight object
-flight <- Flight("2025-12-25", "JFKIST", "9:00AM", "5:00PM", 
-                 "8 hr 0 min", "Nonstop", "150 kg CO2", "10% emissions", "$450")
+# Create Flight objects
+flight1 <- Flight("2025-12-25", "JFKIST", "9:00AM", "5:00PM", 
+                  "8 hr 0 min", "Nonstop", "150 kg CO2", "10% emissions", "$450")
+flight2 <- Flight("2025-12-26", "ISTCDG", "10:00AM", "2:00PM", 
+                  "4 hr 0 min", "Nonstop", "100 kg CO2", "5% emissions", "$300")
+flight3 <- Flight("2025-12-27", "CDGJFK", "11:00AM", "1:00PM", 
+                  "8 hr 0 min", "1 stop", "200 kg CO2", "15% emissions", "$500")
 
 # Convert multiple flights to a data frame
 flights <- list(flight1, flight2, flight3)
 df <- flights_to_dataframe(flights)
 ```
 
-### Caching Data
 
-Store flight data locally or in a SQLite database:
-
-```{r}
-# Cache to CSV files
-CacheControl("./cache/", scrape, use_db = FALSE)
-
-# Cache to SQLite database
-CacheControl("./flights.db", scrape, use_db = TRUE)
-```
 
 ## Trip Types
 
@@ -154,13 +147,11 @@ The package supports multiple trip types:
 ```
 flightanalysis/
 ├── R/
-│   ├── cache.R              # Caching functionality
 │   ├── flight.R             # Flight class and methods
 │   ├── scrape.R             # Scrape class and methods
 │   └── flightanalysis-package.R  # Package documentation
 ├── tests/
 │   └── testthat/            # Test files
-│       ├── test-cache.R
 │       ├── test-flight.R
 │       └── test-scrape.R
 ├── DESCRIPTION              # Package metadata

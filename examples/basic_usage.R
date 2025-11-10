@@ -8,7 +8,6 @@ cat("=== Flight Analysis R Package - Examples ===\n\n")
 # Load the package functions
 source('R/flight.R')
 source('R/scrape.R')
-source('R/cache.R')
 
 # Example 1: One-Way Trip
 cat("Example 1: One-Way Trip\n")
@@ -128,20 +127,5 @@ cat(scrape_oneway$url[[1]], "\n\n")
 cat("Round-trip URLs:\n")
 cat("  Outbound:", scrape_roundtrip$url[[1]], "\n")
 cat("  Return:  ", scrape_roundtrip$url[[2]], "\n\n")
-
-# Example 8: Caching (demonstration of the API)
-cat("Example 8: Caching Data (API demonstration)\n")
-cat("--------------------------------------------\n")
-cat("To cache flight data to CSV:\n")
-cat("  CacheControl('./cache/', scrape_object, use_db = FALSE)\n\n")
-cat("To cache flight data to SQLite database:\n")
-cat("  CacheControl('./flights.db', scrape_object, use_db = TRUE)\n\n")
-cat("Note: Caching requires that the Scrape object has data.\n")
-cat(
-  "      Use ScrapeObjects() to populate the data field (requires chromote).\n"
-)
-cat(
-  "      Example: scrape <- ScrapeObjects(scrape)  # Must capture return value!\n\n"
-)
 
 cat("=== Examples completed successfully! ===\n")

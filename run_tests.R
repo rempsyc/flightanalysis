@@ -6,7 +6,6 @@
 cat("Loading R package functions...\n")
 source('R/flight.R')
 source('R/scrape.R')
-source('R/cache.R')
 
 test_count <- 0
 pass_count <- 0
@@ -211,26 +210,6 @@ expect_s3_class(df, "data.frame")
 expect_equal(nrow(df), 2)
 expect_true("origin" %in% names(df))
 expect_true("destination" %in% names(df))
-
-# Test Suite: Cache
-cat("\n=== Testing Cache Functions ===\n")
-
-cat("\nTest: check_scrape validates Scrape objects\n")
-scrape <- Scrape("JFK", "IST", "2025-12-20")
-expect_true(check_scrape(scrape))
-
-not_scrape <- list(a = 1, b = 2)
-expect_true(!check_scrape(not_scrape))
-
-cat("\nTest: get_file_name generates correct filenames\n")
-fname <- get_file_name("JFK", "IST", access = FALSE)
-expect_equal(fname, "IST-JFK.csv")
-
-fname2 <- get_file_name("RDU", "LGA", access = FALSE)
-expect_equal(fname2, "LGA-RDU.csv")
-
-fname_access <- get_file_name("JFK", "IST", access = TRUE)
-expect_equal(fname_access, "IST-JFK.txt")
 
 # Summary
 cat("\n", rep("=", 50), "\n", sep = "")

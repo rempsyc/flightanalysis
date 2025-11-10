@@ -2,10 +2,7 @@
 
 S3method(print,Flight)
 S3method(print,Scrape)
-export(CacheControl)
 export(Flight)
 export(Scrape)
 export(ScrapeObjects)
 export(flights_to_dataframe)
-importFrom(utils,read.csv)
-importFrom(utils,write.csv)

@@ -32,7 +32,6 @@ if (length(missing_packages) > 0) {
 cat("Loading flightanalysis package...\n")
 source('R/flight.R')
 source('R/scrape.R')
-source('R/cache.R')
 cat("✓ Package loaded\n\n")
 
 # Example 1: Simple one-way trip scraping
@@ -109,16 +108,16 @@ tryCatch(
 
 cat("\n")
 
-# Example 2: Round-trip scraping with caching
-cat("Example 2: Round-Trip with Caching\n")
-cat("-----------------------------------\n")
+# Example 2: Round-trip scraping
+cat("Example 2: Round-Trip Scraping\n")
+cat("-------------------------------\n")
 cat("Creating query: JFK <-> IST (2026-07-20 to 2026-08-05)\n\n")
 
 scrape_roundtrip <- Scrape("JFK", "IST", "2026-07-20", "2026-08-05")
 
 cat("This example demonstrates:\n")
 cat("  1. Scraping multiple flight segments (outbound + return)\n")
-cat("  2. Caching results to a CSV file\n\n")
+cat("  2. Analyzing the combined results\n\n")
 
 tryCatch(
   {
@@ -133,31 +132,19 @@ tryCatch(
         "total flights\n"
       )
 
-      # Cache the data
-      cache_dir <- "/tmp/flight_cache"
-      cat("\nCaching data to:", cache_dir, "\n")
-
-      tryCatch(
-        {
-          CacheControl(cache_dir, scrape_roundtrip, use_db = FALSE)
-          cat("✓ Data cached successfully\n")
-
-          # List cached files
-          cached_files <- list.files(
-            cache_dir,
-            pattern = "\\.csv$",
-            full.names = TRUE
-          )
-          if (length(cached_files) > 0) {
-            cat("\nCached files:\n")
-            for (f in cached_files) {
-              cat("  -", basename(f), "\n")
-            }
-          }
-        },
-        error = function(e) {
-          cat("⚠ Could not cache data:", conditionMessage(e), "\n")
-        }
+      # Display summary
+      cat("\nFlight summary:\n")
+      cat("  - Total flights:", nrow(scrape_roundtrip$data), "\n")
+      cat(
+        "  - Average price: $",
+        round(mean(scrape_roundtrip$data$price, na.rm = TRUE), 2),
+        "\n",
+        sep = ""
+      )
+      
+      # Save to CSV manually if desired
+      cat(
+        "\nTo save results, use: write.csv(scrape_roundtrip$data, 'flights.csv', row.names = FALSE)\n"
       )
     }
   },
@@ -174,5 +161,5 @@ cat(
 )
 cat("  • Be patient - scraping can take 10-30 seconds per flight segment\n")
 cat("  • Use headless = FALSE if you want to watch the scraping process\n")
-cat("  • Cache your results to avoid re-scraping the same data\n")
+cat("  • Save your results using write.csv() or other data export methods\n")
 cat("  • Respect Google's terms of service and rate limits\n")
