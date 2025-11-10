@@ -91,12 +91,7 @@ classify_arg <- function(flight, arg) {
       parsed_time <- tryCatch(
         {
           # Convert to uppercase for parsing
-          datetime_str_upper <- gsub(
-            "am",
-            "AM",
-            gsub("pm", "PM", datetime_str, ignore.case = TRUE),
-            ignore.case = TRUE
-          )
+          datetime_str_upper <- toupper(datetime_str)
           strptime(datetime_str_upper, "%Y-%m-%d %I:%M %p")
         },
         error = function(e) NULL
