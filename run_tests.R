@@ -132,7 +132,7 @@ res3 <- Scrape(
 expect_s3_class(res3, "Scrape")
 expect_equal(unlist(res3$origin), c("JFK", "CDG", "AMS"))
 expect_equal(unlist(res3$dest), c("AMS", "AMS", "IST"))
-expect_equal(unlist(res3$date), c("2025-12-10", "2025-12-17", "2025-12-25"))
+expect_equal(unlist(res3$date), c("2025-11-10", "2025-11-17", "2025-11-25"))
 expect_equal(res3$type, "chain-trip")
 
 cat("\nTest: Perfect-chain is created correctly\n")
