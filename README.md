@@ -30,7 +30,6 @@ Or source files directly:
 ```r
 source('R/flight.R')
 source('R/scrape.R')
-source('R/cache.R')
 ```
 
 ## Usage
@@ -43,7 +42,6 @@ library(flightanalysis)
 # Or source files directly:
 # source('R/flight.R')
 # source('R/scrape.R')
-# source('R/cache.R')
 
 # One-way trip
 scrape <- Scrape("JFK", "IST", "2026-07-20")
@@ -58,9 +56,13 @@ scrape <- Scrape("JFK", "IST", "2026-08-20", "RDU", "LGA", "2026-12-25")
 # Perfect-chain
 scrape <- Scrape("JFK", "2026-09-20", "IST", "2026-09-25", "CDG", "2026-10-10", "JFK")
 
-# Create a Flight object
-flight <- Flight("2026-07-20", "JFKIST", "9:00AM", "5:00PM", 
-                 "8 hr 0 min", "Nonstop", "150 kg CO2", "10% emissions", "$450")
+# Create Flight objects
+flight1 <- Flight("2026-07-20", "JFKIST", "9:00AM", "5:00PM", 
+                  "8 hr 0 min", "Nonstop", "150 kg CO2", "10% emissions", "$450")
+flight2 <- Flight("2026-07-21", "ISTCDG", "10:00AM", "2:00PM", 
+                  "4 hr 0 min", "Nonstop", "100 kg CO2", "5% emissions", "$300")
+flight3 <- Flight("2026-07-22", "CDGJFK", "11:00AM", "1:00PM", 
+                  "8 hr 0 min", "1 stop", "200 kg CO2", "15% emissions", "$500")
 
 # Convert flights to data frame
 df <- flights_to_dataframe(list(flight1, flight2, flight3))
