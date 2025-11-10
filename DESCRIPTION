@@ -2,9 +2,9 @@ Package: flightanalysis
 Title: Google Flight Analysis and Scraping
 Version: 1.0.0
 Authors@R: c(
-    person("Kaya", "Celebi", email = "kayacelebi17@gmail.com", role = c("aut", "fnd"),
+    person("Kaya", "Celebi", email = "kayacelebi17@gmail.com", role = c("aut", "fnd")),
     person("Rémi", "Thériault", , "remi.theriault@mail.mcgill.ca", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0003-4315-6788"))
+           comment = c(ORCID = "0000-0003-4315-6788")))
 Description: Tools and models for users to analyze, forecast, and collect data 
     regarding flights and prices. Features include detailed scraping and 
     querying tools for Google Flights, ability to store data locally or to SQL 
