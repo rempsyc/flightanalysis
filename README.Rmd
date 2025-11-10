@@ -1,0 +1,199 @@
+# Flight Analysis - R Package
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+An R package for analyzing, forecasting, and collecting flight data and prices from Google Flights. 
+
+**Credits:** This package is an R implementation inspired by the original Python package [google-flight-analysis](https://github.com/celebi-pkg/flight-analysis) by Kaya Celebi.
+
+## Features
+
+Current features include:
+
+- Detailed scraping and querying tools for Google Flights
+- Ability to store data locally or to SQL tables
+- Base analytical tools/methods for price forecasting/summary
+- Support for multiple trip types: one-way, round-trip, chain-trip, and perfect-chain
+
+## Installation
+
+You can install the development version of flightanalysis from GitHub:
+
+```r
+# Install devtools if you haven't already
+install.packages("devtools")
+
+# Install flightanalysis
+devtools::install_github("rempsyc/flight-analysis")
+```
+
+## Usage
+
+### Loading the Package
+
+```r
+library(flightanalysis)
+```
+
+### Creating Flight Queries
+
+The main scraping function that makes up the backbone of most functionalities is `Scrape()`. It serves as a data object, preserving the flight information as well as meta-data from your query.
+
+#### One-Way Trip
+
+```r
+# Create a one-way flight query
+scrape <- Scrape("JFK", "IST", "2025-07-20")
+print(scrape)
+```
+
+#### Round-Trip
+
+```r
+# Create a round-trip flight query
+scrape <- Scrape("JFK", "IST", "2025-07-20", "2025-08-20")
+print(scrape)
+```
+
+#### Chain-Trip
+
+Chain-trips are defined as a sequence of one-way flights that have no direct relation to each other, other than being in chronological order.
+
+```r
+# Chain-trip format: origin, dest, date, origin, dest, date, ...
+scrape <- Scrape("JFK", "IST", "2025-08-20", "RDU", "LGA", "2025-12-25", "EWR", "SFO", "2026-01-20")
+print(scrape)
+```
+
+#### Perfect-Chain
+
+Perfect-chains are defined as a sequence of one-way flights such that the destination of the previous flight is the origin of the next, and the origin of the chain is the final destination (a cycle).
+
+```r
+# Perfect-chain format: origin, date, origin, date, ..., first_origin
+scrape <- Scrape("JFK", "2025-09-20", "IST", "2025-09-25", "CDG", "2025-10-10", "LHR", "2025-11-01", "JFK")
+print(scrape)
+```
+
+### Scraping Data
+
+The package now includes full web scraping functionality using **chromote**! First, install the required packages:
+
+```r
+install.packages(c("chromote", "progress"))
+```
+
+**Why chromote?**
+- ✅ No external driver files needed (uses Chrome DevTools Protocol directly)
+- ✅ More reliable - no driver version mismatches or port conflicts
+- ✅ Simpler installation - just install the R package
+- ✅ Works on all platforms (Windows, macOS, Linux)
+- ✅ Fully headless by default
+
+Then scrape flight data from Google Flights:
+
+```r
+# Create a query
+scrape <- Scrape("JFK", "IST", "2026-07-20", "2026-08-20")
+
+# Scrape the data (runs in headless mode by default)
+ScrapeObjects(scrape)
+
+# View the scraped data
+print(scrape$data)
+head(scrape$data)
+```
+
+The `ScrapeObjects()` function will:
+1. **Run pre-flight checks** - Verify Chrome installation and internet connectivity
+2. **Automatically connect to Chrome** - Using Chrome DevTools Protocol (no drivers!)
+3. **Navigate to Google Flights URLs** - With proper wait times for page loading
+4. **Extract flight information** - Parse prices, times, airlines, stops, and emissions
+5. **Store results** - Save data in the Scrape object's `data` field
+6. **Handle errors gracefully** - Provide detailed troubleshooting tips if issues occur
+
+**Advantages over RSelenium:**
+
+chromote eliminates common RSelenium issues:
+- ❌ No more "invalid assignment for reference class field 'port'" errors
+- ❌ No more driver download/installation problems
+- ❌ No more version compatibility issues
+- ❌ No more port conflicts
+- ✅ Just install chromote and it works!
+
+### Working with Flight Objects
+
+```r
+# Create a Flight object
+flight <- Flight("2025-12-25", "JFKIST", "9:00AM", "5:00PM", 
+                 "8 hr 0 min", "Nonstop", "150 kg CO2", "10% emissions", "$450")
+
+# Convert multiple flights to a data frame
+flights <- list(flight1, flight2, flight3)
+df <- flights_to_dataframe(flights)
+```
+
+### Caching Data
+
+Store flight data locally or in a SQLite database:
+
+```r
+# Cache to CSV files
+CacheControl("./cache/", scrape, use_db = FALSE)
+
+# Cache to SQLite database
+CacheControl("./flights.db", scrape, use_db = TRUE)
+```
+
+## Trip Types
+
+The package supports multiple trip types:
+
+- **One-way**: Single flight from origin to destination
+- **Round-trip**: Flight to destination and return
+- **Chain-trip**: Sequence of unrelated one-way flights in chronological order
+- **Perfect-chain**: Sequence where each destination becomes the next origin, forming a cycle
+
+## Package Structure
+
+```
+flightanalysis/
+├── R/
+│   ├── cache.R              # Caching functionality
+│   ├── flight.R             # Flight class and methods
+│   ├── scrape.R             # Scrape class and methods
+│   └── flightanalysis-package.R  # Package documentation
+├── tests/
+│   └── testthat/            # Test files
+│       ├── test-cache.R
+│       ├── test-flight.R
+│       └── test-scrape.R
+├── DESCRIPTION              # Package metadata
+├── NAMESPACE               # Package exports
+└── README_R.md             # This file
+```
+
+## Differences from Python Version
+
+This R package maintains the core functionality of the Python version but with R-specific implementations:
+
+- Uses S3 classes instead of Python classes
+- chromote instead of Python's selenium
+- Base R data frames instead of pandas
+- Native R date/time handling instead of Python's datetime
+
+## Development Status
+
+This is a complete R port of the Python package. The core data structures and API are fully implemented. Web scraping functionality uses chromote (Chrome DevTools Protocol), which provides driver-free browser automation without the configuration overhead of RSelenium.
+
+## License
+
+MIT License
+
+## Original Python Package
+
+This is a port of the [google-flight-analysis](https://github.com/celebi-pkg/flight-analysis) Python package by Kaya Celebi.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.

@@ -2,18 +2,22 @@ nb/
 __pycache__/
 # Jupyter Notebook
 .ipynb_checkpoints
-
 cached/
 .Rproj.user
 .RData
-.RHistory
+.Rhistory
 *.Rproj
-
 flight_analysis_app/
 docs/
-
 .pytest_cache/
 deprecated_src/
-
 src/google_flight_analysis/dev.py
-
+# R specific
+*.Rcheck/
+*.Rout
+.Rdata
+.httr-oauth
+.DS_Store
+man/*.Rd
+flightanalysis_1.0.0.tar.gz
+README.html

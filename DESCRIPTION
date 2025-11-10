@@ -1,0 +1,22 @@
+Package: flightanalysis
+Title: Google Flight Analysis and Scraping
+Version: 1.0.0
+Authors@R: person("Kaya", "Celebi", email = "kayacelebi17@gmail.com", 
+    role = c("aut", "cre"))
+Description: Tools and models for users to analyze, forecast, and collect data 
+    regarding flights and prices. Features include detailed scraping and 
+    querying tools for Google Flights, ability to store data locally or to SQL 
+    tables, and base analytical tools/methods for price forecasting/summary.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.3.3
+Depends: 
+    R (>= 3.6.0)
+Suggests:
+    testthat (>= 3.0.0),
+    chromote,
+    progress,
+    RSQLite
+URL: https://github.com/rempsyc/flight-analysis
+BugReports: https://github.com/rempsyc/flight-analysis/issues

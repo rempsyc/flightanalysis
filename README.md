@@ -1,109 +1,85 @@
-[![kcelebi](https://circleci.com/gh/celebi-pkg/flight-analysis.svg?style=svg)](https://circleci.com/gh/celebi-pkg/flight-analysis)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Live on PyPI](https://img.shields.io/badge/PyPI-1.2.0-brightgreen)](https://pypi.org/project/google-flight-analysis/)
-[![TestPyPI](https://img.shields.io/badge/PyPI-1.1.1--alpha.11-blue)](https://test.pypi.org/project/google-flight-analysis/1.1.1a11/)
 
-# Flight Analysis
+# Flight Analysis - R Package
 
-This project provides tools and models for users to analyze, forecast, and collect data regarding flights and prices. There are currently many features in initial stages and in development. The current features (as of 5/25/2023) are:
+An R package for analyzing, forecasting, and collecting flight data and prices from Google Flights.
 
-- Detailed scraping and querying tools for Google Flights
+**Credits:** This is an R implementation inspired by the original [Python package](https://github.com/celebi-pkg/flight-analysis) by Kaya Celebi.
+
+## Features
+
+- Detailed scraping and querying tools for Google Flights using chromote
 - Ability to store data locally or to SQL tables
-- Base analytical tools/methods for price forecasting/summary
+- Support for multiple trip types: one-way, round-trip, chain-trip, and perfect-chain
+- Driver-free web scraping using Chrome DevTools Protocol
 
-The features in development are:
+## Installation
 
-- Models to demonstrate ML techniques on forecasting
-- Querying of advanced features
-- API for access to previously collected data
+Install from GitHub:
 
-## Table of Contents
-- [Overview](#Overview)
-- [Usage](#usage)
-- [Updates & New Features](#updates-&-new-features)
-- [Real Usage](#real-usage) 😄
+```r
+# Install devtools if you haven't already
+install.packages("devtools")
 
+# Install flightanalysis
+devtools::install_github("rempsyc/flight-analysis")
+```
 
-## Overview
+Or source files directly:
 
-Flight price calculation can either use newly scraped data (scrapes upon running it) or cached data that reports a price-change confidence determined by a trained model. Currently, many features of this application are in development.
+```r
+source('R/flight.R')
+source('R/scrape.R')
+source('R/cache.R')
+```
 
 ## Usage
 
-The web scraping tool is currently functional only for scraping round trip flights for a given origin, destination, and date range. It can be easily used in a script or a jupyter notebook.
+The R version provides similar functionality with R-native syntax:
 
-Note that the following packages are **absolutely required** as dependencies:
-- tqdm
-- selenium **(make sure to update your [ChromeDriver](https://chromedriver.chromium.org)!)**
-- pandas
-- numpy
+```r
+# Load the package
+library(flightanalysis)
+# Or source files directly:
+# source('R/flight.R')
+# source('R/scrape.R')
+# source('R/cache.R')
 
-You can easily install this by running either installing the Python package `google-flight-analysis`:
+# One-way trip
+scrape <- Scrape("JFK", "IST", "2026-07-20")
+print(scrape)
 
-	pip install google-flight-analysis
+# Round-trip
+scrape <- Scrape("JFK", "IST", "2026-07-20", "2026-08-20")
 
-or forking/cloning this repository. Upon doing so, make sure to install the dependencies and update ChromeDriver to match your Google Chrome version.
+# Chain-trip
+scrape <- Scrape("JFK", "IST", "2026-08-20", "RDU", "LGA", "2026-12-25")
 
-	pip install -r requirements.txt
+# Perfect-chain
+scrape <- Scrape("JFK", "2026-09-20", "IST", "2026-09-25", "CDG", "2026-10-10", "JFK")
 
+# Create a Flight object
+flight <- Flight("2026-07-20", "JFKIST", "9:00AM", "5:00PM", 
+                 "8 hr 0 min", "Nonstop", "150 kg CO2", "10% emissions", "$450")
 
-The main scraping function that makes up the backbone of most other functionalities is `Scrape()`. It serves also as a data object, preserving the flight information as well as meta-data from your query. For Python package users, import as follows:
+# Convert flights to data frame
+df <- flights_to_dataframe(list(flight1, flight2, flight3))
 
-	from google_flight_analysis.scrape import *
+# Scrape live data (requires chromote package)
+install.packages(c("chromote", "progress"))
+scrape <- ScrapeObjects(scrape)  # Must capture return value! Uses Chrome directly - no drivers!
+print(scrape$data)
+```
 
-For GitHub repository cloners, import as follows from the root of the repository:
-
-	from src.google_flight_analysis.scrape import *
-	#---OR---#
-	import sys
-	sys.path.append('src/google_flight_analysis')
-	from scrape import *
-
-
-Here is some quick starter code to accomplish the basic tasks. Find more in the [documentation](https://kcelebi.github.io/flight-analysis/).
-
-	# Keep the dates in format YYYY-mm-dd
-	result = Scrape('JFK', 'IST', '2023-07-20', '2023-08-20') # obtain our scrape object, represents out query
-	result.type # This is in a round-trip format
-	result.origin # ['JFK', 'IST']
-	result.dest # ['IST', 'JFK']
-	result.dates # ['2023-07-20', '2023-08-20']
-	print(result) # get unqueried str representation
-
-A `Scrape` object represents a Google Flights query to be run. It maintains flights as a sequence of one or more one-way flights which have a origin, destination, and flight date. The above object for a round-trip flight from JFK to IST is a sequence of JFK --> IST, then IST --> JFK. We can obtain the data as follows:
-
-	ScrapeObjects(result) # runs selenium through ChromeDriver, modifies results in-place
-	result.data # returns pandas DF
-	print(result) # get queried representation of result
-
-You can also scrape for one-way trips:
-
-	results = Scrape('JFK', 'IST', '2023-08-20')
-	ScrapeObjects(result)
-	result.data #see data
-
-You can also scrape chain-trips, which are defined as a sequence of one-way flights that have no direct relation to each other, other than being in chronological order. 
-
-	# chain-trip format: origin, dest, date, origin, dest, date, ...
-	result = Scrape('JFK', 'IST', '2023-08-20', 'RDU', 'LGA', '2023-12-25', 'EWR', 'SFO', '2024-01-20')
-	result.type # chain-trip
-	ScrapeObjects(result)
-	result.data # see data
-
-You can also scrape perfect-chains, which are defined as a sequence of one-way flights such that the destination of the previous flight is the origin of the next and the origin of the chain is the final destination of the chain (a cycle).
-
-	# perfect-chain format: origin, date, origin, date, ..., first_origin
-	result = Scrape("JFK", "2023-09-20", "IST", "2023-09-25", "CDG", "2023-10-10", "LHR", "2023-11-01", "JFK")
-	result.type # perfect-chain
-	ScrapeObjects(result)
-	result.data # see data
-
-You can read more about the different type of trips in the documentation. Scrape objects can be added to one another to create larger queries. This is under the conditions:
-
-1. The objects being added are the same type of trip (one-way, round-trip, etc)
-2. The objects being added are either both unqueried or both queried
+For more examples and detailed documentation, see [README.Rmd](README.Rmd).
 
 ## Updates & New Features
+
+**November 2025**: 
+- ✅ Full R package implementation with equivalent functionality to the Python version!
+- ✅ Complete web scraping with **chromote** - driver-free browser automation
+- ✅ No more driver installation/compatibility issues - uses Chrome DevTools Protocol directly
+- ✅ Headless mode support for server environments
 
 Performing a complete revamp of this package, including new addition to PyPI. Documentation is being updated frequently, contact for any questions.
 
