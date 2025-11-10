@@ -116,7 +116,7 @@ df <- flights_to_dataframe(flights_list)
 cat("Created data frame with", nrow(df), "flights\n")
 cat("Columns:", paste(names(df), collapse = ", "), "\n")
 cat("\nFirst few rows:\n")
-print(head(df, 3))
+print(utils::head(df, 3))
 cat("\n")
 
 # Example 7: URL Generation
