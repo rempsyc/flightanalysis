@@ -4,7 +4,7 @@
 \alias{initialize_chromote_browser}
 \title{Initialize chromote browser}
 \usage{
-initialize_chromote_browser(headless = TRUE)
+initialize_chromote_browser()
 }
 \description{
 Initialize chromote browser
