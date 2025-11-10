@@ -57,7 +57,7 @@ tryCatch(
       cat("\n✓ Successfully scraped", nrow(scrape_oneway$data), "flights!\n\n")
 
       cat("Sample of scraped data:\n")
-      print(head(scrape_oneway$data, 3))
+      print(utils::head(scrape_oneway$data, 3))
       cat("\n")
 
       cat("Summary statistics:\n")
@@ -141,7 +141,7 @@ tryCatch(
         "\n",
         sep = ""
       )
-      
+
       # Save to CSV manually if desired
       cat(
         "\nTo save results, use: write.csv(scrape_roundtrip$data, 'flights.csv', row.names = FALSE)\n"

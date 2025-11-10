@@ -19,7 +19,6 @@ Depends:
 Suggests:
     testthat (>= 3.0.0),
     chromote,
-    progress,
-    RSQLite
+    progress
 URL: https://github.com/rempsyc/flightanalysis, https://rempsyc.github.io/flightanalysis/
 BugReports: https://github.com/rempsyc/flightanalysis/issues

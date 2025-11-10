@@ -712,12 +712,13 @@ clean_results <- function(result, date, verbose = TRUE) {
 
   # Find flight time markers (entries ending with AM or PM, or with + offset)
   # These are more stable than UI text markers
+  # Support both uppercase (AM/PM) and lowercase (am/pm) formats
   is_time_marker <- function(x) {
     if (nchar(x) <= 2) {
       return(FALSE)
     }
     has_colon <- grepl(":", x)
-    ends_ampm <- grepl("(AM|PM)$", x)
+    ends_ampm <- grepl("(AM|PM|am|pm)$", x)
     has_plus <- substr(x, nchar(x) - 1, nchar(x) - 1) == "+"
     return(has_colon && (ends_ampm || has_plus))
   }
@@ -736,10 +737,29 @@ clean_results <- function(result, date, verbose = TRUE) {
 
   if (verbose) {
     cat(sprintf("  Found %d potential flight time markers\n", length(matches)))
+    # Debug: Show what the time markers actually are
+    if (length(matches) > 0 && length(matches) <= 30) {
+      cat(sprintf(
+        "  Time markers at indices: %s\n",
+        paste(matches, collapse = ", ")
+      ))
+      cat(sprintf(
+        "  Time marker values: %s\n",
+        paste(res2[utils::head(matches, 10)], collapse = ", ")
+      ))
+    }
   }
 
   # Take every other match (departure times, not arrival times shown separately)
   matches <- matches[seq(1, length(matches), by = 2)]
+
+  if (verbose && length(matches) > 0) {
+    cat(sprintf(
+      "  After filtering: %d markers (indices: %s)\n",
+      length(matches),
+      paste(utils::head(matches, 5), collapse = ", ")
+    ))
+  }
 
   if (length(matches) <= 1) {
     if (verbose) {
@@ -756,10 +776,47 @@ clean_results <- function(result, date, verbose = TRUE) {
     end <- matches[i + 1] - 1
     flight_data <- res2[start:end]
 
+    # Debug: Show first few elements of flight data and check for times
+    if (verbose && i <= 3) {
+      has_times <- any(
+        grepl("(AM|PM|am|pm)$", flight_data) & grepl(":", flight_data)
+      )
+      time_elements <- flight_data[
+        grepl("(AM|PM|am|pm)$", flight_data) & grepl(":", flight_data)
+      ]
+      cat(sprintf(
+        "  Flight %d data (range %d-%d, %d elements, has_times=%s): %s...\n",
+        i,
+        start,
+        end,
+        length(flight_data),
+        has_times,
+        paste(utils::head(flight_data, 3), collapse = " | ")
+      ))
+      if (has_times) {
+        cat(sprintf(
+          "  Time elements found: %s\n",
+          paste(time_elements, collapse = ", ")
+        ))
+      }
+    }
+
     tryCatch(
       {
         # Use do.call to unpack the vector so each element becomes a separate argument
         flights[[i]] <- do.call(Flight, c(list(date), as.list(flight_data)))
+
+        # Debug: Check if times were actually parsed
+        if (verbose && i <= 3) {
+          flight_obj <- flights[[i]]
+          cat(sprintf(
+            "  Flight %d parsed: %d times captured (dep=%s, arr=%s)\n",
+            i,
+            length(flight_obj$times),
+            if (is.null(flight_obj$time_leave)) "NULL" else "OK",
+            if (is.null(flight_obj$time_arrive)) "NULL" else "OK"
+          ))
+        }
       },
       error = function(e) {
         if (verbose) {
