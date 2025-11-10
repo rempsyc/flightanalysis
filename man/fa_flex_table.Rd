@@ -12,9 +12,10 @@ fa_flex_table(
 )
 }
 \arguments{
-\item{results}{A data frame with columns: City, Airport, Date, Price, and
-optionally Comment. Typically created after scraping with fa_create_date_range_scrape()
-and ScrapeObjects(), then processing the results.}
+\item{results}{Either:
+- A data frame with columns: City, Airport, Date, Price, and optionally Comment
+- A list of Scrape objects (from fa_create_date_range_scrape with multiple origins)
+- A single Scrape object (from fa_create_date_range_scrape with single origin)}
 
 \item{include_comment}{Logical. If TRUE and Comment column exists, includes
 it in the output. Default is TRUE.}
@@ -36,13 +37,14 @@ patterns across multiple dates and comparing different origin airports.
 }
 \examples{
 \dontrun{
-# Create and scrape
-scrape <- fa_create_date_range_scrape(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
-scrape <- ScrapeObjects(scrape)
+# Option 1: Pass list of Scrape objects directly
+scrapes <- fa_create_date_range_scrape(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
+for (code in names(scrapes)) {
+  scrapes[[code]] <- ScrapeObjects(scrapes[[code]])
+}
+summary_table <- fa_flex_table(scrapes)
 
-# Process and create summary table
-# (Add City and Date columns to scrape$data as needed)
-summary_table <- fa_flex_table(results)
-print(summary_table)
+# Option 2: Pass processed data frame
+summary_table <- fa_flex_table(my_data_frame)
 }
 }

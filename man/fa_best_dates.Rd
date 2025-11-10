@@ -7,8 +7,10 @@
 fa_best_dates(results, n = 10, by = "mean")
 }
 \arguments{
-\item{results}{A data frame with columns: Date and Price. Typically created
-after scraping with fa_create_date_range_scrape() and ScrapeObjects().}
+\item{results}{Either:
+- A data frame with columns: Date and Price
+- A list of Scrape objects (from fa_create_date_range_scrape with multiple origins)
+- A single Scrape object (from fa_create_date_range_scrape with single origin)}
 
 \item{n}{Integer. Number of best dates to return. Default is 10.}
 
@@ -28,12 +30,14 @@ when planning a flexible trip.
 }
 \examples{
 \dontrun{
-# Create and scrape
-scrape <- fa_create_date_range_scrape(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
-scrape <- ScrapeObjects(scrape)
+# Option 1: Pass list of Scrape objects directly
+scrapes <- fa_create_date_range_scrape(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
+for (code in names(scrapes)) {
+  scrapes[[code]] <- ScrapeObjects(scrapes[[code]])
+}
+best_dates <- fa_best_dates(scrapes, n = 5, by = "mean")
 
-# Extract best dates from results
-best_dates <- fa_best_dates(results, n = 5, by = "mean")
-print(best_dates)
+# Option 2: Pass processed data frame
+best_dates <- fa_best_dates(my_data_frame, n = 5, by = "mean")
 }
 }
