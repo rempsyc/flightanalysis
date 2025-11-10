@@ -157,7 +157,7 @@ expect_equal(
 expect_equal(res4$type, "perfect-chain")
 
 cat("\nTest: Invalid date order throws error\n")
-expect_error(Scrape("JFK", "IST", "2025-12-20", "2025-12-25"))
+expect_error(Scrape("JFK", "IST", "2025-12-25", "2025-12-20"))
 
 cat("\nTest: Invalid argument format throws error\n")
 expect_error(Scrape("JFKK", "IST", "2025-12-20"))
