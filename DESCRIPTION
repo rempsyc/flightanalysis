@@ -1,6 +1,6 @@
 Package: flightanalysis
 Title: Google Flight Analysis and Scraping
-Version: 1.0.0
+Version: 1.0.1
 Authors@R: c(
     person("Kaya", "Celebi", email = "kayacelebi17@gmail.com", role = c("aut", "fnd")),
     person("Rémi", "Thériault", email = "remi.theriault@mail.mcgill.ca", role = c("aut", "cre"),
