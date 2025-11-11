@@ -32,8 +32,9 @@ A wide data frame with columns: City, Airport, Comment (optional),
 }
 \description{
 Creates a wide summary table showing prices by city/airport and date,
-with an average price column. This is useful for visualizing price
-patterns across multiple dates and comparing different origin airports.
+with an average price column. When multiple flights exist for the same
+date, uses the minimum (cheapest) price. This is useful for visualizing
+price patterns across multiple dates and comparing different origin airports.
 }
 \examples{
 \dontrun{
