@@ -74,9 +74,25 @@ extract_data_from_scrapes <- function(scrapes) {
     
     # Extract relevant columns
     # The 'destination' field contains the origin airport (swapped in scraping)
-    data$Airport <- data$destination
-    data$Date <- as.character(as.Date(data$departure_datetime))
-    data$Price <- data$price
+    if ("destination" %in% names(data)) {
+      data$Airport <- data$destination
+    } else if ("origin" %in% names(data)) {
+      data$Airport <- data$origin
+    } else {
+      data$Airport <- NA_character_
+    }
+    
+    if ("departure_datetime" %in% names(data)) {
+      data$Date <- as.character(as.Date(data$departure_datetime))
+    } else {
+      data$Date <- NA_character_
+    }
+    
+    if ("price" %in% names(data)) {
+      data$Price <- data$price
+    } else {
+      data$Price <- NA_real_
+    }
     
     # Add City from list name if available
     if (!is.null(names(scrapes)[i])) {
