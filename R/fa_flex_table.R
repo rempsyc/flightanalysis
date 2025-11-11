@@ -2,8 +2,9 @@
 #'
 #' @description
 #' Creates a wide summary table showing prices by city/airport and date,
-#' with an average price column. This is useful for visualizing price
-#' patterns across multiple dates and comparing different origin airports.
+#' with an average price column. When multiple flights exist for the same
+#' date, uses the minimum (cheapest) price. This is useful for visualizing
+#' price patterns across multiple dates and comparing different origin airports.
 #'
 #' @param results Either:
 #'   - A data frame with columns: City, Airport, Date, Price, and optionally Comment
@@ -73,16 +74,21 @@ fa_flex_table <- function(
     results$Price <- round(results$Price)
   }
 
-  # Reshape to wide format
-  # Use stats::reshape to avoid dependency on tidyr
-  results_unique <- unique(results[, c("City", "Airport", "Date", "Price")])
+  # Aggregate to get the minimum (cheapest) price for each City-Airport-Date combination
+  # This handles cases where multiple flights exist for the same date
+  results_agg <- stats::aggregate(
+    Price ~ City + Airport + Date,
+    data = results,
+    FUN = min,
+    na.rm = TRUE
+  )
 
   # Create a unique identifier for each City-Airport combination
-  results_unique$ID <- paste(results_unique$City, results_unique$Airport, sep = "_")
+  results_agg$ID <- paste(results_agg$City, results_agg$Airport, sep = "_")
 
   # Reshape
   wide_data <- stats::reshape(
-    results_unique,
+    results_agg,
     idvar = "ID",
     timevar = "Date",
     v.names = "Price",
