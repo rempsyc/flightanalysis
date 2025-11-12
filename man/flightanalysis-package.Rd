@@ -27,7 +27,7 @@ collect data regarding flights and prices. Current features include:
   \item{\code{\link{ScrapeObjects}}}{Execute flight queries (requires chromote)}
   \item{\code{\link{Flight}}}{Create a flight data object}
   \item{\code{\link{flights_to_dataframe}}}{Convert Flight objects to data frame}
-  \item{\code{\link{fa_scrape_best_oneway}}}{Scrape cheapest flights across multiple dates and airports}
+  \item{\code{\link{fa_create_date_range_scrape}}}{Create Scrape objects for flexible date search}
   \item{\code{\link{fa_flex_table}}}{Create wide summary table for price comparison}
   \item{\code{\link{fa_best_dates}}}{Identify cheapest travel dates}
 }

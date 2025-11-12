@@ -4,7 +4,7 @@
 \alias{fa_best_dates}
 \title{Extract Best Dates from Flight Search Results}
 \usage{
-fa_best_dates(results, n = 10, by = "mean")
+fa_best_dates(results, n = 10, by = "min")
 }
 \arguments{
 \item{results}{Either:

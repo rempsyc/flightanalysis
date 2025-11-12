@@ -42,17 +42,29 @@ cat(sprintf("Total queries: %d\n\n", nrow(routes) * length(dates)))
 # ==============================================================================
 
 # cat("Starting scraping... (this will take a while)\n")
-# results <- fa_scrape_best_oneway(
-#   routes = routes,
-#   dates = dates,
-#   keep_offers = FALSE,  # Only keep cheapest per day
-#   pause = 3,            # Wait 3 seconds between requests (be polite!)
-#   headless = TRUE,      # Run browser in background
-#   verbose = TRUE        # Show progress
+# 
+# # Step 1: Create Scrape objects for all routes and dates
+# scrapes <- fa_create_date_range_scrape(
+#   origin = routes$Airport,
+#   dest = "JFK",
+#   date_min = min(dates),
+#   date_max = max(dates)
 # )
 # 
+# # Step 2: Scrape each origin
+# for (code in names(scrapes)) {
+#   cat(sprintf("Scraping %s...\n", code))
+#   scrapes[[code]] <- ScrapeObjects(scrapes[[code]], verbose = TRUE)
+#   Sys.sleep(3)  # Pause between origins to be polite
+# }
+# 
+# # Step 3: Extract results (fa_flex_table/fa_best_dates handle Scrape objects)
+# summary_table <- fa_flex_table(scrapes)
+# best_dates <- fa_best_dates(scrapes, n = 10, by = "min")
+# 
 # # Save results for later use
-# saveRDS(results, "flight_results.rds")
+# saveRDS(list(scrapes = scrapes, summary = summary_table, best = best_dates), 
+#         "flight_results.rds")
 
 # ==============================================================================
 # For demonstration, use mock data
@@ -123,21 +135,9 @@ cat(sprintf("\nCheapest route on average: %s (%s) - $%.2f\n",
 # ==============================================================================
 
 cat("\n=== Tips for Real Usage ===\n")
-cat("1. Uncomment the fa_scrape_best_oneway() call above\n")
-cat("2. Adjust 'pause' based on your needs (2-5 seconds recommended)\n")
-cat("3. Use keep_offers=TRUE to store all flight options\n")
+cat("1. Use fa_create_date_range_scrape() to create Scrape objects\n")
+cat("2. Use ScrapeObjects() to fetch data for each route\n")
+cat("3. Pass Scrape objects directly to fa_flex_table() and fa_best_dates()\n")
 cat("4. Save results with saveRDS() for later analysis\n")
 cat("5. Run during off-peak hours to be considerate of Google's servers\n")
-cat("6. Consider scraping in smaller batches (e.g., 5 dates at a time)\n")
-
-cat("\n=== Example: Keeping All Offers ===\n")
-cat("To keep all flight offers (not just cheapest):\n\n")
-cat("results_full <- fa_scrape_best_oneway(\n")
-cat("  routes = routes,\n")
-cat("  dates = dates[1:3],  # Just first 3 dates for testing\n")
-cat("  keep_offers = TRUE,   # Keep all offers!\n")
-cat("  pause = 3\n")
-cat(")\n\n")
-cat("# Access all offers for a specific route-date:\n")
-cat("all_flights <- results_full$Offers[[1]]\n")
-cat("print(all_flights)\n")
+cat("6. Add Sys.sleep() pauses between scraping different origins\n")

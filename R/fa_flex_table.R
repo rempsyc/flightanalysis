@@ -41,7 +41,15 @@ fa_flex_table <- function(
   round_prices = TRUE
 ) {
   # Handle different input types
-  if (is.list(results) && !is.data.frame(results)) {
+  # Check for Scrape object FIRST (before is.list, since Scrape objects are lists)
+  if (inherits(results, "Scrape")) {
+    # Validate Scrape object has data
+    if (is.null(results$data) || nrow(results$data) == 0) {
+      stop("Scrape object contains no data. Please run ScrapeObjects() first to fetch flight data.")
+    }
+    # Single Scrape object - pass directly to extract_data_from_scrapes
+    results <- extract_data_from_scrapes(results)
+  } else if (is.list(results) && !is.data.frame(results)) {
     # Check if it's a list of Scrape objects
     if (all(sapply(results, function(x) inherits(x, "Scrape")))) {
       # Extract and combine data from list of Scrape objects
@@ -49,9 +57,6 @@ fa_flex_table <- function(
     } else {
       stop("results must be a data frame, a Scrape object, or a list of Scrape objects")
     }
-  } else if (inherits(results, "Scrape")) {
-    # Single Scrape object - pass directly to extract_data_from_scrapes
-    results <- extract_data_from_scrapes(results)
   } else if (!is.data.frame(results)) {
     stop("results must be a data frame, a Scrape object, or a list of Scrape objects")
   }
@@ -62,6 +67,11 @@ fa_flex_table <- function(
       "results must contain columns: %s",
       paste(required_cols, collapse = ", ")
     ))
+  }
+  
+  # Check if we have any data after filtering
+  if (nrow(results) == 0) {
+    stop("No data available after filtering. The Scrape object may contain only placeholder rows or no valid flight data.")
   }
 
   # Convert Date to character if it's not already
@@ -106,7 +116,13 @@ fa_flex_table <- function(
 
   # Calculate average price
   price_cols <- grep("^Price_", names(wide_data))
-  wide_data$Average_Price <- rowMeans(wide_data[, price_cols], na.rm = TRUE)
+  if (length(price_cols) == 1) {
+    # Single column - just use that column directly
+    wide_data$Average_Price <- wide_data[[price_cols]]
+  } else {
+    # Multiple columns - calculate mean
+    wide_data$Average_Price <- rowMeans(wide_data[, price_cols, drop = FALSE], na.rm = TRUE)
+  }
 
   if (round_prices) {
     wide_data$Average_Price <- round(wide_data$Average_Price)
