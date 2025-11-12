@@ -247,7 +247,7 @@ best_dates_min
 
 **Parameters:**
 - `n`: Number of best dates to return (default: 10)
-- `by`: Aggregation method - "mean" (average), "median", or "min" (default: "mean")
+- `by`: Aggregation method - "mean" (average), "median", or "min" (default: "min")
 
 **Output:**
 - `Date`: The date
