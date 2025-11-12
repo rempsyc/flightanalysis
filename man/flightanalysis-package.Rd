@@ -15,6 +15,8 @@ collect data regarding flights and prices. Current features include:
 \itemize{
   \item Detailed scraping and querying tools for Google Flights
   \item Support for multiple trip types (one-way, round-trip, chain, perfect-chain)
+  \item Flexible date search across multiple airports and date ranges
+  \item Summary tables and best date identification for travel planning
   \item Base analytical tools/methods for price forecasting/summary
 }
 }
@@ -25,6 +27,9 @@ collect data regarding flights and prices. Current features include:
   \item{\code{\link{ScrapeObjects}}}{Execute flight queries (requires chromote)}
   \item{\code{\link{Flight}}}{Create a flight data object}
   \item{\code{\link{flights_to_dataframe}}}{Convert Flight objects to data frame}
+  \item{\code{\link{fa_scrape_best_oneway}}}{Scrape cheapest flights across multiple dates and airports}
+  \item{\code{\link{fa_flex_table}}}{Create wide summary table for price comparison}
+  \item{\code{\link{fa_best_dates}}}{Identify cheapest travel dates}
 }
 }
 
