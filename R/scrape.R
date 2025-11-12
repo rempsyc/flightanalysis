@@ -336,12 +336,12 @@ ScrapeObjects <- function(
           pb$tick()
         }
       } else {
-        if (verbose) {
-          cat(sprintf("Scraping %d object(s)...\n", length(objs)))
+        if (verbose && length(objs) > 1) {
+          cat(sprintf("Scraping %d objects...\n\n", length(objs)))
         }
         for (i in seq_along(objs)) {
-          if (verbose) {
-            cat(sprintf("\n[%d/%d] Processing query...\n", i, length(objs)))
+          if (verbose && length(objs) > 1) {
+            cat(sprintf("[%d/%d] ", i, length(objs)))
           }
           objs[[i]] <- scrape_data_chromote(
             objs[[i]],
@@ -540,7 +540,7 @@ scrape_data_chromote <- function(obj, browser, verbose = TRUE) {
   results_list <- list()
 
   if (verbose && length(obj$url) > 1) {
-    cat(sprintf("  Query has %d segment(s)\n", length(obj$url)))
+    cat(sprintf("Query has %d segment(s)\n", length(obj$url)))
   }
 
   for (i in seq_along(obj$url)) {
@@ -556,7 +556,7 @@ scrape_data_chromote <- function(obj, browser, verbose = TRUE) {
         ))
       } else {
         cat(sprintf(
-          "  Route: %s -> %s on %s\n",
+          "Route: %s -> %s on %s\n",
           obj$origin[[i]],
           obj$dest[[i]],
           obj$date[[i]]
@@ -578,7 +578,7 @@ scrape_data_chromote <- function(obj, browser, verbose = TRUE) {
   if (length(results_list) > 0) {
     obj$data <- do.call(rbind, results_list)
     rownames(obj$data) <- NULL
-    if (verbose) {
+    if (verbose && length(obj$url) > 1) {
       cat(sprintf("  [OK] Total flights retrieved: %d\n", nrow(obj$data)))
     }
   } else {
@@ -613,19 +613,11 @@ get_results_chromote <- function(url, date, browser, verbose = TRUE) {
 #' Make URL request and wait for content using chromote
 #' @keywords internal
 make_url_request_chromote <- function(url, browser, verbose = TRUE) {
-  if (verbose) {
-    cat(sprintf("  Navigating to Google Flights...\n"))
-  }
-
   # Navigate to URL
   browser$Page$navigate(url, wait_ = TRUE)
 
   # Wait for page load event
   browser$Page$loadEventFired(timeout_ = 10000)
-
-  if (verbose) {
-    cat("  Waiting for page content to load...\n")
-  }
 
   # Wait for network to be idle (important for dynamic content)
   Sys.sleep(2)
@@ -636,15 +628,6 @@ make_url_request_chromote <- function(url, browser, verbose = TRUE) {
 
   for (attempt in 1:max_attempts) {
     results <- get_flight_elements_chromote(browser)
-
-    if (verbose && attempt > 1) {
-      cat(sprintf(
-        "  Attempt %d/%d: %d lines retrieved\n",
-        attempt,
-        max_attempts,
-        length(results)
-      ))
-    }
 
     # Check if we have substantial content
     if (length(results) > 100) {
@@ -659,10 +642,6 @@ make_url_request_chromote <- function(url, browser, verbose = TRUE) {
     stop(
       "Page did not load sufficient content. Check your internet connection or verify flights exist for this query."
     )
-  }
-
-  if (verbose) {
-    cat(sprintf("  Retrieved %d lines of page content\n", length(results)))
   }
 
   results
@@ -691,10 +670,6 @@ get_flight_elements_chromote <- function(browser) {
 #' Clean and parse results from scraped page
 #' @keywords internal
 clean_results <- function(result, date, verbose = TRUE) {
-  if (verbose) {
-    cat(sprintf("  Parsing %d lines of content...\n", length(result)))
-  }
-
   # Clean results - remove non-ASCII and strip whitespace
   res2 <- sapply(result, function(x) {
     iconv(x, from = "UTF-8", to = "ASCII", sub = "")
@@ -750,9 +725,7 @@ clean_results <- function(result, date, verbose = TRUE) {
         flights[[i]] <- do.call(Flight, c(list(date), as.list(flight_data)))
       },
       error = function(e) {
-        if (verbose) {
-          cat(sprintf("  [!] Could not parse flight %d: %s\n", i, e$message))
-        }
+        # Silent failure for individual flights - they'll be filtered out
       }
     )
   }
