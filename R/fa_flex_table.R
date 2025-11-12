@@ -41,7 +41,11 @@ fa_flex_table <- function(
   round_prices = TRUE
 ) {
   # Handle different input types
-  if (is.list(results) && !is.data.frame(results)) {
+  # Check for Scrape object FIRST (before is.list, since Scrape objects are lists)
+  if (inherits(results, "Scrape")) {
+    # Single Scrape object - pass directly to extract_data_from_scrapes
+    results <- extract_data_from_scrapes(results)
+  } else if (is.list(results) && !is.data.frame(results)) {
     # Check if it's a list of Scrape objects
     if (all(sapply(results, function(x) inherits(x, "Scrape")))) {
       # Extract and combine data from list of Scrape objects
@@ -49,9 +53,6 @@ fa_flex_table <- function(
     } else {
       stop("results must be a data frame, a Scrape object, or a list of Scrape objects")
     }
-  } else if (inherits(results, "Scrape")) {
-    # Single Scrape object - pass directly to extract_data_from_scrapes
-    results <- extract_data_from_scrapes(results)
   } else if (!is.data.frame(results)) {
     stop("results must be a data frame, a Scrape object, or a list of Scrape objects")
   }

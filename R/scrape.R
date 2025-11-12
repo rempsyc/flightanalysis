@@ -292,16 +292,10 @@ ScrapeObjects <- function(
   }
 
   # Pre-flight checks
-  if (verbose) {
-    cat("Running pre-flight checks...\n")
-  }
-  check_chrome_installation(verbose = verbose)
-  check_internet_connection(verbose = verbose)
+  check_chrome_installation(verbose = FALSE)
+  check_internet_connection(verbose = FALSE)
 
   # Initialize chromote browser
-  if (verbose) {
-    cat("Initializing Chrome browser...\n")
-  }
   browser <- NULL
 
   tryCatch(
@@ -313,10 +307,6 @@ ScrapeObjects <- function(
         stop(
           "Failed to initialize Chrome browser. Please check Chrome installation."
         )
-      }
-
-      if (verbose) {
-        cat("[OK] Browser ready\n\n")
       }
 
       # Scrape each object
@@ -352,9 +342,6 @@ ScrapeObjects <- function(
       }
 
       # Close browser
-      if (verbose) {
-        cat("\nClosing browser...\n")
-      }
       close_chromote_safely(browser)
     },
     error = function(e) {
@@ -538,10 +525,6 @@ get_troubleshooting_tips_chromote <- function() {
 #' @keywords internal
 scrape_data_chromote <- function(obj, browser, verbose = TRUE) {
   results_list <- list()
-
-  if (verbose && length(obj$url) > 1) {
-    cat(sprintf("Query has %d segment(s)\n", length(obj$url)))
-  }
 
   for (i in seq_along(obj$url)) {
     if (verbose) {
