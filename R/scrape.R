@@ -226,6 +226,7 @@ make_url <- function(origins, dests, dates) {
 #' Print method for Scrape objects
 #' @param x A Scrape object
 #' @param ... Additional arguments (ignored)
+#' @export
 print.Scrape <- function(x, ...) {
   cat("Scrape( ")
 

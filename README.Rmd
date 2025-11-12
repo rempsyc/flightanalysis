@@ -36,7 +36,7 @@ devtools::install_github("rempsyc/flightanalysis")
 
 ### Loading the Package
 
-```{r eval=FALSE}
+```{r eval=TRUE}
 library(flightanalysis)
 ```
 
@@ -46,7 +46,7 @@ The main scraping function that makes up the backbone of most functionalities is
 
 #### One-Way Trip
 
-```{r eval=FALSE}
+```{r eval=TRUE}
 # Create a one-way flight query
 scrape <- Scrape("JFK", "IST", "2025-07-20")
 scrape
@@ -54,7 +54,7 @@ scrape
 
 #### Round-Trip
 
-```{r eval=FALSE}
+```{r eval=TRUE}
 # Create a round-trip flight query
 scrape <- Scrape("JFK", "IST", "2025-07-20", "2025-08-20")
 scrape
@@ -64,7 +64,7 @@ scrape
 
 Chain-trips are defined as a sequence of one-way flights that have no direct relation to each other, other than being in chronological order.
 
-```{r eval=FALSE}
+```{r eval=TRUE}
 # Chain-trip format: origin, dest, date, origin, dest, date, ...
 scrape <- Scrape("JFK", "IST", "2025-08-20", "RDU", "LGA", "2025-12-25", "EWR", "SFO", "2026-01-20")
 scrape
@@ -74,7 +74,7 @@ scrape
 
 Perfect-chains are defined as a sequence of one-way flights such that the destination of the previous flight is the origin of the next, and the origin of the chain is the final destination (a cycle).
 
-```{r eval=FALSE}
+```{r eval=TRUE}
 # Perfect-chain format: origin, date, origin, date, ..., first_origin
 scrape <- Scrape("JFK", "2025-09-20", "IST", "2025-09-25", "CDG", "2025-10-10", "LHR", "2025-11-01", "JFK")
 scrape
@@ -93,7 +93,7 @@ The package now includes full web scraping functionality using **chromote**!
 
 Then scrape flight data from Google Flights:
 
-```{r eval=FALSE}
+```{r eval=TRUE}
 # Create a query
 scrape <- Scrape("JFK", "IST", "2025-12-20", "2026-01-05")
 
@@ -101,7 +101,8 @@ scrape <- Scrape("JFK", "IST", "2025-12-20", "2026-01-05")
 scrape <- ScrapeObjects(scrape)
 
 # View the scraped data
-head(scrape$data)
+head(scrape$data) |>
+  knitr::kable()
 ```
 
 The `ScrapeObjects()` function will:
@@ -123,7 +124,7 @@ chromote eliminates common RSelenium issues:
 
 ### Working with Flight Objects
 
-```{r eval=FALSE}
+```{r eval=TRUE}
 # Create Flight objects
 flight1 <- Flight("2025-12-25", "JFKIST", "9:00AM", "5:00PM", 
                   "8 hr 0 min", "Nonstop", "150 kg CO2", "10% emissions", "$450")
@@ -144,44 +145,29 @@ The package now supports flexible date search across multiple airports and dates
 
 ### Basic Workflow
 
-```{r eval=FALSE}
-library(flightanalysis)
-
-# Define routes to search
-routes <- data.frame(
-  City = c("Mumbai", "Delhi", "Varanasi", "Patna", "Gaya"),
-  Airport = c("BOM", "DEL", "VNS", "PAT", "GAY"),
-  Dest = c("JFK", "JFK", "JFK", "JFK", "JFK"),
-  Comment = c("Original flight", "", "", "", "")
-)
-
-# Define date range  
-dates <- seq(as.Date("2025-12-18"), as.Date("2026-01-05"), by = "day")
-
+```{r eval=TRUE}
 # Step 1: Create Scrape objects for all routes and dates
-# Returns a list of Scrape objects (one per origin) for multiple origins
 scrapes <- fa_create_date_range_scrape(
-  origin = routes$Airport,  # c("BOM", "DEL", "VNS", "PAT", "GAY")
+  origin = c("BOM", "DEL", "VNS", "PAT"),
   dest = "JFK",
-  date_min = min(dates),
-  date_max = max(dates)
+  date_min = "2025-12-28",
+  date_max = "2026-01-03"
 )
 
 # Step 2: Scrape each origin
-for (origin_code in names(scrapes)) {
-  scrapes[[origin_code]] <- ScrapeObjects(scrapes[[origin_code]], verbose = TRUE)
-}
+scraped <- ScrapeObjects(scrapes)
 
 # Step 3: Analyze directly with list of Scrape objects
-# fa_flex_table and fa_best_dates now accept lists of Scrape objects directly!
 
 # Create wide summary table (City × Date with Average Price)
-summary_table <- fa_flex_table(scrapes)
-print(summary_table)
+summary_table <- fa_flex_table(scraped)
+summary_table |>
+  knitr::kable()
 
 # Find the top 10 cheapest dates
-best_dates <- fa_best_dates(scrapes, n = 10, by = "mean")
-print(best_dates)
+best_dates <- fa_best_dates(scraped, n = 10, by = "mean")
+best_dates |>
+  knitr::kable()
 ```
 
 **Key Features:**
@@ -197,7 +183,7 @@ print(best_dates)
 
 ### Single Origin Example
 
-```{r eval=FALSE}
+```{r eval=TRUE}
 # For single origin, returns one Scrape object (not a list)
 scrape <- fa_create_date_range_scrape(
   origin = "BOM",
@@ -207,24 +193,29 @@ scrape <- fa_create_date_range_scrape(
 )
 
 # Scrape directly
-scrape <- ScrapeObjects(scrape, verbose = TRUE)
+scraped <- ScrapeObjects(scrape, verbose = TRUE)
 
 # Analyze with helper functions
-summary_table <- fa_flex_table(scrape)
-best_dates <- fa_best_dates(scrape, n = 5)
+summary_table <- fa_flex_table(scraped)
+summary_table |>
+  knitr::kable()
+
+best_dates <- fa_best_dates(scraped, n = 5)
+best_dates |>
+  knitr::kable()
 ```
 
 ### Using fa_flex_table()
 
 The `fa_flex_table()` function creates a wide summary table showing prices by city/airport and date:
 
-```{r eval=FALSE}
+```{r eval=TRUE}
 # Create summary table from scraped data
-summary_table <- fa_flex_table(scrapes)
+summary_table <- fa_flex_table(scraped)
 
 # Optional: customize the output
 summary_table <- fa_flex_table(
-  scrapes,
+  scraped,
   include_comment = TRUE,     # Include comment column if available
   currency_symbol = "$",      # Currency symbol for formatting
   round_prices = TRUE         # Round prices to nearest integer
@@ -241,13 +232,17 @@ summary_table <- fa_flex_table(
 
 The `fa_best_dates()` function identifies the cheapest travel dates:
 
-```{r eval=FALSE}
+```{r eval=TRUE}
 # Find the 10 cheapest dates by mean price
-best_dates <- fa_best_dates(scrapes, n = 10, by = "mean")
+best_dates <- fa_best_dates(scraped, n = 10, by = "mean")
+best_dates
 
 # Alternative aggregation methods
-best_dates_median <- fa_best_dates(scrapes, n = 5, by = "median")
-best_dates_min <- fa_best_dates(scrapes, n = 5, by = "min")
+best_dates_median <- fa_best_dates(scraped, n = 5, by = "median")
+best_dates_median
+
+best_dates_min <- fa_best_dates(scraped, n = 5, by = "min")
+best_dates_min
 ```
 
 **Parameters:**

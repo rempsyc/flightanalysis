@@ -28,11 +28,11 @@
 #'   scrapes[[code]] <- ScrapeObjects(scrapes[[code]])
 #' }
 #' best_dates <- fa_best_dates(scrapes, n = 5, by = "mean")
-#' 
+#'
 #' # Option 2: Pass processed data frame
 #' best_dates <- fa_best_dates(my_data_frame, n = 5, by = "mean")
 #' }
-fa_best_dates <- function(results, n = 10, by = "mean") {
+fa_best_dates <- function(results, n = 10, by = "min") {
   # Handle different input types
   # Check for Scrape object FIRST (before is.list, since Scrape objects are lists)
   if (inherits(results, "Scrape")) {
@@ -44,10 +44,14 @@ fa_best_dates <- function(results, n = 10, by = "mean") {
       # Extract and combine data from list of Scrape objects
       results <- extract_data_from_scrapes(results)
     } else {
-      stop("results must be a data frame, a Scrape object, or a list of Scrape objects")
+      stop(
+        "results must be a data frame, a Scrape object, or a list of Scrape objects"
+      )
     }
   } else if (!is.data.frame(results)) {
-    stop("results must be a data frame, a Scrape object, or a list of Scrape objects")
+    stop(
+      "results must be a data frame, a Scrape object, or a list of Scrape objects"
+    )
   }
 
   required_cols <- c("Date", "Price")
@@ -67,7 +71,8 @@ fa_best_dates <- function(results, n = 10, by = "mean") {
     Price ~ Date,
     data = results,
     FUN = function(x) {
-      switch(by,
+      switch(
+        by,
         mean = mean(x, na.rm = TRUE),
         median = stats::median(x, na.rm = TRUE),
         min = min(x, na.rm = TRUE)
