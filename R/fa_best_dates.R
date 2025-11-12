@@ -36,6 +36,10 @@ fa_best_dates <- function(results, n = 10, by = "min") {
   # Handle different input types
   # Check for Scrape object FIRST (before is.list, since Scrape objects are lists)
   if (inherits(results, "Scrape")) {
+    # Validate Scrape object has data
+    if (is.null(results$data) || nrow(results$data) == 0) {
+      stop("Scrape object contains no data. Please run ScrapeObjects() first to fetch flight data.")
+    }
     # Single Scrape object - pass directly to extract_data_from_scrapes
     results <- extract_data_from_scrapes(results)
   } else if (is.list(results) && !is.data.frame(results)) {
@@ -60,6 +64,11 @@ fa_best_dates <- function(results, n = 10, by = "min") {
       "results must contain columns: %s",
       paste(required_cols, collapse = ", ")
     ))
+  }
+  
+  # Check if we have any data after filtering
+  if (nrow(results) == 0) {
+    stop("No data available after filtering. The Scrape object may contain only placeholder rows or no valid flight data.")
   }
 
   if (!by %in% c("mean", "median", "min")) {

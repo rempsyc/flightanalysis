@@ -88,22 +88,25 @@ best_dates_min <- fa_best_dates(results, n = 5, by = "min")
 print("\n=== TOP 5 DATES WITH LOWEST PRICE (Best deal found) ===")
 print(best_dates_min)
 
-# Example 5: Keep all offers for detailed analysis
-# results_with_offers <- fa_scrape_best_oneway(
-#   routes = routes,
-#   dates = dates[1:3],  # Just first 3 dates for quick test
-#   keep_offers = TRUE,   # Store all flight offers
-#   pause = 3,
-#   verbose = TRUE
+# Example 5: Alternative workflow - separate scraping per origin
+# (commented out - uncomment to run actual scraping)
+# scrape_single <- fa_create_date_range_scrape(
+#   origin = "BOM",
+#   dest = "JFK",
+#   date_min = "2025-12-18",
+#   date_max = "2025-12-20"
 # )
 # 
-# # Access all offers for a specific route and date
-# offers <- results_with_offers$Offers[[1]]
-# print(offers)
+# # Scrape the data
+# scrape_single <- ScrapeObjects(scrape_single, verbose = TRUE)
+# 
+# # Analyze single origin
+# best_dates_single <- fa_best_dates(scrape_single, n = 5, by = "min")
+# print(best_dates_single)
 
 cat("\n=== Usage Tips ===\n")
-cat("1. Use fa_scrape_best_oneway() to scrape multiple routes and dates\n")
-cat("2. Use fa_flex_table() to create a wide summary table for easy comparison\n")
-cat("3. Use fa_best_dates() to quickly identify the cheapest travel dates\n")
-cat("4. Set keep_offers=TRUE to store all flight options for detailed analysis\n")
-cat("5. Adjust the pause parameter to control rate limiting (default: 2 seconds)\n")
+cat("1. Use fa_create_date_range_scrape() to create Scrape objects for date ranges\n")
+cat("2. Use ScrapeObjects() to fetch actual flight data from Google Flights\n")
+cat("3. Use fa_flex_table() to create a wide summary table for easy comparison\n")
+cat("4. Use fa_best_dates() to quickly identify the cheapest travel dates\n")
+cat("5. Both fa_flex_table() and fa_best_dates() accept Scrape objects or data frames\n")
