@@ -21,3 +21,5 @@
 ^pkgdown$
 ^\.github$
 ^flightanalysis\.Rproj$
+REFACTORING_SUMMARY.md
+IMPLEMENTATION_SUMMARY.md
