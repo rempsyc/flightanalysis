@@ -50,8 +50,8 @@ fa_flex_table <- function(
       stop("results must be a data frame, a Scrape object, or a list of Scrape objects")
     }
   } else if (inherits(results, "Scrape")) {
-    # Single Scrape object
-    results <- extract_data_from_scrapes(list(results))
+    # Single Scrape object - pass directly to extract_data_from_scrapes
+    results <- extract_data_from_scrapes(results)
   } else if (!is.data.frame(results)) {
     stop("results must be a data frame, a Scrape object, or a list of Scrape objects")
   }
