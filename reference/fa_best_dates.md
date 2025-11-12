@@ -7,7 +7,7 @@ when planning a flexible trip.
 ## Usage
 
 ``` r
-fa_best_dates(results, n = 10, by = "mean")
+fa_best_dates(results, n = 10, by = "min")
 ```
 
 ## Arguments

@@ -38,9 +38,9 @@ and collect data regarding flights and prices. Current features include:
 
   Convert Flight objects to data frame
 
-- `fa_scrape_best_oneway`:
+- [`fa_create_date_range_scrape`](https://rempsyc.github.io/flightanalysis/reference/fa_create_date_range_scrape.md):
 
-  Scrape cheapest flights across multiple dates and airports
+  Create Scrape objects for flexible date search
 
 - [`fa_flex_table`](https://rempsyc.github.io/flightanalysis/reference/fa_flex_table.md):
 
