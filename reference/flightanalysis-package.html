@@ -6,6 +6,8 @@ collect data regarding flights and prices. Current features include:
 
 Detailed scraping and querying tools for Google Flights
 Support for multiple trip types (one-way, round-trip, chain, perfect-chain)
+Flexible date search across multiple airports and date ranges
+Summary tables and best date identification for travel planning
 Base analytical tools/methods for price forecasting/summary
 
 "><meta property="og:description" content="
@@ -15,6 +17,8 @@ collect data regarding flights and prices. Current features include:
 
 Detailed scraping and querying tools for Google Flights
 Support for multiple trip types (one-way, round-trip, chain, perfect-chain)
+Flexible date search across multiple airports and date ranges
+Summary tables and best date identification for travel planning
 Base analytical tools/methods for price forecasting/summary
 
 "><meta property="og:image" content="https://rempsyc.github.io/flightanalysis/logo.png"></head><body>
@@ -25,7 +29,7 @@ Base analytical tools/methods for price forecasting/summary
 
     <a class="navbar-brand me-2" href="../index.html">flightanalysis</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,6 +38,7 @@ Base analytical tools/methods for price forecasting/summary
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/rempsyc/flightanalysis/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -56,6 +61,8 @@ Base analytical tools/methods for price forecasting/summary
 collect data regarding flights and prices. Current features include:</p>
 <ul><li><p>Detailed scraping and querying tools for Google Flights</p></li>
 <li><p>Support for multiple trip types (one-way, round-trip, chain, perfect-chain)</p></li>
+<li><p>Flexible date search across multiple airports and date ranges</p></li>
+<li><p>Summary tables and best date identification for travel planning</p></li>
 <li><p>Base analytical tools/methods for price forecasting/summary</p></li>
 </ul></div>
 
@@ -75,6 +82,15 @@ collect data regarding flights and prices. Current features include:</p>
 
   <dt><code><a href="flights_to_dataframe.html">flights_to_dataframe</a></code></dt>
 <dd><p>Convert Flight objects to data frame</p></dd>
+
+  <dt><code>fa_scrape_best_oneway</code></dt>
+<dd><p>Scrape cheapest flights across multiple dates and airports</p></dd>
+
+  <dt><code><a href="fa_flex_table.html">fa_flex_table</a></code></dt>
+<dd><p>Create wide summary table for price comparison</p></dd>
+
+  <dt><code><a href="fa_best_dates.html">fa_best_dates</a></code></dt>
+<dd><p>Identify cheapest travel dates</p></dd>
 
 
 </dl></div>

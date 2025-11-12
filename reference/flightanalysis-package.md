@@ -14,6 +14,10 @@ and collect data regarding flights and prices. Current features include:
 - Support for multiple trip types (one-way, round-trip, chain,
   perfect-chain)
 
+- Flexible date search across multiple airports and date ranges
+
+- Summary tables and best date identification for travel planning
+
 - Base analytical tools/methods for price forecasting/summary
 
 ## Main Functions
@@ -33,6 +37,18 @@ and collect data regarding flights and prices. Current features include:
 - [`flights_to_dataframe`](https://rempsyc.github.io/flightanalysis/reference/flights_to_dataframe.md):
 
   Convert Flight objects to data frame
+
+- `fa_scrape_best_oneway`:
+
+  Scrape cheapest flights across multiple dates and airports
+
+- [`fa_flex_table`](https://rempsyc.github.io/flightanalysis/reference/fa_flex_table.md):
+
+  Create wide summary table for price comparison
+
+- [`fa_best_dates`](https://rempsyc.github.io/flightanalysis/reference/fa_best_dates.md):
+
+  Identify cheapest travel dates
 
 ## Trip Types
 
