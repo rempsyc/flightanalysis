@@ -1,142 +1,88 @@
 # Changelog
 
-## flightanalysis (development version)
+## flightanalysis 2.0.0
 
-### Major API Redesign (v2.0)
+### Major API Redesign
 
-This release includes a comprehensive API redesign to follow Tidyverse
-style guidelines with verb-based, descriptive function names.
+This release represents a complete redesign of the package API following
+Tidyverse conventions with consistent `fa_` prefixing for all
+user-facing functions.
 
-#### Breaking Changes (with deprecation support)
+#### Core Functions
 
-**Core Function Renames:** -
-[`Scrape()`](https://rempsyc.github.io/flightanalysis/reference/define_query.md)
-→
-[`define_query()`](https://rempsyc.github.io/flightanalysis/reference/define_query.md) -
-Create flight query objects -
-[`ScrapeObjects()`](https://rempsyc.github.io/flightanalysis/reference/fetch_flights.md)
-/
-[`scrape_objects()`](https://rempsyc.github.io/flightanalysis/reference/fetch_flights.md)
-→
-[`fetch_flights()`](https://rempsyc.github.io/flightanalysis/reference/fetch_flights.md) -
-Fetch flight data from Google -
-[`fa_create_date_range_scrape()`](https://rempsyc.github.io/flightanalysis/reference/create_date_range.md)
-→
-[`create_date_range()`](https://rempsyc.github.io/flightanalysis/reference/create_date_range.md) -
-Create date range queries
+**Query Creation:** -
+[`fa_define_query()`](https://rempsyc.github.io/flightanalysis/reference/fa_define_query.md) -
+Create flight query objects for one-way, round-trip, chain-trip, or
+perfect-chain searches -
+[`fa_create_date_range()`](https://rempsyc.github.io/flightanalysis/reference/fa_create_date_range.md) -
+Create query objects for multiple origins and dates
 
-**Internal Changes:** -
-[`Flight()`](https://rempsyc.github.io/flightanalysis/reference/Flight.md)
-is now internal (not exported) - only used internally for parsing -
-[`flights_to_dataframe()`](https://rempsyc.github.io/flightanalysis/reference/flights_to_dataframe.md)
-is now internal - only used by fetch_flights() - S3 class renamed:
-`Scrape` → `flight_query` (backward compatible)
+**Data Fetching:** -
+[`fa_fetch_flights()`](https://rempsyc.github.io/flightanalysis/reference/fa_fetch_flights.md) -
+Fetch flight data from Google Flights using chromote
 
-**All old function names remain available as deprecated aliases** with
-warnings to guide users to the new API. Both old and new class names are
-supported.
+**Analysis Functions:** -
+[`fa_summarize_prices()`](https://rempsyc.github.io/flightanalysis/reference/fa_summarize_prices.md) -
+Create wide summary table showing prices by city/airport and date -
+[`fa_find_best_dates()`](https://rempsyc.github.io/flightanalysis/reference/fa_find_best_dates.md) -
+Identify cheapest travel dates across routes
 
-#### New API Examples
+#### Example Usage
 
 ``` r
-# Old way
-scrape <- Scrape("JFK", "IST", "2025-12-20")
-scrape <- scrape_objects(scrape)
+library(flightanalysis)
 
-# New way
-query <- define_query("JFK", "IST", "2025-12-20")
-result <- fetch_flights(query)
+# Create a query
+query <- fa_define_query("JFK", "IST", "2025-12-20", "2025-12-27")
 
-# Old way
-scrapes <- fa_create_date_range_scrape(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
+# Fetch flight data
+result <- fa_fetch_flights(query)
 
-# New way
-queries <- create_date_range(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
+# Analyze results
+summary <- fa_summarize_prices(result)
+best <- fa_find_best_dates(result, n = 5)
 ```
 
-#### Migration Guide
+#### Date Range Search
 
-1.  Replace
-    [`Scrape()`](https://rempsyc.github.io/flightanalysis/reference/define_query.md)
-    with
-    [`define_query()`](https://rempsyc.github.io/flightanalysis/reference/define_query.md)
-2.  Replace
-    [`ScrapeObjects()`](https://rempsyc.github.io/flightanalysis/reference/fetch_flights.md)
-    or
-    [`scrape_objects()`](https://rempsyc.github.io/flightanalysis/reference/fetch_flights.md)
-    with
-    [`fetch_flights()`](https://rempsyc.github.io/flightanalysis/reference/fetch_flights.md)
-3.  Replace
-    [`fa_create_date_range_scrape()`](https://rempsyc.github.io/flightanalysis/reference/create_date_range.md)
-    with
-    [`create_date_range()`](https://rempsyc.github.io/flightanalysis/reference/create_date_range.md)
-4.  Remove direct use of
-    [`Flight()`](https://rempsyc.github.io/flightanalysis/reference/Flight.md)
-    (it’s internal now)
-5.  Remove direct use of
-    [`flights_to_dataframe()`](https://rempsyc.github.io/flightanalysis/reference/flights_to_dataframe.md)
-    (it’s internal now)
+``` r
+# Search multiple origins over a date range
+queries <- fa_create_date_range(
+  origin = c("BOM", "DEL", "VNS"),
+  dest = "JFK",
+  date_min = "2025-12-18",
+  date_max = "2026-01-05"
+)
 
-All existing code will continue to work with deprecation warnings.
+# Fetch data for each origin
+for (code in names(queries)) {
+  queries[[code]] <- fa_fetch_flights(queries[[code]])
+}
 
-### Previous Changes
+# Analyze all results
+summary <- fa_summarize_prices(queries)
+best_dates <- fa_find_best_dates(queries, n = 10, by = "mean")
+```
 
-#### Minor Improvements from v1.0.2
+#### Internal Functions
 
-- Added
-  [`fa_create_date_range_scrape()`](https://rempsyc.github.io/flightanalysis/reference/create_date_range.md)
-  function for creating flexible date range Scrape objects. This
-  function:
-  - Creates chain-trip Scrape objects from origin airports and date
-    range
-  - For single origin: returns one Scrape object
-  - For multiple origins: returns a named list of Scrape objects (one
-    per origin)
-  - Generates all date permutations without scraping (use with
-    [`scrape_objects()`](https://rempsyc.github.io/flightanalysis/reference/fetch_flights.md))
-  - Parameter `origin` (not `airports`) for consistency with original
-    Python package
-  - Each origin gets its own Scrape object to satisfy chain-trip’s
-    strictly increasing date requirement
-- Added
-  [`fa_flex_table()`](https://rempsyc.github.io/flightanalysis/reference/fa_flex_table.md)
-  function for creating wide summary tables. This function:
-  - Accepts data frames, single Scrape objects, or lists of Scrape
-    objects
-  - Automatically extracts and processes data from Scrape objects
-  - Reshapes results into City × Date format
-  - Calculates average prices across dates
-  - Optionally includes comment column from routes
-  - Formats prices with currency symbols
-  - Sorts date columns chronologically
-- Added
-  [`fa_best_dates()`](https://rempsyc.github.io/flightanalysis/reference/fa_best_dates.md)
-  function for identifying cheapest travel dates. This function:
-  - Accepts data frames, single Scrape objects, or lists of Scrape
-    objects
-  - Automatically extracts and processes data from Scrape objects
-  - Aggregates prices by date using mean, median, or min
-  - Returns top N cheapest dates
-  - Includes route count per date
-  - Sorts results by price (cheapest first)
+The following functions are internal and not exported: -
+[`Flight()`](https://rempsyc.github.io/flightanalysis/reference/Flight.md) -
+Used internally for parsing scraped data -
+[`flights_to_dataframe()`](https://rempsyc.github.io/flightanalysis/reference/flights_to_dataframe.md) -
+Converts flight objects to data frames
 
-### Minor Improvements
+#### Package Organization
 
-- Added internal
-  [`filter_placeholder_rows()`](https://rempsyc.github.io/flightanalysis/reference/filter_placeholder_rows.md)
-  helper function
-- Added internal
-  [`extract_data_from_scrapes()`](https://rempsyc.github.io/flightanalysis/reference/extract_data_from_scrapes.md)
-  helper function for processing Scrape objects
-- Updated package documentation to describe new flexible date search
-  features
-- Split functions into separate files for better organization
-  (fa_create_date_range_scrape.R, fa_flex_table.R, fa_best_dates.R,
-  filter_placeholder_rows.R)
-- Added comprehensive examples in `examples/flexible_date_search.R`
-- Added test coverage for new functions in
-  `tests/testthat/test-flex_search.R`
-- Added `scales` and `tibble` to suggested dependencies
+- Functions organized by purpose:
+  - `fa_create_date_range.R` - Date range query creation
+  - `fa_summarize_prices.R` - Price summary tables
+  - `fa_find_best_dates.R` - Best date identification
+  - `filter_placeholder_rows.R` - Data cleaning helpers
+  - `scrape.R` - Core query and fetching functionality
+- Comprehensive examples in `examples/` directory
+- Full test coverage in `tests/testthat/`
+- Suggested dependencies: `chromote`, `scales`, `tibble`, `progress`
 
 ## flightanalysis 1.0.0
 

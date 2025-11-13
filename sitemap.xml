@@ -14,12 +14,12 @@
 <url><loc>https://rempsyc.github.io/flightanalysis/reference/classify_arg.html</loc></url>
 <url><loc>https://rempsyc.github.io/flightanalysis/reference/clean_results.html</loc></url>
 <url><loc>https://rempsyc.github.io/flightanalysis/reference/close_chromote_safely.html</loc></url>
-<url><loc>https://rempsyc.github.io/flightanalysis/reference/create_date_range.html</loc></url>
-<url><loc>https://rempsyc.github.io/flightanalysis/reference/define_query.html</loc></url>
 <url><loc>https://rempsyc.github.io/flightanalysis/reference/extract_data_from_scrapes.html</loc></url>
-<url><loc>https://rempsyc.github.io/flightanalysis/reference/fa_best_dates.html</loc></url>
-<url><loc>https://rempsyc.github.io/flightanalysis/reference/fa_flex_table.html</loc></url>
-<url><loc>https://rempsyc.github.io/flightanalysis/reference/fetch_flights.html</loc></url>
+<url><loc>https://rempsyc.github.io/flightanalysis/reference/fa_create_date_range.html</loc></url>
+<url><loc>https://rempsyc.github.io/flightanalysis/reference/fa_define_query.html</loc></url>
+<url><loc>https://rempsyc.github.io/flightanalysis/reference/fa_fetch_flights.html</loc></url>
+<url><loc>https://rempsyc.github.io/flightanalysis/reference/fa_find_best_dates.html</loc></url>
+<url><loc>https://rempsyc.github.io/flightanalysis/reference/fa_summarize_prices.html</loc></url>
 <url><loc>https://rempsyc.github.io/flightanalysis/reference/filter_placeholder_rows.html</loc></url>
 <url><loc>https://rempsyc.github.io/flightanalysis/reference/flightanalysis-package.html</loc></url>
 <url><loc>https://rempsyc.github.io/flightanalysis/reference/flights_to_dataframe.html</loc></url>

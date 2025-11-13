@@ -93,15 +93,15 @@
 <div class="section level3">
 <h3 id="creating-flight-queries">Creating Flight Queries<a class="anchor" aria-label="anchor" href="#creating-flight-queries"></a>
 </h3>
-<p>The main scraping function that makes up the backbone of most functionalities is <code><a href="reference/define_query.html">Scrape()</a></code>. It serves as a data object, preserving the flight information as well as meta-data from your query.</p>
+<p>The main scraping function that makes up the backbone of most functionalities is <code><a href="reference/fa_define_query.html">fa_define_query()</a></code>. It serves as a data object, preserving the flight information as well as meta-data from your query.</p>
 <div class="section level4">
 <h4 id="one-way-trip">One-Way Trip<a class="anchor" aria-label="anchor" href="#one-way-trip"></a>
 </h4>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create a one-way flight query</span></span>
-<span><span class="va">scrape</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/define_query.html">Scrape</a></span><span class="op">(</span><span class="st">"JFK"</span>, <span class="st">"IST"</span>, <span class="st">"2025-07-20"</span><span class="op">)</span></span>
-<span><span class="va">scrape</span></span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="do">## Scrape( {Query Not Yet Used}</span></span>
+<span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_define_query.html">fa_define_query</a></span><span class="op">(</span><span class="st">"JFK"</span>, <span class="st">"IST"</span>, <span class="st">"2025-07-20"</span><span class="op">)</span></span>
+<span><span class="va">query</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="do">## Flight Query( {Not Yet Fetched}</span></span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="do">## 2025-07-20: JFK --&gt; IST</span></span>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="do">## )</span></span></code></pre></div>
 </div>
@@ -110,9 +110,9 @@
 </h4>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create a round-trip flight query</span></span>
-<span><span class="va">scrape</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/define_query.html">Scrape</a></span><span class="op">(</span><span class="st">"JFK"</span>, <span class="st">"IST"</span>, <span class="st">"2025-07-20"</span>, <span class="st">"2025-08-20"</span><span class="op">)</span></span>
-<span><span class="va">scrape</span></span></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="do">## Scrape( {Query Not Yet Used}</span></span>
+<span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_define_query.html">fa_define_query</a></span><span class="op">(</span><span class="st">"JFK"</span>, <span class="st">"IST"</span>, <span class="st">"2025-07-20"</span>, <span class="st">"2025-08-20"</span><span class="op">)</span></span>
+<span><span class="va">query</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="do">## Flight Query( {Not Yet Fetched}</span></span>
 <span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="do">## 2025-07-20: JFK --&gt; IST</span></span>
 <span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="do">## 2025-08-20: IST --&gt; JFK</span></span>
 <span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="do">## )</span></span></code></pre></div>
@@ -123,9 +123,9 @@
 <p>Chain-trips are defined as a sequence of one-way flights that have no direct relation to each other, other than being in chronological order.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Chain-trip format: origin, dest, date, origin, dest, date, ...</span></span>
-<span><span class="va">scrape</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/define_query.html">Scrape</a></span><span class="op">(</span><span class="st">"JFK"</span>, <span class="st">"IST"</span>, <span class="st">"2025-08-20"</span>, <span class="st">"RDU"</span>, <span class="st">"LGA"</span>, <span class="st">"2025-12-25"</span>, <span class="st">"EWR"</span>, <span class="st">"SFO"</span>, <span class="st">"2026-01-20"</span><span class="op">)</span></span>
-<span><span class="va">scrape</span></span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="do">## Scrape( {Query Not Yet Used}</span></span>
+<span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_define_query.html">fa_define_query</a></span><span class="op">(</span><span class="st">"JFK"</span>, <span class="st">"IST"</span>, <span class="st">"2025-08-20"</span>, <span class="st">"RDU"</span>, <span class="st">"LGA"</span>, <span class="st">"2025-12-25"</span>, <span class="st">"EWR"</span>, <span class="st">"SFO"</span>, <span class="st">"2026-01-20"</span><span class="op">)</span></span>
+<span><span class="va">query</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="do">## Flight Query( {Not Yet Fetched}</span></span>
 <span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="do">## 2025-08-20: JFK --&gt; IST</span></span>
 <span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="do">## 2025-12-25: RDU --&gt; LGA</span></span>
 <span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="do">## 2026-01-20: EWR --&gt; SFO</span></span>
@@ -137,9 +137,9 @@
 <p>Perfect-chains are defined as a sequence of one-way flights such that the destination of the previous flight is the origin of the next, and the origin of the chain is the final destination (a cycle).</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Perfect-chain format: origin, date, origin, date, ..., first_origin</span></span>
-<span><span class="va">scrape</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/define_query.html">Scrape</a></span><span class="op">(</span><span class="st">"JFK"</span>, <span class="st">"2025-09-20"</span>, <span class="st">"IST"</span>, <span class="st">"2025-09-25"</span>, <span class="st">"CDG"</span>, <span class="st">"2025-10-10"</span>, <span class="st">"LHR"</span>, <span class="st">"2025-11-01"</span>, <span class="st">"JFK"</span><span class="op">)</span></span>
-<span><span class="va">scrape</span></span></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="do">## Scrape( {Query Not Yet Used}</span></span>
+<span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_define_query.html">fa_define_query</a></span><span class="op">(</span><span class="st">"JFK"</span>, <span class="st">"2025-09-20"</span>, <span class="st">"IST"</span>, <span class="st">"2025-09-25"</span>, <span class="st">"CDG"</span>, <span class="st">"2025-10-10"</span>, <span class="st">"LHR"</span>, <span class="st">"2025-11-01"</span>, <span class="st">"JFK"</span><span class="op">)</span></span>
+<span><span class="va">query</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="do">## Flight Query( {Not Yet Fetched}</span></span>
 <span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="do">## 2025-09-20: JFK --&gt; IST</span></span>
 <span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="do">## 2025-09-25: IST --&gt; CDG</span></span>
 <span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="do">## 2025-10-10: CDG --&gt; LHR</span></span>
@@ -155,10 +155,10 @@
 <p>Then scrape flight data from Google Flights:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create a query</span></span>
-<span><span class="va">scrape</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/define_query.html">Scrape</a></span><span class="op">(</span><span class="st">"JFK"</span>, <span class="st">"IST"</span>, <span class="st">"2025-12-20"</span>, <span class="st">"2026-01-05"</span><span class="op">)</span></span>
+<span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_define_query.html">fa_define_query</a></span><span class="op">(</span><span class="st">"JFK"</span>, <span class="st">"IST"</span>, <span class="st">"2025-12-20"</span>, <span class="st">"2026-01-05"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Scrape the data (runs in headless mode by default)</span></span>
-<span><span class="va">scrape</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_flights.html">scrape_objects</a></span><span class="op">(</span><span class="va">scrape</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_fetch_flights.html">fa_fetch_flights</a></span><span class="op">(</span><span class="va">query</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb12"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="do">##   Segment 1/2: JFK -&gt; IST on 2025-12-20</span></span>
 <span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="do">##   [OK] Successfully parsed 8 flights</span></span>
 <span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="do">##   Segment 2/2: IST -&gt; JFK on 2026-01-05</span></span>
@@ -166,7 +166,7 @@
 <span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="do">##   [OK] Total flights retrieved: 15</span></span></code></pre></div>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># View the scraped data</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">scrape</span><span class="op">$</span><span class="va">data</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">query</span><span class="op">$</span><span class="va">data</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
@@ -284,7 +284,7 @@
 </tr>
 </tbody>
 </table>
-<p>The <code><a href="reference/fetch_flights.html">scrape_objects()</a></code> function will: 1. <strong>Run pre-flight checks</strong> - Verify Chrome installation and internet connectivity 2. <strong>Automatically connect to Chrome</strong> - Using Chrome DevTools Protocol (no drivers!) 3. <strong>Navigate to Google Flights URLs</strong> - With proper wait times for page loading 4. <strong>Extract flight information</strong> - Parse prices, times, airlines, stops, and emissions 5. <strong>Store results</strong> - Save data in the Scrape object’s <code>data</code> field 6. <strong>Handle errors gracefully</strong> - Provide detailed troubleshooting tips if issues occur</p>
+<p>The <code><a href="reference/fa_fetch_flights.html">fa_fetch_flights()</a></code> function will: 1. <strong>Run pre-flight checks</strong> - Verify Chrome installation and internet connectivity 2. <strong>Automatically connect to Chrome</strong> - Using Chrome DevTools Protocol (no drivers!) 3. <strong>Navigate to Google Flights URLs</strong> - With proper wait times for page loading 4. <strong>Extract flight information</strong> - Parse prices, times, airlines, stops, and emissions 5. <strong>Store results</strong> - Save data in the query object’s <code>data</code> field 6. <strong>Handle errors gracefully</strong> - Provide detailed troubleshooting tips if issues occur</p>
 <p><strong>Advantages over RSelenium:</strong></p>
 <p>chromote eliminates common RSelenium issues: - ❌ No more “invalid assignment for reference class field ‘port’” errors - ❌ No more driver download/installation problems - ❌ No more version compatibility issues - ❌ No more port conflicts - ✅ Just install chromote and it works!</p>
 </div>
@@ -326,8 +326,8 @@
 <h3 id="basic-workflow">Basic Workflow<a class="anchor" aria-label="anchor" href="#basic-workflow"></a>
 </h3>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Step 1: Create Scrape objects for all routes and dates</span></span>
-<span><span class="va">scrapes</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_date_range.html">fa_create_date_range_scrape</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="co"># Step 1: Create query objects for all routes and dates</span></span>
+<span><span class="va">scrapes</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_create_date_range.html">fa_create_date_range</a></span><span class="op">(</span></span>
 <span>  origin <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BOM"</span>, <span class="st">"DEL"</span>, <span class="st">"VNS"</span>, <span class="st">"PAT"</span><span class="op">)</span>,</span>
 <span>  dest <span class="op">=</span> <span class="st">"JFK"</span>,</span>
 <span>  date_min <span class="op">=</span> <span class="st">"2025-12-28"</span>,</span>
@@ -335,7 +335,7 @@
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Step 2: Scrape each origin</span></span>
-<span><span class="va">scraped</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_flights.html">scrape_objects</a></span><span class="op">(</span><span class="va">scrapes</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">scraped</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_fetch_flights.html">fa_fetch_flights</a></span><span class="op">(</span><span class="va">queries</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb17"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="do">## Scraping 4 objects...</span></span>
 <span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="do">## </span></span>
 <span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="do">## [1/4]   Segment 1/7: BOM -&gt; JFK on 2025-12-28</span></span>
@@ -399,10 +399,10 @@
 <span id="cb17-61"><a href="#cb17-61" tabindex="-1"></a><span class="do">##   [OK] Successfully parsed 12 flights</span></span>
 <span id="cb17-62"><a href="#cb17-62" tabindex="-1"></a><span class="do">##   [OK] Total flights retrieved: 81</span></span></code></pre></div>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Step 3: Analyze directly with list of Scrape objects</span></span>
+<code class="sourceCode R"><span><span class="co"># Step 3: Analyze directly with list of query objects</span></span>
 <span></span>
 <span><span class="co"># Create wide summary table (City × Date with Average Price)</span></span>
-<span><span class="va">summary_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_flex_table.html">fa_flex_table</a></span><span class="op">(</span><span class="va">scraped</span><span class="op">)</span></span>
+<span><span class="va">summary_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_summarize_prices.html">fa_summarize_prices</a></span><span class="op">(</span><span class="va">scraped</span><span class="op">)</span></span>
 <span><span class="va">summary_table</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table style="width:100%;" class="table">
@@ -463,7 +463,7 @@
 </table>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Find the top 10 cheapest dates</span></span>
-<span><span class="va">best_dates</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_best_dates.html">fa_best_dates</a></span><span class="op">(</span><span class="va">scraped</span>, n <span class="op">=</span> <span class="fl">10</span>, by <span class="op">=</span> <span class="st">"mean"</span><span class="op">)</span></span>
+<span><span class="va">best_dates</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_find_best_dates.html">fa_find_best_dates</a></span><span class="op">(</span><span class="va">scraped</span>, n <span class="op">=</span> <span class="fl">10</span>, by <span class="op">=</span> <span class="st">"mean"</span><span class="op">)</span></span>
 <span><span class="va">best_dates</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
@@ -510,14 +510,14 @@
 </tr>
 </tbody>
 </table>
-<p><strong>Key Features:</strong> - <strong>Per-origin Scrape objects</strong>: Each origin gets its own chain-trip Scrape object (required due to strict date ordering in chain-trips) - <strong>Simple workflow</strong>: (1) Create list of Scrape objects with <code><a href="reference/create_date_range.html">fa_create_date_range_scrape()</a></code>, (2) Scrape each with <code><a href="reference/fetch_flights.html">scrape_objects()</a></code>, (3) Pass directly to analysis functions - <strong>Direct Scrape object support</strong>: <code><a href="reference/fa_flex_table.html">fa_flex_table()</a></code> and <code><a href="reference/fa_best_dates.html">fa_best_dates()</a></code> accept lists of Scrape objects directly - no manual data processing needed! - Search multiple origin airports and dates efficiently - Automatically leverages existing chain-trip functionality - Automatic filtering of placeholder rows - Create wide summary tables for easy price comparison - Identify cheapest travel dates automatically - Optional currency formatting with the <code>scales</code> package</p>
+<p><strong>Key Features:</strong> - <strong>Per-origin query objects</strong>: Each origin gets its own chain-trip query object (required due to strict date ordering in chain-trips) - <strong>Simple workflow</strong>: (1) Create list of query objects with <code><a href="reference/fa_create_date_range.html">fa_create_date_range()</a></code>, (2) Scrape each with <code><a href="reference/fa_fetch_flights.html">fa_fetch_flights()</a></code>, (3) Pass directly to analysis functions - <strong>Direct query object support</strong>: <code><a href="reference/fa_summarize_prices.html">fa_summarize_prices()</a></code> and <code><a href="reference/fa_find_best_dates.html">fa_find_best_dates()</a></code> accept lists of query objects directly - no manual data processing needed! - Search multiple origin airports and dates efficiently - Automatically leverages existing chain-trip functionality - Automatic filtering of placeholder rows - Create wide summary tables for easy price comparison - Identify cheapest travel dates automatically - Optional currency formatting with the <code>scales</code> package</p>
 </div>
 <div class="section level3">
 <h3 id="single-origin-example">Single Origin Example<a class="anchor" aria-label="anchor" href="#single-origin-example"></a>
 </h3>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># For single origin, returns one Scrape object (not a list)</span></span>
-<span><span class="va">scrape</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_date_range.html">fa_create_date_range_scrape</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="co"># For single origin, returns one query object (not a list)</span></span>
+<span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_create_date_range.html">fa_create_date_range</a></span><span class="op">(</span></span>
 <span>  origin <span class="op">=</span> <span class="st">"BOM"</span>,</span>
 <span>  dest <span class="op">=</span> <span class="st">"JFK"</span>,</span>
 <span>  date_min <span class="op">=</span> <span class="st">"2025-12-18"</span>,</span>
@@ -525,7 +525,7 @@
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Scrape directly</span></span>
-<span><span class="va">scraped</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_flights.html">scrape_objects</a></span><span class="op">(</span><span class="va">scrape</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">scraped</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_fetch_flights.html">fa_fetch_flights</a></span><span class="op">(</span><span class="va">query</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb21"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="do">##   Segment 1/19: BOM -&gt; JFK on 2025-12-18</span></span>
 <span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a><span class="do">##   [OK] Successfully parsed 9 flights</span></span>
 <span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a><span class="do">##   Segment 2/19: BOM -&gt; JFK on 2025-12-19</span></span>
@@ -567,7 +567,7 @@
 <span id="cb21-39"><a href="#cb21-39" tabindex="-1"></a><span class="do">##   [OK] Total flights retrieved: 193</span></span></code></pre></div>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Analyze with helper functions</span></span>
-<span><span class="va">summary_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_flex_table.html">fa_flex_table</a></span><span class="op">(</span><span class="va">scraped</span><span class="op">)</span></span>
+<span><span class="va">summary_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_summarize_prices.html">fa_summarize_prices</a></span><span class="op">(</span><span class="va">scraped</span><span class="op">)</span></span>
 <span><span class="va">summary_table</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table style="width:100%;" class="table">
@@ -645,7 +645,7 @@
 </tr></tbody>
 </table>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">best_dates</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_best_dates.html">fa_best_dates</a></span><span class="op">(</span><span class="va">scraped</span>, n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">best_dates</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_find_best_dates.html">fa_find_best_dates</a></span><span class="op">(</span><span class="va">scraped</span>, n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="va">best_dates</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
@@ -684,15 +684,15 @@
 </table>
 </div>
 <div class="section level3">
-<h3 id="using-fa_flex_table">Using fa_flex_table()<a class="anchor" aria-label="anchor" href="#using-fa_flex_table"></a>
+<h3 id="using-fa_summarize_prices">Using fa_summarize_prices()<a class="anchor" aria-label="anchor" href="#using-fa_summarize_prices"></a>
 </h3>
-<p>The <code><a href="reference/fa_flex_table.html">fa_flex_table()</a></code> function creates a wide summary table showing prices by city/airport and date:</p>
+<p>The <code><a href="reference/fa_summarize_prices.html">fa_summarize_prices()</a></code> function creates a wide summary table showing prices by city/airport and date:</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create summary table from scraped data</span></span>
-<span><span class="va">summary_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_flex_table.html">fa_flex_table</a></span><span class="op">(</span><span class="va">scraped</span><span class="op">)</span></span>
+<span><span class="va">summary_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_summarize_prices.html">fa_summarize_prices</a></span><span class="op">(</span><span class="va">scraped</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Optional: customize the output</span></span>
-<span><span class="va">summary_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_flex_table.html">fa_flex_table</a></span><span class="op">(</span></span>
+<span><span class="va">summary_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_summarize_prices.html">fa_summarize_prices</a></span><span class="op">(</span></span>
 <span>  <span class="va">scraped</span>,</span>
 <span>  include_comment <span class="op">=</span> <span class="cn">TRUE</span>,     <span class="co"># Include comment column if available</span></span>
 <span>  currency_symbol <span class="op">=</span> <span class="st">"$"</span>,      <span class="co"># Currency symbol for formatting</span></span>
@@ -701,12 +701,12 @@
 <p><strong>Output format:</strong> - Rows: One per city/airport combination - Columns: One per date, plus an Average_Price column - Values: Minimum (cheapest) price for each date - Automatically filters out placeholder rows (e.g., “Price graph”)</p>
 </div>
 <div class="section level3">
-<h3 id="using-fa_best_dates">Using fa_best_dates()<a class="anchor" aria-label="anchor" href="#using-fa_best_dates"></a>
+<h3 id="using-fa_find_best_dates">Using fa_find_best_dates()<a class="anchor" aria-label="anchor" href="#using-fa_find_best_dates"></a>
 </h3>
-<p>The <code><a href="reference/fa_best_dates.html">fa_best_dates()</a></code> function identifies the cheapest travel dates:</p>
+<p>The <code><a href="reference/fa_find_best_dates.html">fa_find_best_dates()</a></code> function identifies the cheapest travel dates:</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Find the 10 cheapest dates by mean price</span></span>
-<span><span class="va">best_dates</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_best_dates.html">fa_best_dates</a></span><span class="op">(</span><span class="va">scraped</span>, n <span class="op">=</span> <span class="fl">10</span>, by <span class="op">=</span> <span class="st">"mean"</span><span class="op">)</span></span>
+<span><span class="va">best_dates</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_find_best_dates.html">fa_find_best_dates</a></span><span class="op">(</span><span class="va">scraped</span>, n <span class="op">=</span> <span class="fl">10</span>, by <span class="op">=</span> <span class="st">"mean"</span><span class="op">)</span></span>
 <span><span class="va">best_dates</span></span></code></pre></div>
 <div class="sourceCode" id="cb26"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="do">##          Date    Price N_Routes</span></span>
 <span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a><span class="do">## 1  2025-12-18 403.2500        8</span></span>
@@ -721,7 +721,7 @@
 <span id="cb26-11"><a href="#cb26-11" tabindex="-1"></a><span class="do">## 10 2025-12-27 833.5000        8</span></span></code></pre></div>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Alternative aggregation methods</span></span>
-<span><span class="va">best_dates_median</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_best_dates.html">fa_best_dates</a></span><span class="op">(</span><span class="va">scraped</span>, n <span class="op">=</span> <span class="fl">5</span>, by <span class="op">=</span> <span class="st">"median"</span><span class="op">)</span></span>
+<span><span class="va">best_dates_median</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_find_best_dates.html">fa_find_best_dates</a></span><span class="op">(</span><span class="va">scraped</span>, n <span class="op">=</span> <span class="fl">5</span>, by <span class="op">=</span> <span class="st">"median"</span><span class="op">)</span></span>
 <span><span class="va">best_dates_median</span></span></code></pre></div>
 <div class="sourceCode" id="cb28"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a><span class="do">##         Date Price N_Routes</span></span>
 <span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a><span class="do">## 1 2025-12-18 376.5        8</span></span>
@@ -730,7 +730,7 @@
 <span id="cb28-5"><a href="#cb28-5" tabindex="-1"></a><span class="do">## 4 2025-12-23 442.0        8</span></span>
 <span id="cb28-6"><a href="#cb28-6" tabindex="-1"></a><span class="do">## 5 2025-12-24 474.0        8</span></span></code></pre></div>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">best_dates_min</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_best_dates.html">fa_best_dates</a></span><span class="op">(</span><span class="va">scraped</span>, n <span class="op">=</span> <span class="fl">5</span>, by <span class="op">=</span> <span class="st">"min"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">best_dates_min</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_find_best_dates.html">fa_find_best_dates</a></span><span class="op">(</span><span class="va">scraped</span>, n <span class="op">=</span> <span class="fl">5</span>, by <span class="op">=</span> <span class="st">"min"</span><span class="op">)</span></span>
 <span><span class="va">best_dates_min</span></span></code></pre></div>
 <div class="sourceCode" id="cb30"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="do">##         Date Price N_Routes</span></span>
 <span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a><span class="do">## 1 2025-12-22   342        9</span></span>
@@ -760,7 +760,7 @@
 <div class="section level2">
 <h2 id="updates--new-features">Updates &amp; New Features<a class="anchor" aria-label="anchor" href="#updates--new-features"></a>
 </h2>
-<p><strong>November 2025</strong>: - ✅ Full R package implementation with equivalent functionality to the Python version! - ✅ Complete web scraping with <strong>chromote</strong> - driver-free browser automation - ✅ No more driver installation/compatibility issues - uses Chrome DevTools Protocol directly - ✅ Headless mode support for server environments - ✅ <strong>NEW:</strong> Flexible date search with <code><a href="reference/create_date_range.html">fa_create_date_range_scrape()</a></code> for searching multiple airports and dates - ✅ <strong>NEW:</strong> Wide summary tables with <code><a href="reference/fa_flex_table.html">fa_flex_table()</a></code> for easy price comparison - ✅ <strong>NEW:</strong> Best date identification with <code><a href="reference/fa_best_dates.html">fa_best_dates()</a></code> for finding cheapest travel dates</p>
+<p><strong>November 2025</strong>: - ✅ Full R package implementation with equivalent functionality to the Python version! - ✅ Complete web scraping with <strong>chromote</strong> - driver-free browser automation - ✅ No more driver installation/compatibility issues - uses Chrome DevTools Protocol directly - ✅ Headless mode support for server environments - ✅ <strong>NEW:</strong> Flexible date search with <code><a href="reference/fa_create_date_range.html">fa_create_date_range()</a></code> for searching multiple airports and dates - ✅ <strong>NEW:</strong> Wide summary tables with <code><a href="reference/fa_summarize_prices.html">fa_summarize_prices()</a></code> for easy price comparison - ✅ <strong>NEW:</strong> Best date identification with <code><a href="reference/fa_find_best_dates.html">fa_find_best_dates()</a></code> for finding cheapest travel dates</p>
 <p>This R package maintains the core functionality of the Python version but with R-specific implementations:</p>
 <ul>
 <li>Uses S3 classes instead of Python classes</li>

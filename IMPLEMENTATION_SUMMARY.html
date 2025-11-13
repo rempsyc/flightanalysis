@@ -50,7 +50,7 @@
 <a class="anchor" aria-label="anchor" href="#id_1-create_date_rangeairports-dest-date_min-date_max"></a></h3>
 <p><strong>Purpose</strong>: Helper function to create chain-trip Scrape object with flexible parameters</p>
 <p><strong>Parameters</strong>: - <code>airports</code>: Character vector of 3-letter airport codes - <code>dest</code>: Character, single 3-letter destination code - <code>date_min</code>: Start date (Date or character in “YYYY-MM-DD”) - <code>date_max</code>: End date (Date or character in “YYYY-MM-DD”)</p>
-<p><strong>Features</strong>: - Generates all airport × date combinations - Creates chain-trip Scrape object WITHOUT scraping - Returns Scrape object ready to pass to <code><a href="reference/fetch_flights.html">fetch_flights()</a></code> - Leverages existing chain-trip functionality</p>
+<p><strong>Features</strong>: - Generates all airport × date combinations - Creates chain-trip Scrape object WITHOUT scraping - Returns Scrape object ready to pass to <code>fetch_flights()</code> - Leverages existing chain-trip functionality</p>
 <p><strong>Returns</strong>: Scrape object of type “chain-trip”</p>
 </div>
 <div class="section level3">
@@ -58,7 +58,7 @@
 <a class="anchor" aria-label="anchor" href="#id_2-fa_scrape_best_onewayroutes-dates-"></a></h3>
 <p><strong>Purpose</strong>: Main scraping function for multiple routes and dates</p>
 <p><strong>Parameters</strong>: - <code>routes</code>: Data frame with columns City, Airport, Dest (+ optional Comment) - <code>dates</code>: Vector of dates (Date objects or character strings) - <code>keep_offers</code>: Logical, store all offers or only cheapest (default: FALSE) - <code>headless</code>: Run browser in headless mode (default: TRUE) - <code>verbose</code>: Show progress information (default: TRUE)</p>
-<p><strong>Features</strong>: - Uses <code><a href="reference/create_date_range.html">create_date_range()</a></code> to create batch Scrape object - Calls <code><a href="reference/fetch_flights.html">fetch_flights()</a></code> to scrape all queries in one browser session - Filters placeholder rows automatically - Processes results into user-friendly format - Comprehensive error messages</p>
+<p><strong>Features</strong>: - Uses <code>create_date_range()</code> to create batch Scrape object - Calls <code>fetch_flights()</code> to scrape all queries in one browser session - Filters placeholder rows automatically - Processes results into user-friendly format - Comprehensive error messages</p>
 <p><strong>Returns</strong>: Data frame with columns: City, Airport, Dest, Date, Price, and optionally Comment and Offers</p>
 </div>
 <div class="section level3">
@@ -171,13 +171,13 @@
 <div class="section level3">
 <h3 id="why-these-function-names">Why These Function Names?<a class="anchor" aria-label="anchor" href="#why-these-function-names"></a></h3>
 <ul><li>
-<code><a href="reference/create_date_range.html">create_date_range()</a></code>: Clear purpose - creates Scrape object for date range</li>
+<code>create_date_range()</code>: Clear purpose - creates Scrape object for date range</li>
 <li>
 <code>fa_scrape_best_oneway()</code>: Clear that it’s flight analysis (fa_), scrapes data, finds best prices, one-way trips</li>
 <li>
-<code><a href="reference/fa_flex_table.html">fa_flex_table()</a></code>: Indicates flexible date table output</li>
+<code>fa_flex_table()</code>: Indicates flexible date table output</li>
 <li>
-<code><a href="reference/fa_best_dates.html">fa_best_dates()</a></code>: Simple, self-explanatory</li>
+<code>fa_best_dates()</code>: Simple, self-explanatory</li>
 </ul></div>
 <div class="section level3">
 <h3 id="why-not-use-tidyrdplyr">Why Not Use tidyr/dplyr?<a class="anchor" aria-label="anchor" href="#why-not-use-tidyrdplyr"></a></h3>
@@ -225,11 +225,11 @@
 <span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu">fa_scrape_best_oneway</span><span class="op">(</span><span class="va">routes</span>, <span class="va">dates</span>, pause <span class="op">=</span> <span class="fl">3</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Create summary table</span></span>
-<span><span class="va">summary_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_flex_table.html">fa_flex_table</a></span><span class="op">(</span><span class="va">results</span><span class="op">)</span></span>
+<span><span class="va">summary_table</span> <span class="op">&lt;-</span> <span class="fu">fa_flex_table</span><span class="op">(</span><span class="va">results</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">summary_table</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Find best dates</span></span>
-<span><span class="va">best_dates</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_best_dates.html">fa_best_dates</a></span><span class="op">(</span><span class="va">results</span>, n <span class="op">=</span> <span class="fl">5</span>, by <span class="op">=</span> <span class="st">"mean"</span><span class="op">)</span></span>
+<span><span class="va">best_dates</span> <span class="op">&lt;-</span> <span class="fu">fa_best_dates</span><span class="op">(</span><span class="va">results</span>, n <span class="op">=</span> <span class="fl">5</span>, by <span class="op">=</span> <span class="st">"mean"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">best_dates</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">

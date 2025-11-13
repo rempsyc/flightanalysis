@@ -1,8 +1,8 @@
-# Extract and Process Data from Scrape Objects
+# Extract and Process Data from Query Objects
 
-Internal helper that extracts data from Scrape objects (single or list),
-filters placeholder rows, and formats for use with fa_flex_table and
-fa_best_dates.
+Internal helper that extracts data from query objects (single or list),
+filters placeholder rows, and formats for use with fa_summarize_prices
+and fa_find_best_dates.
 
 ## Usage
 
@@ -14,7 +14,7 @@ extract_data_from_scrapes(scrapes)
 
 - scrapes:
 
-  A single Scrape object or a named list of Scrape objects
+  A single query object or a named list of query objects
 
 ## Value
 

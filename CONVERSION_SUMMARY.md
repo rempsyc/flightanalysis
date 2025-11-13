@@ -10,11 +10,11 @@ now ready for use!
 
 ### 1. Core Classes (Python → R)
 
-| Python Class                     | R Implementation                                                                                | Status                                        |
-|----------------------------------|-------------------------------------------------------------------------------------------------|-----------------------------------------------|
-| `Flight`                         | [`Flight()`](https://rempsyc.github.io/flightanalysis/reference/Flight.md) S3 class             | ✅ Complete                                   |
-| `Scrape` / `_Scrape`             | [`define_query()`](https://rempsyc.github.io/flightanalysis/reference/define_query.md) S3 class | ✅ Complete                                   |
-| `CacheControl` / `_CacheControl` | ~~`CacheControl()` function~~                                                                   | ❌ Removed (users can use standard R methods) |
+| Python Class                     | R Implementation                                                                    | Status                                        |
+|----------------------------------|-------------------------------------------------------------------------------------|-----------------------------------------------|
+| `Flight`                         | [`Flight()`](https://rempsyc.github.io/flightanalysis/reference/Flight.md) S3 class | ✅ Complete                                   |
+| `Scrape` / `_Scrape`             | `define_query()` S3 class                                                           | ✅ Complete                                   |
+| `CacheControl` / `_CacheControl` | ~~`CacheControl()` function~~                                                       | ❌ Removed (users can use standard R methods) |
 
 ### 2. Features Implemented
 
@@ -175,12 +175,11 @@ write.csv(df, "flights.csv", row.names = FALSE)
 
 ### 3. Web Scraping Implementation
 
-The
-[`fetch_flights()`](https://rempsyc.github.io/flightanalysis/reference/fetch_flights.md)
-function is fully implemented using the chromote package. Implementation
-details: 1. Uses Chrome DevTools Protocol (no external drivers needed)
-2. Automatic browser setup and connection 3. Complete page scraping and
-data extraction logic 4. Supports headless mode and verbose output
+The `fetch_flights()` function is fully implemented using the chromote
+package. Implementation details: 1. Uses Chrome DevTools Protocol (no
+external drivers needed) 2. Automatic browser setup and connection 3.
+Complete page scraping and data extraction logic 4. Supports headless
+mode and verbose output
 
 This provides a modern, driver-free web scraping solution that
 eliminates the common issues associated with Selenium-based approaches.

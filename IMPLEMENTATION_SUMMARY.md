@@ -36,9 +36,8 @@ End date (Date or character in “YYYY-MM-DD”)
 
 **Features**: - Generates all airport × date combinations - Creates
 chain-trip Scrape object WITHOUT scraping - Returns Scrape object ready
-to pass to
-[`fetch_flights()`](https://rempsyc.github.io/flightanalysis/reference/fetch_flights.md) -
-Leverages existing chain-trip functionality
+to pass to `fetch_flights()` - Leverages existing chain-trip
+functionality
 
 **Returns**: Scrape object of type “chain-trip”
 
@@ -52,13 +51,10 @@ character strings) - `keep_offers`: Logical, store all offers or only
 cheapest (default: FALSE) - `headless`: Run browser in headless mode
 (default: TRUE) - `verbose`: Show progress information (default: TRUE)
 
-**Features**: - Uses
-[`create_date_range()`](https://rempsyc.github.io/flightanalysis/reference/create_date_range.md)
-to create batch Scrape object - Calls
-[`fetch_flights()`](https://rempsyc.github.io/flightanalysis/reference/fetch_flights.md)
-to scrape all queries in one browser session - Filters placeholder rows
-automatically - Processes results into user-friendly format -
-Comprehensive error messages
+**Features**: - Uses `create_date_range()` to create batch Scrape
+object - Calls `fetch_flights()` to scrape all queries in one browser
+session - Filters placeholder rows automatically - Processes results
+into user-friendly format - Comprehensive error messages
 
 **Returns**: Data frame with columns: City, Airport, Dest, Date, Price,
 and optionally Comment and Offers
@@ -167,14 +163,12 @@ offers - Formats into expected data structure
 
 ### Why These Function Names?
 
-- [`create_date_range()`](https://rempsyc.github.io/flightanalysis/reference/create_date_range.md):
-  Clear purpose - creates Scrape object for date range
+- `create_date_range()`: Clear purpose - creates Scrape object for date
+  range
 - `fa_scrape_best_oneway()`: Clear that it’s flight analysis (fa\_),
   scrapes data, finds best prices, one-way trips
-- [`fa_flex_table()`](https://rempsyc.github.io/flightanalysis/reference/fa_flex_table.md):
-  Indicates flexible date table output
-- [`fa_best_dates()`](https://rempsyc.github.io/flightanalysis/reference/fa_best_dates.md):
-  Simple, self-explanatory
+- `fa_flex_table()`: Indicates flexible date table output
+- `fa_best_dates()`: Simple, self-explanatory
 
 ### Why Not Use tidyr/dplyr?
 
