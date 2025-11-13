@@ -135,9 +135,9 @@ cat(sprintf("\nCheapest route on average: %s (%s) - $%.2f\n",
 # ==============================================================================
 
 cat("\n=== Tips for Real Usage ===\n")
-cat("1. Use create_date_range() to create Scrape objects\n")
+cat("1. Use create_date_range() to create query objects\n")
 cat("2. Use fetch_flights() to fetch data for each route\n")
-cat("3. Pass Scrape objects directly to fa_flex_table() and fa_best_dates()\n")
+cat("3. Pass query objects directly to fa_flex_table() and fa_best_dates()\n")
 cat("4. Save results with saveRDS() for later analysis\n")
 cat("5. Run during off-peak hours to be considerate of Google's servers\n")
 cat("6. Add Sys.sleep() pauses between scraping different origins\n")

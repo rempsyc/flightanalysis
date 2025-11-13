@@ -54,9 +54,9 @@ tryCatch(
     query_oneway <- fetch_flights(query_oneway)
 
     if (nrow(query_oneway$data) > 0) {
-      cat("\n✓ Successfully results", nrow(query_oneway$data), "flights!\n\n")
+      cat("\n✓ Successfully scraped", nrow(query_oneway$data), "flights!\n\n")
 
-      cat("Sample of results data:\n")
+      cat("Sample of scraped data:\n")
       print(utils::head(query_oneway$data, 3))
       cat("\n")
 
@@ -126,7 +126,7 @@ tryCatch(
 
     if (nrow(query_roundtrip$data) > 0) {
       cat(
-        "\n✓ Successfully results",
+        "\n✓ Successfully scraped",
         nrow(query_roundtrip$data),
         "total flights\n"
       )

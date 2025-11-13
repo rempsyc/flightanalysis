@@ -14,7 +14,7 @@ fa_flex_table(
 \arguments{
 \item{results}{Either:
 - A data frame with columns: City, Airport, Date, Price, and optionally Comment
-- A list of flight querys (from create_date_range with multiple origins)
+- A list of flight queries (from create_date_range with multiple origins)
 - A single flight query (from create_date_range with single origin)}
 
 \item{include_comment}{Logical. If TRUE and Comment column exists, includes
@@ -38,7 +38,7 @@ price patterns across multiple dates and comparing different origin airports.
 }
 \examples{
 \dontrun{
-# Option 1: Pass list of flight querys directly
+# Option 1: Pass list of flight queries directly
 scrapes <- create_date_range(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
 for (code in names(scrapes)) {
   scrapes[[code]] <- scrape_objects(scrapes[[code]])
