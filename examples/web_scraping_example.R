@@ -31,7 +31,7 @@ if (length(missing_packages) > 0) {
 # Load the package functions
 cat("Loading flightanalysis package...\n")
 source('R/flight.R')
-source('R/scrape.R')
+source('R/query.R')
 cat("✓ Package loaded\n\n")
 
 # Example 1: Simple one-way trip scraping
@@ -39,10 +39,10 @@ cat("Example 1: Scraping a One-Way Trip\n")
 cat("-----------------------------------\n")
 cat("Creating query: JFK -> IST on 2026-07-20\n\n")
 
-scrape_oneway <- Scrape("JFK", "IST", "2026-07-20")
+query_oneway <- define_query("JFK", "IST", "2026-07-20")
 
 cat("Query details:\n")
-print(scrape_oneway)
+print(query_oneway)
 cat("\n")
 
 cat("Now scraping live data from Google Flights...\n")
@@ -51,42 +51,42 @@ cat("(Pre-flight checks and driver initialization will run automatically)\n\n")
 tryCatch(
   {
     # IMPORTANT: Must capture the return value!
-    scrape_oneway <- scrape_objects(scrape_oneway)
+    query_oneway <- fetch_flights(query_oneway)
 
-    if (nrow(scrape_oneway$data) > 0) {
-      cat("\n✓ Successfully scraped", nrow(scrape_oneway$data), "flights!\n\n")
+    if (nrow(query_oneway$data) > 0) {
+      cat("\n✓ Successfully results", nrow(query_oneway$data), "flights!\n\n")
 
-      cat("Sample of scraped data:\n")
-      print(utils::head(scrape_oneway$data, 3))
+      cat("Sample of results data:\n")
+      print(utils::head(query_oneway$data, 3))
       cat("\n")
 
       cat("Summary statistics:\n")
       cat(
         "  - Average price: $",
-        round(mean(scrape_oneway$data$price, na.rm = TRUE), 2),
+        round(mean(query_oneway$data$price, na.rm = TRUE), 2),
         "\n",
         sep = ""
       )
       cat(
         "  - Min price: $",
-        min(scrape_oneway$data$price, na.rm = TRUE),
+        min(query_oneway$data$price, na.rm = TRUE),
         "\n",
         sep = ""
       )
       cat(
         "  - Max price: $",
-        max(scrape_oneway$data$price, na.rm = TRUE),
+        max(query_oneway$data$price, na.rm = TRUE),
         "\n",
         sep = ""
       )
       cat(
         "  - Direct flights:",
-        sum(scrape_oneway$data$num_stops == 0, na.rm = TRUE),
+        sum(query_oneway$data$num_stops == 0, na.rm = TRUE),
         "\n"
       )
       cat(
         "  - Flights with stops:",
-        sum(scrape_oneway$data$num_stops > 0, na.rm = TRUE),
+        sum(query_oneway$data$num_stops > 0, na.rm = TRUE),
         "\n"
       )
     } else {
@@ -112,7 +112,7 @@ cat("Example 2: Round-Trip Scraping\n")
 cat("-------------------------------\n")
 cat("Creating query: JFK <-> IST (2026-07-20 to 2026-08-05)\n\n")
 
-scrape_roundtrip <- Scrape("JFK", "IST", "2026-07-20", "2026-08-05")
+query_roundtrip <- define_query("JFK", "IST", "2026-07-20", "2026-08-05")
 
 cat("This example demonstrates:\n")
 cat("  1. Scraping multiple flight segments (outbound + return)\n")
@@ -122,28 +122,28 @@ tryCatch(
   {
     cat("Scraping (this may take a moment for 2 segments)...\n")
     # IMPORTANT: Must capture the return value!
-    scrape_roundtrip <- scrape_objects(scrape_roundtrip)
+    query_roundtrip <- fetch_flights(query_roundtrip)
 
-    if (nrow(scrape_roundtrip$data) > 0) {
+    if (nrow(query_roundtrip$data) > 0) {
       cat(
-        "\n✓ Successfully scraped",
-        nrow(scrape_roundtrip$data),
+        "\n✓ Successfully results",
+        nrow(query_roundtrip$data),
         "total flights\n"
       )
 
       # Display summary
       cat("\nFlight summary:\n")
-      cat("  - Total flights:", nrow(scrape_roundtrip$data), "\n")
+      cat("  - Total flights:", nrow(query_roundtrip$data), "\n")
       cat(
         "  - Average price: $",
-        round(mean(scrape_roundtrip$data$price, na.rm = TRUE), 2),
+        round(mean(query_roundtrip$data$price, na.rm = TRUE), 2),
         "\n",
         sep = ""
       )
 
       # Save to CSV manually if desired
       cat(
-        "\nTo save results, use: write.csv(scrape_roundtrip$data, 'flights.csv', row.names = FALSE)\n"
+        "\nTo save results, use: write.csv(query_roundtrip$data, 'flights.csv', row.names = FALSE)\n"
       )
     }
   },

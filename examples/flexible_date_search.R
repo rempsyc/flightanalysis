@@ -37,7 +37,7 @@ dates <- seq(as.Date("2025-12-18"), as.Date("2026-01-05"), by = "day")
 # Uncomment the following lines to run the actual scraping
 
 # Step 1: Create Scrape objects (one per origin)
-# scrapes <- fa_create_date_range_scrape(
+# scrapes <- create_date_range(
 #   origin = routes$Airport,
 #   dest = "JFK",
 #   date_min = min(dates),
@@ -46,7 +46,7 @@ dates <- seq(as.Date("2025-12-18"), as.Date("2026-01-05"), by = "day")
 # 
 # # Step 2: Scrape each origin
 # for (code in names(scrapes)) {
-#   scrapes[[code]] <- scrape_objects(scrapes[[code]], verbose = TRUE)
+#   scrapes[[code]] <- fetch_flights(scrapes[[code]], verbose = TRUE)
 # }
 # 
 # # Step 3: Analyze directly - fa_flex_table and fa_best_dates accept lists of Scrape objects!
@@ -90,7 +90,7 @@ print(best_dates_min)
 
 # Example 5: Alternative workflow - separate scraping per origin
 # (commented out - uncomment to run actual scraping)
-# scrape_single <- fa_create_date_range_scrape(
+# query_single <- create_date_range(
 #   origin = "BOM",
 #   dest = "JFK",
 #   date_min = "2025-12-18",
@@ -98,15 +98,15 @@ print(best_dates_min)
 # )
 # 
 # # Scrape the data
-# scrape_single <- scrape_objects(scrape_single, verbose = TRUE)
+# query_single <- fetch_flights(query_single, verbose = TRUE)
 # 
 # # Analyze single origin
-# best_dates_single <- fa_best_dates(scrape_single, n = 5, by = "min")
+# best_dates_single <- fa_best_dates(query_single, n = 5, by = "min")
 # print(best_dates_single)
 
 cat("\n=== Usage Tips ===\n")
-cat("1. Use fa_create_date_range_scrape() to create Scrape objects for date ranges\n")
-cat("2. Use scrape_objects() to fetch actual flight data from Google Flights\n")
+cat("1. Use create_date_range() to create Scrape objects for date ranges\n")
+cat("2. Use fetch_flights() to fetch actual flight data from Google Flights\n")
 cat("3. Use fa_flex_table() to create a wide summary table for easy comparison\n")
 cat("4. Use fa_best_dates() to quickly identify the cheapest travel dates\n")
 cat("5. Both fa_flex_table() and fa_best_dates() accept Scrape objects or data frames\n")
