@@ -14,13 +14,6 @@ A data frame with flight information
 }
 \description{
 Converts a list of Flight objects into a data frame.
+Internal function used by fetch_flights().
 }
-\examples{
-\dontrun{
-flight1 <- Flight("2025-12-25", "JFKIST", "$450", "Nonstop")
-flight2 <- Flight("2025-12-26", "ISTCDG", "$300", "1 stop")
-flight3 <- Flight("2025-12-27", "CDGJFK", "$500", "Nonstop")
-flights <- list(flight1, flight2, flight3)
-df <- flights_to_dataframe(flights)
-}
-}
+\keyword{internal}

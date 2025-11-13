@@ -2,18 +2,13 @@
 #'
 #' @description
 #' Creates a Flight object that represents a single flight with all its details.
+#' Internal function used by fetch_flights() for parsing scraped data.
 #'
 #' @param date Character string representing the flight date in format "YYYY-MM-DD"
 #' @param ... Additional arguments containing flight details
 #'
 #' @return A Flight object (S3 class)
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' flight <- Flight("2025-12-25", "JFKIST", "9:00AM", "5:00PM+1",
-#'                  "8 hr 0 min", "Nonstop", "150 kg CO2", "10% emissions", "$450")
-#' }
+#' @keywords internal
 Flight <- function(date, ...) {
   args <- list(...)
 
@@ -217,20 +212,12 @@ print.Flight <- function(x, ...) {
 #'
 #' @description
 #' Converts a list of Flight objects into a data frame.
+#' Internal function used by fetch_flights().
 #'
 #' @param flights List of Flight objects
 #'
 #' @return A data frame with flight information
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' flight1 <- Flight("2025-12-25", "JFKIST", "$450", "Nonstop")
-#' flight2 <- Flight("2025-12-26", "ISTCDG", "$300", "1 stop")
-#' flight3 <- Flight("2025-12-27", "CDGJFK", "$500", "Nonstop")
-#' flights <- list(flight1, flight2, flight3)
-#' df <- flights_to_dataframe(flights)
-#' }
+#' @keywords internal
 flights_to_dataframe <- function(flights) {
   data <- data.frame(
     departure_datetime = character(),

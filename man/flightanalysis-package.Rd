@@ -23,13 +23,21 @@ collect data regarding flights and prices. Current features include:
 \section{Main Functions}{
 
 \describe{
-  \item{\code{\link{Scrape}}}{Create a flight query object}
-  \item{\code{\link{ScrapeObjects}}}{Execute flight queries (requires chromote)}
-  \item{\code{\link{Flight}}}{Create a flight data object}
-  \item{\code{\link{flights_to_dataframe}}}{Convert Flight objects to data frame}
-  \item{\code{\link{fa_create_date_range_scrape}}}{Create Scrape objects for flexible date search}
+  \item{\code{\link{define_query}}}{Create a flight query object}
+  \item{\code{\link{fetch_flights}}}{Execute flight queries (requires chromote)}
+  \item{\code{\link{create_date_range}}}{Create queries for flexible date search}
   \item{\code{\link{fa_flex_table}}}{Create wide summary table for price comparison}
   \item{\code{\link{fa_best_dates}}}{Identify cheapest travel dates}
+}
+}
+
+\section{Deprecated Functions}{
+
+The following functions are deprecated but still available for backward compatibility:
+\itemize{
+  \item \code{Scrape()} - use \code{define_query()} instead
+  \item \code{ScrapeObjects()} and \code{scrape_objects()} - use \code{fetch_flights()} instead
+  \item \code{fa_create_date_range_scrape()} - use \code{create_date_range()} instead
 }
 }
 

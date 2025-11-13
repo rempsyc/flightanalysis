@@ -127,7 +127,7 @@ test_that("fa_best_dates works with different aggregation methods", {
 
 test_that("fa_create_date_range_scrape creates valid Scrape object for single origin", {
   # Single origin - should return one Scrape object
-  scrape <- fa_create_date_range_scrape(
+  query <- create_date_range(
     origin = "BOM",
     dest = "JFK",
     date_min = "2025-12-18",
@@ -135,30 +135,30 @@ test_that("fa_create_date_range_scrape creates valid Scrape object for single or
   )
 
   # Check it's a Scrape object
-  expect_s3_class(scrape, "Scrape")
+  expect_true(inherits(query, "flight_query") || inherits(query, "Scrape"))
 
   # Check type
-  expect_equal(scrape$type, "chain-trip")
+  expect_equal(query$type, "chain-trip")
 
   # Should have 3 dates for 1 airport = 3 segments
-  expect_equal(length(scrape$origin), 3)
-  expect_equal(length(scrape$dest), 3)
-  expect_equal(length(scrape$date), 3)
+  expect_equal(length(query$origin), 3)
+  expect_equal(length(query$dest), 3)
+  expect_equal(length(query$date), 3)
 
   # All destinations should be JFK
-  expect_true(all(unlist(scrape$dest) == "JFK"))
+  expect_true(all(unlist(query$dest) == "JFK"))
 
   # All origins should be BOM
-  expect_true(all(unlist(scrape$origin) == "BOM"))
+  expect_true(all(unlist(query$origin) == "BOM"))
 
   # Dates should be in increasing order
-  dates <- unlist(scrape$date)
+  dates <- unlist(query$date)
   expect_true(all(dates == sort(dates)))
 })
 
 test_that("fa_create_date_range_scrape creates list for multiple origins", {
   # Multiple origins - should return list of Scrape objects
-  scrapes <- fa_create_date_range_scrape(
+  queries <- create_date_range(
     origin = c("BOM", "DEL"),
     dest = "JFK",
     date_min = "2025-12-18",
@@ -166,38 +166,38 @@ test_that("fa_create_date_range_scrape creates list for multiple origins", {
   )
 
   # Check it's a list
-  expect_true(is.list(scrapes))
-  expect_equal(length(scrapes), 2)
-  expect_equal(names(scrapes), c("BOM", "DEL"))
+  expect_true(is.list(queries))
+  expect_equal(length(queries), 2)
+  expect_equal(names(queries), c("BOM", "DEL"))
 
-  # Check each element is a Scrape object
-  expect_s3_class(scrapes$BOM, "Scrape")
-  expect_s3_class(scrapes$DEL, "Scrape")
+  # Check each element is a flight query object
+  expect_true(inherits(queries$BOM, "flight_query") || inherits(queries$BOM, "Scrape"))
+  expect_true(inherits(queries$DEL, "flight_query") || inherits(queries$DEL, "Scrape"))
 
-  # Check BOM scrape
-  expect_equal(scrapes$BOM$type, "chain-trip")
-  expect_equal(length(scrapes$BOM$origin), 3) # 3 dates
-  expect_true(all(unlist(scrapes$BOM$origin) == "BOM"))
-  expect_true(all(unlist(scrapes$BOM$dest) == "JFK"))
+  # Check BOM query
+  expect_equal(queries$BOM$type, "chain-trip")
+  expect_equal(length(queries$BOM$origin), 3) # 3 dates
+  expect_true(all(unlist(queries$BOM$origin) == "BOM"))
+  expect_true(all(unlist(queries$BOM$dest) == "JFK"))
 
-  # Check DEL scrape
-  expect_equal(scrapes$DEL$type, "chain-trip")
-  expect_equal(length(scrapes$DEL$origin), 3) # 3 dates
-  expect_true(all(unlist(scrapes$DEL$origin) == "DEL"))
-  expect_true(all(unlist(scrapes$DEL$dest) == "JFK"))
+  # Check DEL query
+  expect_equal(queries$DEL$type, "chain-trip")
+  expect_equal(length(queries$DEL$origin), 3) # 3 dates
+  expect_true(all(unlist(queries$DEL$origin) == "DEL"))
+  expect_true(all(unlist(queries$DEL$dest) == "JFK"))
 
   # Dates should be in increasing order for each
-  bom_dates <- unlist(scrapes$BOM$date)
+  bom_dates <- unlist(queries$BOM$date)
   expect_true(all(bom_dates == sort(bom_dates)))
 
-  del_dates <- unlist(scrapes$DEL$date)
+  del_dates <- unlist(queries$DEL$date)
   expect_true(all(del_dates == sort(del_dates)))
 })
 
 test_that("fa_create_date_range_scrape validates inputs", {
   # Invalid airport code
   expect_error(
-    fa_create_date_range_scrape(
+    create_date_range(
       origin = c("BO"),
       dest = "JFK",
       date_min = "2025-12-18",
@@ -208,7 +208,7 @@ test_that("fa_create_date_range_scrape validates inputs", {
 
   # Invalid date order
   expect_error(
-    fa_create_date_range_scrape(
+    create_date_range(
       origin = "BOM",
       dest = "JFK",
       date_min = "2025-12-20",
@@ -220,7 +220,7 @@ test_that("fa_create_date_range_scrape validates inputs", {
 
 test_that("extract_data_from_scrapes processes Scrape objects correctly", {
   # Create mock Scrape objects with data (using real structure)
-  scrape1 <- list(
+  query1 <- list(
     data = data.frame(
       departure_datetime = as.POSIXct(c(
         "2025-12-18 10:00:00",
@@ -237,9 +237,9 @@ test_that("extract_data_from_scrapes processes Scrape objects correctly", {
       stringsAsFactors = FALSE
     )
   )
-  class(scrape1) <- "Scrape"
+  class(query1) <- "Scrape"
 
-  scrape2 <- list(
+  query2 <- list(
     data = data.frame(
       departure_datetime = as.POSIXct(c(
         "2025-12-18 12:00:00",
@@ -256,12 +256,12 @@ test_that("extract_data_from_scrapes processes Scrape objects correctly", {
       stringsAsFactors = FALSE
     )
   )
-  class(scrape2) <- "Scrape"
+  class(query2) <- "Scrape"
 
-  scrapes <- list(BOM = scrape1, DEL = scrape2)
+  queries <- list(BOM = query1, DEL = query2)
 
   # Extract data
-  result <- flightanalysis:::extract_data_from_scrapes(scrapes)
+  result <- flightanalysis:::extract_data_from_scrapes(queries)
 
   # Check structure
   expect_true(is.data.frame(result))
@@ -273,7 +273,7 @@ test_that("extract_data_from_scrapes processes Scrape objects correctly", {
 
 test_that("fa_flex_table accepts list of Scrape objects", {
   # Create mock Scrape objects (using real structure)
-  scrape1 <- list(
+  query1 <- list(
     data = data.frame(
       departure_datetime = as.POSIXct(c(
         "2025-12-18 10:00:00",
@@ -290,9 +290,9 @@ test_that("fa_flex_table accepts list of Scrape objects", {
       stringsAsFactors = FALSE
     )
   )
-  class(scrape1) <- "Scrape"
+  class(query1) <- "Scrape"
 
-  scrape2 <- list(
+  query2 <- list(
     data = data.frame(
       departure_datetime = as.POSIXct(c(
         "2025-12-18 12:00:00",
@@ -309,12 +309,12 @@ test_that("fa_flex_table accepts list of Scrape objects", {
       stringsAsFactors = FALSE
     )
   )
-  class(scrape2) <- "Scrape"
+  class(query2) <- "Scrape"
 
-  scrapes <- list(BOM = scrape1, DEL = scrape2)
+  queries <- list(BOM = query1, DEL = query2)
 
   # Create table directly from Scrape objects
-  table <- fa_flex_table(scrapes, round_prices = TRUE)
+  table <- fa_flex_table(queries, round_prices = TRUE)
 
   # Check structure
   expect_true(is.data.frame(table))
@@ -326,7 +326,7 @@ test_that("fa_flex_table accepts list of Scrape objects", {
 
 test_that("fa_best_dates accepts list of Scrape objects", {
   # Create mock Scrape objects (using real structure)
-  scrape1 <- list(
+  query1 <- list(
     data = data.frame(
       departure_datetime = as.POSIXct(c(
         "2025-12-18 10:00:00",
@@ -343,9 +343,9 @@ test_that("fa_best_dates accepts list of Scrape objects", {
       stringsAsFactors = FALSE
     )
   )
-  class(scrape1) <- "Scrape"
+  class(query1) <- "Scrape"
 
-  scrape2 <- list(
+  query2 <- list(
     data = data.frame(
       departure_datetime = as.POSIXct(c(
         "2025-12-18 12:00:00",
@@ -362,12 +362,12 @@ test_that("fa_best_dates accepts list of Scrape objects", {
       stringsAsFactors = FALSE
     )
   )
-  class(scrape2) <- "Scrape"
+  class(query2) <- "Scrape"
 
-  scrapes <- list(BOM = scrape1, DEL = scrape2)
+  queries <- list(BOM = query1, DEL = query2)
 
   # Get best dates directly from Scrape objects
-  best <- fa_best_dates(scrapes, n = 2, by = "mean")
+  best <- fa_best_dates(queries, n = 2, by = "mean")
 
   # Check structure
   expect_true(is.data.frame(best))
@@ -379,7 +379,7 @@ test_that("fa_best_dates accepts list of Scrape objects", {
 
 test_that("fa_flex_table accepts single Scrape object", {
   # Create mock single Scrape object (using real structure)
-  scrape <- list(
+  query <- list(
     data = data.frame(
       departure_datetime = as.POSIXct(c(
         "2025-12-18 10:00:00",
@@ -396,10 +396,10 @@ test_that("fa_flex_table accepts single Scrape object", {
       stringsAsFactors = FALSE
     )
   )
-  class(scrape) <- "Scrape"
+  class(query) <- "Scrape"
 
   # Create table directly from single Scrape object
-  table <- fa_flex_table(scrape, round_prices = TRUE)
+  table <- fa_flex_table(query, round_prices = TRUE)
 
   # Check structure
   expect_true(is.data.frame(table))
@@ -413,7 +413,7 @@ test_that("fa_flex_table accepts single Scrape object", {
 
 test_that("fa_best_dates accepts single Scrape object", {
   # Create mock single Scrape object (using real structure)
-  scrape <- list(
+  query <- list(
     data = data.frame(
       departure_datetime = as.POSIXct(c(
         "2025-12-18 10:00:00",
@@ -430,10 +430,10 @@ test_that("fa_best_dates accepts single Scrape object", {
       stringsAsFactors = FALSE
     )
   )
-  class(scrape) <- "Scrape"
+  class(query) <- "Scrape"
 
   # Get best dates directly from single Scrape object
-  best <- fa_best_dates(scrape, n = 2, by = "mean")
+  best <- fa_best_dates(query, n = 2, by = "mean")
 
   # Check structure
   expect_true(is.data.frame(best))

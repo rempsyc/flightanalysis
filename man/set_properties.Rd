@@ -2,16 +2,16 @@
 % Please edit documentation in R/scrape.R
 \name{set_properties}
 \alias{set_properties}
-\title{Set Scrape Properties}
+\title{Set Query Properties}
 \usage{
-set_properties(scrape, args)
+set_properties(query, args)
 }
 \arguments{
-\item{scrape}{Scrape object being constructed}
+\item{query}{Query object being constructed}
 
 \item{args}{List of arguments}
 }
 \description{
-Set Scrape Properties
+Set Query Properties
 }
 \keyword{internal}

@@ -7,8 +7,8 @@
 #'
 #' @param results Either:
 #'   - A data frame with columns: Date and Price
-#'   - A list of Scrape objects (from fa_create_date_range_scrape with multiple origins)
-#'   - A single Scrape object (from fa_create_date_range_scrape with single origin)
+#'   - A list of flight querys (from create_date_range with multiple origins)
+#'   - A single flight query (from create_date_range with single origin)
 #' @param n Integer. Number of best dates to return. Default is 10.
 #' @param by Character. How to calculate best dates: "mean" (average price
 #'   across routes), "median", or "min" (lowest price on that date).
@@ -22,10 +22,10 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Option 1: Pass list of Scrape objects directly
-#' scrapes <- fa_create_date_range_scrape(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
+#' # Option 1: Pass list of flight querys directly
+#' scrapes <- create_date_range(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
 #' for (code in names(scrapes)) {
-#'   scrapes[[code]] <- ScrapeObjects(scrapes[[code]])
+#'   scrapes[[code]] <- scrape_objects(scrapes[[code]])
 #' }
 #' best_dates <- fa_best_dates(scrapes, n = 5, by = "mean")
 #'
@@ -34,27 +34,27 @@
 #' }
 fa_best_dates <- function(results, n = 10, by = "min") {
   # Handle different input types
-  # Check for Scrape object FIRST (before is.list, since Scrape objects are lists)
-  if (inherits(results, "Scrape")) {
-    # Validate Scrape object has data
+  # Check for flight query FIRST (before is.list, since flight queries are lists)
+  if (inherits(results, "flight_query") || inherits(results, "Scrape")) {
+    # Validate flight query has data
     if (is.null(results$data) || nrow(results$data) == 0) {
-      stop("Scrape object contains no data. Please run ScrapeObjects() first to fetch flight data.")
+      stop("flight query contains no data. Please run fetch_flights() first to fetch flight data.")
     }
-    # Single Scrape object - pass directly to extract_data_from_scrapes
+    # Single flight query - pass directly to extract_data_from_scrapes
     results <- extract_data_from_scrapes(results)
   } else if (is.list(results) && !is.data.frame(results)) {
-    # Check if it's a list of Scrape objects
-    if (all(sapply(results, function(x) inherits(x, "Scrape")))) {
-      # Extract and combine data from list of Scrape objects
+    # Check if it's a list of flight queries
+    if (all(sapply(results, function(x) inherits(x, "flight_query") || inherits(x, "Scrape")))) {
+      # Extract and combine data from list of flight queries
       results <- extract_data_from_scrapes(results)
     } else {
       stop(
-        "results must be a data frame, a Scrape object, or a list of Scrape objects"
+        "results must be a data frame, a flight query, or a list of flight queries"
       )
     }
   } else if (!is.data.frame(results)) {
     stop(
-      "results must be a data frame, a Scrape object, or a list of Scrape objects"
+      "results must be a data frame, a flight query, or a list of flight queries"
     )
   }
 
@@ -68,7 +68,7 @@ fa_best_dates <- function(results, n = 10, by = "min") {
   
   # Check if we have any data after filtering
   if (nrow(results) == 0) {
-    stop("No data available after filtering. The Scrape object may contain only placeholder rows or no valid flight data.")
+    stop("No data available after filtering. The flight query may contain only placeholder rows or no valid flight data.")
   }
 
   if (!by %in% c("mean", "median", "min")) {

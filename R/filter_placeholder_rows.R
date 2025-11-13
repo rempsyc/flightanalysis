@@ -49,8 +49,8 @@ filter_placeholder_rows <- function(data) {
 #' @keywords internal
 extract_data_from_scrapes <- function(scrapes) {
   # Ensure we have a list
-  if (inherits(scrapes, "Scrape")) {
-    # For single Scrape object, try to extract origin from the data
+  if (inherits(scrapes, "flight_query") || inherits(scrapes, "Scrape")) {
+    # For single query object, try to extract origin from the data
     # This ensures we have a named list for proper City assignment
     if (!is.null(scrapes$data) && nrow(scrapes$data) > 0 && "origin" %in% names(scrapes$data)) {
       origin_code <- scrapes$data$origin[1]

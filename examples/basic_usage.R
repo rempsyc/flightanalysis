@@ -7,25 +7,25 @@ cat("=== Flight Analysis R Package - Examples ===\n\n")
 
 # Load the package functions
 source('R/flight.R')
-source('R/scrape.R')
+source('R/query.R')
 
 # Example 1: One-Way Trip
 cat("Example 1: One-Way Trip\n")
 cat("------------------------\n")
-scrape_oneway <- Scrape("JFK", "IST", "2026-07-20")
-print(scrape_oneway)
+query_oneway <- define_query("JFK", "IST", "2026-07-20")
+print(query_oneway)
 cat("\n")
 
 # Example 2: Round-Trip
 cat("Example 2: Round-Trip\n")
 cat("---------------------\n")
-scrape_roundtrip <- Scrape("JFK", "IST", "2026-07-20", "2026-08-20")
-print(scrape_roundtrip)
-cat("\nTrip type:", scrape_roundtrip$type, "\n")
-cat("Origins:", paste(unlist(scrape_roundtrip$origin), collapse = ", "), "\n")
+query_roundtrip <- define_query("JFK", "IST", "2026-07-20", "2026-08-20")
+print(query_roundtrip)
+cat("\nTrip type:", query_roundtrip$type, "\n")
+cat("Origins:", paste(unlist(query_roundtrip$origin), collapse = ", "), "\n")
 cat(
   "Destinations:",
-  paste(unlist(scrape_roundtrip$dest), collapse = ", "),
+  paste(unlist(query_roundtrip$dest), collapse = ", "),
   "\n"
 )
 cat("\n")
@@ -33,7 +33,7 @@ cat("\n")
 # Example 3: Chain-Trip
 cat("Example 3: Chain-Trip (Multiple unrelated flights)\n")
 cat("---------------------------------------------------\n")
-scrape_chain <- Scrape(
+query_chain <- define_query(
   "JFK",
   "IST",
   "2026-08-20",
@@ -44,13 +44,13 @@ scrape_chain <- Scrape(
   "SFO",
   "2027-01-20"
 )
-print(scrape_chain)
+print(query_chain)
 cat("\n")
 
 # Example 4: Perfect-Chain
 cat("Example 4: Perfect-Chain (Circular trip)\n")
 cat("-----------------------------------------\n")
-scrape_perfect <- Scrape(
+query_perfect <- define_query(
   "JFK",
   "2026-09-20",
   "IST",
@@ -61,7 +61,7 @@ scrape_perfect <- Scrape(
   "2026-11-01",
   "JFK"
 )
-print(scrape_perfect)
+print(query_perfect)
 cat("\n")
 
 # Example 5: Working with Flight Objects
@@ -123,9 +123,9 @@ cat("\n")
 cat("Example 7: Generated URLs for Google Flights\n")
 cat("---------------------------------------------\n")
 cat("One-way trip URL:\n")
-cat(scrape_oneway$url[[1]], "\n\n")
+cat(query_oneway$url[[1]], "\n\n")
 cat("Round-trip URLs:\n")
-cat("  Outbound:", scrape_roundtrip$url[[1]], "\n")
-cat("  Return:  ", scrape_roundtrip$url[[2]], "\n\n")
+cat("  Outbound:", query_roundtrip$url[[1]], "\n")
+cat("  Return:  ", query_roundtrip$url[[2]], "\n\n")
 
 cat("=== Examples completed successfully! ===\n")

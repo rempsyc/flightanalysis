@@ -22,7 +22,7 @@ Users needed the ability to:
 
 Four new exported functions were added to provide an intuitive workflow:
 
-### 1. `fa_create_date_range_scrape(airports, dest, date_min, date_max)`
+### 1. `create_date_range(airports, dest, date_min, date_max)`
 
 **Purpose**: Helper function to create chain-trip Scrape object with flexible parameters
 
@@ -35,7 +35,7 @@ Four new exported functions were added to provide an intuitive workflow:
 **Features**:
 - Generates all airport × date combinations
 - Creates chain-trip Scrape object WITHOUT scraping
-- Returns Scrape object ready to pass to `ScrapeObjects()`
+- Returns Scrape object ready to pass to `fetch_flights()`
 - Leverages existing chain-trip functionality
 
 **Returns**: Scrape object of type "chain-trip"
@@ -52,8 +52,8 @@ Four new exported functions were added to provide an intuitive workflow:
 - `verbose`: Show progress information (default: TRUE)
 
 **Features**:
-- Uses `fa_create_date_range_scrape()` to create batch Scrape object
-- Calls `ScrapeObjects()` to scrape all queries in one browser session
+- Uses `create_date_range()` to create batch Scrape object
+- Calls `fetch_flights()` to scrape all queries in one browser session
 - Filters placeholder rows automatically
 - Processes results into user-friendly format
 - Comprehensive error messages
@@ -182,7 +182,7 @@ Processes raw scraped data into user-friendly format:
 
 ### Why These Function Names?
 
-- `fa_create_date_range_scrape()`: Clear purpose - creates Scrape object for date range
+- `create_date_range()`: Clear purpose - creates Scrape object for date range
 - `fa_scrape_best_oneway()`: Clear that it's flight analysis (fa_), scrapes data, finds best prices, one-way trips
 - `fa_flex_table()`: Indicates flexible date table output
 - `fa_best_dates()`: Simple, self-explanatory

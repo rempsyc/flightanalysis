@@ -1,7 +1,7 @@
-#' Create a Scrape Object
+#' Define Flight Query
 #'
 #' @description
-#' Creates a Scrape object representing a Google Flights query. Supports one-way,
+#' Defines a flight query for Google Flights. Supports one-way,
 #' round-trip, chain-trip, and perfect-chain trip types.
 #'
 #' @param ... Arguments defining the trip. Format depends on trip type:
@@ -10,25 +10,25 @@
 #'   - Chain-trip: org1, dest1, date1, org2, dest2, date2, ...
 #'   - Perfect-chain: org1, date1, org2, date2, ..., final_dest
 #'
-#' @return A Scrape object (S3 class)
+#' @return A flight query object (S3 class "flight_query")
 #' @export
 #'
 #' @examples
 #' \dontrun{
 #' # One-way trip
-#' scrape1 <- Scrape("JFK", "BOS", "2025-12-20")
+#' query1 <- define_query("JFK", "BOS", "2025-12-20")
 #'
 #' # Round-trip
-#' scrape2 <- Scrape("JFK", "YUL", "2025-12-20", "2025-12-25")
+#' query2 <- define_query("JFK", "YUL", "2025-12-20", "2025-12-25")
 #'
 #' # Chain-trip
-#' scrape3 <- Scrape("JFK", "YYZ", "2025-12-20", "RDU", "LGA", "2025-12-25")
+#' query3 <- define_query("JFK", "YYZ", "2025-12-20", "RDU", "LGA", "2025-12-25")
 #' }
-Scrape <- function(...) {
+define_query <- function(...) {
   args <- list(...)
 
-  # Initialize Scrape object
-  scrape <- list(
+  # Initialize query object
+  query <- list(
     origin = NULL,
     dest = NULL,
     date = NULL,
@@ -38,18 +38,18 @@ Scrape <- function(...) {
   )
 
   # Set properties based on arguments
-  scrape <- set_properties(scrape, args)
+  query <- set_properties(query, args)
 
-  class(scrape) <- "Scrape"
-  return(scrape)
+  class(query) <- "flight_query"
+  return(query)
 }
 
-#' Set Scrape Properties
+#' Set Query Properties
 #'
-#' @param scrape Scrape object being constructed
+#' @param query Query object being constructed
 #' @param args List of arguments
 #' @keywords internal
-set_properties <- function(scrape, args) {
+set_properties <- function(query, args) {
   n_args <- length(args)
   date_format <- "%Y-%m-%d"
 
@@ -92,11 +92,11 @@ set_properties <- function(scrape, args) {
     }
     validate_date(args[[3]], "Date")
 
-    scrape$origin <- list(args[[1]])
-    scrape$dest <- list(args[[2]])
-    scrape$date <- list(args[[3]])
-    scrape$url <- make_url(scrape$origin, scrape$dest, scrape$date)
-    scrape$type <- "one-way"
+    query$origin <- list(args[[1]])
+    query$dest <- list(args[[2]])
+    query$date <- list(args[[3]])
+    query$url <- make_url(query$origin, query$dest, query$date)
+    query$type <- "one-way"
   } else if (n_args == 4) {
     # Round-trip (4 arguments)
     if (!(nchar(args[[1]]) == 3 && is.character(args[[1]]))) {
@@ -112,11 +112,11 @@ set_properties <- function(scrape, args) {
       stop("Dates must be in increasing order")
     }
 
-    scrape$origin <- list(args[[1]], args[[2]])
-    scrape$dest <- list(args[[2]], args[[1]])
-    scrape$date <- list(args[[3]], args[[4]])
-    scrape$url <- make_url(scrape$origin, scrape$dest, scrape$date)
-    scrape$type <- "round-trip"
+    query$origin <- list(args[[1]], args[[2]])
+    query$dest <- list(args[[2]], args[[1]])
+    query$date <- list(args[[3]], args[[4]])
+    query$url <- make_url(query$origin, query$dest, query$date)
+    query$type <- "round-trip"
   } else if (
     n_args >= 3 &&
       n_args %% 3 == 0 &&
@@ -124,9 +124,9 @@ set_properties <- function(scrape, args) {
       is.character(args[[n_args]])
   ) {
     # Chain-trip (multiples of 3, last element is a date)
-    scrape$origin <- list()
-    scrape$dest <- list()
-    scrape$date <- list()
+    query$origin <- list()
+    query$dest <- list()
+    query$date <- list()
 
     for (i in seq(1, n_args, by = 3)) {
       if (!(nchar(args[[i]]) == 3 && is.character(args[[i]]))) {
@@ -140,20 +140,20 @@ set_properties <- function(scrape, args) {
         sprintf("Argument %d (date)", i + 2)
       )
 
-      if (length(scrape$date) > 0) {
-        prev_date <- as.Date(scrape$date[[length(scrape$date)]], date_format)
+      if (length(query$date) > 0) {
+        prev_date <- as.Date(query$date[[length(query$date)]], date_format)
         if (!(prev_date < curr_date)) {
           stop("Dates must be in increasing order")
         }
       }
 
-      scrape$origin <- c(scrape$origin, args[[i]])
-      scrape$dest <- c(scrape$dest, args[[i + 1]])
-      scrape$date <- c(scrape$date, args[[i + 2]])
+      query$origin <- c(query$origin, args[[i]])
+      query$dest <- c(query$dest, args[[i + 1]])
+      query$date <- c(query$date, args[[i + 2]])
     }
 
-    scrape$url <- make_url(scrape$origin, scrape$dest, scrape$date)
-    scrape$type <- "chain-trip"
+    query$url <- make_url(query$origin, query$dest, query$date)
+    query$type <- "chain-trip"
   } else if (
     n_args >= 5 &&
       n_args %% 2 == 1 &&
@@ -166,9 +166,9 @@ set_properties <- function(scrape, args) {
     }
     validate_date(args[[2]], "Second argument (date)")
 
-    scrape$origin <- list(args[[1]])
-    scrape$dest <- list()
-    scrape$date <- list(args[[2]])
+    query$origin <- list(args[[1]])
+    query$dest <- list()
+    query$date <- list(args[[2]])
 
     for (i in seq(3, n_args - 1, by = 2)) {
       if (!(nchar(args[[i]]) == 3 && is.character(args[[i]]))) {
@@ -179,28 +179,28 @@ set_properties <- function(scrape, args) {
         sprintf("Argument %d (date)", i + 1)
       )
 
-      prev_date <- as.Date(scrape$date[[length(scrape$date)]], date_format)
+      prev_date <- as.Date(query$date[[length(query$date)]], date_format)
       if (!(prev_date < curr_date)) {
         stop("Dates must be in increasing order")
       }
 
-      scrape$origin <- c(scrape$origin, args[[i]])
-      scrape$dest <- c(scrape$dest, args[[i]])
-      scrape$date <- c(scrape$date, args[[i + 1]])
+      query$origin <- c(query$origin, args[[i]])
+      query$dest <- c(query$dest, args[[i]])
+      query$date <- c(query$date, args[[i + 1]])
     }
 
     if (!(nchar(args[[n_args]]) == 3 && is.character(args[[n_args]]))) {
       stop("Last argument must be 3-character string")
     }
-    scrape$dest <- c(scrape$dest, args[[n_args]])
+    query$dest <- c(query$dest, args[[n_args]])
 
-    scrape$url <- make_url(scrape$origin, scrape$dest, scrape$date)
-    scrape$type <- "perfect-chain"
+    query$url <- make_url(query$origin, query$dest, query$date)
+    query$type <- "perfect-chain"
   } else {
     stop("Invalid arguments. See documentation for proper formats.")
   }
 
-  return(scrape)
+  return(query)
 }
 
 #' Make URL for Google Flights Query
@@ -223,15 +223,15 @@ make_url <- function(origins, dests, dates) {
   return(urls)
 }
 
-#' Print method for Scrape objects
-#' @param x A Scrape object
+#' Print method for flight query objects
+#' @param x A flight query object
 #' @param ... Additional arguments (ignored)
 #' @export
-print.Scrape <- function(x, ...) {
-  cat("Scrape( ")
+print.flight_query <- function(x, ...) {
+  cat("Flight Query( ")
 
   if (nrow(x$data) == 0) {
-    cat("{Query Not Yet Used}\n")
+    cat("{Not Yet Fetched}\n")
   } else {
     cat(sprintf("{%d} RESULTS FOR:\n", nrow(x$data)))
   }
@@ -244,30 +244,33 @@ print.Scrape <- function(x, ...) {
   invisible(x)
 }
 
-#' Scrape Flight Objects
+#' @export
+print.Scrape <- print.flight_query
+
+#' Fetch Flight Data
 #'
 #' @description
-#' Scrapes flight data from Google Flights using chromote. This function will
+#' Fetches flight data from Google Flights using chromote. This function will
 #' automatically set up a Chrome browser connection, navigate to Google Flights
 #' URLs, and extract flight information. Uses the Chrome DevTools Protocol for
 #' reliable, driver-free browser automation. The browser runs in headless mode
 #' by default (no visible GUI).
 #'
-#' @param objs A Scrape object or list of Scrape objects
+#' @param queries A flight query object or list of query objects (from define_query())
 #' @param verbose Logical. If TRUE, shows detailed progress information (default)
 #'
-#' @return Modified Scrape object(s) with scraped data. **Important:** You must
-#'   capture the return value to get the scraped data: `scrape <- ScrapeObjects(scrape)`
+#' @return Modified query object(s) with scraped data. **Important:** You must
+#'   capture the return value to get the scraped data: `result <- fetch_flights(query)`
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' scrape <- Scrape("JFK", "IST", "2025-12-20", "2025-12-25")
-#' scrape <- ScrapeObjects(scrape)
-#' scrape$data
+#' query <- define_query("JFK", "IST", "2025-12-20", "2025-12-25")
+#' result <- fetch_flights(query)
+#' result$data
 #' }
-ScrapeObjects <- function(
-  objs,
+fetch_flights <- function(
+  queries,
   verbose = TRUE
 ) {
   # Check if chromote is available
@@ -284,12 +287,13 @@ ScrapeObjects <- function(
     )
   }
 
-  # Track if input was a single Scrape object
-  single_object <- inherits(objs, "Scrape")
+  # Track if input was a single query object
+  # Accept both new "flight_query" and legacy "Scrape" classes
+  single_object <- inherits(queries, "flight_query") || inherits(queries, "Scrape")
 
-  # Ensure objs is a list
+  # Ensure queries is a list
   if (single_object) {
-    objs <- list(objs)
+    queries <- list(queries)
   }
 
   # Pre-flight checks
@@ -314,28 +318,28 @@ ScrapeObjects <- function(
       if (requireNamespace("progress", quietly = TRUE) && !verbose) {
         pb <- progress::progress_bar$new(
           format = "Scraping [:bar] :percent eta: :eta",
-          total = length(objs),
+          total = length(queries),
           clear = FALSE
         )
 
-        for (i in seq_along(objs)) {
-          objs[[i]] <- scrape_data_chromote(
-            objs[[i]],
+        for (i in seq_along(queries)) {
+          queries[[i]] <- scrape_data_chromote(
+            queries[[i]],
             browser,
             verbose = verbose
           )
           pb$tick()
         }
       } else {
-        if (verbose && length(objs) > 1) {
-          cat(sprintf("Scraping %d objects...\n\n", length(objs)))
+        if (verbose && length(queries) > 1) {
+          cat(sprintf("Scraping %d objects...\n\n", length(queries)))
         }
-        for (i in seq_along(objs)) {
-          if (verbose && length(objs) > 1) {
-            cat(sprintf("[%d/%d] ", i, length(objs)))
+        for (i in seq_along(queries)) {
+          if (verbose && length(queries) > 1) {
+            cat(sprintf("[%d/%d] ", i, length(queries)))
           }
-          objs[[i]] <- scrape_data_chromote(
-            objs[[i]],
+          queries[[i]] <- scrape_data_chromote(
+            queries[[i]],
             browser,
             verbose = verbose
           )
@@ -365,9 +369,9 @@ ScrapeObjects <- function(
   # If a single Scrape object was passed in, return just that object
   # Otherwise return the list
   if (single_object) {
-    return(objs[[1]])
+    return(queries[[1]])
   } else {
-    return(objs)
+    return(queries)
   }
 }
 
@@ -722,4 +726,28 @@ clean_results <- function(result, date, verbose = TRUE) {
   }
 
   flights
+}
+
+#' @rdname define_query
+#' @export
+Scrape <- function(...) {
+  .Deprecated("define_query", package = "flightanalysis",
+              msg = "'Scrape()' is deprecated. Use 'define_query()' instead.")
+  define_query(...)
+}
+
+#' @rdname fetch_flights
+#' @export
+ScrapeObjects <- function(queries, verbose = TRUE) {
+  .Deprecated("fetch_flights", package = "flightanalysis",
+              msg = "'ScrapeObjects()' is deprecated. Use 'fetch_flights()' instead.")
+  fetch_flights(queries, verbose)
+}
+
+#' @rdname fetch_flights
+#' @export
+scrape_objects <- function(queries, verbose = TRUE) {
+  .Deprecated("fetch_flights", package = "flightanalysis",
+              msg = "'scrape_objects()' is deprecated. Use 'fetch_flights()' instead.")
+  fetch_flights(queries, verbose)
 }

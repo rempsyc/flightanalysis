@@ -16,10 +16,6 @@ A Flight object (S3 class)
 }
 \description{
 Creates a Flight object that represents a single flight with all its details.
+Internal function used by fetch_flights() for parsing scraped data.
 }
-\examples{
-\dontrun{
-flight <- Flight("2025-12-25", "JFKIST", "9:00AM", "5:00PM+1",
-                 "8 hr 0 min", "Nonstop", "150 kg CO2", "10\% emissions", "$450")
-}
-}
+\keyword{internal}
