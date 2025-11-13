@@ -46,7 +46,7 @@ dates <- seq(as.Date("2025-12-18"), as.Date("2026-01-05"), by = "day")
 # 
 # # Step 2: Scrape each origin
 # for (code in names(scrapes)) {
-#   scrapes[[code]] <- ScrapeObjects(scrapes[[code]], verbose = TRUE)
+#   scrapes[[code]] <- scrape_objects(scrapes[[code]], verbose = TRUE)
 # }
 # 
 # # Step 3: Analyze directly - fa_flex_table and fa_best_dates accept lists of Scrape objects!
@@ -98,7 +98,7 @@ print(best_dates_min)
 # )
 # 
 # # Scrape the data
-# scrape_single <- ScrapeObjects(scrape_single, verbose = TRUE)
+# scrape_single <- scrape_objects(scrape_single, verbose = TRUE)
 # 
 # # Analyze single origin
 # best_dates_single <- fa_best_dates(scrape_single, n = 5, by = "min")
@@ -106,7 +106,7 @@ print(best_dates_min)
 
 cat("\n=== Usage Tips ===\n")
 cat("1. Use fa_create_date_range_scrape() to create Scrape objects for date ranges\n")
-cat("2. Use ScrapeObjects() to fetch actual flight data from Google Flights\n")
+cat("2. Use scrape_objects() to fetch actual flight data from Google Flights\n")
 cat("3. Use fa_flex_table() to create a wide summary table for easy comparison\n")
 cat("4. Use fa_best_dates() to quickly identify the cheapest travel dates\n")
 cat("5. Both fa_flex_table() and fa_best_dates() accept Scrape objects or data frames\n")

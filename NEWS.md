@@ -1,12 +1,19 @@
 # flightanalysis (development version)
 
+## Breaking Changes
+
+* **Renamed `ScrapeObjects()` to `scrape_objects()` for R naming conventions**
+  - The old `ScrapeObjects()` function is now deprecated but still available with a warning
+  - All documentation and examples updated to use `scrape_objects()`
+  - Update your code to use `scrape_objects()` instead of `ScrapeObjects()`
+
 ## New Features
 
 * Added `fa_create_date_range_scrape()` function for creating flexible date range Scrape objects. This function:
   - Creates chain-trip Scrape objects from origin airports and date range
   - For single origin: returns one Scrape object
   - For multiple origins: returns a named list of Scrape objects (one per origin)
-  - Generates all date permutations without scraping (use with `ScrapeObjects()`)
+  - Generates all date permutations without scraping (use with `scrape_objects()`)
   - Parameter `origin` (not `airports`) for consistency with original Python package
   - Each origin gets its own Scrape object to satisfy chain-trip's strictly increasing date requirement
 

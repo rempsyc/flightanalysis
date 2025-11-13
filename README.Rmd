@@ -98,14 +98,14 @@ Then scrape flight data from Google Flights:
 scrape <- Scrape("JFK", "IST", "2025-12-20", "2026-01-05")
 
 # Scrape the data (runs in headless mode by default)
-scrape <- ScrapeObjects(scrape)
+scrape <- scrape_objects(scrape)
 
 # View the scraped data
 head(scrape$data) |>
   knitr::kable()
 ```
 
-The `ScrapeObjects()` function will:
+The `scrape_objects()` function will:
 1. **Run pre-flight checks** - Verify Chrome installation and internet connectivity
 2. **Automatically connect to Chrome** - Using Chrome DevTools Protocol (no drivers!)
 3. **Navigate to Google Flights URLs** - With proper wait times for page loading
@@ -155,7 +155,7 @@ scrapes <- fa_create_date_range_scrape(
 )
 
 # Step 2: Scrape each origin
-scraped <- ScrapeObjects(scrapes)
+scraped <- scrape_objects(scrapes)
 
 # Step 3: Analyze directly with list of Scrape objects
 
@@ -172,7 +172,7 @@ best_dates |>
 
 **Key Features:**
 - **Per-origin Scrape objects**: Each origin gets its own chain-trip Scrape object (required due to strict date ordering in chain-trips)
-- **Simple workflow**: (1) Create list of Scrape objects with `fa_create_date_range_scrape()`, (2) Scrape each with `ScrapeObjects()`, (3) Pass directly to analysis functions
+- **Simple workflow**: (1) Create list of Scrape objects with `fa_create_date_range_scrape()`, (2) Scrape each with `scrape_objects()`, (3) Pass directly to analysis functions
 - **Direct Scrape object support**: `fa_flex_table()` and `fa_best_dates()` accept lists of Scrape objects directly - no manual data processing needed!
 - Search multiple origin airports and dates efficiently
 - Automatically leverages existing chain-trip functionality
@@ -193,7 +193,7 @@ scrape <- fa_create_date_range_scrape(
 )
 
 # Scrape directly
-scraped <- ScrapeObjects(scrape, verbose = TRUE)
+scraped <- scrape_objects(scrape, verbose = TRUE)
 
 # Analyze with helper functions
 summary_table <- fa_flex_table(scraped)

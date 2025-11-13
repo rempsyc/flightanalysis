@@ -51,7 +51,7 @@ cat("(Pre-flight checks and driver initialization will run automatically)\n\n")
 tryCatch(
   {
     # IMPORTANT: Must capture the return value!
-    scrape_oneway <- ScrapeObjects(scrape_oneway)
+    scrape_oneway <- scrape_objects(scrape_oneway)
 
     if (nrow(scrape_oneway$data) > 0) {
       cat("\n✓ Successfully scraped", nrow(scrape_oneway$data), "flights!\n\n")
@@ -122,7 +122,7 @@ tryCatch(
   {
     cat("Scraping (this may take a moment for 2 segments)...\n")
     # IMPORTANT: Must capture the return value!
-    scrape_roundtrip <- ScrapeObjects(scrape_roundtrip)
+    scrape_roundtrip <- scrape_objects(scrape_roundtrip)
 
     if (nrow(scrape_roundtrip$data) > 0) {
       cat(

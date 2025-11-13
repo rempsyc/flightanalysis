@@ -257,16 +257,16 @@ print.Scrape <- function(x, ...) {
 #' @param verbose Logical. If TRUE, shows detailed progress information (default)
 #'
 #' @return Modified Scrape object(s) with scraped data. **Important:** You must
-#'   capture the return value to get the scraped data: `scrape <- ScrapeObjects(scrape)`
+#'   capture the return value to get the scraped data: `scrape <- scrape_objects(scrape)`
 #' @export
 #'
 #' @examples
 #' \dontrun{
 #' scrape <- Scrape("JFK", "IST", "2025-12-20", "2025-12-25")
-#' scrape <- ScrapeObjects(scrape)
+#' scrape <- scrape_objects(scrape)
 #' scrape$data
 #' }
-ScrapeObjects <- function(
+scrape_objects <- function(
   objs,
   verbose = TRUE
 ) {
@@ -722,4 +722,13 @@ clean_results <- function(result, date, verbose = TRUE) {
   }
 
   flights
+}
+
+#' @rdname scrape_objects
+#' @export
+#' @usage NULL
+ScrapeObjects <- function(objs, verbose = TRUE) {
+  .Deprecated("scrape_objects", package = "flightanalysis",
+              msg = "'ScrapeObjects' is deprecated. Use 'scrape_objects' instead.")
+  scrape_objects(objs, verbose)
 }

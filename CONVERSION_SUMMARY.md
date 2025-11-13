@@ -37,7 +37,7 @@ The Python package `google-flight-analysis` has been successfully converted to R
 - ✅ Validate date formats (YYYY-MM-DD)
 - ✅ Generate Google Flights URLs
 - ✅ Print methods for display
-- ✅ **ScrapeObjects() with chromote web scraping (no drivers needed!)**
+- ✅ **scrape_objects() with chromote web scraping (no drivers needed!)**
 - ✅ **Uses Chrome DevTools Protocol directly - more reliable than Selenium**
 - ✅ **No external driver files or version compatibility issues**
 - ✅ **Pre-flight checks (Chrome detection, internet connectivity)**
@@ -162,7 +162,7 @@ write.csv(df, "flights.csv", row.names = FALSE)
 - **Methods**: Python `self.method()` → R `object$field`
 
 ### 3. Web Scraping Implementation
-The `ScrapeObjects()` function is fully implemented using the chromote package. Implementation details:
+The `scrape_objects()` function is fully implemented using the chromote package. Implementation details:
 1. Uses Chrome DevTools Protocol (no external drivers needed)
 2. Automatic browser setup and connection
 3. Complete page scraping and data extraction logic

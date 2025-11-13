@@ -18,7 +18,7 @@
 #' @section Main Functions:
 #' \describe{
 #'   \item{\code{\link{Scrape}}}{Create a flight query object}
-#'   \item{\code{\link{ScrapeObjects}}}{Execute flight queries (requires chromote)}
+#'   \item{\code{\link{scrape_objects}}}{Execute flight queries (requires chromote)}
 #'   \item{\code{\link{Flight}}}{Create a flight data object}
 #'   \item{\code{\link{flights_to_dataframe}}}{Convert Flight objects to data frame}
 #'   \item{\code{\link{fa_create_date_range_scrape}}}{Create Scrape objects for flexible date search}

@@ -35,7 +35,7 @@ Four new exported functions were added to provide an intuitive workflow:
 **Features**:
 - Generates all airport × date combinations
 - Creates chain-trip Scrape object WITHOUT scraping
-- Returns Scrape object ready to pass to `ScrapeObjects()`
+- Returns Scrape object ready to pass to `scrape_objects()`
 - Leverages existing chain-trip functionality
 
 **Returns**: Scrape object of type "chain-trip"
@@ -53,7 +53,7 @@ Four new exported functions were added to provide an intuitive workflow:
 
 **Features**:
 - Uses `fa_create_date_range_scrape()` to create batch Scrape object
-- Calls `ScrapeObjects()` to scrape all queries in one browser session
+- Calls `scrape_objects()` to scrape all queries in one browser session
 - Filters placeholder rows automatically
 - Processes results into user-friendly format
 - Comprehensive error messages

@@ -54,7 +54,7 @@ cat(sprintf("Total queries: %d\n\n", nrow(routes) * length(dates)))
 # # Step 2: Scrape each origin
 # for (code in names(scrapes)) {
 #   cat(sprintf("Scraping %s...\n", code))
-#   scrapes[[code]] <- ScrapeObjects(scrapes[[code]], verbose = TRUE)
+#   scrapes[[code]] <- scrape_objects(scrapes[[code]], verbose = TRUE)
 #   Sys.sleep(3)  # Pause between origins to be polite
 # }
 # 
@@ -136,7 +136,7 @@ cat(sprintf("\nCheapest route on average: %s (%s) - $%.2f\n",
 
 cat("\n=== Tips for Real Usage ===\n")
 cat("1. Use fa_create_date_range_scrape() to create Scrape objects\n")
-cat("2. Use ScrapeObjects() to fetch data for each route\n")
+cat("2. Use scrape_objects() to fetch data for each route\n")
 cat("3. Pass Scrape objects directly to fa_flex_table() and fa_best_dates()\n")
 cat("4. Save results with saveRDS() for later analysis\n")
 cat("5. Run during off-peak hours to be considerate of Google's servers\n")

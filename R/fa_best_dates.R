@@ -25,7 +25,7 @@
 #' # Option 1: Pass list of Scrape objects directly
 #' scrapes <- fa_create_date_range_scrape(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
 #' for (code in names(scrapes)) {
-#'   scrapes[[code]] <- ScrapeObjects(scrapes[[code]])
+#'   scrapes[[code]] <- scrape_objects(scrapes[[code]])
 #' }
 #' best_dates <- fa_best_dates(scrapes, n = 5, by = "mean")
 #'
@@ -38,7 +38,7 @@ fa_best_dates <- function(results, n = 10, by = "min") {
   if (inherits(results, "Scrape")) {
     # Validate Scrape object has data
     if (is.null(results$data) || nrow(results$data) == 0) {
-      stop("Scrape object contains no data. Please run ScrapeObjects() first to fetch flight data.")
+      stop("Scrape object contains no data. Please run scrape_objects() first to fetch flight data.")
     }
     # Single Scrape object - pass directly to extract_data_from_scrapes
     results <- extract_data_from_scrapes(results)
