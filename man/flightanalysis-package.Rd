@@ -23,21 +23,11 @@ collect data regarding flights and prices. Current features include:
 \section{Main Functions}{
 
 \describe{
-  \item{\code{\link{define_query}}}{Create a flight query object}
-  \item{\code{\link{fetch_flights}}}{Execute flight queries (requires chromote)}
-  \item{\code{\link{create_date_range}}}{Create queries for flexible date search}
-  \item{\code{\link{fa_flex_table}}}{Create wide summary table for price comparison}
-  \item{\code{\link{fa_best_dates}}}{Identify cheapest travel dates}
-}
-}
-
-\section{Deprecated Functions}{
-
-The following functions are deprecated but still available for backward compatibility:
-\itemize{
-  \item \code{Scrape()} - use \code{define_query()} instead
-  \item \code{ScrapeObjects()} and \code{scrape_objects()} - use \code{fetch_flights()} instead
-  \item \code{fa_create_date_range_scrape()} - use \code{create_date_range()} instead
+  \item{\code{\link{fa_define_query}}}{Create a flight query object}
+  \item{\code{\link{fa_fetch_flights}}}{Execute flight queries (requires chromote)}
+  \item{\code{\link{fa_create_date_range}}}{Create queries for flexible date search}
+  \item{\code{\link{fa_summarize_prices}}}{Create wide summary table for price comparison}
+  \item{\code{\link{fa_find_best_dates}}}{Identify cheapest travel dates}
 }
 }
 

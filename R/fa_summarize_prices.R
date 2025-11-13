@@ -1,4 +1,4 @@
-#' Create Flexible Date Summary Table
+#' Create Price Summary Table
 #'
 #' @description
 #' Creates a wide summary table showing prices by city/airport and date,
@@ -8,8 +8,8 @@
 #'
 #' @param results Either:
 #'   - A data frame with columns: City, Airport, Date, Price, and optionally Comment
-#'   - A list of flight querys (from create_date_range with multiple origins)
-#'   - A single flight query (from create_date_range with single origin)
+#'   - A list of flight querys (from fa_create_date_range with multiple origins)
+#'   - A single flight query (from fa_create_date_range with single origin)
 #' @param include_comment Logical. If TRUE and Comment column exists, includes
 #'   it in the output. Default is TRUE.
 #' @param currency_symbol Character. Currency symbol to use for formatting.
@@ -25,16 +25,16 @@
 #' @examples
 #' \dontrun{
 #' # Option 1: Pass list of flight querys directly
-#' scrapes <- create_date_range(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
-#' for (code in names(scrapes)) {
-#'   scrapes[[code]] <- scrape_objects(scrapes[[code]])
+#' queries <- fa_create_date_range(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
+#' for (code in names(queries)) {
+#'   queries[[code]] <- fa_fetch_flights(queries[[code]])
 #' }
-#' summary_table <- fa_flex_table(scrapes)
+#' summary_table <- fa_summarize_prices(queries)
 #' 
 #' # Option 2: Pass processed data frame
-#' summary_table <- fa_flex_table(my_data_frame)
+#' summary_table <- fa_summarize_prices(my_data_frame)
 #' }
-fa_flex_table <- function(
+fa_summarize_prices <- function(
   results,
   include_comment = TRUE,
   currency_symbol = "$",
@@ -42,16 +42,16 @@ fa_flex_table <- function(
 ) {
   # Handle different input types
   # Check for flight query FIRST (before is.list, since flight queries are lists)
-  if (inherits(results, "flight_query") || inherits(results, "Scrape")) {
+  if (inherits(results, "flight_query")) {
     # Validate flight query has data
     if (is.null(results$data) || nrow(results$data) == 0) {
-      stop("flight query contains no data. Please run fetch_flights() first to fetch flight data.")
+      stop("flight query contains no data. Please run fa_fetch_flights() first to fetch flight data.")
     }
     # Single flight query - pass directly to extract_data_from_scrapes
     results <- extract_data_from_scrapes(results)
   } else if (is.list(results) && !is.data.frame(results)) {
     # Check if it's a list of flight queries
-    if (all(sapply(results, function(x) inherits(x, "flight_query") || inherits(x, "Scrape")))) {
+    if (all(sapply(results, function(x) inherits(x, "flight_query")))) {
       # Extract and combine data from list of flight queries
       results <- extract_data_from_scrapes(results)
     } else {

@@ -39,7 +39,7 @@ cat("Example 1: Scraping a One-Way Trip\n")
 cat("-----------------------------------\n")
 cat("Creating query: JFK -> IST on 2026-07-20\n\n")
 
-query_oneway <- define_query("JFK", "IST", "2026-07-20")
+query_oneway <- fa_define_query("JFK", "IST", "2026-07-20")
 
 cat("Query details:\n")
 print(query_oneway)
@@ -51,7 +51,7 @@ cat("(Pre-flight checks and driver initialization will run automatically)\n\n")
 tryCatch(
   {
     # IMPORTANT: Must capture the return value!
-    query_oneway <- fetch_flights(query_oneway)
+    query_oneway <- fa_fetch_flights(query_oneway)
 
     if (nrow(query_oneway$data) > 0) {
       cat("\n✓ Successfully scraped", nrow(query_oneway$data), "flights!\n\n")
@@ -112,7 +112,7 @@ cat("Example 2: Round-Trip Scraping\n")
 cat("-------------------------------\n")
 cat("Creating query: JFK <-> IST (2026-07-20 to 2026-08-05)\n\n")
 
-query_roundtrip <- define_query("JFK", "IST", "2026-07-20", "2026-08-05")
+query_roundtrip <- fa_define_query("JFK", "IST", "2026-07-20", "2026-08-05")
 
 cat("This example demonstrates:\n")
 cat("  1. Scraping multiple flight segments (outbound + return)\n")
@@ -122,7 +122,7 @@ tryCatch(
   {
     cat("Scraping (this may take a moment for 2 segments)...\n")
     # IMPORTANT: Must capture the return value!
-    query_roundtrip <- fetch_flights(query_roundtrip)
+    query_roundtrip <- fa_fetch_flights(query_roundtrip)
 
     if (nrow(query_roundtrip$data) > 0) {
       cat(

@@ -46,18 +46,18 @@ library(flightanalysis)
 ### Creating Flight Queries
 
 The main scraping function that makes up the backbone of most
-functionalities is `Scrape()`. It serves as a data object, preserving
-the flight information as well as meta-data from your query.
+functionalities is `fa_define_query()`. It serves as a data object,
+preserving the flight information as well as meta-data from your query.
 
 #### One-Way Trip
 
 ``` r
 # Create a one-way flight query
-scrape <- Scrape("JFK", "IST", "2025-07-20")
-scrape
+query <- fa_define_query("JFK", "IST", "2025-07-20")
+query
 ```
 
-    ## Scrape( {Query Not Yet Used}
+    ## Flight Query( {Not Yet Fetched}
     ## 2025-07-20: JFK --> IST
     ## )
 
@@ -65,11 +65,11 @@ scrape
 
 ``` r
 # Create a round-trip flight query
-scrape <- Scrape("JFK", "IST", "2025-07-20", "2025-08-20")
-scrape
+query <- fa_define_query("JFK", "IST", "2025-07-20", "2025-08-20")
+query
 ```
 
-    ## Scrape( {Query Not Yet Used}
+    ## Flight Query( {Not Yet Fetched}
     ## 2025-07-20: JFK --> IST
     ## 2025-08-20: IST --> JFK
     ## )
@@ -81,11 +81,11 @@ direct relation to each other, other than being in chronological order.
 
 ``` r
 # Chain-trip format: origin, dest, date, origin, dest, date, ...
-scrape <- Scrape("JFK", "IST", "2025-08-20", "RDU", "LGA", "2025-12-25", "EWR", "SFO", "2026-01-20")
-scrape
+query <- fa_define_query("JFK", "IST", "2025-08-20", "RDU", "LGA", "2025-12-25", "EWR", "SFO", "2026-01-20")
+query
 ```
 
-    ## Scrape( {Query Not Yet Used}
+    ## Flight Query( {Not Yet Fetched}
     ## 2025-08-20: JFK --> IST
     ## 2025-12-25: RDU --> LGA
     ## 2026-01-20: EWR --> SFO
@@ -99,11 +99,11 @@ the origin of the chain is the final destination (a cycle).
 
 ``` r
 # Perfect-chain format: origin, date, origin, date, ..., first_origin
-scrape <- Scrape("JFK", "2025-09-20", "IST", "2025-09-25", "CDG", "2025-10-10", "LHR", "2025-11-01", "JFK")
-scrape
+query <- fa_define_query("JFK", "2025-09-20", "IST", "2025-09-25", "CDG", "2025-10-10", "LHR", "2025-11-01", "JFK")
+query
 ```
 
-    ## Scrape( {Query Not Yet Used}
+    ## Flight Query( {Not Yet Fetched}
     ## 2025-09-20: JFK --> IST
     ## 2025-09-25: IST --> CDG
     ## 2025-10-10: CDG --> LHR
@@ -125,10 +125,10 @@ Then scrape flight data from Google Flights:
 
 ``` r
 # Create a query
-scrape <- Scrape("JFK", "IST", "2025-12-20", "2026-01-05")
+query <- fa_define_query("JFK", "IST", "2025-12-20", "2026-01-05")
 
 # Scrape the data (runs in headless mode by default)
-scrape <- scrape_objects(scrape)
+query <- fa_fetch_flights(query)
 ```
 
     ##   Segment 1/2: JFK -> IST on 2025-12-20
@@ -139,7 +139,7 @@ scrape <- scrape_objects(scrape)
 
 ``` r
 # View the scraped data
-head(scrape$data) |>
+head(query$data) |>
   knitr::kable()
 ```
 
@@ -152,13 +152,13 @@ head(scrape$data) |>
 | 2025-12-20 20:05:00 | 2025-12-21 14:05:00 | JFK | IST | Price graph | 10 hr | 1982 | 0 | NA | 2025-11-12 17:15:33 | 528 | NA |
 | 2025-12-20 01:00:00 | 2025-12-21 03:50:00 | JFK | IST | Air FranceDelta, KLM | 18 hr 50 min | 1469 | 1 | 8 hr 15 min CDG | 2025-11-12 17:15:33 | 551 | 0 |
 
-The `scrape_objects()` function will: 1. **Run pre-flight checks** -
+The `fa_fetch_flights()` function will: 1. **Run pre-flight checks** -
 Verify Chrome installation and internet connectivity 2. **Automatically
 connect to Chrome** - Using Chrome DevTools Protocol (no drivers!) 3.
 **Navigate to Google Flights URLs** - With proper wait times for page
 loading 4. **Extract flight information** - Parse prices, times,
 airlines, stops, and emissions 5. **Store results** - Save data in the
-Scrape object’s `data` field 6. **Handle errors gracefully** - Provide
+query object’s `data` field 6. **Handle errors gracefully** - Provide
 detailed troubleshooting tips if issues occur
 
 **Advantages over RSelenium:**
@@ -208,8 +208,8 @@ flexibility in your travel plans.
 ### Basic Workflow
 
 ``` r
-# Step 1: Create Scrape objects for all routes and dates
-scrapes <- fa_create_date_range_scrape(
+# Step 1: Create query objects for all routes and dates
+scrapes <- fa_create_date_range(
   origin = c("BOM", "DEL", "VNS", "PAT"),
   dest = "JFK",
   date_min = "2025-12-28",
@@ -217,7 +217,7 @@ scrapes <- fa_create_date_range_scrape(
 )
 
 # Step 2: Scrape each origin
-scraped <- scrape_objects(scrapes)
+scraped <- fa_fetch_flights(queries)
 ```
 
     ## Scraping 4 objects...
@@ -284,10 +284,10 @@ scraped <- scrape_objects(scrapes)
     ##   [OK] Total flights retrieved: 81
 
 ``` r
-# Step 3: Analyze directly with list of Scrape objects
+# Step 3: Analyze directly with list of query objects
 
 # Create wide summary table (City × Date with Average Price)
-summary_table <- fa_flex_table(scraped)
+summary_table <- fa_summarize_prices(scraped)
 summary_table |>
   knitr::kable()
 ```
@@ -301,7 +301,7 @@ summary_table |>
 
 ``` r
 # Find the top 10 cheapest dates
-best_dates <- fa_best_dates(scraped, n = 10, by = "mean")
+best_dates <- fa_find_best_dates(scraped, n = 10, by = "mean")
 best_dates |>
   knitr::kable()
 ```
@@ -316,13 +316,13 @@ best_dates |>
 | 2026-01-02 | 2735.711 |       45 |
 | 2026-01-03 | 3037.079 |       38 |
 
-**Key Features:** - **Per-origin Scrape objects**: Each origin gets its
-own chain-trip Scrape object (required due to strict date ordering in
-chain-trips) - **Simple workflow**: (1) Create list of Scrape objects
-with `fa_create_date_range_scrape()`, (2) Scrape each with
-`scrape_objects()`, (3) Pass directly to analysis functions - **Direct
-Scrape object support**: `fa_flex_table()` and `fa_best_dates()` accept
-lists of Scrape objects directly - no manual data processing needed! -
+**Key Features:** - **Per-origin query objects**: Each origin gets its
+own chain-trip query object (required due to strict date ordering in
+chain-trips) - **Simple workflow**: (1) Create list of query objects
+with `fa_create_date_range()`, (2) Scrape each with
+`fa_fetch_flights()`, (3) Pass directly to analysis functions - **Direct
+query object support**: `fa_summarize_prices()` and `fa_find_best_dates()` accept
+lists of query objects directly - no manual data processing needed! -
 Search multiple origin airports and dates efficiently - Automatically
 leverages existing chain-trip functionality - Automatic filtering of
 placeholder rows - Create wide summary tables for easy price
@@ -332,8 +332,8 @@ currency formatting with the `scales` package
 ### Single Origin Example
 
 ``` r
-# For single origin, returns one Scrape object (not a list)
-scrape <- fa_create_date_range_scrape(
+# For single origin, returns one query object (not a list)
+query <- fa_create_date_range(
   origin = "BOM",
   dest = "JFK",
   date_min = "2025-12-18",
@@ -341,7 +341,7 @@ scrape <- fa_create_date_range_scrape(
 )
 
 # Scrape directly
-scraped <- scrape_objects(scrape, verbose = TRUE)
+scraped <- fa_fetch_flights(query, verbose = TRUE)
 ```
 
     ##   Segment 1/19: BOM -> JFK on 2025-12-18
@@ -386,7 +386,7 @@ scraped <- scrape_objects(scrape, verbose = TRUE)
 
 ``` r
 # Analyze with helper functions
-summary_table <- fa_flex_table(scraped)
+summary_table <- fa_summarize_prices(scraped)
 summary_table |>
   knitr::kable()
 ```
@@ -396,7 +396,7 @@ summary_table |>
 | BOM | BOM | \$361 | \$365 | \$413 | \$365 | \$342 | \$361 | \$373 | \$418 | \$563 | \$616 | \$693 | \$756 | \$773 | \$908 | \$1,055 | \$1,631 | \$1,492 | \$1,151 | \$1,364 | \$737 |
 
 ``` r
-best_dates <- fa_best_dates(scraped, n = 5)
+best_dates <- fa_find_best_dates(scraped, n = 5)
 best_dates |>
   knitr::kable()
 ```
@@ -409,17 +409,17 @@ best_dates |>
 | 2025-12-19 |   365 |       10 |
 | 2025-12-21 |   365 |        7 |
 
-### Using fa_flex_table()
+### Using fa_summarize_prices()
 
-The `fa_flex_table()` function creates a wide summary table showing
+The `fa_summarize_prices()` function creates a wide summary table showing
 prices by city/airport and date:
 
 ``` r
 # Create summary table from scraped data
-summary_table <- fa_flex_table(scraped)
+summary_table <- fa_summarize_prices(scraped)
 
 # Optional: customize the output
-summary_table <- fa_flex_table(
+summary_table <- fa_summarize_prices(
   scraped,
   include_comment = TRUE,     # Include comment column if available
   currency_symbol = "$",      # Currency symbol for formatting
@@ -432,13 +432,13 @@ One per date, plus an Average_Price column - Values: Minimum (cheapest)
 price for each date - Automatically filters out placeholder rows (e.g.,
 “Price graph”)
 
-### Using fa_best_dates()
+### Using fa_find_best_dates()
 
-The `fa_best_dates()` function identifies the cheapest travel dates:
+The `fa_find_best_dates()` function identifies the cheapest travel dates:
 
 ``` r
 # Find the 10 cheapest dates by mean price
-best_dates <- fa_best_dates(scraped, n = 10, by = "mean")
+best_dates <- fa_find_best_dates(scraped, n = 10, by = "mean")
 best_dates
 ```
 
@@ -456,7 +456,7 @@ best_dates
 
 ``` r
 # Alternative aggregation methods
-best_dates_median <- fa_best_dates(scraped, n = 5, by = "median")
+best_dates_median <- fa_find_best_dates(scraped, n = 5, by = "median")
 best_dates_median
 ```
 
@@ -468,7 +468,7 @@ best_dates_median
     ## 5 2025-12-24 474.0        8
 
 ``` r
-best_dates_min <- fa_best_dates(scraped, n = 5, by = "min")
+best_dates_min <- fa_find_best_dates(scraped, n = 5, by = "min")
 best_dates_min
 ```
 
@@ -505,10 +505,10 @@ functionality to the Python version! - ✅ Complete web scraping with
 **chromote** - driver-free browser automation - ✅ No more driver
 installation/compatibility issues - uses Chrome DevTools Protocol
 directly - ✅ Headless mode support for server environments - ✅
-**NEW:** Flexible date search with `fa_create_date_range_scrape()` for
+**NEW:** Flexible date search with `fa_create_date_range()` for
 searching multiple airports and dates - ✅ **NEW:** Wide summary tables
-with `fa_flex_table()` for easy price comparison - ✅ **NEW:** Best date
-identification with `fa_best_dates()` for finding cheapest travel dates
+with `fa_summarize_prices()` for easy price comparison - ✅ **NEW:** Best date
+identification with `fa_find_best_dates()` for finding cheapest travel dates
 
 This R package maintains the core functionality of the Python version
 but with R-specific implementations:
