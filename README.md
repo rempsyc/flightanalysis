@@ -43,6 +43,29 @@ devtools::install_github("rempsyc/flightanalysis")
 library(flightanalysis)
 ```
 
+### Sample Datasets
+
+The package includes sample datasets for testing and learning without making API calls:
+
+``` r
+# Load sample flight query
+data(sample_query)
+print(sample_query)
+
+# Load sample flight data (scraped flights)
+data(sample_flights)
+head(sample_flights)
+
+# Load sample multi-origin queries
+data(sample_multi_origin)
+names(sample_multi_origin)
+```
+
+These datasets are useful for:
+- Testing analysis functions like `fa_find_best_dates()` and `fa_summarize_prices()` offline
+- Learning the package structure without internet access
+- Running examples in documentation
+
 ### Creating Flight Queries
 
 The main scraping function that makes up the backbone of most
