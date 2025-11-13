@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">flightanalysis</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,7 +52,7 @@
 <code>Scrape</code> / <code>_Scrape</code>
 </td>
 <td>
-<code><a href="reference/Scrape.html">Scrape()</a></code> S3 class</td>
+<code><a href="reference/define_query.html">define_query()</a></code> S3 class</td>
 <td>✅ Complete</td>
 </tr><tr class="odd"><td>
 <code>CacheControl</code> / <code>_CacheControl</code>
@@ -85,7 +85,7 @@
 <li>✅ Validate date formats (YYYY-MM-DD)</li>
 <li>✅ Generate Google Flights URLs</li>
 <li>✅ Print methods for display</li>
-<li>✅ <strong>ScrapeObjects() with chromote web scraping (no drivers needed!)</strong>
+<li>✅ <strong>fetch_flights() with chromote web scraping (no drivers needed!)</strong>
 </li>
 <li>✅ <strong>Uses Chrome DevTools Protocol directly - more reliable than Selenium</strong>
 </li>
@@ -192,7 +192,7 @@
 <h3 id="basic-usage">Basic Usage<a class="anchor" aria-label="anchor" href="#basic-usage"></a></h3>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create a round-trip query</span></span>
-<span><span class="va">scrape</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/Scrape.html">Scrape</a></span><span class="op">(</span><span class="st">"JFK"</span>, <span class="st">"IST"</span>, <span class="st">"2023-07-20"</span>, <span class="st">"2023-08-20"</span><span class="op">)</span></span>
+<span><span class="va">scrape</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/define_query.html">define_query</a></span><span class="op">(</span><span class="st">"JFK"</span>, <span class="st">"IST"</span>, <span class="st">"2023-07-20"</span>, <span class="st">"2023-08-20"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">scrape</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Create flight objects</span></span>
@@ -239,7 +239,7 @@
 </ul></div>
 <div class="section level3">
 <h3 id="id_3-web-scraping-implementation">3. Web Scraping Implementation<a class="anchor" aria-label="anchor" href="#id_3-web-scraping-implementation"></a></h3>
-<p>The <code><a href="reference/ScrapeObjects.html">ScrapeObjects()</a></code> function is fully implemented using the chromote package. Implementation details: 1. Uses Chrome DevTools Protocol (no external drivers needed) 2. Automatic browser setup and connection 3. Complete page scraping and data extraction logic 4. Supports headless mode and verbose output</p>
+<p>The <code><a href="reference/fetch_flights.html">fetch_flights()</a></code> function is fully implemented using the chromote package. Implementation details: 1. Uses Chrome DevTools Protocol (no external drivers needed) 2. Automatic browser setup and connection 3. Complete page scraping and data extraction logic 4. Supports headless mode and verbose output</p>
 <p>This provides a modern, driver-free web scraping solution that eliminates the common issues associated with Selenium-based approaches.</p>
 </div>
 </div>
@@ -290,7 +290,7 @@ Success rate: 100.0%
 <span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="bu">cd</span> examples <span class="kw">&amp;&amp;</span> <span class="ex">Rscript</span> basic_usage.R</span>
 <span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a></span>
 <span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co"># Quick verification</span></span>
-<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="ex">R</span> <span class="at">-e</span> <span class="st">"source('R/scrape.R'); s &lt;- Scrape('JFK', 'IST', '2023-07-20'); print(s)"</span></span></code></pre></div>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="ex">R</span> <span class="at">-e</span> <span class="st">"source('R/scrape.R'); s &lt;- define_query('JFK', 'IST', '2023-07-20'); print(s)"</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="next-steps-for-users">Next Steps for Users<a class="anchor" aria-label="anchor" href="#next-steps-for-users"></a></h2>

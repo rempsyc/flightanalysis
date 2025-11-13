@@ -14,10 +14,9 @@ fa_best_dates(results, n = 10, by = "min")
 
 - results:
 
-  Either: - A data frame with columns: Date and Price - A list of Scrape
-  objects (from fa_create_date_range_scrape with multiple origins) - A
-  single Scrape object (from fa_create_date_range_scrape with single
-  origin)
+  Either: - A data frame with columns: Date and Price - A list of flight
+  querys (from create_date_range with multiple origins) - A single
+  flight query (from create_date_range with single origin)
 
 - n:
 
@@ -39,10 +38,10 @@ N_Routes (number of routes with data for that date). Sorted by price
 
 ``` r
 if (FALSE) { # \dontrun{
-# Option 1: Pass list of Scrape objects directly
-scrapes <- fa_create_date_range_scrape(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
+# Option 1: Pass list of flight querys directly
+scrapes <- create_date_range(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
 for (code in names(scrapes)) {
-  scrapes[[code]] <- ScrapeObjects(scrapes[[code]])
+  scrapes[[code]] <- scrape_objects(scrapes[[code]])
 }
 best_dates <- fa_best_dates(scrapes, n = 5, by = "mean")
 

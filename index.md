@@ -46,7 +46,7 @@ library(flightanalysis)
 
 The main scraping function that makes up the backbone of most
 functionalities is
-[`Scrape()`](https://rempsyc.github.io/flightanalysis/reference/Scrape.md).
+[`Scrape()`](https://rempsyc.github.io/flightanalysis/reference/define_query.md).
 It serves as a data object, preserving the flight information as well as
 meta-data from your query.
 
@@ -137,7 +137,7 @@ Then scrape flight data from Google Flights:
 scrape <- Scrape("JFK", "IST", "2025-12-20", "2026-01-05")
 
 # Scrape the data (runs in headless mode by default)
-scrape <- ScrapeObjects(scrape)
+scrape <- scrape_objects(scrape)
 ```
 
 ``` R
@@ -164,7 +164,7 @@ head(scrape$data) |>
 | 2025-12-20 01:00:00 | 2025-12-21 03:50:00 | JFK    | IST         | Air FranceDelta, KLM    | 18 hr 50 min |  1469 |         1 | 8 hr 15 min CDG | 2025-11-12 17:15:33 |             551 |                 0 |
 
 The
-[`ScrapeObjects()`](https://rempsyc.github.io/flightanalysis/reference/ScrapeObjects.md)
+[`scrape_objects()`](https://rempsyc.github.io/flightanalysis/reference/fetch_flights.md)
 function will: 1. **Run pre-flight checks** - Verify Chrome installation
 and internet connectivity 2. **Automatically connect to Chrome** - Using
 Chrome DevTools Protocol (no drivers!) 3. **Navigate to Google Flights
@@ -232,7 +232,7 @@ scrapes <- fa_create_date_range_scrape(
 )
 
 # Step 2: Scrape each origin
-scraped <- ScrapeObjects(scrapes)
+scraped <- scrape_objects(scrapes)
 ```
 
 ``` R
@@ -335,9 +335,9 @@ best_dates |>
 own chain-trip Scrape object (required due to strict date ordering in
 chain-trips) - **Simple workflow**: (1) Create list of Scrape objects
 with
-[`fa_create_date_range_scrape()`](https://rempsyc.github.io/flightanalysis/reference/fa_create_date_range_scrape.md),
+[`fa_create_date_range_scrape()`](https://rempsyc.github.io/flightanalysis/reference/create_date_range.md),
 (2) Scrape each with
-[`ScrapeObjects()`](https://rempsyc.github.io/flightanalysis/reference/ScrapeObjects.md),
+[`scrape_objects()`](https://rempsyc.github.io/flightanalysis/reference/fetch_flights.md),
 (3) Pass directly to analysis functions - **Direct Scrape object
 support**:
 [`fa_flex_table()`](https://rempsyc.github.io/flightanalysis/reference/fa_flex_table.md)
@@ -362,7 +362,7 @@ scrape <- fa_create_date_range_scrape(
 )
 
 # Scrape directly
-scraped <- ScrapeObjects(scrape, verbose = TRUE)
+scraped <- scrape_objects(scrape, verbose = TRUE)
 ```
 
 ``` R
@@ -539,7 +539,7 @@ functionality to the Python version! - ✅ Complete web scraping with
 installation/compatibility issues - uses Chrome DevTools Protocol
 directly - ✅ Headless mode support for server environments - ✅
 **NEW:** Flexible date search with
-[`fa_create_date_range_scrape()`](https://rempsyc.github.io/flightanalysis/reference/fa_create_date_range_scrape.md)
+[`fa_create_date_range_scrape()`](https://rempsyc.github.io/flightanalysis/reference/create_date_range.md)
 for searching multiple airports and dates - ✅ **NEW:** Wide summary
 tables with
 [`fa_flex_table()`](https://rempsyc.github.io/flightanalysis/reference/fa_flex_table.md)

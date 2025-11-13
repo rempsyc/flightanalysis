@@ -24,7 +24,7 @@ Include polite rate-limiting
 
 Four new exported functions were added to provide an intuitive workflow:
 
-### 1. `fa_create_date_range_scrape(airports, dest, date_min, date_max)`
+### 1. `create_date_range(airports, dest, date_min, date_max)`
 
 **Purpose**: Helper function to create chain-trip Scrape object with
 flexible parameters
@@ -37,7 +37,7 @@ End date (Date or character in “YYYY-MM-DD”)
 **Features**: - Generates all airport × date combinations - Creates
 chain-trip Scrape object WITHOUT scraping - Returns Scrape object ready
 to pass to
-[`ScrapeObjects()`](https://rempsyc.github.io/flightanalysis/reference/ScrapeObjects.md) -
+[`fetch_flights()`](https://rempsyc.github.io/flightanalysis/reference/fetch_flights.md) -
 Leverages existing chain-trip functionality
 
 **Returns**: Scrape object of type “chain-trip”
@@ -53,9 +53,9 @@ cheapest (default: FALSE) - `headless`: Run browser in headless mode
 (default: TRUE) - `verbose`: Show progress information (default: TRUE)
 
 **Features**: - Uses
-[`fa_create_date_range_scrape()`](https://rempsyc.github.io/flightanalysis/reference/fa_create_date_range_scrape.md)
+[`create_date_range()`](https://rempsyc.github.io/flightanalysis/reference/create_date_range.md)
 to create batch Scrape object - Calls
-[`ScrapeObjects()`](https://rempsyc.github.io/flightanalysis/reference/ScrapeObjects.md)
+[`fetch_flights()`](https://rempsyc.github.io/flightanalysis/reference/fetch_flights.md)
 to scrape all queries in one browser session - Filters placeholder rows
 automatically - Processes results into user-friendly format -
 Comprehensive error messages
@@ -167,7 +167,7 @@ offers - Formats into expected data structure
 
 ### Why These Function Names?
 
-- [`fa_create_date_range_scrape()`](https://rempsyc.github.io/flightanalysis/reference/fa_create_date_range_scrape.md):
+- [`create_date_range()`](https://rempsyc.github.io/flightanalysis/reference/create_date_range.md):
   Clear purpose - creates Scrape object for date range
 - `fa_scrape_best_oneway()`: Clear that it’s flight analysis (fa\_),
   scrapes data, finds best prices, one-way trips

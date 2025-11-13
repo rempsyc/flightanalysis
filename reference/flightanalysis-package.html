@@ -29,7 +29,7 @@ Base analytical tools/methods for price forecasting/summary
 
     <a class="navbar-brand me-2" href="../index.html">flightanalysis</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,20 +71,14 @@ collect data regarding flights and prices. Current features include:</p>
     <h2 id="main-functions">Main Functions<a class="anchor" aria-label="anchor" href="#main-functions"></a></h2>
 
 
-<dl><dt><code><a href="Scrape.html">Scrape</a></code></dt>
+<dl><dt><code><a href="define_query.html">define_query</a></code></dt>
 <dd><p>Create a flight query object</p></dd>
 
-  <dt><code><a href="ScrapeObjects.html">ScrapeObjects</a></code></dt>
+  <dt><code><a href="fetch_flights.html">fetch_flights</a></code></dt>
 <dd><p>Execute flight queries (requires chromote)</p></dd>
 
-  <dt><code><a href="Flight.html">Flight</a></code></dt>
-<dd><p>Create a flight data object</p></dd>
-
-  <dt><code><a href="flights_to_dataframe.html">flights_to_dataframe</a></code></dt>
-<dd><p>Convert Flight objects to data frame</p></dd>
-
-  <dt><code><a href="fa_create_date_range_scrape.html">fa_create_date_range_scrape</a></code></dt>
-<dd><p>Create Scrape objects for flexible date search</p></dd>
+  <dt><code><a href="create_date_range.html">create_date_range</a></code></dt>
+<dd><p>Create queries for flexible date search</p></dd>
 
   <dt><code><a href="fa_flex_table.html">fa_flex_table</a></code></dt>
 <dd><p>Create wide summary table for price comparison</p></dd>
@@ -94,6 +88,14 @@ collect data regarding flights and prices. Current features include:</p>
 
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="deprecated-functions">Deprecated Functions<a class="anchor" aria-label="anchor" href="#deprecated-functions"></a></h2>
+
+
+<p>The following functions are deprecated but still available for backward compatibility:</p><ul><li><p><code><a href="define_query.html">Scrape()</a></code> - use <code><a href="define_query.html">define_query()</a></code> instead</p></li>
+<li><p><code><a href="fetch_flights.html">ScrapeObjects()</a></code> and <code><a href="fetch_flights.html">scrape_objects()</a></code> - use <code><a href="fetch_flights.html">fetch_flights()</a></code> instead</p></li>
+<li><p><code><a href="create_date_range.html">fa_create_date_range_scrape()</a></code> - use <code><a href="create_date_range.html">create_date_range()</a></code> instead</p></li>
+</ul></div>
     <div class="section level2">
     <h2 id="trip-types">Trip Types<a class="anchor" aria-label="anchor" href="#trip-types"></a></h2>
 

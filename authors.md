@@ -13,13 +13,13 @@ Source:
 [`DESCRIPTION`](https://github.com/rempsyc/flightanalysis/blob/main/DESCRIPTION)
 
 Celebi K, Thériault R (2025). *flightanalysis: Google Flight Analysis
-and Scraping*. R package version 1.0.2,
+and Scraping*. R package version 2.0.0,
 <https://github.com/rempsyc/flightanalysis>.
 
     @Manual{,
       title = {flightanalysis: Google Flight Analysis and Scraping},
       author = {Kaya Celebi and Rémi Thériault},
       year = {2025},
-      note = {R package version 1.0.2},
+      note = {R package version 2.0.0},
       url = {https://github.com/rempsyc/flightanalysis},
     }

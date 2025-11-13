@@ -1,18 +1,18 @@
-# Set Scrape Properties
+# Set Query Properties
 
-Set Scrape Properties
+Set Query Properties
 
 ## Usage
 
 ``` r
-set_properties(scrape, args)
+set_properties(query, args)
 ```
 
 ## Arguments
 
-- scrape:
+- query:
 
-  Scrape object being constructed
+  Query object being constructed
 
 - args:
 

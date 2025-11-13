@@ -10,11 +10,11 @@ now ready for use!
 
 ### 1. Core Classes (Python → R)
 
-| Python Class                     | R Implementation                                                                    | Status                                        |
-|----------------------------------|-------------------------------------------------------------------------------------|-----------------------------------------------|
-| `Flight`                         | [`Flight()`](https://rempsyc.github.io/flightanalysis/reference/Flight.md) S3 class | ✅ Complete                                   |
-| `Scrape` / `_Scrape`             | [`Scrape()`](https://rempsyc.github.io/flightanalysis/reference/Scrape.md) S3 class | ✅ Complete                                   |
-| `CacheControl` / `_CacheControl` | ~~`CacheControl()` function~~                                                       | ❌ Removed (users can use standard R methods) |
+| Python Class                     | R Implementation                                                                                | Status                                        |
+|----------------------------------|-------------------------------------------------------------------------------------------------|-----------------------------------------------|
+| `Flight`                         | [`Flight()`](https://rempsyc.github.io/flightanalysis/reference/Flight.md) S3 class             | ✅ Complete                                   |
+| `Scrape` / `_Scrape`             | [`define_query()`](https://rempsyc.github.io/flightanalysis/reference/define_query.md) S3 class | ✅ Complete                                   |
+| `CacheControl` / `_CacheControl` | ~~`CacheControl()` function~~                                                                   | ❌ Removed (users can use standard R methods) |
 
 ### 2. Features Implemented
 
@@ -41,7 +41,7 @@ now ready for use!
 - ✅ Validate date formats (YYYY-MM-DD)
 - ✅ Generate Google Flights URLs
 - ✅ Print methods for display
-- ✅ **ScrapeObjects() with chromote web scraping (no drivers needed!)**
+- ✅ **fetch_flights() with chromote web scraping (no drivers needed!)**
 - ✅ **Uses Chrome DevTools Protocol directly - more reliable than
   Selenium**
 - ✅ **No external driver files or version compatibility issues**
@@ -136,7 +136,7 @@ devtools::install_github("rempsyc/flightanalysis")
 
 ``` r
 # Create a round-trip query
-scrape <- Scrape("JFK", "IST", "2023-07-20", "2023-08-20")
+scrape <- define_query("JFK", "IST", "2023-07-20", "2023-08-20")
 print(scrape)
 
 # Create flight objects
@@ -176,7 +176,7 @@ write.csv(df, "flights.csv", row.names = FALSE)
 ### 3. Web Scraping Implementation
 
 The
-[`ScrapeObjects()`](https://rempsyc.github.io/flightanalysis/reference/ScrapeObjects.md)
+[`fetch_flights()`](https://rempsyc.github.io/flightanalysis/reference/fetch_flights.md)
 function is fully implemented using the chromote package. Implementation
 details: 1. Uses Chrome DevTools Protocol (no external drivers needed)
 2. Automatic browser setup and connection 3. Complete page scraping and
@@ -238,7 +238,7 @@ Rscript run_tests.R
 cd examples && Rscript basic_usage.R
 
 # Quick verification
-R -e "source('R/scrape.R'); s <- Scrape('JFK', 'IST', '2023-07-20'); print(s)"
+R -e "source('R/scrape.R'); s <- define_query('JFK', 'IST', '2023-07-20'); print(s)"
 ```
 
 ## Next Steps for Users

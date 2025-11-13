@@ -22,25 +22,17 @@ and collect data regarding flights and prices. Current features include:
 
 ## Main Functions
 
-- [`Scrape`](https://rempsyc.github.io/flightanalysis/reference/Scrape.md):
+- [`define_query`](https://rempsyc.github.io/flightanalysis/reference/define_query.md):
 
   Create a flight query object
 
-- [`ScrapeObjects`](https://rempsyc.github.io/flightanalysis/reference/ScrapeObjects.md):
+- [`fetch_flights`](https://rempsyc.github.io/flightanalysis/reference/fetch_flights.md):
 
   Execute flight queries (requires chromote)
 
-- [`Flight`](https://rempsyc.github.io/flightanalysis/reference/Flight.md):
+- [`create_date_range`](https://rempsyc.github.io/flightanalysis/reference/create_date_range.md):
 
-  Create a flight data object
-
-- [`flights_to_dataframe`](https://rempsyc.github.io/flightanalysis/reference/flights_to_dataframe.md):
-
-  Convert Flight objects to data frame
-
-- [`fa_create_date_range_scrape`](https://rempsyc.github.io/flightanalysis/reference/fa_create_date_range_scrape.md):
-
-  Create Scrape objects for flexible date search
+  Create queries for flexible date search
 
 - [`fa_flex_table`](https://rempsyc.github.io/flightanalysis/reference/fa_flex_table.md):
 
@@ -49,6 +41,28 @@ and collect data regarding flights and prices. Current features include:
 - [`fa_best_dates`](https://rempsyc.github.io/flightanalysis/reference/fa_best_dates.md):
 
   Identify cheapest travel dates
+
+## Deprecated Functions
+
+The following functions are deprecated but still available for backward
+compatibility:
+
+- [`Scrape()`](https://rempsyc.github.io/flightanalysis/reference/define_query.md) -
+  use
+  [`define_query()`](https://rempsyc.github.io/flightanalysis/reference/define_query.md)
+  instead
+
+- [`ScrapeObjects()`](https://rempsyc.github.io/flightanalysis/reference/fetch_flights.md)
+  and
+  [`scrape_objects()`](https://rempsyc.github.io/flightanalysis/reference/fetch_flights.md) -
+  use
+  [`fetch_flights()`](https://rempsyc.github.io/flightanalysis/reference/fetch_flights.md)
+  instead
+
+- [`fa_create_date_range_scrape()`](https://rempsyc.github.io/flightanalysis/reference/create_date_range.md) -
+  use
+  [`create_date_range()`](https://rempsyc.github.io/flightanalysis/reference/create_date_range.md)
+  instead
 
 ## Trip Types
 
