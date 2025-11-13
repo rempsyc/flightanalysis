@@ -261,7 +261,7 @@ test_that("extract_data_from_scrapes processes Scrape objects correctly", {
   queries <- list(BOM = query1, DEL = query2)
 
   # Extract data
-  result <- flightanalysis:::extract_data_from_scrapes(scrapes)
+  result <- flightanalysis:::extract_data_from_scrapes(queries)
 
   # Check structure
   expect_true(is.data.frame(result))
@@ -314,7 +314,7 @@ test_that("fa_flex_table accepts list of Scrape objects", {
   queries <- list(BOM = query1, DEL = query2)
 
   # Create table directly from Scrape objects
-  table <- fa_flex_table(scrapes, round_prices = TRUE)
+  table <- fa_flex_table(queries, round_prices = TRUE)
 
   # Check structure
   expect_true(is.data.frame(table))
@@ -367,7 +367,7 @@ test_that("fa_best_dates accepts list of Scrape objects", {
   queries <- list(BOM = query1, DEL = query2)
 
   # Get best dates directly from Scrape objects
-  best <- fa_best_dates(scrapes, n = 2, by = "mean")
+  best <- fa_best_dates(queries, n = 2, by = "mean")
 
   # Check structure
   expect_true(is.data.frame(best))
@@ -396,10 +396,10 @@ test_that("fa_flex_table accepts single Scrape object", {
       stringsAsFactors = FALSE
     )
   )
-  class(scrape) <- "Scrape"
+  class(query) <- "Scrape"
 
   # Create table directly from single Scrape object
-  table <- fa_flex_table(scrape, round_prices = TRUE)
+  table <- fa_flex_table(query, round_prices = TRUE)
 
   # Check structure
   expect_true(is.data.frame(table))
@@ -430,10 +430,10 @@ test_that("fa_best_dates accepts single Scrape object", {
       stringsAsFactors = FALSE
     )
   )
-  class(scrape) <- "Scrape"
+  class(query) <- "Scrape"
 
   # Get best dates directly from single Scrape object
-  best <- fa_best_dates(scrape, n = 2, by = "mean")
+  best <- fa_best_dates(query, n = 2, by = "mean")
 
   # Check structure
   expect_true(is.data.frame(best))

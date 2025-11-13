@@ -44,12 +44,12 @@ define_query <- function(...) {
   return(query)
 }
 
-#' Set Scrape Properties
+#' Set Query Properties
 #'
-#' @param scrape Scrape object being constructed
+#' @param query Query object being constructed
 #' @param args List of arguments
 #' @keywords internal
-set_properties <- function(scrape, args) {
+set_properties <- function(query, args) {
   n_args <- length(args)
   date_format <- "%Y-%m-%d"
 
