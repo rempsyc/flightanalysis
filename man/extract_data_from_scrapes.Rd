@@ -2,18 +2,18 @@
 % Please edit documentation in R/filter_placeholder_rows.R
 \name{extract_data_from_scrapes}
 \alias{extract_data_from_scrapes}
-\title{Extract and Process Data from Scrape Objects}
+\title{Extract and Process Data from Query Objects}
 \usage{
 extract_data_from_scrapes(scrapes)
 }
 \arguments{
-\item{scrapes}{A single Scrape object or a named list of Scrape objects}
+\item{scrapes}{A single query object or a named list of query objects}
 }
 \value{
 A data frame with columns: Airport, Date, Price, and City (if named list)
 }
 \description{
-Internal helper that extracts data from Scrape objects (single or list),
-filters placeholder rows, and formats for use with fa_flex_table and fa_best_dates.
+Internal helper that extracts data from query objects (single or list),
+filters placeholder rows, and formats for use with fa_summarize_prices and fa_find_best_dates.
 }
 \keyword{internal}
