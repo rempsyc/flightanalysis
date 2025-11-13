@@ -1,32 +1,26 @@
-# Future API Improvements
+# Future Improvements
 
-This document outlines the phased approach to API improvements for the flightanalysis package.
+This document outlines planned improvements for the flightanalysis package.
 
-## Completed: Phase 1 - Core Function Renames (Issue #15)
+## Completed: v2.0.0 API Redesign
 
-✅ **Core Function Renames (Tidyverse Style)**
-- `Scrape()` → `define_query()`
-- `ScrapeObjects()`/`scrape_objects()` → `fetch_flights()`
-- `fa_create_date_range_scrape()` → `create_date_range()`
+✅ **Consistent fa_ Prefix**
+- Applied `fa_` prefix to all user-facing functions
+- Follows R/Tidyverse conventions for namespace clarity
+- Improves discoverability via auto-completion
 
-✅ **Code Organization**
-- Made `Flight()` and `flights_to_dataframe()` internal
-- Added S3 class `flight_query` (backward compatible with `Scrape`)
-- Updated all R source files, examples, tests, and documentation
-- Kept all old function names as deprecated aliases
+✅ **Core Functions**
+- `fa_query()` - Create flight queries (formerly `fa_query`, `Scrape`)
+- `fa_fa_fetch_flights()` - Fetch flight data (formerly `fa_fetch_flights`, `scrape_objects`, `ScrapeObjects`)
+- `fa_date_range()` - Create date range queries (formerly `fa_date_range`, `fa_fa_date_range_scrape`)
+- `fa_price_summary()` - Create price summary tables (formerly `fa_price_summary`)
+- `fa_find_best_dates()` - Find cheapest travel dates (formerly `fa_find_best_dates`)
 
-## Completed: Phase 1.5 - Documentation Cleanup (This PR)
-
-✅ **README Updates**
-- Fixed README.Rmd variable naming inconsistencies (scrape → query)
-- Updated README.md to use new API throughout
-- Ensured all examples use new API consistently
-- Updated terminology: "Scrape object" → "query object"
-- Updated print output examples to show new format
-
-✅ **Verification**
-- All examples (basic_usage.R, flexible_date_search.R, issue_example.R, web_scraping_example.R) confirmed to use new API
-- Documentation now consistent with code changes from Issue #15
+✅ **Clean Slate**
+- Removed all deprecated functions and backward compatibility code
+- No migration guides needed (unpublished package)
+- Consistent terminology throughout documentation
+- Updated all examples, tests, and documentation
 
 ## Phase 2: Sample Datasets (Next PR)
 
@@ -50,7 +44,7 @@ This document outlines the phased approach to API improvements for the flightana
 #' Sample Flight Query
 #'
 #' @description
-#' A sample flight query object created with define_query().
+#' A sample flight query object created with fa_query().
 #' Can be used for testing and examples.
 #'
 #' @format A flight_query object for JFK to IST round-trip
@@ -62,8 +56,8 @@ This document outlines the phased approach to API improvements for the flightana
 #' Sample Flight Data
 #'
 #' @description  
-#' Sample scraped flight data. Use for testing fa_best_dates()
-#' and fa_flex_table() without internet access.
+#' Sample scraped flight data. Use for testing fa_find_best_dates()
+#' and fa_price_summary() without internet access.
 #'
 #' @format A data frame with 10 rows and 12 variables
 #' @examples
@@ -75,7 +69,7 @@ This document outlines the phased approach to API improvements for the flightana
 4. Create datasets:
 ```r
 # In data-raw/create_datasets.R
-sample_query <- define_query("JFK", "IST", "2025-12-20", "2025-12-27")
+sample_query <- fa_query("JFK", "IST", "2025-12-20", "2025-12-27")
 usethis::use_data(sample_query, overwrite = TRUE)
 
 sample_flights <- data.frame(
@@ -96,31 +90,7 @@ sample_flights <- data.frame(
 usethis::use_data(sample_flights, overwrite = TRUE)
 ```
 
-## Phase 3: Consider fa_ Prefix Removal (Future PR)
-
-**Current State:**
-- `fa_best_dates()` - already good
-- `fa_flex_table()` - already good
-
-**Consideration:**
-The `fa_` prefix might be redundant since these functions are in the `flightanalysis` package.
-
-**Options:**
-1. **Keep as is** - `fa_` provides namespace clarity
-2. **Remove prefix** - `best_dates()`, `flex_table()`
-3. **More descriptive** - `find_best_dates()`, `create_summary_table()`
-
-**Recommendation:** Keep as is for now. The `fa_` prefix is helpful for:
-- Avoiding conflicts with user functions
-- Grouping related functions
-- Maintaining consistency with existing code
-
-If removing, would need:
-- Deprecated aliases for `fa_best_dates()` and `fa_flex_table()`
-- Update all documentation and examples
-- Another major version bump
-
-## Phase 4: Documentation Improvements (Ongoing)
+## Phase 3: Documentation Improvements (Ongoing)
 
 ### Generate Man Pages
 After completing code changes:
@@ -145,7 +115,7 @@ Content should include:
 - Troubleshooting deprecated warnings
 - Examples for each renamed function
 
-## Phase 5: Testing & Validation
+## Phase 4: Testing & Validation
 
 ### Test Coverage
 - Verify all deprecated functions still work
@@ -180,7 +150,7 @@ mkdir -p data-raw
 library(flightanalysis)
 
 # Sample 1: Simple query object
-sample_query <- define_query("JFK", "IST", "2025-12-20", "2025-12-27")
+sample_query <- fa_query("JFK", "IST", "2025-12-20", "2025-12-27")
 usethis::use_data(sample_query, overwrite = TRUE)
 
 # Sample 2: Sample flight data
@@ -217,7 +187,7 @@ sample_flights <- data.frame(
 usethis::use_data(sample_flights, overwrite = TRUE)
 
 # Sample 3: Multiple origin queries
-sample_multi_origin <- create_date_range(
+sample_multi_origin <- fa_date_range(
   origin = c("BOM", "DEL"),
   dest = "JFK",
   date_min = "2025-12-18",
@@ -236,7 +206,7 @@ cat("  - sample_multi_origin: Multiple origin queries\n")
 #' Sample Flight Query
 #'
 #' @description
-#' A sample flight query object created with `define_query()`.
+#' A sample flight query object created with `fa_query()`.
 #' Useful for testing and documentation examples without making API calls.
 #'
 #' @format A flight_query object for JFK to IST round-trip
@@ -258,7 +228,7 @@ cat("  - sample_multi_origin: Multiple origin queries\n")
 #'
 #' @description
 #' Sample scraped flight data for testing analysis functions
-#' like `fa_best_dates()` and `fa_flex_table()` without internet access.
+#' like `fa_find_best_dates()` and `fa_price_summary()` without internet access.
 #'
 #' @format A data frame with 6 rows and 12 variables:
 #' \describe{
@@ -281,14 +251,14 @@ cat("  - sample_multi_origin: Multiple origin queries\n")
 #' head(sample_flights)
 #' # Use with analysis functions
 #' \dontrun{
-#' fa_best_dates(sample_flights, n = 3)
+#' fa_find_best_dates(sample_flights, n = 3)
 #' }
 "sample_flights"
 
 #' Sample Multiple Origin Queries
 #'
 #' @description
-#' Sample query objects for multiple origins created with `create_date_range()`.
+#' Sample query objects for multiple origins created with `fa_date_range()`.
 #' Demonstrates searching multiple airports over a date range.
 #'
 #' @format A named list of 2 flight_query objects (BOM and DEL to JFK)
@@ -354,8 +324,8 @@ data(sample_flights)
 data(sample_multi_origin)
 
 # Use in examples
-fa_best_dates(sample_flights, n = 3)
-fa_flex_table(sample_flights)
+fa_find_best_dates(sample_flights, n = 3)
+fa_price_summary(sample_flights)
 print(sample_query)
 ```
 

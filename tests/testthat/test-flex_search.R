@@ -33,7 +33,7 @@ test_that("filter_placeholder_rows handles empty data", {
   expect_equal(nrow(filtered), 0)
 })
 
-test_that("fa_flex_table creates correct structure", {
+test_that("fa_price_summary creates correct structure", {
   # Create mock results data
   results <- data.frame(
     City = rep(c("Mumbai", "Delhi"), each = 3),
@@ -46,7 +46,7 @@ test_that("fa_flex_table creates correct structure", {
   )
 
   # Create table
-  table <- fa_flex_table(results, include_comment = TRUE, round_prices = TRUE)
+  table <- fa_price_summary(results, include_comment = TRUE, round_prices = TRUE)
 
   # Check structure
   expect_true(is.data.frame(table))
@@ -63,7 +63,7 @@ test_that("fa_flex_table creates correct structure", {
   expect_equal(nrow(table), 2)
 })
 
-test_that("fa_flex_table handles missing Comment column", {
+test_that("fa_price_summary handles missing Comment column", {
   results <- data.frame(
     City = c("Mumbai", "Delhi"),
     Airport = c("BOM", "DEL"),
@@ -74,12 +74,12 @@ test_that("fa_flex_table handles missing Comment column", {
   )
 
   # Should work without Comment column
-  table <- fa_flex_table(results, include_comment = FALSE)
+  table <- fa_price_summary(results, include_comment = FALSE)
   expect_true(is.data.frame(table))
   expect_false("Comment" %in% names(table))
 })
 
-test_that("fa_best_dates returns top dates by mean", {
+test_that("fa_find_best_dates returns top dates by mean", {
   results <- data.frame(
     City = rep(c("Mumbai", "Delhi"), each = 3),
     Airport = rep(c("BOM", "DEL"), each = 3),
@@ -89,7 +89,7 @@ test_that("fa_best_dates returns top dates by mean", {
     stringsAsFactors = FALSE
   )
 
-  best <- fa_best_dates(results, n = 2, by = "mean")
+  best <- fa_find_best_dates(results, n = 2, by = "mean")
 
   expect_true(is.data.frame(best))
   expect_equal(nrow(best), 2)
@@ -102,7 +102,7 @@ test_that("fa_best_dates returns top dates by mean", {
   expect_true(best$Price[1] < best$Price[2])
 })
 
-test_that("fa_best_dates works with different aggregation methods", {
+test_that("fa_find_best_dates works with different aggregation methods", {
   results <- data.frame(
     City = c("Mumbai", "Delhi", "Varanasi"),
     Airport = c("BOM", "DEL", "VNS"),
@@ -113,21 +113,21 @@ test_that("fa_best_dates works with different aggregation methods", {
   )
 
   # Test mean
-  best_mean <- fa_best_dates(results, n = 1, by = "mean")
+  best_mean <- fa_find_best_dates(results, n = 1, by = "mean")
   expect_equal(best_mean$Price[1], 400) # (500 + 300 + 400) / 3
 
   # Test median
-  best_median <- fa_best_dates(results, n = 1, by = "median")
+  best_median <- fa_find_best_dates(results, n = 1, by = "median")
   expect_equal(best_median$Price[1], 400) # median of 300, 400, 500
 
   # Test min
-  best_min <- fa_best_dates(results, n = 1, by = "min")
+  best_min <- fa_find_best_dates(results, n = 1, by = "min")
   expect_equal(best_min$Price[1], 300) # min of 300, 400, 500
 })
 
-test_that("fa_create_date_range_scrape creates valid Scrape object for single origin", {
+test_that("fa_fa_date_range_scrape creates valid Scrape object for single origin", {
   # Single origin - should return one Scrape object
-  query <- create_date_range(
+  query <- fa_date_range(
     origin = "BOM",
     dest = "JFK",
     date_min = "2025-12-18",
@@ -156,9 +156,9 @@ test_that("fa_create_date_range_scrape creates valid Scrape object for single or
   expect_true(all(dates == sort(dates)))
 })
 
-test_that("fa_create_date_range_scrape creates list for multiple origins", {
+test_that("fa_fa_date_range_scrape creates list for multiple origins", {
   # Multiple origins - should return list of Scrape objects
-  queries <- create_date_range(
+  queries <- fa_date_range(
     origin = c("BOM", "DEL"),
     dest = "JFK",
     date_min = "2025-12-18",
@@ -194,10 +194,10 @@ test_that("fa_create_date_range_scrape creates list for multiple origins", {
   expect_true(all(del_dates == sort(del_dates)))
 })
 
-test_that("fa_create_date_range_scrape validates inputs", {
+test_that("fa_fa_date_range_scrape validates inputs", {
   # Invalid airport code
   expect_error(
-    create_date_range(
+    fa_date_range(
       origin = c("BO"),
       dest = "JFK",
       date_min = "2025-12-18",
@@ -208,7 +208,7 @@ test_that("fa_create_date_range_scrape validates inputs", {
 
   # Invalid date order
   expect_error(
-    create_date_range(
+    fa_date_range(
       origin = "BOM",
       dest = "JFK",
       date_min = "2025-12-20",
@@ -271,7 +271,7 @@ test_that("extract_data_from_scrapes processes Scrape objects correctly", {
   expect_equal(sort(unique(result$City)), c("BOM", "DEL"))
 })
 
-test_that("fa_flex_table accepts list of Scrape objects", {
+test_that("fa_price_summary accepts list of Scrape objects", {
   # Create mock Scrape objects (using real structure)
   query1 <- list(
     data = data.frame(
@@ -314,7 +314,7 @@ test_that("fa_flex_table accepts list of Scrape objects", {
   queries <- list(BOM = query1, DEL = query2)
 
   # Create table directly from Scrape objects
-  table <- fa_flex_table(queries, round_prices = TRUE)
+  table <- fa_price_summary(queries, round_prices = TRUE)
 
   # Check structure
   expect_true(is.data.frame(table))
@@ -324,7 +324,7 @@ test_that("fa_flex_table accepts list of Scrape objects", {
   expect_equal(nrow(table), 2) # One row per airport
 })
 
-test_that("fa_best_dates accepts list of Scrape objects", {
+test_that("fa_find_best_dates accepts list of Scrape objects", {
   # Create mock Scrape objects (using real structure)
   query1 <- list(
     data = data.frame(
@@ -367,7 +367,7 @@ test_that("fa_best_dates accepts list of Scrape objects", {
   queries <- list(BOM = query1, DEL = query2)
 
   # Get best dates directly from Scrape objects
-  best <- fa_best_dates(queries, n = 2, by = "mean")
+  best <- fa_find_best_dates(queries, n = 2, by = "mean")
 
   # Check structure
   expect_true(is.data.frame(best))
@@ -377,7 +377,7 @@ test_that("fa_best_dates accepts list of Scrape objects", {
   expect_equal(nrow(best), 2)
 })
 
-test_that("fa_flex_table accepts single Scrape object", {
+test_that("fa_price_summary accepts single Scrape object", {
   # Create mock single Scrape object (using real structure)
   query <- list(
     data = data.frame(
@@ -399,7 +399,7 @@ test_that("fa_flex_table accepts single Scrape object", {
   class(query) <- "Scrape"
 
   # Create table directly from single Scrape object
-  table <- fa_flex_table(query, round_prices = TRUE)
+  table <- fa_price_summary(query, round_prices = TRUE)
 
   # Check structure
   expect_true(is.data.frame(table))
@@ -411,7 +411,7 @@ test_that("fa_flex_table accepts single Scrape object", {
   expect_equal(table$City[1], "BOM")
 })
 
-test_that("fa_best_dates accepts single Scrape object", {
+test_that("fa_find_best_dates accepts single Scrape object", {
   # Create mock single Scrape object (using real structure)
   query <- list(
     data = data.frame(
@@ -433,7 +433,7 @@ test_that("fa_best_dates accepts single Scrape object", {
   class(query) <- "Scrape"
 
   # Get best dates directly from single Scrape object
-  best <- fa_best_dates(query, n = 2, by = "mean")
+  best <- fa_find_best_dates(query, n = 2, by = "mean")
 
   # Check structure
   expect_true(is.data.frame(best))
