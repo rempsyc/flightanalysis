@@ -1,4 +1,4 @@
-#' Extract Best Dates from Flight Search Results
+#' Find Best Travel Dates
 #'
 #' @description
 #' Identifies and returns the top N dates with the cheapest average prices
@@ -7,8 +7,8 @@
 #'
 #' @param results Either:
 #'   - A data frame with columns: Date and Price
-#'   - A list of flight querys (from create_date_range with multiple origins)
-#'   - A single flight query (from create_date_range with single origin)
+#'   - A list of flight querys (from fa_date_range with multiple origins)
+#'   - A single flight query (from fa_date_range with single origin)
 #' @param n Integer. Number of best dates to return. Default is 10.
 #' @param by Character. How to calculate best dates: "mean" (average price
 #'   across routes), "median", or "min" (lowest price on that date).
@@ -23,28 +23,28 @@
 #' @examples
 #' \dontrun{
 #' # Option 1: Pass list of flight querys directly
-#' scrapes <- create_date_range(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
-#' for (code in names(scrapes)) {
-#'   scrapes[[code]] <- scrape_objects(scrapes[[code]])
+#' queries <- fa_date_range(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
+#' for (code in names(queries)) {
+#'   queries[[code]] <- fa_fetch_flights(queries[[code]])
 #' }
-#' best_dates <- fa_best_dates(scrapes, n = 5, by = "mean")
+#' best_dates <- fa_find_best_dates(queries, n = 5, by = "mean")
 #'
 #' # Option 2: Pass processed data frame
-#' best_dates <- fa_best_dates(my_data_frame, n = 5, by = "mean")
+#' best_dates <- fa_find_best_dates(my_data_frame, n = 5, by = "mean")
 #' }
-fa_best_dates <- function(results, n = 10, by = "min") {
+fa_find_best_dates <- function(results, n = 10, by = "min") {
   # Handle different input types
   # Check for flight query FIRST (before is.list, since flight queries are lists)
-  if (inherits(results, "flight_query") || inherits(results, "Scrape")) {
+  if (inherits(results, "flight_query")) {
     # Validate flight query has data
     if (is.null(results$data) || nrow(results$data) == 0) {
-      stop("flight query contains no data. Please run fetch_flights() first to fetch flight data.")
+      stop("flight query contains no data. Please run fa_fetch_flights() first to fetch flight data.")
     }
     # Single flight query - pass directly to extract_data_from_scrapes
     results <- extract_data_from_scrapes(results)
   } else if (is.list(results) && !is.data.frame(results)) {
     # Check if it's a list of flight queries
-    if (all(sapply(results, function(x) inherits(x, "flight_query") || inherits(x, "Scrape")))) {
+    if (all(sapply(results, function(x) inherits(x, "flight_query")))) {
       # Extract and combine data from list of flight queries
       results <- extract_data_from_scrapes(results)
     } else {

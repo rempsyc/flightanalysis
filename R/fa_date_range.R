@@ -18,16 +18,16 @@
 #' @examples
 #' \dontrun{
 #' # Single origin - returns one query object
-#' query <- create_date_range(
+#' query <- fa_date_range(
 #'   origin = "BOM",
 #'   dest = "JFK",
 #'   date_min = "2025-12-18",
 #'   date_max = "2026-01-05"
 #' )
-#' result <- fetch_flights(query)
+#' result <- fa_fetch_flights(query)
 #'
 #' # Multiple origins - returns list of query objects
-#' queries <- create_date_range(
+#' queries <- fa_date_range(
 #'   origin = c("BOM", "DEL", "VNS"),
 #'   dest = "JFK",
 #'   date_min = "2025-12-18",
@@ -37,13 +37,13 @@
 #' # Fetch data for each origin
 #' results <- list()
 #' for (i in seq_along(queries)) {
-#'   results[[i]] <- fetch_flights(queries[[i]])
+#'   results[[i]] <- fa_fetch_flights(queries[[i]])
 #' }
 #' 
 #' # Combine all results
 #' all_data <- do.call(rbind, lapply(results, function(x) x$data))
 #' }
-create_date_range <- function(origin, dest, date_min, date_max) {
+fa_date_range <- function(origin, dest, date_min, date_max) {
   # Validate inputs
   if (!is.character(origin) || length(origin) == 0) {
     stop("origin must be a non-empty character vector")
@@ -85,7 +85,7 @@ create_date_range <- function(origin, dest, date_min, date_max) {
       args <- c(args, list(origin, dest, date))
     }
     
-    query <- do.call(define_query, args)
+    query <- do.call(fa_query, args)
     return(query)
   }
   
@@ -99,16 +99,8 @@ create_date_range <- function(origin, dest, date_min, date_max) {
       args <- c(args, list(orig, dest, date))
     }
     
-    query_list[[orig]] <- do.call(define_query, args)
+    query_list[[orig]] <- do.call(fa_query, args)
   }
   
   return(query_list)
-}
-
-#' @rdname create_date_range
-#' @export
-fa_create_date_range_scrape <- function(origin, dest, date_min, date_max) {
-  .Deprecated("create_date_range", package = "flightanalysis",
-              msg = "'fa_create_date_range_scrape()' is deprecated. Use 'create_date_range()' instead.")
-  create_date_range(origin, dest, date_min, date_max)
 }

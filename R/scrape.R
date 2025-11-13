@@ -16,15 +16,15 @@
 #' @examples
 #' \dontrun{
 #' # One-way trip
-#' query1 <- define_query("JFK", "BOS", "2025-12-20")
+#' query1 <- fa_query("JFK", "BOS", "2025-12-20")
 #'
 #' # Round-trip
-#' query2 <- define_query("JFK", "YUL", "2025-12-20", "2025-12-25")
+#' query2 <- fa_query("JFK", "YUL", "2025-12-20", "2025-12-25")
 #'
 #' # Chain-trip
-#' query3 <- define_query("JFK", "YYZ", "2025-12-20", "RDU", "LGA", "2025-12-25")
+#' query3 <- fa_query("JFK", "YYZ", "2025-12-20", "RDU", "LGA", "2025-12-25")
 #' }
-define_query <- function(...) {
+fa_query <- function(...) {
   args <- list(...)
 
   # Initialize query object
@@ -244,9 +244,6 @@ print.flight_query <- function(x, ...) {
   invisible(x)
 }
 
-#' @export
-print.Scrape <- print.flight_query
-
 #' Fetch Flight Data
 #'
 #' @description
@@ -256,20 +253,20 @@ print.Scrape <- print.flight_query
 #' reliable, driver-free browser automation. The browser runs in headless mode
 #' by default (no visible GUI).
 #'
-#' @param queries A flight query object or list of query objects (from define_query())
+#' @param queries A flight query object or list of query objects (from fa_query())
 #' @param verbose Logical. If TRUE, shows detailed progress information (default)
 #'
 #' @return Modified query object(s) with scraped data. **Important:** You must
-#'   capture the return value to get the scraped data: `result <- fetch_flights(query)`
+#'   capture the return value to get the scraped data: `result <- fa_fetch_flights(query)`
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' query <- define_query("JFK", "IST", "2025-12-20", "2025-12-25")
-#' result <- fetch_flights(query)
+#' query <- fa_query("JFK", "IST", "2025-12-20", "2025-12-25")
+#' result <- fa_fetch_flights(query)
 #' result$data
 #' }
-fetch_flights <- function(
+fa_fetch_flights <- function(
   queries,
   verbose = TRUE
 ) {
@@ -726,28 +723,4 @@ clean_results <- function(result, date, verbose = TRUE) {
   }
 
   flights
-}
-
-#' @rdname define_query
-#' @export
-Scrape <- function(...) {
-  .Deprecated("define_query", package = "flightanalysis",
-              msg = "'Scrape()' is deprecated. Use 'define_query()' instead.")
-  define_query(...)
-}
-
-#' @rdname fetch_flights
-#' @export
-ScrapeObjects <- function(queries, verbose = TRUE) {
-  .Deprecated("fetch_flights", package = "flightanalysis",
-              msg = "'ScrapeObjects()' is deprecated. Use 'fetch_flights()' instead.")
-  fetch_flights(queries, verbose)
-}
-
-#' @rdname fetch_flights
-#' @export
-scrape_objects <- function(queries, verbose = TRUE) {
-  .Deprecated("fetch_flights", package = "flightanalysis",
-              msg = "'scrape_objects()' is deprecated. Use 'fetch_flights()' instead.")
-  fetch_flights(queries, verbose)
 }
