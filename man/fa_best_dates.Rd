@@ -33,7 +33,7 @@ when planning a flexible trip.
 # Option 1: Pass list of Scrape objects directly
 scrapes <- fa_create_date_range_scrape(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
 for (code in names(scrapes)) {
-  scrapes[[code]] <- ScrapeObjects(scrapes[[code]])
+  scrapes[[code]] <- scrape_objects(scrapes[[code]])
 }
 best_dates <- fa_best_dates(scrapes, n = 5, by = "mean")
 

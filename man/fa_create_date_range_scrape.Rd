@@ -24,7 +24,7 @@ Creates Scrape objects for multiple origin airports and date range.
 This is a helper function that generates all permutations of origins and dates
 without actually scraping. Each origin gets its own chain-trip Scrape object
 (to satisfy the chain-trip requirement that dates must be strictly increasing).
-The resulting list of Scrape objects can be passed to ScrapeObjects() one at a time.
+The resulting list of Scrape objects can be passed to scrape_objects() one at a time.
 }
 \examples{
 \dontrun{
@@ -35,7 +35,7 @@ scrape <- fa_create_date_range_scrape(
   date_min = "2025-12-18",
   date_max = "2026-01-05"
 )
-scrape <- ScrapeObjects(scrape)
+scrape <- scrape_objects(scrape)
 
 # Multiple origins - returns list of Scrape objects
 scrapes <- fa_create_date_range_scrape(
@@ -48,7 +48,7 @@ scrapes <- fa_create_date_range_scrape(
 # Scrape each origin
 results <- list()
 for (i in seq_along(scrapes)) {
-  scrapes[[i]] <- ScrapeObjects(scrapes[[i]])
+  scrapes[[i]] <- scrape_objects(scrapes[[i]])
   results[[i]] <- scrapes[[i]]$data
 }
 
