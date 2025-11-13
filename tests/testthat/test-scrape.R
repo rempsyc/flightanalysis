@@ -1,7 +1,7 @@
 test_that("One-way trip is created correctly", {
   res <- define_query("FCO", "IST", "2025-12-05")
 
-  expect_s3_class(res, "Scrape")
+  expect_true(inherits(res, "flight_query") || inherits(res, "Scrape"))
   expect_equal(res$origin[[1]], "FCO")
   expect_equal(res$dest[[1]], "IST")
   expect_equal(res$date[[1]], "2025-12-05")
@@ -11,7 +11,7 @@ test_that("One-way trip is created correctly", {
 test_that("Round-trip is created correctly", {
   res <- define_query("LGA", "RDU", "2025-05-15", "2025-06-15")
 
-  expect_s3_class(res, "Scrape")
+  expect_true(inherits(res, "flight_query") || inherits(res, "Scrape"))
   expect_equal(res$origin[[1]], "LGA")
   expect_equal(res$dest[[1]], "RDU")
   expect_equal(res$origin[[2]], "RDU")
@@ -34,7 +34,7 @@ test_that("Chain-trip is created correctly", {
     "2025-11-25"
   )
 
-  expect_s3_class(res, "Scrape")
+  expect_true(inherits(res, "flight_query") || inherits(res, "Scrape"))
   expect_equal(unlist(res$origin), c("JFK", "CDG", "AMS"))
   expect_equal(unlist(res$dest), c("AMS", "AMS", "IST"))
   expect_equal(unlist(res$date), c("2025-11-10", "2025-11-17", "2025-11-25"))
@@ -54,7 +54,7 @@ test_that("Perfect-chain is created correctly", {
     "JFK"
   )
 
-  expect_s3_class(res, "Scrape")
+  expect_true(inherits(res, "flight_query") || inherits(res, "Scrape"))
   expect_equal(unlist(res$origin), c("JFK", "AMS", "CDG", "IST"))
   expect_equal(unlist(res$dest), c("AMS", "CDG", "IST", "JFK"))
   expect_equal(
@@ -75,8 +75,8 @@ test_that("Invalid argument format throws error", {
 
 test_that("Print method works", {
   res <- define_query("JFK", "IST", "2025-07-20")
-  expect_output(print(res), "Scrape")
-  expect_output(print(res), "Query Not Yet Used")
+  expect_output(print(res), "Flight Query")
+  expect_output(print(res), "Not Yet Fetched")
 })
 
 test_that("URL generation has correct origin and destination order", {

@@ -135,14 +135,14 @@ test_that("fa_create_date_range_scrape creates valid Scrape object for single or
   )
 
   # Check it's a Scrape object
-  expect_s3_class(scrape, "Scrape")
+  expect_true(inherits(query, "flight_query") || inherits(query, "Scrape"))
 
   # Check type
-  expect_equal(scrape$type, "chain-trip")
+  expect_equal(query$type, "chain-trip")
 
   # Should have 3 dates for 1 airport = 3 segments
-  expect_equal(length(scrape$origin), 3)
-  expect_equal(length(scrape$dest), 3)
+  expect_equal(length(query$origin), 3)
+  expect_equal(length(query$dest), 3)
   expect_equal(length(scrape$date), 3)
 
   # All destinations should be JFK
@@ -166,31 +166,31 @@ test_that("fa_create_date_range_scrape creates list for multiple origins", {
   )
 
   # Check it's a list
-  expect_true(is.list(scrapes))
-  expect_equal(length(scrapes), 2)
-  expect_equal(names(scrapes), c("BOM", "DEL"))
+  expect_true(is.list(queries))
+  expect_equal(length(queries), 2)
+  expect_equal(names(queries), c("BOM", "DEL"))
 
-  # Check each element is a Scrape object
-  expect_s3_class(scrapes$BOM, "Scrape")
-  expect_s3_class(scrapes$DEL, "Scrape")
+  # Check each element is a flight query object
+  expect_true(inherits(queries$BOM, "flight_query") || inherits(queries$BOM, "Scrape"))
+  expect_true(inherits(queries$DEL, "flight_query") || inherits(queries$DEL, "Scrape"))
 
-  # Check BOM scrape
-  expect_equal(scrapes$BOM$type, "chain-trip")
-  expect_equal(length(scrapes$BOM$origin), 3) # 3 dates
-  expect_true(all(unlist(scrapes$BOM$origin) == "BOM"))
-  expect_true(all(unlist(scrapes$BOM$dest) == "JFK"))
+  # Check BOM query
+  expect_equal(queries$BOM$type, "chain-trip")
+  expect_equal(length(queries$BOM$origin), 3) # 3 dates
+  expect_true(all(unlist(queries$BOM$origin) == "BOM"))
+  expect_true(all(unlist(queries$BOM$dest) == "JFK"))
 
-  # Check DEL scrape
-  expect_equal(scrapes$DEL$type, "chain-trip")
-  expect_equal(length(scrapes$DEL$origin), 3) # 3 dates
-  expect_true(all(unlist(scrapes$DEL$origin) == "DEL"))
-  expect_true(all(unlist(scrapes$DEL$dest) == "JFK"))
+  # Check DEL query
+  expect_equal(queries$DEL$type, "chain-trip")
+  expect_equal(length(queries$DEL$origin), 3) # 3 dates
+  expect_true(all(unlist(queries$DEL$origin) == "DEL"))
+  expect_true(all(unlist(queries$DEL$dest) == "JFK"))
 
   # Dates should be in increasing order for each
-  bom_dates <- unlist(scrapes$BOM$date)
+  bom_dates <- unlist(queries$BOM$date)
   expect_true(all(bom_dates == sort(bom_dates)))
 
-  del_dates <- unlist(scrapes$DEL$date)
+  del_dates <- unlist(queries$DEL$date)
   expect_true(all(del_dates == sort(del_dates)))
 })
 
