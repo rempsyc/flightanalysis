@@ -200,7 +200,7 @@ set_properties <- function(query, args) {
     stop("Invalid arguments. See documentation for proper formats.")
   }
 
-  return(scrape)
+  return(query)
 }
 
 #' Make URL for Google Flights Query
