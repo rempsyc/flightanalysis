@@ -25,7 +25,7 @@ collect data regarding flights and prices. Current features include:
 \describe{
   \item{\code{\link{fa_define_query}}}{Create a flight query object}
   \item{\code{\link{fa_fetch_flights}}}{Execute flight queries (requires chromote)}
-  \item{\code{\link{fa_date_range}}}{Create queries for flexible date search}
+  \item{\code{\link{fa_create_date_range}}}{Create queries for flexible date search}
   \item{\code{\link{fa_summarize_prices}}}{Create wide summary table for price comparison}
   \item{\code{\link{fa_find_best_dates}}}{Identify cheapest travel dates}
 }
