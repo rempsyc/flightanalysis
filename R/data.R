@@ -44,9 +44,12 @@
 #' @examples
 #' data(sample_flights)
 #' head(sample_flights)
-#' # Use with analysis functions
+#' # Use with analysis functions by attaching to a query object
 #' \dontrun{
-#' fa_find_best_dates(sample_flights, n = 3)
+#' data(sample_query)
+#' sample_query$data <- sample_flights
+#' fa_find_best_dates(sample_query, n = 3)
+#' fa_summarize_prices(sample_query)
 #' }
 "sample_flights"
 
