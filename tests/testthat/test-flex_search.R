@@ -149,10 +149,10 @@ test_that("fa_create_date_range_scrape creates valid Scrape object for single or
   expect_true(all(unlist(query$dest) == "JFK"))
 
   # All origins should be BOM
-  expect_true(all(unlist(scrape$origin) == "BOM"))
+  expect_true(all(unlist(query$origin) == "BOM"))
 
   # Dates should be in increasing order
-  dates <- unlist(scrape$date)
+  dates <- unlist(query$date)
   expect_true(all(dates == sort(dates)))
 })
 
