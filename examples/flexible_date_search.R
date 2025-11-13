@@ -37,7 +37,7 @@ dates <- seq(as.Date("2025-12-18"), as.Date("2026-01-05"), by = "day")
 # Uncomment the following lines to run the actual scraping
 
 # Step 1: Create Scrape objects (one per origin)
-# scrapes <- fa_date_range(
+# scrapes <- fa_create_date_range(
 #   origin = routes$Airport,
 #   dest = "JFK",
 #   date_min = min(dates),
@@ -49,8 +49,8 @@ dates <- seq(as.Date("2025-12-18"), as.Date("2026-01-05"), by = "day")
 #   scrapes[[code]] <- fa_fetch_flights(scrapes[[code]], verbose = TRUE)
 # }
 # 
-# # Step 3: Analyze directly - fa_price_summary and fa_find_best_dates accept lists of Scrape objects!
-# summary_table <- fa_price_summary(scrapes)
+# # Step 3: Analyze directly - fa_summarize_prices and fa_find_best_dates accept lists of Scrape objects!
+# summary_table <- fa_summarize_prices(scrapes)
 # best_dates <- fa_find_best_dates(scrapes, n = 10, by = "mean")
 
 # For demonstration purposes, create mock results
@@ -66,7 +66,7 @@ results <- data.frame(
 )
 
 # Example 2: Create wide summary table
-summary_table <- fa_price_summary(
+summary_table <- fa_summarize_prices(
   results,
   include_comment = TRUE,
   currency_symbol = "$",
@@ -90,7 +90,7 @@ print(best_dates_min)
 
 # Example 5: Alternative workflow - separate scraping per origin
 # (commented out - uncomment to run actual scraping)
-# query_single <- fa_date_range(
+# query_single <- fa_create_date_range(
 #   origin = "BOM",
 #   dest = "JFK",
 #   date_min = "2025-12-18",
@@ -105,8 +105,8 @@ print(best_dates_min)
 # print(best_dates_single)
 
 cat("\n=== Usage Tips ===\n")
-cat("1. Use fa_date_range() to create query objects for date ranges\n")
+cat("1. Use fa_create_date_range() to create query objects for date ranges\n")
 cat("2. Use fa_fetch_flights() to fetch actual flight data from Google Flights\n")
-cat("3. Use fa_price_summary() to create a wide summary table for easy comparison\n")
+cat("3. Use fa_summarize_prices() to create a wide summary table for easy comparison\n")
 cat("4. Use fa_find_best_dates() to quickly identify the cheapest travel dates\n")
-cat("5. Both fa_price_summary() and fa_find_best_dates() accept query objects or data frames\n")
+cat("5. Both fa_summarize_prices() and fa_find_best_dates() accept query objects or data frames\n")

@@ -8,8 +8,8 @@
 #'
 #' @param results Either:
 #'   - A data frame with columns: City, Airport, Date, Price, and optionally Comment
-#'   - A list of flight querys (from fa_date_range with multiple origins)
-#'   - A single flight query (from fa_date_range with single origin)
+#'   - A list of flight querys (from fa_create_date_range with multiple origins)
+#'   - A single flight query (from fa_create_date_range with single origin)
 #' @param include_comment Logical. If TRUE and Comment column exists, includes
 #'   it in the output. Default is TRUE.
 #' @param currency_symbol Character. Currency symbol to use for formatting.
@@ -25,16 +25,16 @@
 #' @examples
 #' \dontrun{
 #' # Option 1: Pass list of flight querys directly
-#' queries <- fa_date_range(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
+#' queries <- fa_create_date_range(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
 #' for (code in names(queries)) {
 #'   queries[[code]] <- fa_fetch_flights(queries[[code]])
 #' }
-#' summary_table <- fa_price_summary(queries)
+#' summary_table <- fa_summarize_prices(queries)
 #' 
 #' # Option 2: Pass processed data frame
-#' summary_table <- fa_price_summary(my_data_frame)
+#' summary_table <- fa_summarize_prices(my_data_frame)
 #' }
-fa_price_summary <- function(
+fa_summarize_prices <- function(
   results,
   include_comment = TRUE,
   currency_symbol = "$",

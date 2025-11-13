@@ -7,8 +7,8 @@
 #'
 #' @param results Either:
 #'   - A data frame with columns: Date and Price
-#'   - A list of flight querys (from fa_date_range with multiple origins)
-#'   - A single flight query (from fa_date_range with single origin)
+#'   - A list of flight querys (from fa_create_date_range with multiple origins)
+#'   - A single flight query (from fa_create_date_range with single origin)
 #' @param n Integer. Number of best dates to return. Default is 10.
 #' @param by Character. How to calculate best dates: "mean" (average price
 #'   across routes), "median", or "min" (lowest price on that date).
@@ -23,7 +23,7 @@
 #' @examples
 #' \dontrun{
 #' # Option 1: Pass list of flight querys directly
-#' queries <- fa_date_range(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
+#' queries <- fa_create_date_range(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
 #' for (code in names(queries)) {
 #'   queries[[code]] <- fa_fetch_flights(queries[[code]])
 #' }

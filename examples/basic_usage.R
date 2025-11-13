@@ -12,14 +12,14 @@ source('R/query.R')
 # Example 1: One-Way Trip
 cat("Example 1: One-Way Trip\n")
 cat("------------------------\n")
-query_oneway <- fa_query("JFK", "IST", "2026-07-20")
+query_oneway <- fa_define_query("JFK", "IST", "2026-07-20")
 print(query_oneway)
 cat("\n")
 
 # Example 2: Round-Trip
 cat("Example 2: Round-Trip\n")
 cat("---------------------\n")
-query_roundtrip <- fa_query("JFK", "IST", "2026-07-20", "2026-08-20")
+query_roundtrip <- fa_define_query("JFK", "IST", "2026-07-20", "2026-08-20")
 print(query_roundtrip)
 cat("\nTrip type:", query_roundtrip$type, "\n")
 cat("Origins:", paste(unlist(query_roundtrip$origin), collapse = ", "), "\n")
@@ -33,7 +33,7 @@ cat("\n")
 # Example 3: Chain-Trip
 cat("Example 3: Chain-Trip (Multiple unrelated flights)\n")
 cat("---------------------------------------------------\n")
-query_chain <- fa_query(
+query_chain <- fa_define_query(
   "JFK",
   "IST",
   "2026-08-20",
@@ -50,7 +50,7 @@ cat("\n")
 # Example 4: Perfect-Chain
 cat("Example 4: Perfect-Chain (Circular trip)\n")
 cat("-----------------------------------------\n")
-query_perfect <- fa_query(
+query_perfect <- fa_define_query(
   "JFK",
   "2026-09-20",
   "IST",

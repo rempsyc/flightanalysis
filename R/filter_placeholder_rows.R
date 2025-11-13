@@ -40,7 +40,7 @@ filter_placeholder_rows <- function(data) {
 #'
 #' @description
 #' Internal helper that extracts data from query objects (single or list),
-#' filters placeholder rows, and formats for use with fa_price_summary and fa_find_best_dates.
+#' filters placeholder rows, and formats for use with fa_summarize_prices and fa_find_best_dates.
 #'
 #' @param scrapes A single query object or a named list of query objects
 #'

@@ -16,15 +16,15 @@
 #' @examples
 #' \dontrun{
 #' # One-way trip
-#' query1 <- fa_query("JFK", "BOS", "2025-12-20")
+#' query1 <- fa_define_query("JFK", "BOS", "2025-12-20")
 #'
 #' # Round-trip
-#' query2 <- fa_query("JFK", "YUL", "2025-12-20", "2025-12-25")
+#' query2 <- fa_define_query("JFK", "YUL", "2025-12-20", "2025-12-25")
 #'
 #' # Chain-trip
-#' query3 <- fa_query("JFK", "YYZ", "2025-12-20", "RDU", "LGA", "2025-12-25")
+#' query3 <- fa_define_query("JFK", "YYZ", "2025-12-20", "RDU", "LGA", "2025-12-25")
 #' }
-fa_query <- function(...) {
+fa_define_query <- function(...) {
   args <- list(...)
 
   # Initialize query object
@@ -253,7 +253,7 @@ print.flight_query <- function(x, ...) {
 #' reliable, driver-free browser automation. The browser runs in headless mode
 #' by default (no visible GUI).
 #'
-#' @param queries A flight query object or list of query objects (from fa_query())
+#' @param queries A flight query object or list of query objects (from fa_define_query())
 #' @param verbose Logical. If TRUE, shows detailed progress information (default)
 #'
 #' @return Modified query object(s) with scraped data. **Important:** You must
@@ -262,7 +262,7 @@ print.flight_query <- function(x, ...) {
 #'
 #' @examples
 #' \dontrun{
-#' query <- fa_query("JFK", "IST", "2025-12-20", "2025-12-25")
+#' query <- fa_define_query("JFK", "IST", "2025-12-20", "2025-12-25")
 #' result <- fa_fetch_flights(query)
 #' result$data
 #' }

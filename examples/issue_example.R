@@ -44,7 +44,7 @@ cat(sprintf("Total queries: %d\n\n", nrow(routes) * length(dates)))
 # cat("Starting scraping... (this will take a while)\n")
 # 
 # # Step 1: Create Scrape objects for all routes and dates
-# scrapes <- fa_date_range(
+# scrapes <- fa_create_date_range(
 #   origin = routes$Airport,
 #   dest = "JFK",
 #   date_min = min(dates),
@@ -58,8 +58,8 @@ cat(sprintf("Total queries: %d\n\n", nrow(routes) * length(dates)))
 #   Sys.sleep(3)  # Pause between origins to be polite
 # }
 # 
-# # Step 3: Extract results (fa_price_summary/fa_find_best_dates handle Scrape objects)
-# summary_table <- fa_price_summary(scrapes)
+# # Step 3: Extract results (fa_summarize_prices/fa_find_best_dates handle Scrape objects)
+# summary_table <- fa_summarize_prices(scrapes)
 # best_dates <- fa_find_best_dates(scrapes, n = 10, by = "min")
 # 
 # # Save results for later use
@@ -86,7 +86,7 @@ results <- data.frame(
 # ==============================================================================
 
 cat("\n=== Creating Summary Table ===\n")
-summary_table <- fa_price_summary(
+summary_table <- fa_summarize_prices(
   results,
   include_comment = TRUE,
   currency_symbol = "$",
@@ -135,9 +135,9 @@ cat(sprintf("\nCheapest route on average: %s (%s) - $%.2f\n",
 # ==============================================================================
 
 cat("\n=== Tips for Real Usage ===\n")
-cat("1. Use fa_date_range() to create query objects\n")
+cat("1. Use fa_create_date_range() to create query objects\n")
 cat("2. Use fa_fetch_flights() to fetch data for each route\n")
-cat("3. Pass query objects directly to fa_price_summary() and fa_find_best_dates()\n")
+cat("3. Pass query objects directly to fa_summarize_prices() and fa_find_best_dates()\n")
 cat("4. Save results with saveRDS() for later analysis\n")
 cat("5. Run during off-peak hours to be considerate of Google's servers\n")
 cat("6. Add Sys.sleep() pauses between scraping different origins\n")

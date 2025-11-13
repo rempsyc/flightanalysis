@@ -1,5 +1,5 @@
 test_that("One-way trip is created correctly", {
-  res <- fa_query("FCO", "IST", "2025-12-05")
+  res <- fa_define_query("FCO", "IST", "2025-12-05")
 
   expect_true(inherits(res, "flight_query") || inherits(res, "Scrape"))
   expect_equal(res$origin[[1]], "FCO")
@@ -9,7 +9,7 @@ test_that("One-way trip is created correctly", {
 })
 
 test_that("Round-trip is created correctly", {
-  res <- fa_query("LGA", "RDU", "2025-05-15", "2025-06-15")
+  res <- fa_define_query("LGA", "RDU", "2025-05-15", "2025-06-15")
 
   expect_true(inherits(res, "flight_query") || inherits(res, "Scrape"))
   expect_equal(res$origin[[1]], "LGA")
@@ -22,7 +22,7 @@ test_that("Round-trip is created correctly", {
 })
 
 test_that("Chain-trip is created correctly", {
-  res <- fa_query(
+  res <- fa_define_query(
     "JFK",
     "AMS",
     "2025-11-10",
@@ -42,7 +42,7 @@ test_that("Chain-trip is created correctly", {
 })
 
 test_that("Perfect-chain is created correctly", {
-  res <- fa_query(
+  res <- fa_define_query(
     "JFK",
     "2025-11-10",
     "AMS",
@@ -65,28 +65,28 @@ test_that("Perfect-chain is created correctly", {
 })
 
 test_that("Invalid date order throws error", {
-  expect_error(fa_query("JFK", "IST", "2025-08-20", "2025-07-20"))
+  expect_error(fa_define_query("JFK", "IST", "2025-08-20", "2025-07-20"))
 })
 
 test_that("Invalid argument format throws error", {
-  expect_error(fa_query("JFKK", "IST", "2025-07-20"))
-  expect_error(fa_query("JFK", "IST", "07-20-2025"))
+  expect_error(fa_define_query("JFKK", "IST", "2025-07-20"))
+  expect_error(fa_define_query("JFK", "IST", "07-20-2025"))
 })
 
 test_that("Print method works", {
-  res <- fa_query("JFK", "IST", "2025-07-20")
+  res <- fa_define_query("JFK", "IST", "2025-07-20")
   expect_output(print(res), "Flight Query")
   expect_output(print(res), "Not Yet Fetched")
 })
 
 test_that("URL generation has correct origin and destination order", {
   # One-way trip
-  res <- fa_query("JFK", "IST", "2025-12-20")
+  res <- fa_define_query("JFK", "IST", "2025-12-20")
   expected_url <- "https://www.google.com/travel/flights?hl=en&q=Flights%20to%20IST%20from%20JFK%20on%202025-12-20%20oneway"
   expect_equal(res$url[[1]], expected_url)
 
   # Chain-trip with multiple segments (issue example)
-  res2 <- fa_query("VNS", "JFK", "2025-12-20", "PAT", "JFK", "2025-12-25")
+  res2 <- fa_define_query("VNS", "JFK", "2025-12-20", "PAT", "JFK", "2025-12-25")
   expect_true(inherits(res2, "flight_query") || inherits(res2, "Scrape"))
   expect_equal(res2$type, "chain-trip")
   expect_equal(length(res2$origin), 2)

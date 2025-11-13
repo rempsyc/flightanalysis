@@ -7,14 +7,14 @@ This release represents a complete redesign of the package API following Tidyver
 ### Core Functions
 
 **Query Creation:**
-- `fa_query()` - Create flight query objects for one-way, round-trip, chain-trip, or perfect-chain searches
-- `fa_date_range()` - Create query objects for multiple origins and dates
+- `fa_define_query()` - Create flight query objects for one-way, round-trip, chain-trip, or perfect-chain searches
+- `fa_create_date_range()` - Create query objects for multiple origins and dates
 
 **Data Fetching:**
 - `fa_fetch_flights()` - Fetch flight data from Google Flights using chromote
 
 **Analysis Functions:**
-- `fa_price_summary()` - Create wide summary table showing prices by city/airport and date
+- `fa_summarize_prices()` - Create wide summary table showing prices by city/airport and date
 - `fa_find_best_dates()` - Identify cheapest travel dates across routes
 
 ### Example Usage
@@ -23,13 +23,13 @@ This release represents a complete redesign of the package API following Tidyver
 library(flightanalysis)
 
 # Create a query
-query <- fa_query("JFK", "IST", "2025-12-20", "2025-12-27")
+query <- fa_define_query("JFK", "IST", "2025-12-20", "2025-12-27")
 
 # Fetch flight data
 result <- fa_fetch_flights(query)
 
 # Analyze results
-summary <- fa_price_summary(result)
+summary <- fa_summarize_prices(result)
 best <- fa_find_best_dates(result, n = 5)
 ```
 
@@ -37,7 +37,7 @@ best <- fa_find_best_dates(result, n = 5)
 
 ```r
 # Search multiple origins over a date range
-queries <- fa_date_range(
+queries <- fa_create_date_range(
   origin = c("BOM", "DEL", "VNS"),
   dest = "JFK",
   date_min = "2025-12-18",
@@ -50,7 +50,7 @@ for (code in names(queries)) {
 }
 
 # Analyze all results
-summary <- fa_price_summary(queries)
+summary <- fa_summarize_prices(queries)
 best_dates <- fa_find_best_dates(queries, n = 10, by = "mean")
 ```
 
@@ -63,8 +63,8 @@ The following functions are internal and not exported:
 ### Package Organization
 
 * Functions organized by purpose:
-  - `fa_date_range.R` - Date range query creation
-  - `fa_price_summary.R` - Price summary tables
+  - `fa_create_date_range.R` - Date range query creation
+  - `fa_summarize_prices.R` - Price summary tables
   - `fa_find_best_dates.R` - Best date identification
   - `filter_placeholder_rows.R` - Data cleaning helpers
   - `scrape.R` - Core query and fetching functionality

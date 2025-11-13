@@ -10,10 +10,10 @@ This document outlines planned improvements for the flightanalysis package.
 - Improves discoverability via auto-completion
 
 ✅ **Core Functions**
-- `fa_query()` - Create flight queries (formerly `fa_query`, `Scrape`)
+- `fa_define_query()` - Create flight queries (formerly `fa_define_query`, `Scrape`)
 - `fa_fa_fetch_flights()` - Fetch flight data (formerly `fa_fetch_flights`, `scrape_objects`, `ScrapeObjects`)
-- `fa_date_range()` - Create date range queries (formerly `fa_date_range`, `fa_fa_date_range_scrape`)
-- `fa_price_summary()` - Create price summary tables (formerly `fa_price_summary`)
+- `fa_create_date_range()` - Create date range queries (formerly `fa_create_date_range`, `fa_fa_create_date_range_scrape`)
+- `fa_summarize_prices()` - Create price summary tables (formerly `fa_summarize_prices`)
 - `fa_find_best_dates()` - Find cheapest travel dates (formerly `fa_find_best_dates`)
 
 ✅ **Clean Slate**
@@ -44,7 +44,7 @@ This document outlines planned improvements for the flightanalysis package.
 #' Sample Flight Query
 #'
 #' @description
-#' A sample flight query object created with fa_query().
+#' A sample flight query object created with fa_define_query().
 #' Can be used for testing and examples.
 #'
 #' @format A flight_query object for JFK to IST round-trip
@@ -57,7 +57,7 @@ This document outlines planned improvements for the flightanalysis package.
 #'
 #' @description  
 #' Sample scraped flight data. Use for testing fa_find_best_dates()
-#' and fa_price_summary() without internet access.
+#' and fa_summarize_prices() without internet access.
 #'
 #' @format A data frame with 10 rows and 12 variables
 #' @examples
@@ -69,7 +69,7 @@ This document outlines planned improvements for the flightanalysis package.
 4. Create datasets:
 ```r
 # In data-raw/create_datasets.R
-sample_query <- fa_query("JFK", "IST", "2025-12-20", "2025-12-27")
+sample_query <- fa_define_query("JFK", "IST", "2025-12-20", "2025-12-27")
 usethis::use_data(sample_query, overwrite = TRUE)
 
 sample_flights <- data.frame(
@@ -150,7 +150,7 @@ mkdir -p data-raw
 library(flightanalysis)
 
 # Sample 1: Simple query object
-sample_query <- fa_query("JFK", "IST", "2025-12-20", "2025-12-27")
+sample_query <- fa_define_query("JFK", "IST", "2025-12-20", "2025-12-27")
 usethis::use_data(sample_query, overwrite = TRUE)
 
 # Sample 2: Sample flight data
@@ -187,7 +187,7 @@ sample_flights <- data.frame(
 usethis::use_data(sample_flights, overwrite = TRUE)
 
 # Sample 3: Multiple origin queries
-sample_multi_origin <- fa_date_range(
+sample_multi_origin <- fa_create_date_range(
   origin = c("BOM", "DEL"),
   dest = "JFK",
   date_min = "2025-12-18",
@@ -206,7 +206,7 @@ cat("  - sample_multi_origin: Multiple origin queries\n")
 #' Sample Flight Query
 #'
 #' @description
-#' A sample flight query object created with `fa_query()`.
+#' A sample flight query object created with `fa_define_query()`.
 #' Useful for testing and documentation examples without making API calls.
 #'
 #' @format A flight_query object for JFK to IST round-trip
@@ -228,7 +228,7 @@ cat("  - sample_multi_origin: Multiple origin queries\n")
 #'
 #' @description
 #' Sample scraped flight data for testing analysis functions
-#' like `fa_find_best_dates()` and `fa_price_summary()` without internet access.
+#' like `fa_find_best_dates()` and `fa_summarize_prices()` without internet access.
 #'
 #' @format A data frame with 6 rows and 12 variables:
 #' \describe{
@@ -258,7 +258,7 @@ cat("  - sample_multi_origin: Multiple origin queries\n")
 #' Sample Multiple Origin Queries
 #'
 #' @description
-#' Sample query objects for multiple origins created with `fa_date_range()`.
+#' Sample query objects for multiple origins created with `fa_create_date_range()`.
 #' Demonstrates searching multiple airports over a date range.
 #'
 #' @format A named list of 2 flight_query objects (BOM and DEL to JFK)
@@ -325,7 +325,7 @@ data(sample_multi_origin)
 
 # Use in examples
 fa_find_best_dates(sample_flights, n = 3)
-fa_price_summary(sample_flights)
+fa_summarize_prices(sample_flights)
 print(sample_query)
 ```
 

@@ -18,7 +18,7 @@
 #' @examples
 #' \dontrun{
 #' # Single origin - returns one query object
-#' query <- fa_date_range(
+#' query <- fa_create_date_range(
 #'   origin = "BOM",
 #'   dest = "JFK",
 #'   date_min = "2025-12-18",
@@ -27,7 +27,7 @@
 #' result <- fa_fetch_flights(query)
 #'
 #' # Multiple origins - returns list of query objects
-#' queries <- fa_date_range(
+#' queries <- fa_create_date_range(
 #'   origin = c("BOM", "DEL", "VNS"),
 #'   dest = "JFK",
 #'   date_min = "2025-12-18",
@@ -43,7 +43,7 @@
 #' # Combine all results
 #' all_data <- do.call(rbind, lapply(results, function(x) x$data))
 #' }
-fa_date_range <- function(origin, dest, date_min, date_max) {
+fa_create_date_range <- function(origin, dest, date_min, date_max) {
   # Validate inputs
   if (!is.character(origin) || length(origin) == 0) {
     stop("origin must be a non-empty character vector")
@@ -85,7 +85,7 @@ fa_date_range <- function(origin, dest, date_min, date_max) {
       args <- c(args, list(origin, dest, date))
     }
     
-    query <- do.call(fa_query, args)
+    query <- do.call(fa_define_query, args)
     return(query)
   }
   
@@ -99,7 +99,7 @@ fa_date_range <- function(origin, dest, date_min, date_max) {
       args <- c(args, list(orig, dest, date))
     }
     
-    query_list[[orig]] <- do.call(fa_query, args)
+    query_list[[orig]] <- do.call(fa_define_query, args)
   }
   
   return(query_list)

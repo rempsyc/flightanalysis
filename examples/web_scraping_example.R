@@ -39,7 +39,7 @@ cat("Example 1: Scraping a One-Way Trip\n")
 cat("-----------------------------------\n")
 cat("Creating query: JFK -> IST on 2026-07-20\n\n")
 
-query_oneway <- fa_query("JFK", "IST", "2026-07-20")
+query_oneway <- fa_define_query("JFK", "IST", "2026-07-20")
 
 cat("Query details:\n")
 print(query_oneway)
@@ -112,7 +112,7 @@ cat("Example 2: Round-Trip Scraping\n")
 cat("-------------------------------\n")
 cat("Creating query: JFK <-> IST (2026-07-20 to 2026-08-05)\n\n")
 
-query_roundtrip <- fa_query("JFK", "IST", "2026-07-20", "2026-08-05")
+query_roundtrip <- fa_define_query("JFK", "IST", "2026-07-20", "2026-08-05")
 
 cat("This example demonstrates:\n")
 cat("  1. Scraping multiple flight segments (outbound + return)\n")
