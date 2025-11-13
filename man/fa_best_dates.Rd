@@ -9,8 +9,8 @@ fa_best_dates(results, n = 10, by = "min")
 \arguments{
 \item{results}{Either:
 - A data frame with columns: Date and Price
-- A list of Scrape objects (from fa_create_date_range_scrape with multiple origins)
-- A single Scrape object (from fa_create_date_range_scrape with single origin)}
+- A list of flight querys (from create_date_range with multiple origins)
+- A single flight query (from create_date_range with single origin)}
 
 \item{n}{Integer. Number of best dates to return. Default is 10.}
 
@@ -30,8 +30,8 @@ when planning a flexible trip.
 }
 \examples{
 \dontrun{
-# Option 1: Pass list of Scrape objects directly
-scrapes <- fa_create_date_range_scrape(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
+# Option 1: Pass list of flight querys directly
+scrapes <- create_date_range(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
 for (code in names(scrapes)) {
   scrapes[[code]] <- scrape_objects(scrapes[[code]])
 }
