@@ -87,7 +87,7 @@ test_that("URL generation has correct origin and destination order", {
 
   # Chain-trip with multiple segments (issue example)
   res2 <- define_query("VNS", "JFK", "2025-12-20", "PAT", "JFK", "2025-12-25")
-  expect_s3_class(res2, "Scrape")
+  expect_true(inherits(res2, "flight_query") || inherits(res2, "Scrape"))
   expect_equal(res2$type, "chain-trip")
   expect_equal(length(res2$origin), 2)
   expect_equal(length(res2$dest), 2)

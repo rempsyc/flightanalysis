@@ -143,10 +143,10 @@ test_that("fa_create_date_range_scrape creates valid Scrape object for single or
   # Should have 3 dates for 1 airport = 3 segments
   expect_equal(length(query$origin), 3)
   expect_equal(length(query$dest), 3)
-  expect_equal(length(scrape$date), 3)
+  expect_equal(length(query$date), 3)
 
   # All destinations should be JFK
-  expect_true(all(unlist(scrape$dest) == "JFK"))
+  expect_true(all(unlist(query$dest) == "JFK"))
 
   # All origins should be BOM
   expect_true(all(unlist(scrape$origin) == "BOM"))
