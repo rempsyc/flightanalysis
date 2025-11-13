@@ -36,7 +36,7 @@ dates <- seq(as.Date("2025-12-18"), as.Date("2026-01-05"), by = "day")
 # Note: This will take time to run as it scrapes live data
 # Uncomment the following lines to run the actual scraping
 
-# Step 1: Create Scrape objects (one per origin)
+# Step 1: Create query objects (one per origin)
 # scrapes <- fa_create_date_range(
 #   origin = routes$Airport,
 #   dest = "JFK",
@@ -49,7 +49,7 @@ dates <- seq(as.Date("2025-12-18"), as.Date("2026-01-05"), by = "day")
 #   scrapes[[code]] <- fa_fetch_flights(scrapes[[code]], verbose = TRUE)
 # }
 # 
-# # Step 3: Analyze directly - fa_summarize_prices and fa_find_best_dates accept lists of Scrape objects!
+# # Step 3: Analyze directly - fa_summarize_prices and fa_find_best_dates accept lists of query objects!
 # summary_table <- fa_summarize_prices(scrapes)
 # best_dates <- fa_find_best_dates(scrapes, n = 10, by = "mean")
 

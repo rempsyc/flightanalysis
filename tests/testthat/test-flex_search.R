@@ -125,8 +125,8 @@ test_that("fa_find_best_dates works with different aggregation methods", {
   expect_equal(best_min$Price[1], 300) # min of 300, 400, 500
 })
 
-test_that("fa_fa_create_date_range_scrape creates valid Scrape object for single origin", {
-  # Single origin - should return one Scrape object
+test_that("fa_create_date_range creates valid query object for single origin", {
+  # Single origin - should return one query object
   query <- fa_create_date_range(
     origin = "BOM",
     dest = "JFK",
@@ -134,7 +134,7 @@ test_that("fa_fa_create_date_range_scrape creates valid Scrape object for single
     date_max = "2025-12-20"
   )
 
-  # Check it's a Scrape object
+  # Check it's a query object
   expect_true(inherits(query, "flight_query") || inherits(query, "Scrape"))
 
   # Check type
@@ -156,8 +156,8 @@ test_that("fa_fa_create_date_range_scrape creates valid Scrape object for single
   expect_true(all(dates == sort(dates)))
 })
 
-test_that("fa_fa_create_date_range_scrape creates list for multiple origins", {
-  # Multiple origins - should return list of Scrape objects
+test_that("fa_create_date_range creates list for multiple origins", {
+  # Multiple origins - should return list of query objects
   queries <- fa_create_date_range(
     origin = c("BOM", "DEL"),
     dest = "JFK",
@@ -194,7 +194,7 @@ test_that("fa_fa_create_date_range_scrape creates list for multiple origins", {
   expect_true(all(del_dates == sort(del_dates)))
 })
 
-test_that("fa_fa_create_date_range_scrape validates inputs", {
+test_that("fa_create_date_range validates inputs", {
   # Invalid airport code
   expect_error(
     fa_create_date_range(
@@ -218,8 +218,8 @@ test_that("fa_fa_create_date_range_scrape validates inputs", {
   )
 })
 
-test_that("extract_data_from_scrapes processes Scrape objects correctly", {
-  # Create mock Scrape objects with data (using real structure)
+test_that("extract_data_from_scrapes processes query objects correctly", {
+  # Create mock query objects with data (using real structure)
   query1 <- list(
     data = data.frame(
       departure_datetime = as.POSIXct(c(
@@ -271,8 +271,8 @@ test_that("extract_data_from_scrapes processes Scrape objects correctly", {
   expect_equal(sort(unique(result$City)), c("BOM", "DEL"))
 })
 
-test_that("fa_summarize_prices accepts list of Scrape objects", {
-  # Create mock Scrape objects (using real structure)
+test_that("fa_summarize_prices accepts list of query objects", {
+  # Create mock query objects (using real structure)
   query1 <- list(
     data = data.frame(
       departure_datetime = as.POSIXct(c(
@@ -313,7 +313,7 @@ test_that("fa_summarize_prices accepts list of Scrape objects", {
 
   queries <- list(BOM = query1, DEL = query2)
 
-  # Create table directly from Scrape objects
+  # Create table directly from query objects
   table <- fa_summarize_prices(queries, round_prices = TRUE)
 
   # Check structure
@@ -324,8 +324,8 @@ test_that("fa_summarize_prices accepts list of Scrape objects", {
   expect_equal(nrow(table), 2) # One row per airport
 })
 
-test_that("fa_find_best_dates accepts list of Scrape objects", {
-  # Create mock Scrape objects (using real structure)
+test_that("fa_find_best_dates accepts list of query objects", {
+  # Create mock query objects (using real structure)
   query1 <- list(
     data = data.frame(
       departure_datetime = as.POSIXct(c(
@@ -366,7 +366,7 @@ test_that("fa_find_best_dates accepts list of Scrape objects", {
 
   queries <- list(BOM = query1, DEL = query2)
 
-  # Get best dates directly from Scrape objects
+  # Get best dates directly from query objects
   best <- fa_find_best_dates(queries, n = 2, by = "mean")
 
   # Check structure
@@ -377,8 +377,8 @@ test_that("fa_find_best_dates accepts list of Scrape objects", {
   expect_equal(nrow(best), 2)
 })
 
-test_that("fa_summarize_prices accepts single Scrape object", {
-  # Create mock single Scrape object (using real structure)
+test_that("fa_summarize_prices accepts single query object", {
+  # Create mock single query object (using real structure)
   query <- list(
     data = data.frame(
       departure_datetime = as.POSIXct(c(
@@ -398,7 +398,7 @@ test_that("fa_summarize_prices accepts single Scrape object", {
   )
   class(query) <- "flight_query"
 
-  # Create table directly from single Scrape object
+  # Create table directly from single query object
   table <- fa_summarize_prices(query, round_prices = TRUE)
 
   # Check structure
@@ -411,8 +411,8 @@ test_that("fa_summarize_prices accepts single Scrape object", {
   expect_equal(table$City[1], "BOM")
 })
 
-test_that("fa_find_best_dates accepts single Scrape object", {
-  # Create mock single Scrape object (using real structure)
+test_that("fa_find_best_dates accepts single query object", {
+  # Create mock single query object (using real structure)
   query <- list(
     data = data.frame(
       departure_datetime = as.POSIXct(c(
@@ -432,7 +432,7 @@ test_that("fa_find_best_dates accepts single Scrape object", {
   )
   class(query) <- "flight_query"
 
-  # Get best dates directly from single Scrape object
+  # Get best dates directly from single query object
   best <- fa_find_best_dates(query, n = 2, by = "mean")
 
   # Check structure

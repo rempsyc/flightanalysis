@@ -43,7 +43,7 @@ cat(sprintf("Total queries: %d\n\n", nrow(routes) * length(dates)))
 
 # cat("Starting scraping... (this will take a while)\n")
 # 
-# # Step 1: Create Scrape objects for all routes and dates
+# # Step 1: Create query objects for all routes and dates
 # scrapes <- fa_create_date_range(
 #   origin = routes$Airport,
 #   dest = "JFK",
@@ -58,7 +58,7 @@ cat(sprintf("Total queries: %d\n\n", nrow(routes) * length(dates)))
 #   Sys.sleep(3)  # Pause between origins to be polite
 # }
 # 
-# # Step 3: Extract results (fa_summarize_prices/fa_find_best_dates handle Scrape objects)
+# # Step 3: Extract results (fa_summarize_prices/fa_find_best_dates handle query objects)
 # summary_table <- fa_summarize_prices(scrapes)
 # best_dates <- fa_find_best_dates(scrapes, n = 10, by = "min")
 # 

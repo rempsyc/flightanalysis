@@ -146,7 +146,7 @@ The package now supports flexible date search across multiple airports and dates
 ### Basic Workflow
 
 ```{r eval=TRUE}
-# Step 1: Create Scrape objects for all routes and dates
+# Step 1: Create query objects for all routes and dates
 queries <- fa_create_date_range(
   origin = c("BOM", "DEL", "VNS", "PAT"),
   dest = "JFK",

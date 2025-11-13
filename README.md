@@ -158,7 +158,7 @@ connect to Chrome** - Using Chrome DevTools Protocol (no drivers!) 3.
 **Navigate to Google Flights URLs** - With proper wait times for page
 loading 4. **Extract flight information** - Parse prices, times,
 airlines, stops, and emissions 5. **Store results** - Save data in the
-Scrape object’s `data` field 6. **Handle errors gracefully** - Provide
+query object’s `data` field 6. **Handle errors gracefully** - Provide
 detailed troubleshooting tips if issues occur
 
 **Advantages over RSelenium:**
@@ -317,11 +317,11 @@ best_dates |>
 | 2026-01-03 | 3037.079 |       38 |
 
 **Key Features:** - **Per-origin query objects**: Each origin gets its
-own chain-trip Scrape object (required due to strict date ordering in
+own chain-trip query object (required due to strict date ordering in
 chain-trips) - **Simple workflow**: (1) Create list of query objects
 with `fa_create_date_range()`, (2) Scrape each with
 `fa_fetch_flights()`, (3) Pass directly to analysis functions - **Direct
-Scrape object support**: `fa_summarize_prices()` and `fa_find_best_dates()` accept
+query object support**: `fa_summarize_prices()` and `fa_find_best_dates()` accept
 lists of query objects directly - no manual data processing needed! -
 Search multiple origin airports and dates efficiently - Automatically
 leverages existing chain-trip functionality - Automatic filtering of

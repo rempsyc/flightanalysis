@@ -10,11 +10,11 @@ This document outlines planned improvements for the flightanalysis package.
 - Improves discoverability via auto-completion
 
 ✅ **Core Functions**
-- `fa_define_query()` - Create flight queries (formerly `fa_define_query`, `Scrape`)
-- `fa_fa_fetch_flights()` - Fetch flight data (formerly `fa_fetch_flights`, `scrape_objects`, `ScrapeObjects`)
-- `fa_create_date_range()` - Create date range queries (formerly `fa_create_date_range`, `fa_fa_create_date_range_scrape`)
-- `fa_summarize_prices()` - Create price summary tables (formerly `fa_summarize_prices`)
-- `fa_find_best_dates()` - Find cheapest travel dates (formerly `fa_find_best_dates`)
+- `fa_define_query()` - Create flight queries (formerly `define_query`, `Scrape`)
+- `fa_fetch_flights()` - Fetch flight data (formerly `fetch_flights`, `scrape_objects`, `ScrapeObjects`)
+- `fa_create_date_range()` - Create date range queries (formerly `create_date_range`, `fa_create_date_range_scrape`)
+- `fa_summarize_prices()` - Create price summary tables (formerly `fa_flex_table`)
+- `fa_find_best_dates()` - Find cheapest travel dates (formerly `fa_best_dates`)
 
 ✅ **Clean Slate**
 - Removed all deprecated functions and backward compatibility code
