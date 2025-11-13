@@ -1,52 +1,49 @@
-#' Create Flexible Date Range Scrape Objects
+#' Create Date Range Queries
 #'
 #' @description
-#' Creates Scrape objects for multiple origin airports and date range.
-#' This is a helper function that generates all permutations of origins and dates
-#' without actually scraping. Each origin gets its own chain-trip Scrape object
-#' (to satisfy the chain-trip requirement that dates must be strictly increasing).
-#' The resulting list of Scrape objects can be passed to scrape_objects() one at a time.
+#' Creates flight queries for multiple origin airports across a date range.
+#' This helper function generates all permutations of origins and dates
+#' without actually fetching data. Each origin gets its own query object.
 #'
 #' @param origin Character vector of 3-letter airport codes to search from.
 #' @param dest Character. 3-letter destination airport code.
 #' @param date_min Character or Date. Start date in "YYYY-MM-DD" format.
 #' @param date_max Character or Date. End date in "YYYY-MM-DD" format.
 #'
-#' @return If single origin: A Scrape object of type "chain-trip" containing all dates.
-#'   If multiple origins: A named list of Scrape objects, one per origin.
+#' @return If single origin: A flight query object containing all dates.
+#'   If multiple origins: A named list of flight query objects, one per origin.
 #'
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' # Single origin - returns one Scrape object
-#' scrape <- fa_create_date_range_scrape(
+#' # Single origin - returns one query object
+#' query <- create_date_range(
 #'   origin = "BOM",
 #'   dest = "JFK",
 #'   date_min = "2025-12-18",
 #'   date_max = "2026-01-05"
 #' )
-#' scrape <- scrape_objects(scrape)
+#' result <- fetch_flights(query)
 #'
-#' # Multiple origins - returns list of Scrape objects
-#' scrapes <- fa_create_date_range_scrape(
+#' # Multiple origins - returns list of query objects
+#' queries <- create_date_range(
 #'   origin = c("BOM", "DEL", "VNS"),
 #'   dest = "JFK",
 #'   date_min = "2025-12-18",
 #'   date_max = "2026-01-05"
 #' )
 #'
-#' # Scrape each origin
+#' # Fetch data for each origin
 #' results <- list()
-#' for (i in seq_along(scrapes)) {
-#'   scrapes[[i]] <- scrape_objects(scrapes[[i]])
-#'   results[[i]] <- scrapes[[i]]$data
+#' for (i in seq_along(queries)) {
+#'   results[[i]] <- fetch_flights(queries[[i]])
 #' }
 #' 
 #' # Combine all results
-#' all_data <- do.call(rbind, results)
+#' all_data <- do.call(rbind, lapply(results, function(x) x$data))
 #' }
-fa_create_date_range_scrape <- function(origin, dest, date_min, date_max) {
+create_date_range <- function(origin, dest, date_min, date_max) {
   # Validate inputs
   if (!is.character(origin) || length(origin) == 0) {
     stop("origin must be a non-empty character vector")
@@ -80,7 +77,7 @@ fa_create_date_range_scrape <- function(origin, dest, date_min, date_max) {
   dates <- seq(date_min, date_max, by = "day")
   dates_char <- format(dates, "%Y-%m-%d")
 
-  # If single origin, create one Scrape object
+  # If single origin, create one query object
   if (length(origin) == 1) {
     # Build chain-trip arguments: origin, dest, date1, origin, dest, date2, ...
     args <- list()
@@ -88,14 +85,12 @@ fa_create_date_range_scrape <- function(origin, dest, date_min, date_max) {
       args <- c(args, list(origin, dest, date))
     }
     
-    scrape <- do.call(Scrape, args)
-    return(scrape)
+    query <- do.call(define_query, args)
+    return(query)
   }
   
-  # If multiple origins, create separate Scrape object for each origin
-  # (chain-trip validation requires strictly increasing dates, which prevents
-  # multiple origins with overlapping date ranges in a single Scrape object)
-  scrape_list <- list()
+  # If multiple origins, create separate query object for each origin
+  query_list <- list()
   
   for (orig in origin) {
     # Build chain-trip arguments for this origin
@@ -104,8 +99,16 @@ fa_create_date_range_scrape <- function(origin, dest, date_min, date_max) {
       args <- c(args, list(orig, dest, date))
     }
     
-    scrape_list[[orig]] <- do.call(Scrape, args)
+    query_list[[orig]] <- do.call(define_query, args)
   }
   
-  return(scrape_list)
+  return(query_list)
+}
+
+#' @rdname create_date_range
+#' @export
+fa_create_date_range_scrape <- function(origin, dest, date_min, date_max) {
+  .Deprecated("create_date_range", package = "flightanalysis",
+              msg = "'fa_create_date_range_scrape()' is deprecated. Use 'create_date_range()' instead.")
+  create_date_range(origin, dest, date_min, date_max)
 }

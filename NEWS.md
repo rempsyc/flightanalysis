@@ -1,13 +1,54 @@
 # flightanalysis (development version)
 
-## Breaking Changes
+## Major API Redesign (v2.0)
 
-* **Renamed `ScrapeObjects()` to `scrape_objects()` for R naming conventions**
-  - The old `ScrapeObjects()` function is now deprecated but still available with a warning
-  - All documentation and examples updated to use `scrape_objects()`
-  - Update your code to use `scrape_objects()` instead of `ScrapeObjects()`
+This release includes a comprehensive API redesign to follow Tidyverse style guidelines with verb-based, descriptive function names.
 
-## New Features
+### Breaking Changes (with deprecation support)
+
+**Core Function Renames:**
+- `Scrape()` → `define_query()` - Create flight query objects
+- `ScrapeObjects()` / `scrape_objects()` → `fetch_flights()` - Fetch flight data from Google
+- `fa_create_date_range_scrape()` → `create_date_range()` - Create date range queries
+
+**Internal Changes:**
+- `Flight()` is now internal (not exported) - only used internally for parsing
+- `flights_to_dataframe()` is now internal - only used by fetch_flights()
+- S3 class renamed: `Scrape` → `flight_query` (backward compatible)
+
+**All old function names remain available as deprecated aliases** with warnings to guide users to the new API. Both old and new class names are supported.
+
+### New API Examples
+
+```r
+# Old way
+scrape <- Scrape("JFK", "IST", "2025-12-20")
+scrape <- scrape_objects(scrape)
+
+# New way
+query <- define_query("JFK", "IST", "2025-12-20")
+result <- fetch_flights(query)
+
+# Old way
+scrapes <- fa_create_date_range_scrape(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
+
+# New way
+queries <- create_date_range(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
+```
+
+### Migration Guide
+
+1. Replace `Scrape()` with `define_query()`
+2. Replace `ScrapeObjects()` or `scrape_objects()` with `fetch_flights()`
+3. Replace `fa_create_date_range_scrape()` with `create_date_range()`
+4. Remove direct use of `Flight()` (it's internal now)
+5. Remove direct use of `flights_to_dataframe()` (it's internal now)
+
+All existing code will continue to work with deprecation warnings.
+
+## Previous Changes
+
+### Minor Improvements from v1.0.2
 
 * Added `fa_create_date_range_scrape()` function for creating flexible date range Scrape objects. This function:
   - Creates chain-trip Scrape objects from origin airports and date range
