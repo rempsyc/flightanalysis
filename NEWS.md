@@ -71,7 +71,7 @@ The following functions are internal and not exported:
 
 * Comprehensive examples in `examples/` directory
 * Full test coverage in `tests/testthat/`
-* Suggested dependencies: `chromote`, `scales`, `tibble`, `progress`
+* Suggested dependencies: `chromote`, `progress`
 
 # flightanalysis 1.0.0
 

@@ -204,7 +204,13 @@ classify_arg <- function(flight, arg) {
 #' @param x A flight_record object
 #' @param ... Additional arguments (ignored)
 print.flight_record <- function(x, ...) {
-  cat(sprintf("flight_record(id:%d, %s-->%s on %s)\n", x$id, x$origin, x$dest, x$date))
+  cat(sprintf(
+    "flight_record(id:%d, %s-->%s on %s)\n",
+    x$id,
+    x$origin,
+    x$dest,
+    x$date
+  ))
   invisible(x)
 }
 

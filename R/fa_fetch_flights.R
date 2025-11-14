@@ -1,4 +1,3 @@
-
 #' Fetch Flight Data
 #'
 #' @description
@@ -41,7 +40,8 @@ fa_fetch_flights <- function(
 
   # Track if input was a single query object
   # Accept both new "flight_query" and legacy "Scrape" classes
-  single_object <- inherits(queries, "flight_query") || inherits(queries, "Scrape")
+  single_object <- inherits(queries, "flight_query") ||
+    inherits(queries, "Scrape")
 
   # Ensure queries is a list
   if (single_object) {

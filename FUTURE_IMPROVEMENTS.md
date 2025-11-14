@@ -111,4 +111,40 @@ Rscript -e "rmarkdown::render('README.Rmd')"
 - TBD
 
 ## Maintainer Notes
-- TBD
+
+- Consider whether we can deal with the warnings of airportr without usign `invokeRestart("muffleWarning")`, for example by loading the data set through `data(airportr::airports)`
+
+This doesn’t work
+
+``` r
+data(airportr::airports)
+#> Warning in data(airportr::airports): data set 'airportr::airports' not found
+```
+
+but this does
+
+``` r
+airports <- airportr::airports
+airports
+#> # A tibble: 7,698 × 17
+#>    `OpenFlights ID` Name                City  IATA  ICAO  Country `Country Code`
+#>               <dbl> <chr>               <chr> <chr> <chr> <chr>   <chr>         
+#>  1                1 Goroka Airport      Goro… GKA   AYGA  Papua … 598           
+#>  2                2 Madang Airport      Mada… MAG   AYMD  Papua … 598           
+#>  3                3 Mount Hagen Kagamu… Moun… HGU   AYMH  Papua … 598           
+#>  4                4 Nadzab Airport      Nadz… LAE   AYNZ  Papua … 598           
+#>  5                5 Port Moresby Jacks… Port… POM   AYPY  Papua … 598           
+#>  6                6 Wewak Internationa… Wewak WWK   AYWK  Papua … 598           
+#>  7                7 Narsarsuaq Airport  Nars… UAK   BGBW  Greenl… 304           
+#>  8                8 Godthaab / Nuuk Ai… Godt… GOH   BGGH  Greenl… 304           
+#>  9                9 Kangerlussuaq Airp… Sond… SFJ   BGSF  Greenl… 304           
+#> 10               10 Thule Air Base      Thule THU   BGTL  Greenl… 304           
+#> # ℹ 7,688 more rows
+#> # ℹ 10 more variables: `Country Code (Alpha-2)` <chr>,
+#> #   `Country Code (Alpha-3)` <chr>, Latitude <dbl>, Longitude <dbl>,
+#> #   Altitude <dbl>, UTC <dbl>, DST <chr>, Timezone <chr>, Type <chr>,
+#> #   Source <chr>
+```
+
+<sup>Created on 2025-11-13 with [reprex v2.1.1](https://reprex.tidyverse.org)</sup>
+
