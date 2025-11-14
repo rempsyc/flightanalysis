@@ -171,23 +171,23 @@ fa_find_best_dates(
   by = "min",
   price_max = 1400,
   max_stops = 1,
-  travel_time_max = "26 hr"
+  travel_time_max = 1560  # 26 hours in minutes
   ) |>
   knitr::kable()
 ```
 
-| departure_datetime | Origin | Price | num_stops | layover | travel_time | co2_emission_kg | airlines | N_Routes |
-|:---|:---|---:|---:|:---|:---|---:|:---|---:|
-| 2025-12-18 20:55:00 | DEL | 393 | 1 | 3 hr 30 min AUH | 22 hr 35 min | 843 | Etihad | 1 |
-| 2025-12-18 01:30:00 | DEL | 408 | 1 | 2 hr CDG | 19 hr 45 min | 794 | Air FranceDelta, KLM | 1 |
-| 2025-12-18 04:40:00 | BOM | 413 | 1 | 3 hr 15 min AUH | 21 hr 15 min | 852 | Etihad | 1 |
-| 2025-12-18 23:15:00 | BOM | 413 | 1 | 2 hr 5 min AUH | 20 hr 15 min | 763 | Akasa Air, Etihad | 1 |
-| 2025-12-19 04:40:00 | BOM | 413 | 1 | 3 hr 15 min AUH | 21 hr 15 min | 844 | Etihad | 1 |
-| 2025-12-19 23:15:00 | BOM | 413 | 1 | 2 hr 5 min AUH | 20 hr 15 min | 763 | Akasa Air, Etihad | 1 |
-| 2025-12-21 23:15:00 | BOM | 413 | 1 | 2 hr 5 min AUH | 20 hr 15 min | 763 | Akasa Air, Etihad | 1 |
-| 2025-12-22 04:40:00 | BOM | 413 | 1 | 3 hr 15 min AUH | 21 hr 15 min | 845 | Etihad | 1 |
-| 2025-12-18 06:45:00 | BOM | 418 | 1 | 3 hr 55 min IST | 21 hr 55 min | 811 | IndiGo, Turkish Airlines | 2 |
-| 2025-12-18 22:55:00 | BOM | 429 | 1 | 2 hr 15 min AUH | 20 hr 35 min | 775 | Etihad | 1 |
+| departure_date | departure_time | origin | price | num_stops | layover | travel_time | co2_emission_kg | airlines | n_routes |
+|:---|:---|:---|---:|---:|:---|:---|---:|:---|---:|
+| 2025-12-18 | 20:55:00 | DEL | 393 | 1 | 3 hr 30 min AUH | 22 hr 35 min | 843 | Etihad | 1 |
+| 2025-12-18 | 01:30:00 | DEL | 408 | 1 | 2 hr CDG | 19 hr 45 min | 794 | Air FranceDelta, KLM | 1 |
+| 2025-12-18 | 04:40:00 | BOM | 413 | 1 | 3 hr 15 min AUH | 21 hr 15 min | 852 | Etihad | 1 |
+| 2025-12-18 | 23:15:00 | BOM | 413 | 1 | 2 hr 5 min AUH | 20 hr 15 min | 763 | Akasa Air, Etihad | 1 |
+| 2025-12-19 | 04:40:00 | BOM | 413 | 1 | 3 hr 15 min AUH | 21 hr 15 min | 844 | Etihad | 1 |
+| 2025-12-19 | 23:15:00 | BOM | 413 | 1 | 2 hr 5 min AUH | 20 hr 15 min | 763 | Akasa Air, Etihad | 1 |
+| 2025-12-21 | 23:15:00 | BOM | 413 | 1 | 2 hr 5 min AUH | 20 hr 15 min | 763 | Akasa Air, Etihad | 1 |
+| 2025-12-22 | 04:40:00 | BOM | 413 | 1 | 3 hr 15 min AUH | 21 hr 15 min | 845 | Etihad | 1 |
+| 2025-12-18 | 06:45:00 | BOM | 418 | 1 | 3 hr 55 min IST | 21 hr 55 min | 811 | IndiGo, Turkish Airlines | 2 |
+| 2025-12-18 | 22:55:00 | BOM | 429 | 1 | 2 hr 15 min AUH | 20 hr 35 min | 775 | Etihad | 1 |
 
 **Key Features:**
 
