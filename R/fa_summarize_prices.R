@@ -170,22 +170,20 @@ fa_summarize_prices <- function(
   final_cols <- c(base_cols, date_names_sorted, "Average_Price")
   wide_data <- wide_data[, final_cols]
 
-  # Format prices with currency symbol if scales is available
-  if (requireNamespace("scales", quietly = TRUE)) {
-    price_format_cols <- c(date_names_sorted, "Average_Price")
-    for (col in price_format_cols) {
-      if (col %in% names(wide_data)) {
-        # Format only non-NA values
-        formatted_vals <- ifelse(
-          is.na(wide_data[[col]]),
-          NA_character_,
-          paste0(
-            currency_symbol,
-            format(wide_data[[col]], big.mark = ",", scientific = FALSE)
-          )
+  # Format prices with currency symbol
+  price_format_cols <- c(date_names_sorted, "Average_Price")
+  for (col in price_format_cols) {
+    if (col %in% names(wide_data)) {
+      # Format only non-NA values
+      formatted_vals <- ifelse(
+        is.na(wide_data[[col]]),
+        NA_character_,
+        paste0(
+          currency_symbol,
+          format(wide_data[[col]], big.mark = ",", scientific = FALSE)
         )
-        wide_data[[col]] <- formatted_vals
-      }
+      )
+      wide_data[[col]] <- formatted_vals
     }
   }
 

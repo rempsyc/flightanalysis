@@ -24,19 +24,7 @@ fa_fetch_flights <- function(
   queries,
   verbose = TRUE
 ) {
-  # Check if chromote is available
-  if (!requireNamespace("chromote", quietly = TRUE)) {
-    stop(
-      "chromote package is required for web scraping.\n",
-      "Install it with: install.packages('chromote')\n\n",
-      "chromote is a modern Chrome automation package that:\n",
-      "  - Works without external drivers (no chromedriver needed)\n",
-      "  - Is more reliable and easier to use\n",
-      "  - Runs fully headless by default\n",
-      "  - Uses the Chrome DevTools Protocol directly",
-      call. = FALSE
-    )
-  }
+
 
   # Track if input was a single query object
   # Accept both new "flight_query" and legacy "Scrape" classes
@@ -67,7 +55,7 @@ fa_fetch_flights <- function(
       }
 
       # Scrape each object
-      if (requireNamespace("progress", quietly = TRUE) && !verbose) {
+      if (!verbose) {
         pb <- progress::progress_bar$new(
           format = "Scraping [:bar] :percent eta: :eta",
           total = length(queries),
@@ -462,7 +450,7 @@ clean_results <- function(result, date, verbose = TRUE) {
     tryCatch(
       {
         # Use do.call to unpack the vector so each element becomes a separate argument
-        flights[[i]] <- do.call(Flight, c(list(date), as.list(flight_data)))
+        flights[[i]] <- do.call(flight_record, c(list(date), as.list(flight_data)))
       },
       error = function(e) {
         # Silent failure for individual flights - they'll be filtered out
