@@ -131,3 +131,73 @@ test_that("fa_find_best_dates accepts single query object", {
   expect_true("N_Routes" %in% names(best))
   expect_equal(nrow(best), 2)
 })
+
+test_that("fa_find_best_dates supports filtering by time", {
+  # Create mock data with departure times
+  results <- data.frame(
+    Airport = c("BOM", "BOM", "BOM"),
+    Date = rep("2025-12-18", 3),
+    Price = c(300, 350, 400),
+    departure_datetime = as.POSIXct(c(
+      "2025-12-18 06:00:00",
+      "2025-12-18 12:00:00",
+      "2025-12-18 20:00:00"
+    )),
+    stringsAsFactors = FALSE
+  )
+  
+  # Filter for flights between 08:00 and 18:00
+  best <- fa_find_best_dates(results, n = 5, time_min = "08:00", time_max = "18:00")
+  
+  expect_true(is.data.frame(best))
+  expect_equal(nrow(best), 1) # Only the 12:00 flight should remain
+  expect_equal(best$Price[1], 350)
+})
+
+test_that("fa_find_best_dates supports filtering by price range", {
+  results <- data.frame(
+    Airport = c("BOM", "BOM", "BOM"),
+    Date = rep("2025-12-18", 3),
+    Price = c(300, 350, 400),
+    stringsAsFactors = FALSE
+  )
+  
+  # Filter for prices between 320 and 380
+  best <- fa_find_best_dates(results, n = 5, price_min = 320, price_max = 380)
+  
+  expect_true(is.data.frame(best))
+  expect_equal(nrow(best), 1)
+  expect_equal(best$Price[1], 350)
+})
+
+test_that("fa_find_best_dates supports filtering by stops", {
+  # Create mock query with num_stops
+  query <- list(
+    data = data.frame(
+      departure_datetime = as.POSIXct(c(
+        "2025-12-18 10:00:00",
+        "2025-12-18 12:00:00",
+        "2025-12-18 14:00:00"
+      )),
+      arrival_datetime = as.POSIXct(c(
+        "2025-12-18 18:00:00",
+        "2025-12-18 20:00:00",
+        "2025-12-18 22:00:00"
+      )),
+      origin = c("BOM", "BOM", "BOM"),
+      destination = c("JFK", "JFK", "JFK"),
+      airlines = c("Air India", "Emirates", "Delta"),
+      price = c(500, 450, 600),
+      num_stops = c(0, 1, 2),
+      stringsAsFactors = FALSE
+    )
+  )
+  class(query) <- "flight_query"
+  
+  # Filter for direct flights only
+  best <- fa_find_best_dates(query, n = 5, max_stops = 0)
+  
+  expect_true(is.data.frame(best))
+  expect_equal(nrow(best), 1)
+  expect_equal(best$Price[1], 500)
+})
