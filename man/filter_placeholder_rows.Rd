@@ -2,7 +2,7 @@
 % Please edit documentation in R/filter_placeholder_rows.R
 \name{filter_placeholder_rows}
 \alias{filter_placeholder_rows}
-\title{Filter Out Placeholder Rows from Flight Data}
+\title{Clean Flight Data by Removing Invalid Entries}
 \usage{
 filter_placeholder_rows(data)
 }
@@ -13,7 +13,8 @@ filter_placeholder_rows(data)
 A filtered data frame with placeholder rows removed
 }
 \description{
-Removes placeholder rows from scraped flight data, such as "Price graph",
-"Price unavailable", etc.
+Removes invalid and placeholder rows from flight data, such as "Price graph",
+"Price unavailable", empty entries, and rows with missing prices.
+This is a data cleaning function used internally.
 }
 \keyword{internal}

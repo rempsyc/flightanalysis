@@ -30,7 +30,7 @@
 #'   queries[[code]] <- fa_fetch_flights(queries[[code]])
 #' }
 #' summary_table <- fa_summarize_prices(queries)
-#' 
+#'
 #' # Option 2: Pass processed data frame
 #' summary_table <- fa_summarize_prices(my_data_frame)
 #' }
@@ -45,7 +45,9 @@ fa_summarize_prices <- function(
   if (inherits(results, "flight_query")) {
     # Validate flight query has data
     if (is.null(results$data) || nrow(results$data) == 0) {
-      stop("flight query contains no data. Please run fa_fetch_flights() first to fetch flight data.")
+      stop(
+        "flight query contains no data. Please run fa_fetch_flights() first to fetch flight data."
+      )
     }
     # Single flight query - pass directly to extract_data_from_scrapes
     results <- extract_data_from_scrapes(results)
@@ -55,10 +57,14 @@ fa_summarize_prices <- function(
       # Extract and combine data from list of flight queries
       results <- extract_data_from_scrapes(results)
     } else {
-      stop("results must be a data frame, a flight query, or a list of flight queries")
+      stop(
+        "results must be a data frame, a flight query, or a list of flight queries"
+      )
     }
   } else if (!is.data.frame(results)) {
-    stop("results must be a data frame, a flight query, or a list of flight queries")
+    stop(
+      "results must be a data frame, a flight query, or a list of flight queries"
+    )
   }
 
   required_cols <- c("City", "Airport", "Date", "Price")
@@ -68,10 +74,12 @@ fa_summarize_prices <- function(
       paste(required_cols, collapse = ", ")
     ))
   }
-  
+
   # Check if we have any data after filtering
   if (nrow(results) == 0) {
-    stop("No data available after filtering. The flight query may contain only placeholder rows or no valid flight data.")
+    stop(
+      "No data available after filtering. The flight query may contain only placeholder rows or no valid flight data."
+    )
   }
 
   # Convert Date to character if it's not already
@@ -121,7 +129,10 @@ fa_summarize_prices <- function(
     wide_data$Average_Price <- wide_data[[price_cols]]
   } else {
     # Multiple columns - calculate mean
-    wide_data$Average_Price <- rowMeans(wide_data[, price_cols, drop = FALSE], na.rm = TRUE)
+    wide_data$Average_Price <- rowMeans(
+      wide_data[, price_cols, drop = FALSE],
+      na.rm = TRUE
+    )
   }
 
   if (round_prices) {
@@ -159,19 +170,20 @@ fa_summarize_prices <- function(
   final_cols <- c(base_cols, date_names_sorted, "Average_Price")
   wide_data <- wide_data[, final_cols]
 
-  # Format prices with currency symbol if scales is available
-  if (requireNamespace("scales", quietly = TRUE)) {
-    price_format_cols <- c(date_names_sorted, "Average_Price")
-    for (col in price_format_cols) {
-      if (col %in% names(wide_data)) {
-        # Format only non-NA values
-        formatted_vals <- ifelse(
-          is.na(wide_data[[col]]),
-          NA_character_,
-          paste0(currency_symbol, format(wide_data[[col]], big.mark = ",", scientific = FALSE))
+  # Format prices with currency symbol
+  price_format_cols <- c(date_names_sorted, "Average_Price")
+  for (col in price_format_cols) {
+    if (col %in% names(wide_data)) {
+      # Format only non-NA values
+      formatted_vals <- ifelse(
+        is.na(wide_data[[col]]),
+        NA_character_,
+        paste0(
+          currency_symbol,
+          format(wide_data[[col]], big.mark = ",", scientific = FALSE)
         )
-        wide_data[[col]] <- formatted_vals
-      }
+      )
+      wide_data[[col]] <- formatted_vals
     }
   }
 

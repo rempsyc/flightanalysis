@@ -1,6 +1,6 @@
 Package: flightanalysis
 Title: Google Flight Analysis and Scraping
-Version: 2.0.0
+Version: 2.0.1
 Authors@R: c(
     person("Kaya", "Celebi", email = "kayacelebi17@gmail.com", role = c("aut", "fnd")),
     person("Rémi", "Thériault", email = "remi.theriault@mail.mcgill.ca", role = c("aut", "cre"),
@@ -16,11 +16,12 @@ LazyData: true
 RoxygenNote: 7.3.3
 Depends: 
     R (>= 3.6.0)
+Imports:
+    progress,
+    chromote,
+    airportr
 Suggests:
     testthat (>= 3.0.0),
-    chromote,
-    progress,
-    scales,
-    tibble
+    knitr
 URL: https://github.com/rempsyc/flightanalysis, https://rempsyc.github.io/flightanalysis/
 BugReports: https://github.com/rempsyc/flightanalysis/issues

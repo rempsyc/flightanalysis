@@ -86,12 +86,19 @@ test_that("URL generation has correct origin and destination order", {
   expect_equal(res$url[[1]], expected_url)
 
   # Chain-trip with multiple segments (issue example)
-  res2 <- fa_define_query("VNS", "JFK", "2025-12-20", "PAT", "JFK", "2025-12-25")
+  res2 <- fa_define_query(
+    "VNS",
+    "JFK",
+    "2025-12-20",
+    "PAT",
+    "JFK",
+    "2025-12-25"
+  )
   expect_true(inherits(res2, "flight_query") || inherits(res2, "Scrape"))
   expect_equal(res2$type, "chain-trip")
   expect_equal(length(res2$origin), 2)
   expect_equal(length(res2$dest), 2)
-  
+
   # Verify origin/destination arrays
   expect_equal(unlist(res2$origin), c("VNS", "PAT"))
   expect_equal(unlist(res2$dest), c("JFK", "JFK"))
