@@ -153,40 +153,9 @@ extract_data_from_scrapes <- function(scrapes) {
 #'
 #' @keywords internal
 airport_to_city <- function(airport_codes, fallback = airport_codes) {
-  # Load airportr dataset to avoid warnings
-  # Using local assignment to avoid polluting global environment
-  airports <- airportr::airports
-  
-  # Convert each airport code using airportr (now mandatory)
-  city_names <- vapply(
-    seq_along(airport_codes),
-    function(i) {
-      code <- airport_codes[i]
-
-      # Skip if code is NA or empty
-      if (is.na(code) || code == "") {
-        return(fallback[i])
-      }
-
-      # Try to lookup city name
-      city <- tryCatch(
-        airportr::airport_lookup(
-          code,
-          input_type = "IATA",
-          output_type = "city"
-        ),
-        error = function(e) character(0)
-      )
-
-      # Return city if found, otherwise fallback
-      if (length(city) > 0 && !is.na(city)) {
-        city
-      } else {
-        fallback[i]
-      }
-    },
-    character(1)
-  )
-
-  return(city_names)
+  ap <- airportr::airports
+  key <- ap$IATA
+  val <- ap$City
+  out <- val[match(airport_codes, key)]
+  ifelse(is.na(out) | out == "", fallback, out)
 }
