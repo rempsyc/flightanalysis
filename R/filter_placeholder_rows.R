@@ -200,3 +200,38 @@ airport_to_city <- function(airport_codes, fallback = airport_codes) {
   })
   return(result)
 }
+
+#' Parse Time Duration to Minutes
+#'
+#' @description
+#' Internal helper function to parse time duration strings or numeric values to minutes.
+#' Handles both numeric (hours) and character ("XX hr XX min") formats.
+#'
+#' @param time_value Numeric or character. If numeric, interpreted as hours.
+#'   If character, parsed as "XX hr XX min" format.
+#'
+#' @return Numeric value in minutes
+#'
+#' @keywords internal
+parse_time_to_minutes <- function(time_value) {
+  if (is.numeric(time_value)) {
+    # If numeric, interpret as hours and convert to minutes
+    return(time_value * 60)
+  } else if (is.character(time_value)) {
+    # If character, parse the format "XX hr XX min"
+    parts <- strsplit(time_value, " ")[[1]]
+    hours <- 0
+    minutes <- 0
+    if (length(parts) >= 2 && parts[2] == "hr") {
+      hours <- as.numeric(parts[1])
+    }
+    if (length(parts) >= 4 && parts[4] == "min") {
+      minutes <- as.numeric(parts[3])
+    } else if (length(parts) >= 2 && parts[2] == "min") {
+      minutes <- as.numeric(parts[1])
+    }
+    return(hours * 60 + minutes)
+  } else {
+    stop("time_value must be numeric (hours) or character (format: 'XX hr XX min')")
+  }
+}

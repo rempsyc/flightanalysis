@@ -151,27 +151,8 @@ fa_summarize_prices <- function(
       return(hours * 60 + minutes)
     })
     
-    # Convert travel_time_max to minutes based on type
-    if (is.numeric(travel_time_max)) {
-      # If numeric, interpret as hours and convert to minutes
-      max_minutes <- travel_time_max * 60
-    } else if (is.character(travel_time_max)) {
-      # If character, parse the format "XX hr XX min"
-      parts <- strsplit(travel_time_max, " ")[[1]]
-      hours <- 0
-      minutes <- 0
-      if (length(parts) >= 2 && parts[2] == "hr") {
-        hours <- as.numeric(parts[1])
-      }
-      if (length(parts) >= 4 && parts[4] == "min") {
-        minutes <- as.numeric(parts[3])
-      } else if (length(parts) >= 2 && parts[2] == "min") {
-        minutes <- as.numeric(parts[1])
-      }
-      max_minutes <- hours * 60 + minutes
-    } else {
-      stop("travel_time_max must be numeric (hours) or character (format: 'XX hr XX min')")
-    }
+    # Convert travel_time_max to minutes using helper function
+    max_minutes <- parse_time_to_minutes(travel_time_max)
     
     results <- results[!is.na(results$travel_time_minutes) & results$travel_time_minutes <= max_minutes, ]
     results$travel_time_minutes <- NULL
