@@ -171,7 +171,7 @@ fa_find_best_dates(
   by = "min",
   price_max = 1400,
   max_stops = 1,
-  travel_time_max = 1560  # 26 hours in minutes
+  travel_time_max = 26  # 26 hours (numeric = hours, or use "26 hr" format)
   ) |>
   knitr::kable()
 ```

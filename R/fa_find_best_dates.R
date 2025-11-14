@@ -21,7 +21,8 @@
 #' @param airlines Character vector. Filter by specific airlines. Default is NULL (no filter).
 #' @param price_min Numeric. Minimum price. Default is NULL (no filter).
 #' @param price_max Numeric. Maximum price. Default is NULL (no filter).
-#' @param travel_time_max Numeric. Maximum travel time in minutes.
+#' @param travel_time_max Numeric or character. Maximum travel time. 
+#'   If numeric, interpreted as hours. If character, use format "XX hr XX min".
 #'   Default is NULL (no filter).
 #' @param max_stops Integer. Maximum number of stops. Default is NULL (no filter).
 #' @param max_layover Character. Maximum layover time in format "XX hr XX min".
@@ -152,8 +153,29 @@ fa_find_best_dates <- function(
       return(hours * 60 + minutes)
     })
     
-    # travel_time_max is now numeric (in minutes)
-    results <- results[!is.na(results$travel_time_minutes) & results$travel_time_minutes <= travel_time_max, ]
+    # Convert travel_time_max to minutes based on type
+    if (is.numeric(travel_time_max)) {
+      # If numeric, interpret as hours and convert to minutes
+      max_minutes <- travel_time_max * 60
+    } else if (is.character(travel_time_max)) {
+      # If character, parse the format "XX hr XX min"
+      parts <- strsplit(travel_time_max, " ")[[1]]
+      hours <- 0
+      minutes <- 0
+      if (length(parts) >= 2 && parts[2] == "hr") {
+        hours <- as.numeric(parts[1])
+      }
+      if (length(parts) >= 4 && parts[4] == "min") {
+        minutes <- as.numeric(parts[3])
+      } else if (length(parts) >= 2 && parts[2] == "min") {
+        minutes <- as.numeric(parts[1])
+      }
+      max_minutes <- hours * 60 + minutes
+    } else {
+      stop("travel_time_max must be numeric (hours) or character (format: 'XX hr XX min')")
+    }
+    
+    results <- results[!is.na(results$travel_time_minutes) & results$travel_time_minutes <= max_minutes, ]
     results$travel_time_minutes <- NULL
   }
   
