@@ -153,9 +153,14 @@ extract_data_from_scrapes <- function(scrapes) {
 #'
 #' @keywords internal
 airport_to_city <- function(airport_codes, fallback = airport_codes) {
-  ap <- airportr::airports
-  key <- ap$IATA
-  val <- ap$City
-  out <- val[match(airport_codes, key)]
-  ifelse(is.na(out) | out == "", fallback, out)
+  result <- tryCatch({
+    ap <- airportr::airports
+    key <- ap$IATA
+    val <- ap$City
+    out <- val[match(airport_codes, key)]
+    ifelse(is.na(out) | out == "", fallback, out)
+  }, error = function(e) {
+    fallback
+  })
+  return(result)
 }
