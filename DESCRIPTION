@@ -16,14 +16,15 @@ LazyData: true
 RoxygenNote: 7.3.3
 Depends: 
     R (>= 3.6.0)
+Imports:
+    insight,
+    chromote,
+    airportr,
+    scales,
+    tibble,
+    progress
 Suggests:
     testthat (>= 3.0.0),
-    airportr,
-    chromote,
-    insight,
-    knitr,
-    progress,
-    scales,
-    tibble
+    knitr
 URL: https://github.com/rempsyc/flightanalysis, https://rempsyc.github.io/flightanalysis/
 BugReports: https://github.com/rempsyc/flightanalysis/issues

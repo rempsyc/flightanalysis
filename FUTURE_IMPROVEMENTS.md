@@ -152,3 +152,6 @@ Content should include:
 - Update package website with migration guide
 - Post in R-packages mailing list
 - Update GitHub README with prominent migration notice
+
+## Maintainer Notes
+- TBD

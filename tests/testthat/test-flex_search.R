@@ -46,7 +46,11 @@ test_that("fa_summarize_prices creates correct structure", {
   )
 
   # Create table
-  table <- fa_summarize_prices(results, include_comment = TRUE, round_prices = TRUE)
+  table <- fa_summarize_prices(
+    results,
+    include_comment = TRUE,
+    round_prices = TRUE
+  )
 
   # Check structure
   expect_true(is.data.frame(table))
@@ -171,8 +175,12 @@ test_that("fa_create_date_range creates list for multiple origins", {
   expect_equal(names(queries), c("BOM", "DEL"))
 
   # Check each element is a flight query object
-  expect_true(inherits(queries$BOM, "flight_query") || inherits(queries$BOM, "Scrape"))
-  expect_true(inherits(queries$DEL, "flight_query") || inherits(queries$DEL, "Scrape"))
+  expect_true(
+    inherits(queries$BOM, "flight_query") || inherits(queries$BOM, "Scrape")
+  )
+  expect_true(
+    inherits(queries$DEL, "flight_query") || inherits(queries$DEL, "Scrape")
+  )
 
   # Check BOM query
   expect_equal(queries$BOM$type, "chain-trip")
@@ -270,7 +278,9 @@ test_that("extract_data_from_scrapes processes query objects correctly", {
   expect_equal(sort(unique(result$Airport)), c("BOM", "DEL"))
   # City names should be converted from airport codes (if airportr is available)
   # Accept either airport codes or city names
-  expect_true(all(sort(unique(result$City)) %in% c("BOM", "DEL", "Mumbai", "Delhi")))
+  expect_true(all(
+    sort(unique(result$City)) %in% c("BOM", "DEL", "Mumbai", "Delhi")
+  ))
 })
 
 test_that("fa_summarize_prices accepts list of query objects", {

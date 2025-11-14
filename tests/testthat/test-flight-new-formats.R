@@ -1,5 +1,10 @@
 test_that("Flight parses CO2e format (new Google Flights format)", {
-  flight <- flight_record("2025-07-20", "JFKIST", "593 kg CO2e", "18% emissions")
+  flight <- flight_record(
+    "2025-07-20",
+    "JFKIST",
+    "593 kg CO2e",
+    "18% emissions"
+  )
 
   expect_equal(flight$co2, 593)
   expect_equal(flight$emissions, 18)
