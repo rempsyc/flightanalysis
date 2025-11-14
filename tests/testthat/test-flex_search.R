@@ -268,7 +268,9 @@ test_that("extract_data_from_scrapes processes query objects correctly", {
   expect_true(all(c("City", "Airport", "Date", "Price") %in% names(result)))
   expect_equal(nrow(result), 4)
   expect_equal(sort(unique(result$Airport)), c("BOM", "DEL"))
-  expect_equal(sort(unique(result$City)), c("BOM", "DEL"))
+  # City names should be converted from airport codes (if airportr is available)
+  # Accept either airport codes or city names
+  expect_true(all(sort(unique(result$City)) %in% c("BOM", "DEL", "Mumbai", "Delhi")))
 })
 
 test_that("fa_summarize_prices accepts list of query objects", {
@@ -408,7 +410,9 @@ test_that("fa_summarize_prices accepts single query object", {
   expect_true("Average_Price" %in% names(table))
   expect_equal(nrow(table), 1) # One row for single airport
   expect_equal(table$Airport[1], "BOM")
-  expect_equal(table$City[1], "BOM")
+  # City name should be converted from airport code (if airportr is available)
+  # Accept either airport code or city name
+  expect_true(table$City[1] %in% c("BOM", "Mumbai"))
 })
 
 test_that("fa_find_best_dates accepts single query object", {

@@ -39,9 +39,6 @@ flight_record <- function(date, ...) {
   return(flight)
 }
 
-# Keep old name for backwards compatibility
-Flight <- flight_record
-
 #' Parse Flight Arguments
 #'
 #' @param flight Flight object being constructed
@@ -210,9 +207,6 @@ print.flight_record <- function(x, ...) {
   cat(sprintf("flight_record(id:%d, %s-->%s on %s)\n", x$id, x$origin, x$dest, x$date))
   invisible(x)
 }
-
-# Keep old print method for backwards compatibility
-print.Flight <- print.flight_record
 
 #' Convert flight_record objects to data frame
 #'

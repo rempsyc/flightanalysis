@@ -1,5 +1,5 @@
 test_that("Flight parses CO2e format (new Google Flights format)", {
-  flight <- Flight("2025-07-20", "JFKIST", "593 kg CO2e", "18% emissions")
+  flight <- flight_record("2025-07-20", "JFKIST", "593 kg CO2e", "18% emissions")
 
   expect_equal(flight$co2, 593)
   expect_equal(flight$emissions, 18)
@@ -7,7 +7,7 @@ test_that("Flight parses CO2e format (new Google Flights format)", {
 
 test_that("Flight handles price without dollar sign", {
   # Price should be recognized when flight time is already set
-  flight <- Flight("2025-07-20", "JFKIST", "8 hr 30 min", "450")
+  flight <- flight_record("2025-07-20", "JFKIST", "8 hr 30 min", "450")
 
   expect_equal(flight$price, 450)
   expect_equal(flight$flight_time, "8 hr 30 min")
@@ -15,24 +15,24 @@ test_that("Flight handles price without dollar sign", {
 
 test_that("Flight filters out CO2-related text from airlines", {
   # These strings should not be set as airline names
-  flight1 <- Flight("2025-07-20", "JFKIST", "593 kg CO2e")
+  flight1 <- flight_record("2025-07-20", "JFKIST", "593 kg CO2e")
   expect_null(flight1$airline)
   expect_equal(flight1$co2, 593)
 
-  flight2 <- Flight(
+  flight2 <- flight_record(
     "2025-07-20",
     "JFKIST",
     "Avoids as much CO2e as 7,731 trees absorb in a day"
   )
   expect_null(flight2$airline)
 
-  flight3 <- Flight("2025-07-20", "JFKIST", "Other flights")
+  flight3 <- flight_record("2025-07-20", "JFKIST", "Other flights")
   expect_null(flight3$airline)
 })
 
 test_that("Flight handles missing times gracefully", {
   # When times are not provided, they should be NULL/NA
-  flight <- Flight(
+  flight <- flight_record(
     "2025-07-20",
     "JFKIST",
     "593 kg CO2e",
@@ -48,7 +48,7 @@ test_that("Flight handles missing times gracefully", {
 })
 
 test_that("flights_to_dataframe handles flights without times", {
-  flight1 <- Flight(
+  flight1 <- flight_record(
     "2025-07-20",
     "JFKIST",
     "593 kg CO2e",
@@ -57,7 +57,7 @@ test_that("flights_to_dataframe handles flights without times", {
     "Nonstop",
     "18% emissions"
   )
-  flight2 <- Flight(
+  flight2 <- flight_record(
     "2025-07-21",
     "ISTCDG",
     "479 kg CO2e",
@@ -79,7 +79,7 @@ test_that("flights_to_dataframe handles flights without times", {
 })
 
 test_that("Flight with both times and new CO2e format", {
-  flight <- Flight(
+  flight <- flight_record(
     "2025-07-20",
     "JFKIST",
     "9:00AM",
@@ -101,7 +101,7 @@ test_that("Flight with both times and new CO2e format", {
 })
 
 test_that("Flight parses lowercase am/pm times", {
-  flight <- Flight(
+  flight <- flight_record(
     "2025-07-20",
     "JFKIST",
     "9:00am",
@@ -116,7 +116,7 @@ test_that("Flight parses lowercase am/pm times", {
 })
 
 test_that("Flight parses mixed case Am/Pm times", {
-  flight <- Flight(
+  flight <- flight_record(
     "2025-07-20",
     "JFKIST",
     "9:00Am",

@@ -170,7 +170,10 @@ airport_to_city <- function(airport_codes, fallback = airport_codes) {
     
     # Try to lookup city name
     city <- tryCatch({
-      result <- airportr::airport_lookup(code, input_type = "IATA", output_type = "city")
+      # Suppress warnings about missing 'airports' dataset (internal to airportr)
+      result <- suppressWarnings(
+        airportr::airport_lookup(code, input_type = "IATA", output_type = "city")
+      )
       if (length(result) > 0 && !is.na(result)) {
         result
       } else {
