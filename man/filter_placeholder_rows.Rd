@@ -13,7 +13,7 @@ filter_placeholder_rows(data)
 A filtered data frame with placeholder rows removed
 }
 \description{
-Removes placeholder rows from scraped flight data, such as "Price graph",
+Removes placeholder rows from flight data, such as "Price graph",
 "Price unavailable", etc.
 }
 \keyword{internal}

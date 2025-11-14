@@ -2,18 +2,18 @@
 % Please edit documentation in R/flight.R
 \name{flights_to_dataframe}
 \alias{flights_to_dataframe}
-\title{Convert Flight objects to data frame}
+\title{Convert flight_record objects to data frame}
 \usage{
 flights_to_dataframe(flights)
 }
 \arguments{
-\item{flights}{List of Flight objects}
+\item{flights}{List of flight_record objects}
 }
 \value{
 A data frame with flight information
 }
 \description{
-Converts a list of Flight objects into a data frame.
+Converts a list of flight_record objects into a data frame.
 Internal function used by fetch_flights().
 }
 \keyword{internal}

@@ -61,16 +61,15 @@ The package supports multiple trip types:
 
 The package includes full web scraping functionality using **chromote**:
 
-```{r eval=TRUE}
+```{r eval=FALSE}
 # Create a query
 query <- fa_define_query("JFK", "IST", "2025-12-18", "2026-01-02")
 
-# Scrape the data
+# Fetch the flight data
 flights <- fa_fetch_flights(query)
 
-# View the scraped data
-head(flights$data) |>
-  knitr::kable()
+# View the flight data
+head(flights$data)
 ```
 
 **Why chromote?**
@@ -83,7 +82,7 @@ head(flights$data) |>
 
 The package supports flexible date search across multiple airports and dates:
 
-```{r eval=TRUE}
+```{r eval=FALSE}
 # Create query objects for multiple origins and dates
 queries <- fa_create_date_range(
   origin = c("BOM", "DEL"),
@@ -91,18 +90,15 @@ queries <- fa_create_date_range(
   date_min = "2025-12-18",
   date_max = "2025-12-20"
 )
-queries
 
-# Scrape all queries
+# Fetch all flights
 flights <- fa_fetch_flights(queries)
 
 # Create summary table (City × Date with prices)
-fa_summarize_prices(flights) |>
-  knitr::kable()
+fa_summarize_prices(flights)
 
 # Find the cheapest dates
-fa_find_best_dates(flights, by = "min") |>
-  knitr::kable()
+fa_find_best_dates(flights, by = "min")
 ```
 
 **Key Features:**

@@ -256,8 +256,8 @@ print.flight_query <- function(x, ...) {
 #' @param queries A flight query object or list of query objects (from fa_define_query())
 #' @param verbose Logical. If TRUE, shows detailed progress information (default)
 #'
-#' @return Modified query object(s) with scraped data. **Important:** You must
-#'   capture the return value to get the scraped data: `result <- fa_fetch_flights(query)`
+#' @return Modified query object(s) with flight data. **Important:** You must
+#'   capture the return value to get the flight data: `result <- fa_fetch_flights(query)`
 #' @export
 #'
 #' @examples
@@ -652,7 +652,7 @@ get_flight_elements_chromote <- function(browser) {
   )
 }
 
-#' Clean and parse results from scraped page
+#' Clean and parse results from page
 #' @keywords internal
 clean_results <- function(result, date, verbose = TRUE) {
   # Clean results - remove non-ASCII and strip whitespace

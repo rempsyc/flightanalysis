@@ -1,7 +1,7 @@
 #' Filter Out Placeholder Rows from Flight Data
 #'
 #' @description
-#' Removes placeholder rows from scraped flight data, such as "Price graph",
+#' Removes placeholder rows from flight data, such as "Price graph",
 #' "Price unavailable", etc.
 #'
 #' @param data A data frame of flight data with an 'airlines' column
@@ -102,12 +102,15 @@ extract_data_from_scrapes <- function(scrapes) {
       data$Price <- NA_real_
     }
     
-    # Add City from list name if available
+    # Add City from list name if available, or try to look up from airport code
     if (!is.null(names(scrapes)[i])) {
       data$City <- names(scrapes)[i]
     } else {
       data$City <- data$Airport
     }
+    
+    # Try to convert airport codes to city names using airportr if available
+    data$City <- airport_to_city(data$Airport, data$City)
     
     # Select only needed columns
     data <- data[, c("City", "Airport", "Date", "Price"), drop = FALSE]
@@ -130,4 +133,55 @@ extract_data_from_scrapes <- function(scrapes) {
   rownames(combined) <- NULL
   
   return(combined)
+}
+
+#' Convert Airport Codes to City Names
+#'
+#' @description
+#' Attempts to convert IATA airport codes to city names using the airportr package.
+#' Falls back to the provided fallback value if conversion fails or package is not available.
+#'
+#' @param airport_codes Character vector of IATA airport codes
+#' @param fallback Character vector of fallback values (same length as airport_codes)
+#'
+#' @return Character vector of city names
+#'
+#' @keywords internal
+airport_to_city <- function(airport_codes, fallback = airport_codes) {
+  # Check if airportr package is available
+  if (!requireNamespace("airportr", quietly = TRUE)) {
+    return(fallback)
+  }
+  
+  # Check if insight package is available for better error handling
+  if (requireNamespace("insight", quietly = TRUE)) {
+    insight::check_if_installed("airportr", 
+                                reason = "to convert airport codes to city names")
+  }
+  
+  # Convert each airport code
+  city_names <- vapply(seq_along(airport_codes), function(i) {
+    code <- airport_codes[i]
+    
+    # Skip if code is NA or empty
+    if (is.na(code) || code == "") {
+      return(fallback[i])
+    }
+    
+    # Try to lookup city name
+    city <- tryCatch({
+      result <- airportr::airport_lookup(code, input_type = "IATA", output_type = "city")
+      if (length(result) > 0 && !is.na(result)) {
+        result
+      } else {
+        fallback[i]
+      }
+    }, error = function(e) {
+      fallback[i]
+    })
+    
+    return(city)
+  }, character(1))
+  
+  return(city_names)
 }

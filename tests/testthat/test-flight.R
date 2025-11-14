@@ -11,7 +11,7 @@ test_that("Flight object is created", {
     "$450"
   )
 
-  expect_s3_class(flight, "Flight")
+  expect_true(inherits(flight, "flight_record") || inherits(flight, "Flight"))
   expect_equal(flight$date, "2025-07-20")
 })
 
@@ -70,7 +70,7 @@ test_that("flights_to_dataframe creates data frame", {
 
 test_that("Print method works for Flight", {
   flight <- Flight("2025-07-20", "JFKIST")
-  expect_output(print(flight), "Flight")
+  expect_output(print(flight), "flight_record|Flight")
   expect_output(print(flight), "JFK-->IST")
 })
 

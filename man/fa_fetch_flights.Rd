@@ -12,8 +12,8 @@ fa_fetch_flights(queries, verbose = TRUE)
 \item{verbose}{Logical. If TRUE, shows detailed progress information (default)}
 }
 \value{
-Modified query object(s) with scraped data. **Important:** You must
-  capture the return value to get the scraped data: `result <- fa_fetch_flights(query)`
+Modified query object(s) with flight data. **Important:** You must
+  capture the return value to get the flight data: `result <- fa_fetch_flights(query)`
 }
 \description{
 Fetches flight data from Google Flights using chromote. This function will

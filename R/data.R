@@ -22,7 +22,7 @@
 #' Sample Flight Data
 #'
 #' @description
-#' Sample scraped flight data for testing analysis functions
+#' Sample flight data for testing analysis functions
 #' like `fa_find_best_dates()` and `fa_summarize_prices()` without internet access.
 #'
 #' @format A data frame with 6 rows and 12 variables:

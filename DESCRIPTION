@@ -20,9 +20,10 @@ Suggests:
     testthat (>= 3.0.0),
     airportr,
     chromote,
+    insight,
+    knitr,
     progress,
     scales,
-    tibble,
-    knitr
+    tibble
 URL: https://github.com/rempsyc/flightanalysis, https://rempsyc.github.io/flightanalysis/
 BugReports: https://github.com/rempsyc/flightanalysis/issues

@@ -1,18 +1,18 @@
-#' Flight Class
+#' Flight Record Class
 #'
 #' @description
-#' Creates a Flight object that represents a single flight with all its details.
-#' Internal function used by fetch_flights() for parsing scraped data.
+#' Creates a flight_record object that represents a single flight with all its details.
+#' Internal function used by fetch_flights() for parsing flight data.
 #'
 #' @param date Character string representing the flight date in format "YYYY-MM-DD"
 #' @param ... Additional arguments containing flight details
 #'
-#' @return A Flight object (S3 class)
+#' @return A flight_record object (S3 class)
 #' @keywords internal
-Flight <- function(date, ...) {
+flight_record <- function(date, ...) {
   args <- list(...)
 
-  # Initialize Flight object
+  # Initialize flight_record object
   flight <- list(
     id = 1,
     origin = NULL,
@@ -35,9 +35,12 @@ Flight <- function(date, ...) {
   # Parse arguments
   flight <- parse_args(flight, args)
 
-  class(flight) <- "Flight"
+  class(flight) <- "flight_record"
   return(flight)
 }
+
+# Keep old name for backwards compatibility
+Flight <- flight_record
 
 #' Parse Flight Arguments
 #'
@@ -200,21 +203,24 @@ classify_arg <- function(flight, arg) {
   return(flight)
 }
 
-#' Print method for Flight objects
-#' @param x A Flight object
+#' Print method for flight_record objects
+#' @param x A flight_record object
 #' @param ... Additional arguments (ignored)
-print.Flight <- function(x, ...) {
-  cat(sprintf("Flight(id:%d, %s-->%s on %s)\n", x$id, x$origin, x$dest, x$date))
+print.flight_record <- function(x, ...) {
+  cat(sprintf("flight_record(id:%d, %s-->%s on %s)\n", x$id, x$origin, x$dest, x$date))
   invisible(x)
 }
 
-#' Convert Flight objects to data frame
+# Keep old print method for backwards compatibility
+print.Flight <- print.flight_record
+
+#' Convert flight_record objects to data frame
 #'
 #' @description
-#' Converts a list of Flight objects into a data frame.
+#' Converts a list of flight_record objects into a data frame.
 #' Internal function used by fetch_flights().
 #'
-#' @param flights List of Flight objects
+#' @param flights List of flight_record objects
 #'
 #' @return A data frame with flight information
 #' @keywords internal

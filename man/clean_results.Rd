@@ -2,11 +2,11 @@
 % Please edit documentation in R/scrape.R
 \name{clean_results}
 \alias{clean_results}
-\title{Clean and parse results from scraped page}
+\title{Clean and parse results from page}
 \usage{
 clean_results(result, date, verbose = TRUE)
 }
 \description{
-Clean and parse results from scraped page
+Clean and parse results from page
 }
 \keyword{internal}
