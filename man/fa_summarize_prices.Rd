@@ -47,7 +47,8 @@ Filters flights departing at or before this time. Default is NULL (no filter).}
 
 \item{price_max}{Numeric. Maximum price. Default is NULL (no filter).}
 
-\item{travel_time_max}{Numeric. Maximum travel time in minutes.
+\item{travel_time_max}{Numeric or character. Maximum travel time. 
+If numeric, interpreted as hours. If character, use format "XX hr XX min".
 Default is NULL (no filter).}
 
 \item{max_stops}{Integer. Maximum number of stops. Default is NULL (no filter).}
