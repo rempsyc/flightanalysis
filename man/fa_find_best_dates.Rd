@@ -43,7 +43,7 @@ Filters flights departing at or before this time. Default is NULL (no filter).}
 
 \item{price_max}{Numeric. Maximum price. Default is NULL (no filter).}
 
-\item{travel_time_max}{Character. Maximum travel time in format "XX hr XX min".
+\item{travel_time_max}{Numeric. Maximum travel time in minutes.
 Default is NULL (no filter).}
 
 \item{max_stops}{Integer. Maximum number of stops. Default is NULL (no filter).}
@@ -54,8 +54,9 @@ Default is NULL (no filter).}
 \item{max_emissions}{Numeric. Maximum CO2 emissions in kg. Default is NULL (no filter).}
 }
 \value{
-A data frame with columns: departure_datetime, Origin, Price (average/median/min),
-  N_Routes, num_stops, layover, travel_time, co2_emission_kg, and airlines.
+A data frame with columns: departure_date, departure_time (or date if datetime not available),
+  origin, price (average/median/min), n_routes, num_stops, layover, travel_time, 
+  co2_emission_kg, and airlines. All column names are lowercase.
   Sorted by price (cheapest first). Additional columns are aggregated using
   mean/median for numeric values and most common value for categorical.
 }
