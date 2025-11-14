@@ -79,10 +79,28 @@ query <- fa_define_query("JFK", "IST", "2025-12-18", "2026-01-02")
 
 # Fetch the flight data
 flights <- fa_fetch_flights(query)
-
-# View the flight data
-head(flights$data)
 ```
+
+    ##   Segment 1/2: JFK -> IST on 2025-12-18
+    ##   [OK] Successfully parsed 7 flights
+    ##   Segment 2/2: IST -> JFK on 2026-01-02
+    ##   [OK] Successfully parsed 8 flights
+    ##   [OK] Total flights retrieved: 15
+
+``` r
+# View the flight data
+head(flights$data) |>
+  knitr::kable()
+```
+
+| departure_datetime | arrival_datetime | origin | destination | airlines | travel_time | price | num_stops | layover | access_date | co2_emission_kg | emission_diff_pct |
+|:---|:---|:---|:---|:---|:---|---:|---:|:---|:---|---:|---:|
+| 2025-12-18 21:20:00 | 2025-12-19 16:55:00 | JFK | IST | KLMDelta | 11 hr 35 min | 1470 | 1 | 1 hr 5 min AMS | 2025-11-13 20:09:55 | 444 | NA |
+| 2025-12-18 00:20:00 | 2025-12-18 18:10:00 | JFK | IST | Turkish AirlinesJetBlue | 9 hr 50 min | 1692 | 0 | NA | 2025-11-13 20:09:55 | 528 | NA |
+| 2025-12-18 12:50:00 | 2025-12-19 06:45:00 | JFK | IST | Turkish Airlines | 9 hr 55 min | 1692 | 0 | NA | 2025-11-13 20:09:55 | 414 | NA |
+| 2025-12-18 20:05:00 | 2025-12-19 14:05:00 | JFK | IST | Price graph | 10 hr | 1722 | 0 | NA | 2025-11-13 20:09:55 | 528 | NA |
+| 2025-12-18 01:00:00 | 2025-12-19 03:50:00 | JFK | IST | Air FranceDelta, KLM | 18 hr 50 min | 1244 | 1 | 8 hr 15 min CDG | 2025-11-13 20:09:55 | 551 | 0 |
+| 2025-12-18 16:40:00 | 2025-12-19 16:55:00 | JFK | IST | Delta, KLM | 16 hr 15 min | 1470 | 1 | 5 hr 40 min AMS | 2025-11-13 20:09:55 | 450 | NA |
 
 **Why chromote?** - ✅ No external driver files needed (uses Chrome
 DevTools Protocol directly) - ✅ More reliable - no driver version
@@ -105,13 +123,237 @@ queries <- fa_create_date_range(
 
 # Fetch all flights
 flights <- fa_fetch_flights(queries)
-
-# Create summary table (City × Date with prices)
-fa_summarize_prices(flights)
-
-# Find the cheapest dates
-fa_find_best_dates(flights, by = "min")
 ```
+
+    ## Scraping 2 objects...
+    ## 
+    ## [1/2]   Segment 1/3: BOM -> JFK on 2025-12-18
+    ##   [OK] Successfully parsed 8 flights
+    ##   Segment 2/3: BOM -> JFK on 2025-12-19
+    ##   [OK] Successfully parsed 11 flights
+    ##   Segment 3/3: BOM -> JFK on 2025-12-20
+    ##   [OK] Successfully parsed 9 flights
+    ##   [OK] Total flights retrieved: 28
+    ## [2/2]   Segment 1/3: DEL -> JFK on 2025-12-18
+    ##   [OK] Successfully parsed 8 flights
+    ##   Segment 2/3: DEL -> JFK on 2025-12-19
+    ##   [OK] Successfully parsed 9 flights
+    ##   Segment 3/3: DEL -> JFK on 2025-12-20
+    ##   [OK] Successfully parsed 8 flights
+    ##   [OK] Total flights retrieved: 25
+
+``` r
+# Create summary table (City × Date with prices)
+fa_summarize_prices(flights) |>
+  knitr::kable()
+```
+
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+
+| City   | Airport | 2025-12-18 | 2025-12-19 | 2025-12-20 | Average_Price |
+|:-------|:--------|:-----------|:-----------|:-----------|:--------------|
+| Mumbai | BOM     | \$360      | \$401      | \$463      | \$408         |
+| Delhi  | DEL     | \$361      | \$361      | \$412      | \$378         |
+
+``` r
+# Find the cheapest dates
+fa_find_best_dates(flights, by = "min") |>
+  knitr::kable()
+```
+
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+    ## Warning in data("airports", envir = environment()): data set 'airports' not
+    ## found
+
+| Date       | Price | N_Routes |
+|:-----------|------:|---------:|
+| 2025-12-18 |   360 |       14 |
+| 2025-12-19 |   361 |       18 |
+| 2025-12-20 |   412 |       15 |
 
 **Key Features:** - Search multiple origin airports and dates
 efficiently - Create wide summary tables for easy price comparison -
