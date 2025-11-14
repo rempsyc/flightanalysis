@@ -1,7 +1,8 @@
-# Filter Out Placeholder Rows from Flight Data
+# Clean Flight Data by Removing Invalid Entries
 
-Removes placeholder rows from scraped flight data, such as "Price
-graph", "Price unavailable", etc.
+Removes invalid and placeholder rows from flight data, such as "Price
+graph", "Price unavailable", empty entries, and rows with missing
+prices. This is a data cleaning function used internally.
 
 ## Usage
 

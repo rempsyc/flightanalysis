@@ -1,7 +1,7 @@
-# Convert Flight objects to data frame
+# Convert flight_record objects to data frame
 
-Converts a list of Flight objects into a data frame. Internal function
-used by fetch_flights().
+Converts a list of flight_record objects into a data frame. Internal
+function used by fetch_flights().
 
 ## Usage
 
@@ -13,7 +13,7 @@ flights_to_dataframe(flights)
 
 - flights:
 
-  List of Flight objects
+  List of flight_record objects
 
 ## Value
 

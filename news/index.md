@@ -66,8 +66,7 @@ best_dates <- fa_find_best_dates(queries, n = 10, by = "mean")
 
 #### Internal Functions
 
-The following functions are internal and not exported: -
-[`Flight()`](https://rempsyc.github.io/flightanalysis/reference/Flight.md) -
+The following functions are internal and not exported: - `Flight()` -
 Used internally for parsing scraped data -
 [`flights_to_dataframe()`](https://rempsyc.github.io/flightanalysis/reference/flights_to_dataframe.md) -
 Converts flight objects to data frames
@@ -82,7 +81,7 @@ Converts flight objects to data frames
   - `scrape.R` - Core query and fetching functionality
 - Comprehensive examples in `examples/` directory
 - Full test coverage in `tests/testthat/`
-- Suggested dependencies: `chromote`, `scales`, `tibble`, `progress`
+- Suggested dependencies: `chromote`, `progress`
 
 ## flightanalysis 1.0.0
 

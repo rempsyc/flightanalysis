@@ -25,8 +25,8 @@ fa_fetch_flights(queries, verbose = TRUE)
 
 ## Value
 
-Modified query object(s) with scraped data. \*\*Important:\*\* You must
-capture the return value to get the scraped data: \`result \<-
+Modified query object(s) with flight data. \*\*Important:\*\* You must
+capture the return value to get the flight data: \`result \<-
 fa_fetch_flights(query)\`
 
 ## Examples

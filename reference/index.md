@@ -12,7 +12,13 @@
   : Find Best Travel Dates
 - [`fa_summarize_prices()`](https://rempsyc.github.io/flightanalysis/reference/fa_summarize_prices.md)
   : Create Price Summary Table
-- [`print(`*`<Flight>`*`)`](https://rempsyc.github.io/flightanalysis/reference/print.Flight.md)
-  : Print method for Flight objects
 - [`print(`*`<flight_query>`*`)`](https://rempsyc.github.io/flightanalysis/reference/print.flight_query.md)
   : Print method for flight query objects
+- [`print(`*`<flight_record>`*`)`](https://rempsyc.github.io/flightanalysis/reference/print.flight_record.md)
+  : Print method for flight_record objects
+- [`sample_flights`](https://rempsyc.github.io/flightanalysis/reference/sample_flights.md)
+  : Sample Flight Data
+- [`sample_multi_origin`](https://rempsyc.github.io/flightanalysis/reference/sample_multi_origin.md)
+  : Sample Multiple Origin Queries
+- [`sample_query`](https://rempsyc.github.io/flightanalysis/reference/sample_query.md)
+  : Sample Flight Query

@@ -1,6 +1,6 @@
-# Clean and parse results from scraped page
+# Clean and parse results from page
 
-Clean and parse results from scraped page
+Clean and parse results from page
 
 ## Usage
 
