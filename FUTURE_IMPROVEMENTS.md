@@ -72,24 +72,7 @@ roxygen2::roxygenize()
 rmarkdown::render("README.Rmd")
 ```
 
-### Create Migration Guide
-Add to package vignettes:
-```r
-usethis::use_vignette("migration-guide-v2")
-```
-
-Content should include:
-- Side-by-side comparison of old vs new API
-- Common migration patterns
-- Troubleshooting deprecated warnings
-- Examples for each renamed function
-
 ## Phase 4: Testing & Validation (Future)
-
-### Test Coverage
-- Verify all deprecated functions still work
-- Test both old and new class names (`Scrape` and `flight_query`)
-- Ensure backward compatibility
 
 ### Documentation Review  
 - Check all man pages render correctly
@@ -112,17 +95,6 @@ Improve package documentation following R package best practices.
 Rscript -e "rmarkdown::render('README.Rmd')"
 ```
 
-**2. Create Migration Guide Vignette:**
-```r
-usethis::use_vignette("migration-guide-v2")
-```
-
-Content should include:
-- Side-by-side comparison of old vs new API
-- Common migration patterns
-- Troubleshooting deprecated warnings
-- Examples for each renamed function
-
 **3. Review and Update Documentation:**
 - Check all man pages render correctly
 - Verify examples run without errors
@@ -131,27 +103,12 @@ Content should include:
 
 ### Validation
 - [ ] README.md is up-to-date with README.Rmd
-- [ ] Migration guide vignette created and complete
 - [ ] All man pages render correctly
 - [ ] All examples run without errors
 - [ ] Documentation follows R package best practices
 
 ## Notes for Maintainers
-
-**Version Numbering:**
-- Current changes warrant v2.0.0 (major API redesign)
-- Include migration guide in release notes
-- Consider a blog post or announcement for users
-
-**Deprecation Timeline:**
-- Keep deprecated functions for at least 2 minor versions
-- Add removal date to deprecation messages in v2.2.0
-- Remove deprecated functions in v3.0.0
-
-**Communication:**
-- Update package website with migration guide
-- Post in R-packages mailing list
-- Update GitHub README with prominent migration notice
+- TBD
 
 ## Maintainer Notes
 - TBD
