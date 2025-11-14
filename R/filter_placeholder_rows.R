@@ -148,15 +148,9 @@ extract_data_from_scrapes <- function(scrapes) {
 #'
 #' @keywords internal
 airport_to_city <- function(airport_codes, fallback = airport_codes) {
-  # Check if airportr package is available
+  # Check if airportr is available (it's optional)
   if (!requireNamespace("airportr", quietly = TRUE)) {
     return(fallback)
-  }
-  
-  # Check if insight package is available for better error handling
-  if (requireNamespace("insight", quietly = TRUE)) {
-    insight::check_if_installed("airportr", 
-                                reason = "to convert airport codes to city names")
   }
   
   # Convert each airport code
@@ -168,22 +162,24 @@ airport_to_city <- function(airport_codes, fallback = airport_codes) {
       return(fallback[i])
     }
     
-    # Try to lookup city name
-    city <- tryCatch({
-      # Suppress warnings about missing 'airports' dataset (internal to airportr)
-      result <- suppressWarnings(
-        airportr::airport_lookup(code, input_type = "IATA", output_type = "city")
-      )
-      if (length(result) > 0 && !is.na(result)) {
-        result
-      } else {
-        fallback[i]
+    # Try to lookup city name with proper warning handling
+    city <- withCallingHandlers(
+      tryCatch(
+        airportr::airport_lookup(code, input_type = "IATA", output_type = "city"),
+        error = function(e) character(0)
+      ),
+      warning = function(w) {
+        # Muffle warnings from airportr's internal data loading
+        invokeRestart("muffleWarning")
       }
-    }, error = function(e) {
-      fallback[i]
-    })
+    )
     
-    return(city)
+    # Return city if found, otherwise fallback
+    if (length(city) > 0 && !is.na(city)) {
+      city
+    } else {
+      fallback[i]
+    }
   }, character(1))
   
   return(city_names)
