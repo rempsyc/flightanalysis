@@ -7,7 +7,7 @@
 #' price patterns across multiple dates and comparing different origin airports.
 #'
 #' @param results Either:
-#'   - A data frame with columns: City, Airport, Date, Price, and optionally Comment
+#'   - A data frame with columns: City, Airport, Date, Price, and optionally Comment (Airport will be renamed to Origin)
 #'   - A list of flight querys (from fa_create_date_range with multiple origins)
 #'   - A single flight query (from fa_create_date_range with single origin)
 #' @param include_comment Logical. If TRUE and Comment column exists, includes
@@ -17,7 +17,7 @@
 #' @param round_prices Logical. If TRUE, rounds prices to nearest integer.
 #'   Default is TRUE.
 #'
-#' @return A wide data frame with columns: City, Airport, Comment (optional),
+#' @return A wide data frame with columns: City, Origin, Comment (optional),
 #'   one column per date with prices, and an Average_Price column.
 #'
 #' @export
@@ -74,6 +74,9 @@ fa_summarize_prices <- function(
       paste(required_cols, collapse = ", ")
     ))
   }
+  
+  # Rename Airport to Origin for consistency
+  names(results)[names(results) == "Airport"] <- "Origin"
 
   # Check if we have any data after filtering
   if (nrow(results) == 0) {
@@ -92,17 +95,17 @@ fa_summarize_prices <- function(
     results$Price <- round(results$Price)
   }
 
-  # Aggregate to get the minimum (cheapest) price for each City-Airport-Date combination
+  # Aggregate to get the minimum (cheapest) price for each City-Origin-Date combination
   # This handles cases where multiple flights exist for the same date
   results_agg <- stats::aggregate(
-    Price ~ City + Airport + Date,
+    Price ~ City + Origin + Date,
     data = results,
     FUN = min,
     na.rm = TRUE
   )
 
-  # Create a unique identifier for each City-Airport combination
-  results_agg$ID <- paste(results_agg$City, results_agg$Airport, sep = "_")
+  # Create a unique identifier for each City-Origin combination
+  results_agg$ID <- paste(results_agg$City, results_agg$Origin, sep = "_")
 
   # Reshape
   wide_data <- stats::reshape(
@@ -114,10 +117,10 @@ fa_summarize_prices <- function(
     sep = "_"
   )
 
-  # Extract City and Airport from ID
+  # Extract City and Origin from ID
   id_parts <- strsplit(wide_data$ID, "_")
   wide_data$City <- sapply(id_parts, function(x) x[1])
-  wide_data$Airport <- sapply(id_parts, function(x) x[2])
+  wide_data$Origin <- sapply(id_parts, function(x) x[2])
 
   # Remove ID column
   wide_data$ID <- NULL
@@ -139,17 +142,17 @@ fa_summarize_prices <- function(
     wide_data$Average_Price <- round(wide_data$Average_Price)
   }
 
-  # Reorder columns: City, Airport, Comment (if applicable), dates, Average_Price
-  base_cols <- c("City", "Airport")
+  # Reorder columns: City, Origin, Comment (if applicable), dates, Average_Price
+  base_cols <- c("City", "Origin")
 
   # Add Comment column if it exists and is requested
   if (include_comment && "Comment" %in% names(results)) {
-    # Get unique comments for each City-Airport pair
-    comment_map <- unique(results[, c("City", "Airport", "Comment")])
+    # Get unique comments for each City-Origin pair
+    comment_map <- unique(results[, c("City", "Origin", "Comment")])
     wide_data <- merge(
       wide_data,
       comment_map,
-      by = c("City", "Airport"),
+      by = c("City", "Origin"),
       all.x = TRUE
     )
     base_cols <- c(base_cols, "Comment")

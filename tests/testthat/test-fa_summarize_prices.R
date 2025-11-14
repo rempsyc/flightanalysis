@@ -20,7 +20,7 @@ test_that("fa_summarize_prices creates correct structure", {
   # Check structure
   expect_true(is.data.frame(table))
   expect_true("City" %in% names(table))
-  expect_true("Airport" %in% names(table))
+  expect_true("Origin" %in% names(table))
   expect_true("Comment" %in% names(table))
   expect_true("Average_Price" %in% names(table))
 
@@ -96,7 +96,7 @@ test_that("fa_summarize_prices accepts list of query objects", {
   # Check structure
   expect_true(is.data.frame(table))
   expect_true("City" %in% names(table))
-  expect_true("Airport" %in% names(table))
+  expect_true("Origin" %in% names(table))
   expect_true("Average_Price" %in% names(table))
   expect_equal(nrow(table), 2) # One row per airport
 })

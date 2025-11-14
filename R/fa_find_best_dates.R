@@ -14,7 +14,7 @@
 #'   across routes), "median", or "min" (lowest price on that date).
 #'   Default is "mean".
 #'
-#' @return A data frame with columns: Date, Price (average/median/min),
+#' @return A data frame with columns: Date, Origin, Price (average/median/min),
 #'   and N_Routes (number of routes with data for that date).
 #'   Sorted by price (cheapest first).
 #'
@@ -66,6 +66,11 @@ fa_find_best_dates <- function(results, n = 10, by = "min") {
     ))
   }
   
+  # Rename Airport to Origin for consistency
+  if ("Airport" %in% names(results)) {
+    names(results)[names(results) == "Airport"] <- "Origin"
+  }
+  
   # Check if we have any data after filtering
   if (nrow(results) == 0) {
     stop("No data available after filtering. The flight query may contain only placeholder rows or no valid flight data.")
@@ -75,30 +80,63 @@ fa_find_best_dates <- function(results, n = 10, by = "min") {
     stop("by must be one of: 'mean', 'median', 'min'")
   }
 
-  # Aggregate by date
-  date_summary <- stats::aggregate(
-    Price ~ Date,
-    data = results,
-    FUN = function(x) {
-      switch(
-        by,
-        mean = mean(x, na.rm = TRUE),
-        median = stats::median(x, na.rm = TRUE),
-        min = min(x, na.rm = TRUE)
-      )
-    }
-  )
+  # Aggregate by date and origin (if Origin column exists)
+  if ("Origin" %in% names(results)) {
+    # Aggregate with Origin
+    date_summary <- stats::aggregate(
+      Price ~ Date + Origin,
+      data = results,
+      FUN = function(x) {
+        switch(
+          by,
+          mean = mean(x, na.rm = TRUE),
+          median = stats::median(x, na.rm = TRUE),
+          min = min(x, na.rm = TRUE)
+        )
+      }
+    )
+    
+    # Find the best origin (cheapest) for each date
+    date_summary <- do.call(rbind, lapply(split(date_summary, date_summary$Date), function(df) {
+      df[which.min(df$Price), ]
+    }))
+    
+    # Count number of routes per date (total across all origins)
+    route_counts <- stats::aggregate(
+      Price ~ Date,
+      data = results,
+      FUN = function(x) sum(!is.na(x))
+    )
+    names(route_counts)[2] <- "N_Routes"
+    
+    # Combine
+    date_summary <- merge(date_summary, route_counts, by = "Date")
+  } else {
+    # Aggregate by date only (no Origin column)
+    date_summary <- stats::aggregate(
+      Price ~ Date,
+      data = results,
+      FUN = function(x) {
+        switch(
+          by,
+          mean = mean(x, na.rm = TRUE),
+          median = stats::median(x, na.rm = TRUE),
+          min = min(x, na.rm = TRUE)
+        )
+      }
+    )
 
-  # Count number of routes per date
-  route_counts <- stats::aggregate(
-    Price ~ Date,
-    data = results,
-    FUN = function(x) sum(!is.na(x))
-  )
-  names(route_counts)[2] <- "N_Routes"
+    # Count number of routes per date
+    route_counts <- stats::aggregate(
+      Price ~ Date,
+      data = results,
+      FUN = function(x) sum(!is.na(x))
+    )
+    names(route_counts)[2] <- "N_Routes"
 
-  # Combine
-  date_summary <- merge(date_summary, route_counts, by = "Date")
+    # Combine
+    date_summary <- merge(date_summary, route_counts, by = "Date")
+  }
 
   # Sort by price
   date_summary <- date_summary[order(date_summary$Price), ]

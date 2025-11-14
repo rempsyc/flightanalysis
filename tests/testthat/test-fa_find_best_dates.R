@@ -13,6 +13,7 @@ test_that("fa_find_best_dates returns top dates by mean", {
   expect_true(is.data.frame(best))
   expect_equal(nrow(best), 2)
   expect_true("Date" %in% names(best))
+  expect_true("Origin" %in% names(best))
   expect_true("Price" %in% names(best))
   expect_true("N_Routes" %in% names(best))
 
@@ -92,6 +93,7 @@ test_that("fa_find_best_dates accepts list of query objects", {
   # Check structure
   expect_true(is.data.frame(best))
   expect_true("Date" %in% names(best))
+  expect_true("Origin" %in% names(best))
   expect_true("Price" %in% names(best))
   expect_true("N_Routes" %in% names(best))
   expect_equal(nrow(best), 2)
@@ -124,6 +126,7 @@ test_that("fa_find_best_dates accepts single query object", {
   # Check structure
   expect_true(is.data.frame(best))
   expect_true("Date" %in% names(best))
+  expect_true("Origin" %in% names(best))
   expect_true("Price" %in% names(best))
   expect_true("N_Routes" %in% names(best))
   expect_equal(nrow(best), 2)
