@@ -327,7 +327,7 @@ scrape_data_chromote <- function(obj, browser, verbose = TRUE) {
     }
   }
 
-  invisible(obj)
+  return(obj)
 }
 
 #' Get results from a single URL using chromote

@@ -1,8 +1,9 @@
-#' Filter Out Placeholder Rows from Flight Data
+#' Clean Flight Data by Removing Invalid Entries
 #'
 #' @description
-#' Removes placeholder rows from flight data, such as "Price graph",
-#' "Price unavailable", etc.
+#' Removes invalid and placeholder rows from flight data, such as "Price graph",
+#' "Price unavailable", empty entries, and rows with missing prices.
+#' This is a data cleaning function used internally.
 #'
 #' @param data A data frame of flight data with an 'airlines' column
 #'
@@ -152,12 +153,7 @@ extract_data_from_scrapes <- function(scrapes) {
 #'
 #' @keywords internal
 airport_to_city <- function(airport_codes, fallback = airport_codes) {
-  # Check if airportr is available (it's optional)
-  if (!requireNamespace("airportr", quietly = TRUE)) {
-    return(fallback)
-  }
-
-  # Convert each airport code
+  # Convert each airport code using airportr (now mandatory)
   city_names <- vapply(
     seq_along(airport_codes),
     function(i) {
