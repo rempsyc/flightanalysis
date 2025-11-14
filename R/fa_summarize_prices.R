@@ -5,6 +5,8 @@
 #' with an average price column. When multiple flights exist for the same
 #' date, uses the minimum (cheapest) price. This is useful for visualizing
 #' price patterns across multiple dates and comparing different origin airports.
+#' Supports filtering by various criteria such as departure time, airlines,
+#' travel time, stops, and emissions.
 #'
 #' @param results Either:
 #'   - A data frame with columns: City, Airport, Date, Price, and optionally Comment (Airport will be renamed to Origin)
@@ -16,6 +18,19 @@
 #'   Default is "$".
 #' @param round_prices Logical. If TRUE, rounds prices to nearest integer.
 #'   Default is TRUE.
+#' @param time_min Character. Minimum departure time in "HH:MM" format (24-hour).
+#'   Filters flights departing at or after this time. Default is NULL (no filter).
+#' @param time_max Character. Maximum departure time in "HH:MM" format (24-hour).
+#'   Filters flights departing at or before this time. Default is NULL (no filter).
+#' @param airlines Character vector. Filter by specific airlines. Default is NULL (no filter).
+#' @param price_min Numeric. Minimum price. Default is NULL (no filter).
+#' @param price_max Numeric. Maximum price. Default is NULL (no filter).
+#' @param travel_time_max Character. Maximum travel time in format "XX hr XX min".
+#'   Default is NULL (no filter).
+#' @param max_stops Integer. Maximum number of stops. Default is NULL (no filter).
+#' @param max_layover Character. Maximum layover time in format "XX hr XX min".
+#'   Default is NULL (no filter).
+#' @param max_emissions Numeric. Maximum CO2 emissions in kg. Default is NULL (no filter).
 #'
 #' @return A wide data frame with columns: City, Origin, Comment (optional),
 #'   one column per date with prices, and an Average_Price column.
@@ -24,21 +39,35 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Option 1: Pass list of flight querys directly
+#' # Basic usage
 #' queries <- fa_create_date_range(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
 #' for (code in names(queries)) {
 #'   queries[[code]] <- fa_fetch_flights(queries[[code]])
 #' }
 #' summary_table <- fa_summarize_prices(queries)
 #'
-#' # Option 2: Pass processed data frame
-#' summary_table <- fa_summarize_prices(my_data_frame)
+#' # With filters
+#' summary_table <- fa_summarize_prices(
+#'   queries,
+#'   time_min = "08:00",
+#'   time_max = "20:00",
+#'   max_stops = 1
+#' )
 #' }
 fa_summarize_prices <- function(
   results,
   include_comment = TRUE,
   currency_symbol = "$",
-  round_prices = TRUE
+  round_prices = TRUE,
+  time_min = NULL,
+  time_max = NULL,
+  airlines = NULL,
+  price_min = NULL,
+  price_max = NULL,
+  travel_time_max = NULL,
+  max_stops = NULL,
+  max_layover = NULL,
+  max_emissions = NULL
 ) {
   # Handle different input types
   # Check for flight query FIRST (before is.list, since flight queries are lists)
@@ -77,6 +106,112 @@ fa_summarize_prices <- function(
   
   # Rename Airport to Origin for consistency
   names(results)[names(results) == "Airport"] <- "Origin"
+
+  # Apply filters (same as fa_find_best_dates)
+  if (!is.null(time_min) && "departure_datetime" %in% names(results)) {
+    time_min_parsed <- as.POSIXct(paste("1970-01-01", time_min), format = "%Y-%m-%d %H:%M")
+    results <- results[format(results$departure_datetime, "%H:%M") >= format(time_min_parsed, "%H:%M"), ]
+  }
+  
+  if (!is.null(time_max) && "departure_datetime" %in% names(results)) {
+    time_max_parsed <- as.POSIXct(paste("1970-01-01", time_max), format = "%Y-%m-%d %H:%M")
+    results <- results[format(results$departure_datetime, "%H:%M") <= format(time_max_parsed, "%H:%M"), ]
+  }
+  
+  if (!is.null(airlines) && "airlines" %in% names(results)) {
+    airline_filter <- sapply(results$airlines, function(x) {
+      any(sapply(airlines, function(a) grepl(a, x, ignore.case = TRUE)))
+    })
+    results <- results[airline_filter, ]
+  }
+  
+  if (!is.null(price_min)) {
+    results <- results[results$Price >= price_min, ]
+  }
+  
+  if (!is.null(price_max)) {
+    results <- results[results$Price <= price_max, ]
+  }
+  
+  if (!is.null(travel_time_max) && "travel_time" %in% names(results)) {
+    results$travel_time_minutes <- sapply(results$travel_time, function(x) {
+      if (is.na(x)) return(NA)
+      parts <- strsplit(x, " ")[[1]]
+      hours <- 0
+      minutes <- 0
+      if (length(parts) >= 2 && parts[2] == "hr") {
+        hours <- as.numeric(parts[1])
+      }
+      if (length(parts) >= 4 && parts[4] == "min") {
+        minutes <- as.numeric(parts[3])
+      } else if (length(parts) >= 2 && parts[2] == "min") {
+        minutes <- as.numeric(parts[1])
+      }
+      return(hours * 60 + minutes)
+    })
+    
+    max_minutes <- sapply(travel_time_max, function(x) {
+      parts <- strsplit(x, " ")[[1]]
+      hours <- 0
+      minutes <- 0
+      if (length(parts) >= 2 && parts[2] == "hr") {
+        hours <- as.numeric(parts[1])
+      }
+      if (length(parts) >= 4 && parts[4] == "min") {
+        minutes <- as.numeric(parts[3])
+      } else if (length(parts) >= 2 && parts[2] == "min") {
+        minutes <- as.numeric(parts[1])
+      }
+      return(hours * 60 + minutes)
+    })
+    
+    results <- results[!is.na(results$travel_time_minutes) & results$travel_time_minutes <= max_minutes, ]
+    results$travel_time_minutes <- NULL
+  }
+  
+  if (!is.null(max_stops) && "num_stops" %in% names(results)) {
+    results <- results[results$num_stops <= max_stops, ]
+  }
+  
+  if (!is.null(max_layover) && "layover" %in% names(results)) {
+    results$layover_minutes <- sapply(results$layover, function(x) {
+      if (is.na(x) || x == "NA") return(0)
+      parts <- strsplit(x, " ")[[1]]
+      hours <- 0
+      minutes <- 0
+      if (length(parts) >= 2 && parts[2] == "hr") {
+        hours <- as.numeric(parts[1])
+      }
+      if (length(parts) >= 4 && parts[4] == "min") {
+        minutes <- as.numeric(parts[3])
+      } else if (length(parts) >= 2 && parts[2] == "min") {
+        minutes <- as.numeric(parts[1])
+      }
+      return(hours * 60 + minutes)
+    })
+    
+    max_layover_minutes <- sapply(max_layover, function(x) {
+      parts <- strsplit(x, " ")[[1]]
+      hours <- 0
+      minutes <- 0
+      if (length(parts) >= 2 && parts[2] == "hr") {
+        hours <- as.numeric(parts[1])
+      }
+      if (length(parts) >= 4 && parts[4] == "min") {
+        minutes <- as.numeric(parts[3])
+      } else if (length(parts) >= 2 && parts[2] == "min") {
+        minutes <- as.numeric(parts[1])
+      }
+      return(hours * 60 + minutes)
+    })
+    
+    results <- results[results$layover_minutes <= max_layover_minutes, ]
+    results$layover_minutes <- NULL
+  }
+  
+  if (!is.null(max_emissions) && "co2_emission_kg" %in% names(results)) {
+    results <- results[!is.na(results$co2_emission_kg) & results$co2_emission_kg <= max_emissions, ]
+  }
 
   # Check if we have any data after filtering
   if (nrow(results) == 0) {
