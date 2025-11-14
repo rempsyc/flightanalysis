@@ -42,63 +42,6 @@ devtools::install_github("rempsyc/flightanalysis")
 library(flightanalysis)
 ```
 
-### Sample Datasets
-
-The package includes sample datasets for testing and learning without
-making API calls:
-
-``` r
-# Load sample flight query
-data(sample_query)
-print(sample_query)
-```
-
-    ## Flight Query( {Not Yet Fetched}
-    ## 2025-12-20: JFK --> IST
-    ## 2025-12-27: IST --> JFK
-    ## )
-
-``` r
-# Load sample flight data (scraped flights)
-data(sample_flights)
-head(sample_flights)
-```
-
-    ##    departure_datetime    arrival_datetime origin destination
-    ## 1 2025-12-20 14:00:00 2025-12-21 03:00:00    JFK         IST
-    ## 2 2025-12-20 19:30:00 2025-12-21 08:45:00    JFK         IST
-    ## 3 2025-12-21 03:00:00 2025-12-21 16:30:00    JFK         IST
-    ## 4 2025-12-21 15:15:00 2025-12-22 04:30:00    JFK         IST
-    ## 5 2025-12-27 13:30:00 2025-12-28 02:15:00    IST         JFK
-    ## 6 2025-12-27 20:45:00 2025-12-28 10:00:00    IST         JFK
-    ##              airlines  travel_time price num_stops         layover
-    ## 1    Turkish Airlines  13 hr 0 min   650         0            <NA>
-    ## 2           Lufthansa 13 hr 15 min   720         1 2 hr 30 min FRA
-    ## 3 LOT Polish Airlines 13 hr 30 min   580         1 3 hr 15 min WAW
-    ## 4          Air France 13 hr 15 min   695         1 2 hr 45 min CDG
-    ## 5    Turkish Airlines 12 hr 45 min   620         0            <NA>
-    ## 6     United Airlines 13 hr 15 min   685         1 3 hr 10 min EWR
-    ##           access_date co2_emission_kg emission_diff_pct
-    ## 1 2025-11-13 23:35:40             550                 5
-    ## 2 2025-11-13 23:35:40             580                10
-    ## 3 2025-11-13 23:35:40             600                15
-    ## 4 2025-11-13 23:35:40             570                 8
-    ## 5 2025-11-13 23:35:40             540                 3
-    ## 6 2025-11-13 23:35:40             575                 9
-
-``` r
-# Load sample multi-origin queries
-data(sample_multi_origin)
-names(sample_multi_origin)
-```
-
-    ## [1] "BOM" "DEL"
-
-These datasets are useful for: - Testing analysis functions like
-`fa_find_best_dates()` and `fa_summarize_prices()` offline - Learning
-the package structure without internet access - Running examples in
-documentation
-
 ### Creating Flight Queries
 
 The main scraping function that makes up the backbone of most
@@ -132,14 +75,32 @@ The package includes full web scraping functionality using **chromote**:
 
 ``` r
 # Create a query
-query <- fa_define_query("JFK", "IST", "2025-12-20", "2026-01-05")
+query <- fa_define_query("JFK", "IST", "2025-12-18", "2026-01-02")
 
-# Scrape the data (runs in headless mode by default)
-query <- fa_fetch_flights(query)
-
-# View the scraped data
-head(query$data)
+# Scrape the data
+flights <- fa_fetch_flights(query)
 ```
+
+    ##   Segment 1/2: JFK -> IST on 2025-12-18
+    ##   [OK] Successfully parsed 7 flights
+    ##   Segment 2/2: IST -> JFK on 2026-01-02
+    ##   [OK] Successfully parsed 8 flights
+    ##   [OK] Total flights retrieved: 15
+
+``` r
+# View the scraped data
+head(flights$data) |>
+  knitr::kable()
+```
+
+| departure_datetime | arrival_datetime | origin | destination | airlines | travel_time | price | num_stops | layover | access_date | co2_emission_kg | emission_diff_pct |
+|:---|:---|:---|:---|:---|:---|---:|---:|:---|:---|---:|---:|
+| 2025-12-18 21:20:00 | 2025-12-19 16:55:00 | JFK | IST | KLMDelta | 11 hr 35 min | 1470 | 1 | 1 hr 5 min AMS | 2025-11-13 19:38:30 | 444 | NA |
+| 2025-12-18 00:20:00 | 2025-12-18 18:10:00 | JFK | IST | Turkish AirlinesJetBlue | 9 hr 50 min | 1692 | 0 | NA | 2025-11-13 19:38:30 | 528 | NA |
+| 2025-12-18 12:50:00 | 2025-12-19 06:45:00 | JFK | IST | Turkish Airlines | 9 hr 55 min | 1692 | 0 | NA | 2025-11-13 19:38:30 | 414 | NA |
+| 2025-12-18 20:05:00 | 2025-12-19 14:05:00 | JFK | IST | Price graph | 10 hr | 1722 | 0 | NA | 2025-11-13 19:38:30 | 528 | NA |
+| 2025-12-18 01:00:00 | 2025-12-19 03:50:00 | JFK | IST | Air FranceDelta, KLM | 18 hr 50 min | 1244 | 1 | 8 hr 15 min CDG | 2025-11-13 19:38:30 | 551 | 0 |
+| 2025-12-18 16:40:00 | 2025-12-19 16:55:00 | JFK | IST | Delta, KLM | 16 hr 15 min | 1470 | 1 | 5 hr 40 min AMS | 2025-11-13 19:38:30 | 450 | NA |
 
 **Why chromote?** - ✅ No external driver files needed (uses Chrome
 DevTools Protocol directly) - ✅ More reliable - no driver version
@@ -157,18 +118,68 @@ queries <- fa_create_date_range(
   origin = c("BOM", "DEL"),
   dest = "JFK",
   date_min = "2025-12-18",
-  date_max = "2025-12-22"
+  date_max = "2025-12-20"
 )
-
-# Scrape all queries
-scraped <- fa_fetch_flights(queries)
-
-# Create summary table (City × Date with prices)
-summary_table <- fa_summarize_prices(scraped)
-
-# Find the cheapest dates
-best_dates <- fa_find_best_dates(scraped, n = 5, by = "mean")
+queries
 ```
+
+    ## $BOM
+    ## Flight Query( {Not Yet Fetched}
+    ## 2025-12-18: BOM --> JFK
+    ## 2025-12-19: BOM --> JFK
+    ## 2025-12-20: BOM --> JFK
+    ## )
+    ## $DEL
+    ## Flight Query( {Not Yet Fetched}
+    ## 2025-12-18: DEL --> JFK
+    ## 2025-12-19: DEL --> JFK
+    ## 2025-12-20: DEL --> JFK
+    ## )
+
+``` r
+# Scrape all queries
+flights <- fa_fetch_flights(queries)
+```
+
+    ## Scraping 2 objects...
+    ## 
+    ## [1/2]   Segment 1/3: BOM -> JFK on 2025-12-18
+    ##   [OK] Successfully parsed 9 flights
+    ##   Segment 2/3: BOM -> JFK on 2025-12-19
+    ##   [OK] Successfully parsed 11 flights
+    ##   Segment 3/3: BOM -> JFK on 2025-12-20
+    ##   [OK] Successfully parsed 9 flights
+    ##   [OK] Total flights retrieved: 29
+    ## [2/2]   Segment 1/3: DEL -> JFK on 2025-12-18
+    ##   [OK] Successfully parsed 8 flights
+    ##   Segment 2/3: DEL -> JFK on 2025-12-19
+    ##   [OK] Successfully parsed 10 flights
+    ##   Segment 3/3: DEL -> JFK on 2025-12-20
+    ##   [OK] Successfully parsed 8 flights
+    ##   [OK] Total flights retrieved: 26
+
+``` r
+# Create summary table (City × Date with prices)
+fa_summarize_prices(flights) |>
+  knitr::kable()
+```
+
+| City | Airport | 2025-12-18 | 2025-12-19 | 2025-12-20 | Average_Price |
+|:-----|:--------|:-----------|:-----------|:-----------|:--------------|
+| BOM  | BOM     | \$360      | \$401      | \$463      | \$408         |
+| DEL  | DEL     | \$361      | \$361      | \$412      | \$378         |
+
+``` r
+# Find the cheapest dates
+fa_find_best_dates(flights, by = "min") |>
+  knitr::kable()
+```
+
+| Date       | Price | N_Routes |
+|:-----------|------:|---------:|
+| 2025-12-18 |   360 |       15 |
+| 2025-12-19 |   361 |       19 |
+| 2025-12-20 |   412 |       15 |
 
 **Key Features:** - Search multiple origin airports and dates
 efficiently - Create wide summary tables for easy price comparison -

@@ -18,9 +18,11 @@ Depends:
     R (>= 3.6.0)
 Suggests:
     testthat (>= 3.0.0),
+    airportr,
     chromote,
     progress,
     scales,
-    tibble
+    tibble,
+    knitr
 URL: https://github.com/rempsyc/flightanalysis, https://rempsyc.github.io/flightanalysis/
 BugReports: https://github.com/rempsyc/flightanalysis/issues

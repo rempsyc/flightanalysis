@@ -40,29 +40,6 @@ devtools::install_github("rempsyc/flightanalysis")
 library(flightanalysis)
 ```
 
-### Sample Datasets
-
-The package includes sample datasets for testing and learning without making API calls:
-
-```{r eval=TRUE}
-# Load sample flight query
-data(sample_query)
-print(sample_query)
-
-# Load sample flight data (scraped flights)
-data(sample_flights)
-head(sample_flights)
-
-# Load sample multi-origin queries
-data(sample_multi_origin)
-names(sample_multi_origin)
-```
-
-These datasets are useful for:
-- Testing analysis functions like `fa_find_best_dates()` and `fa_summarize_prices()` offline
-- Learning the package structure without internet access
-- Running examples in documentation
-
 ### Creating Flight Queries
 
 The main scraping function that makes up the backbone of most functionalities is `fa_define_query()`. It serves as a data object, preserving the flight information as well as meta-data from your query.
@@ -84,15 +61,16 @@ The package supports multiple trip types:
 
 The package includes full web scraping functionality using **chromote**:
 
-```{r eval=FALSE}
+```{r eval=TRUE}
 # Create a query
-query <- fa_define_query("JFK", "IST", "2025-12-20", "2026-01-05")
+query <- fa_define_query("JFK", "IST", "2025-12-18", "2026-01-02")
 
-# Scrape the data (runs in headless mode by default)
-query <- fa_fetch_flights(query)
+# Scrape the data
+flights <- fa_fetch_flights(query)
 
 # View the scraped data
-head(query$data)
+head(flights$data) |>
+  knitr::kable()
 ```
 
 **Why chromote?**
@@ -105,23 +83,26 @@ head(query$data)
 
 The package supports flexible date search across multiple airports and dates:
 
-```{r eval=FALSE}
+```{r eval=TRUE}
 # Create query objects for multiple origins and dates
 queries <- fa_create_date_range(
   origin = c("BOM", "DEL"),
   dest = "JFK",
   date_min = "2025-12-18",
-  date_max = "2025-12-22"
+  date_max = "2025-12-20"
 )
+queries
 
 # Scrape all queries
-scraped <- fa_fetch_flights(queries)
+flights <- fa_fetch_flights(queries)
 
 # Create summary table (City × Date with prices)
-summary_table <- fa_summarize_prices(scraped)
+fa_summarize_prices(flights) |>
+  knitr::kable()
 
 # Find the cheapest dates
-best_dates <- fa_find_best_dates(scraped, n = 5, by = "mean")
+fa_find_best_dates(flights, by = "min") |>
+  knitr::kable()
 ```
 
 **Key Features:**
