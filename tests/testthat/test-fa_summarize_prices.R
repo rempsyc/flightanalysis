@@ -148,9 +148,9 @@ test_that("fa_find_best_dates accepts list of query objects", {
 
   # Check structure
   expect_true(is.data.frame(best))
-  expect_true("Date" %in% names(best))
-  expect_true("Price" %in% names(best))
-  expect_true("N_Routes" %in% names(best))
+  expect_true("departure_date" %in% names(best) || "date" %in% names(best))
+  expect_true("price" %in% names(best))
+  expect_true("n_routes" %in% names(best))
   expect_equal(nrow(best), 2)
 })
 

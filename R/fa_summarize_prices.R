@@ -25,7 +25,7 @@
 #' @param airlines Character vector. Filter by specific airlines. Default is NULL (no filter).
 #' @param price_min Numeric. Minimum price. Default is NULL (no filter).
 #' @param price_max Numeric. Maximum price. Default is NULL (no filter).
-#' @param travel_time_max Character. Maximum travel time in format "XX hr XX min".
+#' @param travel_time_max Numeric. Maximum travel time in minutes.
 #'   Default is NULL (no filter).
 #' @param max_stops Integer. Maximum number of stops. Default is NULL (no filter).
 #' @param max_layover Character. Maximum layover time in format "XX hr XX min".
@@ -150,22 +150,8 @@ fa_summarize_prices <- function(
       return(hours * 60 + minutes)
     })
     
-    max_minutes <- sapply(travel_time_max, function(x) {
-      parts <- strsplit(x, " ")[[1]]
-      hours <- 0
-      minutes <- 0
-      if (length(parts) >= 2 && parts[2] == "hr") {
-        hours <- as.numeric(parts[1])
-      }
-      if (length(parts) >= 4 && parts[4] == "min") {
-        minutes <- as.numeric(parts[3])
-      } else if (length(parts) >= 2 && parts[2] == "min") {
-        minutes <- as.numeric(parts[1])
-      }
-      return(hours * 60 + minutes)
-    })
-    
-    results <- results[!is.na(results$travel_time_minutes) & results$travel_time_minutes <= max_minutes, ]
+    # travel_time_max is now numeric (in minutes)
+    results <- results[!is.na(results$travel_time_minutes) & results$travel_time_minutes <= travel_time_max, ]
     results$travel_time_minutes <- NULL
   }
   
@@ -308,6 +294,36 @@ fa_summarize_prices <- function(
   final_cols <- c(base_cols, date_names_sorted, "Average_Price")
   wide_data <- wide_data[, final_cols]
 
+  # Add "Best" row showing which dates have minimum prices
+  # First, we need to work with numeric values before formatting
+  best_row <- wide_data[1, , drop = FALSE]
+  best_row$City <- "Best"
+  best_row$Origin <- "Best"
+  
+  if ("Comment" %in% names(best_row)) {
+    best_row$Comment <- ""
+  }
+  
+  # For each date column, check if it has the minimum price
+  for (col in date_names_sorted) {
+    if (col %in% names(wide_data)) {
+      # Extract numeric values (remove currency symbol if already formatted)
+      col_vals <- wide_data[[col]]
+      # Convert to numeric
+      if (is.character(col_vals)) {
+        col_vals <- as.numeric(gsub("[^0-9.]", "", col_vals))
+      }
+      min_val <- min(col_vals, na.rm = TRUE)
+      # Check if current column value equals minimum
+      is_min <- !is.na(col_vals) & col_vals == min_val
+      # Mark with "X" if minimum, otherwise empty string
+      best_row[[col]] <- ifelse(any(is_min), "X", "")
+    }
+  }
+  
+  # Average_Price column should be empty for Best row
+  best_row$Average_Price <- ""
+
   # Format prices with currency symbol
   price_format_cols <- c(date_names_sorted, "Average_Price")
   for (col in price_format_cols) {
@@ -324,6 +340,10 @@ fa_summarize_prices <- function(
       wide_data[[col]] <- formatted_vals
     }
   }
+  
+  # Append the "Best" row at the bottom
+  wide_data <- rbind(wide_data, best_row)
+  rownames(wide_data) <- NULL
 
   return(wide_data)
 }

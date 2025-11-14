@@ -21,15 +21,16 @@
 #' @param airlines Character vector. Filter by specific airlines. Default is NULL (no filter).
 #' @param price_min Numeric. Minimum price. Default is NULL (no filter).
 #' @param price_max Numeric. Maximum price. Default is NULL (no filter).
-#' @param travel_time_max Character. Maximum travel time in format "XX hr XX min".
+#' @param travel_time_max Numeric. Maximum travel time in minutes.
 #'   Default is NULL (no filter).
 #' @param max_stops Integer. Maximum number of stops. Default is NULL (no filter).
 #' @param max_layover Character. Maximum layover time in format "XX hr XX min".
 #'   Default is NULL (no filter).
 #' @param max_emissions Numeric. Maximum CO2 emissions in kg. Default is NULL (no filter).
 #'
-#' @return A data frame with columns: departure_datetime, Origin, Price (average/median/min),
-#'   N_Routes, num_stops, layover, travel_time, co2_emission_kg, and airlines.
+#' @return A data frame with columns: departure_date, departure_time (or date if datetime not available),
+#'   origin, price (average/median/min), n_routes, num_stops, layover, travel_time, 
+#'   co2_emission_kg, and airlines. All column names are lowercase.
 #'   Sorted by price (cheapest first). Additional columns are aggregated using
 #'   mean/median for numeric values and most common value for categorical.
 #'
@@ -151,22 +152,8 @@ fa_find_best_dates <- function(
       return(hours * 60 + minutes)
     })
     
-    max_minutes <- sapply(travel_time_max, function(x) {
-      parts <- strsplit(x, " ")[[1]]
-      hours <- 0
-      minutes <- 0
-      if (length(parts) >= 2 && parts[2] == "hr") {
-        hours <- as.numeric(parts[1])
-      }
-      if (length(parts) >= 4 && parts[4] == "min") {
-        minutes <- as.numeric(parts[3])
-      } else if (length(parts) >= 2 && parts[2] == "min") {
-        minutes <- as.numeric(parts[1])
-      }
-      return(hours * 60 + minutes)
-    })
-    
-    results <- results[!is.na(results$travel_time_minutes) & results$travel_time_minutes <= max_minutes, ]
+    # travel_time_max is now numeric (in minutes)
+    results <- results[!is.na(results$travel_time_minutes) & results$travel_time_minutes <= travel_time_max, ]
     results$travel_time_minutes <- NULL
   }
   
@@ -409,8 +396,19 @@ fa_find_best_dates <- function(
     date_summary <- merge(date_summary, route_counts, by = grouping_col)
   }
 
+  # Split departure_datetime into departure_date and departure_time if it exists
+  if ("departure_datetime" %in% names(date_summary)) {
+    date_summary$departure_date <- as.Date(date_summary$departure_datetime)
+    date_summary$departure_time <- format(date_summary$departure_datetime, "%H:%M:%S")
+    # Remove the original departure_datetime column
+    date_summary$departure_datetime <- NULL
+  }
+  
+  # Standardize column names to lowercase
+  names(date_summary) <- tolower(names(date_summary))
+  
   # Sort by price
-  date_summary <- date_summary[order(date_summary$Price), ]
+  date_summary <- date_summary[order(date_summary$price), ]
 
   # Return top n
   if (n < nrow(date_summary)) {
