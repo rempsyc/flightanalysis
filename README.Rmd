@@ -25,11 +25,11 @@ An R package for analyzing, forecasting, and collecting flight data and prices f
 You can install the development version of flightanalysis from GitHub:
 
 ```{r eval=FALSE}
-# Install devtools if you haven't already
-# install.packages("devtools")
+install.packages('flightanalysis', repos = c('https://rempsyc.r-universe.dev', 'https://cloud.r-project.org'))
 
-# Install flightanalysis
-devtools::install_github("rempsyc/flightanalysis")
+# Or if you need the version from the last hour, install through `remotes`
+# install.packages("remotes")
+remotes::install_github("rempsyc/flightanalysis")
 ```
 
 ## Usage
@@ -74,6 +74,7 @@ head(flights$data) |>
 ```
 
 **Why chromote?**
+
 - ✅ No external driver files needed (uses Chrome DevTools Protocol directly)
 - ✅ More reliable - no driver version mismatches or port conflicts
 - ✅ Works on all platforms (Windows, macOS, Linux)
@@ -89,7 +90,7 @@ queries <- fa_create_date_range(
   origin = c("BOM", "DEL"),
   dest = "JFK",
   date_min = "2025-12-18",
-  date_max = "2025-12-20"
+  date_max = "2025-12-22"
 )
 
 # Fetch all flights
@@ -105,6 +106,7 @@ fa_find_best_dates(flights, by = "min") |>
 ```
 
 **Key Features:**
+
 - Search multiple origin airports and dates efficiently
 - Create wide summary tables for easy price comparison
 - Identify cheapest travel dates automatically

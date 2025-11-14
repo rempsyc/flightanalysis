@@ -27,11 +27,11 @@ by Kaya Celebi.
 You can install the development version of flightanalysis from GitHub:
 
 ``` r
-# Install devtools if you haven't already
-# install.packages("devtools")
+install.packages('flightanalysis', repos = c('https://rempsyc.r-universe.dev', 'https://cloud.r-project.org'))
 
-# Install flightanalysis
-devtools::install_github("rempsyc/flightanalysis")
+# Or if you need the version from the last hour, install through `remotes`
+# install.packages("remotes")
+remotes::install_github("rempsyc/flightanalysis")
 ```
 
 ## Usage
@@ -84,8 +84,8 @@ flights <- fa_fetch_flights(query)
     ##   Segment 1/2: JFK -> IST on 2025-12-18
     ##   [OK] Successfully parsed 7 flights
     ##   Segment 2/2: IST -> JFK on 2026-01-02
-    ##   [OK] Successfully parsed 8 flights
-    ##   [OK] Total flights retrieved: 15
+    ##   [OK] Successfully parsed 9 flights
+    ##   [OK] Total flights retrieved: 16
 
 ``` r
 # View the flight data
@@ -95,17 +95,20 @@ head(flights$data) |>
 
 | departure_datetime | arrival_datetime | origin | destination | airlines | travel_time | price | num_stops | layover | access_date | co2_emission_kg | emission_diff_pct |
 |:---|:---|:---|:---|:---|:---|---:|---:|:---|:---|---:|---:|
-| 2025-12-18 21:20:00 | 2025-12-19 16:55:00 | JFK | IST | KLMDelta | 11 hr 35 min | 1470 | 1 | 1 hr 5 min AMS | 2025-11-13 22:55:37 | 444 | NA |
-| 2025-12-18 00:20:00 | 2025-12-18 18:10:00 | JFK | IST | Turkish AirlinesJetBlue | 9 hr 50 min | 1692 | 0 | NA | 2025-11-13 22:55:37 | 528 | NA |
-| 2025-12-18 12:50:00 | 2025-12-19 06:45:00 | JFK | IST | Turkish Airlines | 9 hr 55 min | 1692 | 0 | NA | 2025-11-13 22:55:37 | 414 | NA |
-| 2025-12-18 20:05:00 | 2025-12-19 14:05:00 | JFK | IST | Price graph | 10 hr | 1722 | 0 | NA | 2025-11-13 22:55:37 | 528 | NA |
-| 2025-12-18 01:00:00 | 2025-12-19 03:50:00 | JFK | IST | Air FranceDelta, KLM | 18 hr 50 min | 1244 | 1 | 8 hr 15 min CDG | 2025-11-13 22:55:37 | 551 | 0 |
-| 2025-12-18 22:35:00 | 2025-12-20 00:40:00 | JFK | IST | LOT | 18 hr 5 min | 1475 | 1 | 6 hr 50 min WAW | 2025-11-13 22:55:37 | 633 | NA |
+| 2025-12-18 21:20:00 | 2025-12-19 16:55:00 | JFK | IST | KLMDelta | 11 hr 35 min | 1470 | 1 | 1 hr 5 min AMS | 2025-11-14 13:22:37 | 444 | NA |
+| 2025-12-18 00:20:00 | 2025-12-18 18:10:00 | JFK | IST | Turkish AirlinesJetBlue | 9 hr 50 min | 1692 | 0 | NA | 2025-11-14 13:22:37 | 528 | NA |
+| 2025-12-18 12:50:00 | 2025-12-19 06:45:00 | JFK | IST | Turkish Airlines | 9 hr 55 min | 1692 | 0 | NA | 2025-11-14 13:22:37 | 414 | NA |
+| 2025-12-18 20:05:00 | 2025-12-19 14:05:00 | JFK | IST | Price graph | 10 hr | 1722 | 0 | NA | 2025-11-14 13:22:37 | 528 | NA |
+| 2025-12-18 01:00:00 | 2025-12-19 03:50:00 | JFK | IST | Air FranceDelta, KLM | 18 hr 50 min | 1244 | 1 | 8 hr 15 min CDG | 2025-11-14 13:22:37 | 551 | 0 |
+| 2025-12-18 16:40:00 | 2025-12-19 16:55:00 | JFK | IST | Delta, KLM | 16 hr 15 min | 1470 | 1 | 5 hr 40 min AMS | 2025-11-14 13:22:37 | 450 | NA |
 
-**Why chromote?** - ✅ No external driver files needed (uses Chrome
-DevTools Protocol directly) - ✅ More reliable - no driver version
-mismatches or port conflicts - ✅ Works on all platforms (Windows,
-macOS, Linux) - ✅ Fully headless by default
+**Why chromote?**
+
+- ✅ No external driver files needed (uses Chrome DevTools Protocol
+  directly)
+- ✅ More reliable - no driver version mismatches or port conflicts
+- ✅ Works on all platforms (Windows, macOS, Linux)
+- ✅ Fully headless by default
 
 ## Flexible Date Search
 
@@ -118,7 +121,7 @@ queries <- fa_create_date_range(
   origin = c("BOM", "DEL"),
   dest = "JFK",
   date_min = "2025-12-18",
-  date_max = "2025-12-20"
+  date_max = "2025-12-22"
 )
 
 # Fetch all flights
@@ -127,20 +130,28 @@ flights <- fa_fetch_flights(queries)
 
     ## Scraping 2 objects...
     ## 
-    ## [1/2]   Segment 1/3: BOM -> JFK on 2025-12-18
+    ## [1/2]   Segment 1/5: BOM -> JFK on 2025-12-18
     ##   [OK] Successfully parsed 10 flights
-    ##   Segment 2/3: BOM -> JFK on 2025-12-19
+    ##   Segment 2/5: BOM -> JFK on 2025-12-19
+    ##   [OK] Successfully parsed 11 flights
+    ##   Segment 3/5: BOM -> JFK on 2025-12-20
     ##   [OK] Successfully parsed 10 flights
-    ##   Segment 3/3: BOM -> JFK on 2025-12-20
+    ##   Segment 4/5: BOM -> JFK on 2025-12-21
+    ##   [OK] Successfully parsed 8 flights
+    ##   Segment 5/5: BOM -> JFK on 2025-12-22
     ##   [OK] Successfully parsed 9 flights
-    ##   [OK] Total flights retrieved: 29
-    ## [2/2]   Segment 1/3: DEL -> JFK on 2025-12-18
+    ##   [OK] Total flights retrieved: 48
+    ## [2/2]   Segment 1/5: DEL -> JFK on 2025-12-18
     ##   [OK] Successfully parsed 8 flights
-    ##   Segment 2/3: DEL -> JFK on 2025-12-19
+    ##   Segment 2/5: DEL -> JFK on 2025-12-19
     ##   [OK] Successfully parsed 10 flights
-    ##   Segment 3/3: DEL -> JFK on 2025-12-20
+    ##   Segment 3/5: DEL -> JFK on 2025-12-20
+    ##   [OK] Successfully parsed 9 flights
+    ##   Segment 4/5: DEL -> JFK on 2025-12-21
+    ##   [OK] Successfully parsed 9 flights
+    ##   Segment 5/5: DEL -> JFK on 2025-12-22
     ##   [OK] Successfully parsed 8 flights
-    ##   [OK] Total flights retrieved: 26
+    ##   [OK] Total flights retrieved: 44
 
 ``` r
 # Create summary table (City × Date with prices)
@@ -148,10 +159,10 @@ fa_summarize_prices(flights) |>
   knitr::kable()
 ```
 
-| City   | Airport | 2025-12-18 | 2025-12-19 | 2025-12-20 | Average_Price |
-|:-------|:--------|:-----------|:-----------|:-----------|:--------------|
-| Mumbai | BOM     | \$361      | \$401      | \$463      | \$408         |
-| Delhi  | DEL     | \$361      | \$361      | \$413      | \$378         |
+| City | Airport | 2025-12-18 | 2025-12-19 | 2025-12-20 | 2025-12-21 | 2025-12-22 | Average_Price |
+|:---|:---|:---|:---|:---|:---|:---|:---|
+| Mumbai | BOM | \$361 | \$413 | \$477 | \$413 | \$365 | \$406 |
+| Delhi | DEL | \$361 | \$361 | \$469 | \$463 | \$373 | \$405 |
 
 ``` r
 # Find the cheapest dates
@@ -162,13 +173,17 @@ fa_find_best_dates(flights, by = "min") |>
 | Date       | Price | N_Routes |
 |:-----------|------:|---------:|
 | 2025-12-18 |   361 |       16 |
-| 2025-12-19 |   361 |       18 |
-| 2025-12-20 |   413 |       15 |
+| 2025-12-19 |   361 |       19 |
+| 2025-12-22 |   365 |       15 |
+| 2025-12-21 |   413 |       15 |
+| 2025-12-20 |   469 |       17 |
 
-**Key Features:** - Search multiple origin airports and dates
-efficiently - Create wide summary tables for easy price comparison -
-Identify cheapest travel dates automatically - Direct query object
-support - no manual data processing needed
+**Key Features:**
+
+- Search multiple origin airports and dates efficiently
+- Create wide summary tables for easy price comparison
+- Identify cheapest travel dates automatically
+- Direct query object support - no manual data processing needed
 
 ## Development Status
 
