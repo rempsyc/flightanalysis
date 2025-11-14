@@ -10,7 +10,9 @@ extract_data_from_scrapes(scrapes)
 \item{scrapes}{A single query object or a named list of query objects}
 }
 \value{
-A data frame with columns: Airport, Date, Price, and City (if named list)
+A data frame with columns: Airport, Date, Price, City (if named list), 
+  and additional columns: departure_datetime, airlines, travel_time, num_stops, 
+  layover, co2_emission_kg (when available)
 }
 \description{
 Internal helper that extracts data from query objects (single or list),
