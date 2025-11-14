@@ -178,6 +178,35 @@ fa_find_best_dates(flights, by = "min") |>
 | 2025-12-21 | BOM    |   413 |       15 |
 | 2025-12-20 | DEL    |   469 |       17 |
 
+**Advanced Filtering:**
+
+Both `fa_summarize_prices()` and `fa_find_best_dates()` support comprehensive
+filtering similar to Google Flights:
+
+``` r
+# Filter by departure time, stops, and emissions
+best_dates <- fa_find_best_dates(
+  flights,
+  n = 5,
+  time_min = "08:00",      # Only flights after 8 AM
+  time_max = "20:00",      # Only flights before 8 PM
+  max_stops = 1,           # Maximum 1 stop
+  max_emissions = 500,     # Maximum 500kg CO2
+  price_max = 450          # Maximum price
+)
+
+# Apply same filters to summary table
+summary <- fa_summarize_prices(
+  flights,
+  time_min = "08:00",
+  max_stops = 1,
+  max_emissions = 500
+)
+```
+
+Available filters: `time_min`, `time_max`, `airlines`, `price_min`, 
+`price_max`, `travel_time_max`, `max_stops`, `max_layover`, `max_emissions`.
+
 **Key Features:**
 
 - Search multiple origin airports and dates efficiently
