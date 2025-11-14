@@ -52,7 +52,11 @@ extract_data_from_scrapes <- function(scrapes) {
   if (inherits(scrapes, "flight_query")) {
     # For single query object, try to extract origin from the data
     # This ensures we have a named list for proper City assignment
-    if (!is.null(scrapes$data) && nrow(scrapes$data) > 0 && "origin" %in% names(scrapes$data)) {
+    if (
+      !is.null(scrapes$data) &&
+        nrow(scrapes$data) > 0 &&
+        "origin" %in% names(scrapes$data)
+    ) {
       origin_code <- scrapes$data$origin[1]
       scrapes <- list(scrapes)
       names(scrapes) <- origin_code
@@ -60,26 +64,26 @@ extract_data_from_scrapes <- function(scrapes) {
       scrapes <- list(scrapes)
     }
   }
-  
+
   all_data <- list()
-  
+
   for (i in seq_along(scrapes)) {
     scrape <- scrapes[[i]]
-    
+
     # Extract data
     if (is.null(scrape$data) || nrow(scrape$data) == 0) {
       next
     }
-    
+
     data <- scrape$data
-    
+
     # Filter placeholder rows
     data <- filter_placeholder_rows(data)
-    
+
     if (nrow(data) == 0) {
       next
     }
-    
+
     # Extract relevant columns
     # Use origin as the Airport (the airport we're searching FROM)
     if ("origin" %in% names(data)) {
@@ -89,35 +93,35 @@ extract_data_from_scrapes <- function(scrapes) {
     } else {
       data$Airport <- NA_character_
     }
-    
+
     if ("departure_datetime" %in% names(data)) {
       data$Date <- as.character(as.Date(data$departure_datetime))
     } else {
       data$Date <- NA_character_
     }
-    
+
     if ("price" %in% names(data)) {
       data$Price <- data$price
     } else {
       data$Price <- NA_real_
     }
-    
+
     # Add City from list name if available, or try to look up from airport code
     if (!is.null(names(scrapes)[i])) {
       data$City <- names(scrapes)[i]
     } else {
       data$City <- data$Airport
     }
-    
+
     # Try to convert airport codes to city names using airportr if available
     data$City <- airport_to_city(data$Airport, data$City)
-    
+
     # Select only needed columns
     data <- data[, c("City", "Airport", "Date", "Price"), drop = FALSE]
-    
+
     all_data[[i]] <- data
   }
-  
+
   if (length(all_data) == 0) {
     return(data.frame(
       City = character(),
@@ -127,11 +131,11 @@ extract_data_from_scrapes <- function(scrapes) {
       stringsAsFactors = FALSE
     ))
   }
-  
+
   # Combine all data
   combined <- do.call(rbind, all_data)
   rownames(combined) <- NULL
-  
+
   return(combined)
 }
 
@@ -152,35 +156,43 @@ airport_to_city <- function(airport_codes, fallback = airport_codes) {
   if (!requireNamespace("airportr", quietly = TRUE)) {
     return(fallback)
   }
-  
+
   # Convert each airport code
-  city_names <- vapply(seq_along(airport_codes), function(i) {
-    code <- airport_codes[i]
-    
-    # Skip if code is NA or empty
-    if (is.na(code) || code == "") {
-      return(fallback[i])
-    }
-    
-    # Try to lookup city name with proper warning handling
-    city <- withCallingHandlers(
-      tryCatch(
-        airportr::airport_lookup(code, input_type = "IATA", output_type = "city"),
-        error = function(e) character(0)
-      ),
-      warning = function(w) {
-        # Muffle warnings from airportr's internal data loading
-        invokeRestart("muffleWarning")
+  city_names <- vapply(
+    seq_along(airport_codes),
+    function(i) {
+      code <- airport_codes[i]
+
+      # Skip if code is NA or empty
+      if (is.na(code) || code == "") {
+        return(fallback[i])
       }
-    )
-    
-    # Return city if found, otherwise fallback
-    if (length(city) > 0 && !is.na(city)) {
-      city
-    } else {
-      fallback[i]
-    }
-  }, character(1))
-  
+
+      # Try to lookup city name with proper warning handling
+      city <- withCallingHandlers(
+        tryCatch(
+          airportr::airport_lookup(
+            code,
+            input_type = "IATA",
+            output_type = "city"
+          ),
+          error = function(e) character(0)
+        ),
+        warning = function(w) {
+          # Muffle warnings from airportr's internal data loading
+          invokeRestart("muffleWarning")
+        }
+      )
+
+      # Return city if found, otherwise fallback
+      if (length(city) > 0 && !is.na(city)) {
+        city
+      } else {
+        fallback[i]
+      }
+    },
+    character(1)
+  )
+
   return(city_names)
 }
