@@ -4,7 +4,7 @@
 #' Creates a modern line plot showing price trends across dates for different origins/cities.
 #' This visualizes the output from \code{\link{fa_summarize_prices}}, making it easy
 #' to compare prices across dates and identify the best travel dates visually.
-#' The cheapest date for each origin is highlighted with a larger point.
+#' Point sizes vary inversely with price (cheaper flights = bigger points).
 #'
 #' Uses ggplot2 for a polished, publication-ready aesthetic with colorblind-friendly
 #' colors and clear typography.
@@ -13,8 +13,9 @@
 #'   flight results that can be passed to \code{\link{fa_summarize_prices}}.
 #' @param title Character. Plot title. Default is "Flight Prices by Date".
 #' @param subtitle Character. Plot subtitle. Default is NULL (auto-generated).
-#' @param highlight_best Logical. If TRUE, highlights the cheapest date(s) with
-#'   a larger point. Default is TRUE.
+#' @param annotate_col Character. Name of column from raw flight data to use for
+#'   point annotations (e.g., "travel_time", "num_stops"). Only works when passing
+#'   raw flight data, not summary tables. Default is NULL (no annotations).
 #' @param ... Additional arguments passed to \code{\link{fa_summarize_prices}}
 #'   if price_summary is not already a summary table.
 #'
@@ -27,14 +28,16 @@
 #' # Plot price summary
 #' fa_plot_prices(sample_flights)
 #'
-#' # With custom title
-#' fa_plot_prices(sample_flights, title = "Flight Prices: BOM/DEL to JFK")
+#' # With custom title and annotations
+#' fa_plot_prices(sample_flights, 
+#'                title = "Flight Prices: BOM/DEL to JFK",
+#'                annotate_col = "travel_time")
 #' }
 fa_plot_prices <- function(
   price_summary,
   title = "Flight Prices by Date",
   subtitle = NULL,
-  highlight_best = TRUE,
+  annotate_col = NULL,
   ...
 ) {
   # Check if ggplot2 is available
@@ -51,8 +54,16 @@ fa_plot_prices <- function(
     )
   }
   
+  # Store raw data for annotations if provided
+  raw_data <- NULL
+  has_annotations <- !is.null(annotate_col)
+  
   # If not already a summary table, create it
   if (!all(c("City", "Origin") %in% names(price_summary))) {
+    # Keep raw data for annotations if requested
+    if (has_annotations && annotate_col %in% names(price_summary)) {
+      raw_data <- price_summary
+    }
     price_summary <- fa_summarize_prices(price_summary, ...)
   }
   
@@ -97,15 +108,25 @@ fa_plot_prices <- function(
   # Remove any NA prices
   plot_data <- plot_data[!is.na(plot_data$price), ]
   
-  # Identify minimum price for each origin
-  # Note: Using variables price, origin, is_min for NSE in ggplot2
-  if (highlight_best) {
-    min_prices <- stats::aggregate(price ~ origin, data = plot_data, FUN = min)
-    names(min_prices) <- c("origin", "min_price")
-    plot_data <- merge(plot_data, min_prices, by = "origin", all.x = TRUE)
-    plot_data$is_min <- plot_data$price == plot_data$min_price
-  } else {
-    plot_data$is_min <- FALSE
+  # Add annotation data if available
+  if (has_annotations && !is.null(raw_data)) {
+    # Get the cheapest flight for each origin-date combination for annotation
+    if ("departure_date" %in% names(raw_data)) {
+      raw_data$date <- as.Date(raw_data$departure_date)
+    } else if ("Date" %in% names(raw_data)) {
+      raw_data$date <- as.Date(raw_data$Date)
+    }
+    
+    # Get annotation value for the cheapest flight on each date
+    if ("origin" %in% names(raw_data) && annotate_col %in% names(raw_data)) {
+      annot_data <- raw_data[, c("date", "origin", "price", annotate_col)]
+      # Get the row with minimum price for each date-origin combo
+      annot_data <- do.call(rbind, lapply(split(annot_data, paste(annot_data$date, annot_data$origin)), function(x) {
+        x[which.min(x$price), ]
+      }))
+      plot_data <- merge(plot_data, annot_data[, c("date", "origin", annotate_col)], 
+                        by = c("date", "origin"), all.x = TRUE)
+    }
   }
   
   # Define colorblind-friendly palette
@@ -133,24 +154,28 @@ fa_plot_prices <- function(
   }
   
   # Create the plot
-  # Note: Using variables date, price, origin_label, is_min for NSE in ggplot2
+  # Note: Using variables date, price, origin_label for NSE in ggplot2
   p <- ggplot2::ggplot(
     plot_data,
     ggplot2::aes(x = date, y = price, color = origin_label, group = origin_label)
   ) +
     ggplot2::geom_line(linewidth = 2) +
     ggplot2::geom_point(
-      ggplot2::aes(size = is_min),
+      ggplot2::aes(size = price),
       shape = 21,  # Circle with border and fill
       fill = "white",  # White fill for all points
       stroke = 2,  # Thicker border
       show.legend = FALSE
     ) +
-    ggplot2::scale_size_manual(values = c("FALSE" = 3, "TRUE" = 8)) +
+    # Size varies inversely with price: cheaper = bigger
+    ggplot2::scale_size_continuous(
+      range = c(8, 2),  # Max size for min price, min size for max price
+      trans = "reverse"
+    ) +
     ggplot2::scale_color_manual(values = color_palette) +
     ggplot2::scale_y_continuous(
       labels = scales::dollar_format(),
-      expand = ggplot2::expansion(mult = c(0.05, 0.1))
+      expand = ggplot2::expansion(mult = c(0.05, 0.15))
     ) +
     ggplot2::scale_x_date(
       date_labels = "%b %d",
@@ -173,6 +198,17 @@ fa_plot_prices <- function(
       axis.title = ggplot2::element_text(face = "bold"),
       plot.margin = ggplot2::margin(10, 10, 10, 10)
     )
+  
+  # Add annotations if requested and available
+  if (has_annotations && annotate_col %in% names(plot_data)) {
+    p <- p + ggplot2::geom_text(
+      ggplot2::aes(label = .data[[annotate_col]]),
+      size = 2.5,
+      vjust = -1.5,
+      show.legend = FALSE,
+      color = "grey30"
+    )
+  }
   
   return(p)
 }
