@@ -263,8 +263,9 @@ fa_summarize_prices <- function(
   wide_data <- wide_data[, final_cols]
 
   # Add "Best" row showing which dates have minimum prices
-  # Create an empty template row for "Best"
-  best_row <- as.data.frame(lapply(wide_data, function(x) NA), stringsAsFactors = FALSE)
+  # Create an empty template row for "Best" matching the structure of wide_data
+  best_row <- wide_data[1, , drop = FALSE]
+  best_row[1, ] <- NA
   best_row$City <- "Best"
   best_row$Origin <- "Best"
   
