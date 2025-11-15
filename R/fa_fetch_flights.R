@@ -130,13 +130,13 @@ fa_fetch_flights <- function(
 create_flight_results <- function(queries) {
   # Merge all data from queries
   all_data <- list()
-  
+
   for (i in seq_along(queries)) {
     if (!is.null(queries[[i]]$data) && nrow(queries[[i]]$data) > 0) {
       all_data[[i]] <- queries[[i]]$data
     }
   }
-  
+
   # Combine all data into single data frame
   if (length(all_data) > 0) {
     merged_data <- do.call(rbind, all_data)
@@ -144,11 +144,11 @@ create_flight_results <- function(queries) {
   } else {
     merged_data <- data.frame()
   }
-  
+
   # Create result object
   result <- c(list(data = merged_data), queries)
   class(result) <- "flight_results"
-  
+
   return(result)
 }
 
@@ -159,17 +159,17 @@ create_flight_results <- function(queries) {
 print.flight_results <- function(x, ...) {
   cat("Flight Results\n")
   cat("==============\n\n")
-  
+
   # Show merged data summary
   if (!is.null(x$data) && nrow(x$data) > 0) {
     cat(sprintf("Total flights: %d\n", nrow(x$data)))
-    
+
     # Show origins if available
     if ("origin" %in% names(x$data)) {
       origins <- unique(x$data$origin)
       cat(sprintf("Origins: %s\n", paste(origins, collapse = ", ")))
     }
-    
+
     # Show destinations if available
     if ("destination" %in% names(x$data)) {
       dests <- unique(x$data$destination)
@@ -178,13 +178,16 @@ print.flight_results <- function(x, ...) {
   } else {
     cat("No flight data available\n")
   }
-  
+
   # Show individual queries
   query_names <- setdiff(names(x), "data")
   if (length(query_names) > 0) {
-    cat(sprintf("\nIndividual queries: %s\n", paste(query_names, collapse = ", ")))
+    cat(sprintf(
+      "\nIndividual queries: %s\n",
+      paste(query_names, collapse = ", ")
+    ))
   }
-  
+
   invisible(x)
 }
 
