@@ -2,7 +2,6 @@
 
 S3method(print,flight_query)
 S3method(print,flight_results)
-export(fa_create_date_range)
 export(fa_define_query)
 export(fa_define_query_range)
 export(fa_fetch_flights)

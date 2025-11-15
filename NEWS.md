@@ -4,7 +4,7 @@
 
 ### Breaking Changes
 
-- **Function Rename**: `fa_create_date_range()` is now `fa_define_query_range()` for consistency with `fa_define_query()`. The old function is deprecated but still works with a warning.
+- **Function Rename**: `fa_create_date_range()` has been renamed to `fa_define_query_range()` for consistency with `fa_define_query()`. The old function has been removed.
 
 ### New Features
 
@@ -55,7 +55,7 @@ This release represents a complete redesign of the package API following Tidyver
 
 **Query Creation:**
 - `fa_define_query()` - Create flight query objects for one-way, round-trip, chain-trip, or perfect-chain searches
-- `fa_create_date_range()` - Create query objects for multiple origins and dates
+- `fa_define_query_range()` - Create query objects for multiple origins and dates
 
 **Data Fetching:**
 - `fa_fetch_flights()` - Fetch flight data from Google Flights using chromote
