@@ -5,7 +5,7 @@
 \title{Create Price Summary Table}
 \usage{
 fa_summarize_prices(
-  results,
+  flight_results,
   include_comment = TRUE,
   currency_symbol = "$",
   round_prices = TRUE,
@@ -21,10 +21,11 @@ fa_summarize_prices(
 )
 }
 \arguments{
-\item{results}{Either:
+\item{flight_results}{Either:
 - A data frame with columns: City, Airport, Date, Price, and optionally Comment (Airport will be renamed to Origin)
-- A list of flight queries (from fa_create_date_range with multiple origins)
-- A single flight query (from fa_create_date_range with single origin)}
+- A flight_results object (from fa_fetch_flights with multiple origins)
+- A list of flight queries (from fa_define_query_range with multiple origins)
+- A single flight query (from fa_define_query_range with single origin)}
 
 \item{include_comment}{Logical. If TRUE and Comment column exists, includes
 it in the output. Default is TRUE.}
@@ -73,7 +74,7 @@ travel time, stops, and emissions.
 \examples{
 \dontrun{
 # Basic usage
-queries <- fa_create_date_range(c("BOM", "DEL"), "JFK", "2025-12-28", "2026-01-02")
+queries <- fa_define_query_range(c("BOM", "DEL"), "JFK", "2025-12-28", "2026-01-02")
 flights <- fa_fetch_flights(queries)
 fa_summarize_prices(flights)
 

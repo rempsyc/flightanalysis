@@ -5,7 +5,7 @@
 \title{Find Best Travel Dates}
 \usage{
 fa_find_best_dates(
-  results,
+  flight_results,
   n = 10,
   by = "min",
   time_min = NULL,
@@ -20,10 +20,11 @@ fa_find_best_dates(
 )
 }
 \arguments{
-\item{results}{Either:
+\item{flight_results}{Either:
 - A data frame with columns: Date and Price (and optionally other filter columns)
-- A list of flight queries (from fa_create_date_range with multiple origins)
-- A single flight query (from fa_create_date_range with single origin)}
+- A flight_results object (from fa_fetch_flights with multiple origins)
+- A list of flight queries (from fa_define_query_range with multiple origins)
+- A single flight query (from fa_define_query_range with single origin)}
 
 \item{n}{Integer. Number of best dates to return. Default is 10.}
 
@@ -70,7 +71,7 @@ such as departure time, airlines, travel time, stops, and emissions.
 \examples{
 \dontrun{
 # Basic usage
-queries <- fa_create_date_range(c("BOM", "DEL"), "JFK", "2025-12-28", "2026-01-02")
+queries <- fa_define_query_range(c("BOM", "DEL"), "JFK", "2025-12-28", "2026-01-02")
 flights <- fa_fetch_flights(queries)
 fa_find_best_dates(flights, n = 5, by = "min")
 
