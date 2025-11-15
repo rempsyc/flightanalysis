@@ -8,7 +8,7 @@
 #'
 #' @param results Either:
 #'   - A data frame with columns: Date and Price (and optionally other filter columns)
-#'   - A list of flight querys (from fa_create_date_range with multiple origins)
+#'   - A list of flight queries (from fa_create_date_range with multiple origins)
 #'   - A single flight query (from fa_create_date_range with single origin)
 #' @param n Integer. Number of best dates to return. Default is 10.
 #' @param by Character. How to calculate best dates: "mean" (average price
@@ -136,22 +136,8 @@ fa_find_best_dates <- function(
   }
   
   if (!is.null(travel_time_max) && "travel_time" %in% names(results)) {
-    # Parse travel time (format: "XX hr XX min")
-    results$travel_time_minutes <- sapply(results$travel_time, function(x) {
-      if (is.na(x)) return(NA)
-      parts <- strsplit(x, " ")[[1]]
-      hours <- 0
-      minutes <- 0
-      if (length(parts) >= 2 && parts[2] == "hr") {
-        hours <- as.numeric(parts[1])
-      }
-      if (length(parts) >= 4 && parts[4] == "min") {
-        minutes <- as.numeric(parts[3])
-      } else if (length(parts) >= 2 && parts[2] == "min") {
-        minutes <- as.numeric(parts[1])
-      }
-      return(hours * 60 + minutes)
-    })
+    # Parse travel time using helper function
+    results$travel_time_minutes <- sapply(results$travel_time, parse_time_to_minutes)
     
     # Convert travel_time_max to minutes using helper function
     max_minutes <- parse_time_to_minutes(travel_time_max)
@@ -165,37 +151,14 @@ fa_find_best_dates <- function(
   }
   
   if (!is.null(max_layover) && "layover" %in% names(results)) {
-    # Similar parsing for layover time
+    # Parse layover time using helper function (treat NA/empty as 0)
     results$layover_minutes <- sapply(results$layover, function(x) {
       if (is.na(x) || x == "NA") return(0)
-      parts <- strsplit(x, " ")[[1]]
-      hours <- 0
-      minutes <- 0
-      if (length(parts) >= 2 && parts[2] == "hr") {
-        hours <- as.numeric(parts[1])
-      }
-      if (length(parts) >= 4 && parts[4] == "min") {
-        minutes <- as.numeric(parts[3])
-      } else if (length(parts) >= 2 && parts[2] == "min") {
-        minutes <- as.numeric(parts[1])
-      }
-      return(hours * 60 + minutes)
+      parse_time_to_minutes(x)
     })
     
-    max_layover_minutes <- sapply(max_layover, function(x) {
-      parts <- strsplit(x, " ")[[1]]
-      hours <- 0
-      minutes <- 0
-      if (length(parts) >= 2 && parts[2] == "hr") {
-        hours <- as.numeric(parts[1])
-      }
-      if (length(parts) >= 4 && parts[4] == "min") {
-        minutes <- as.numeric(parts[3])
-      } else if (length(parts) >= 2 && parts[2] == "min") {
-        minutes <- as.numeric(parts[1])
-      }
-      return(hours * 60 + minutes)
-    })
+    # Parse max_layover as a single string
+    max_layover_minutes <- parse_time_to_minutes(max_layover)
     
     results <- results[results$layover_minutes <= max_layover_minutes, ]
     results$layover_minutes <- NULL

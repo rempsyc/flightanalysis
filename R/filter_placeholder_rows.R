@@ -214,22 +214,47 @@ airport_to_city <- function(airport_codes, fallback = airport_codes) {
 #'
 #' @keywords internal
 parse_time_to_minutes <- function(time_value) {
+  # Handle NA and "NA" string values
+  if (is.na(time_value) || (is.character(time_value) && time_value == "NA")) {
+    return(NA_real_)
+  }
+  
   if (is.numeric(time_value)) {
     # If numeric, interpret as hours and convert to minutes
     return(time_value * 60)
   } else if (is.character(time_value)) {
-    # If character, parse the format "XX hr XX min"
+    # Handle empty strings
+    if (time_value == "" || nchar(trimws(time_value)) == 0) {
+      return(NA_real_)
+    }
+    
+    # If character, parse the format "XX hr XX min", "XX hr", or "XX min"
     parts <- strsplit(time_value, " ")[[1]]
     hours <- 0
     minutes <- 0
+    
     if (length(parts) >= 2 && parts[2] == "hr") {
-      hours <- as.numeric(parts[1])
+      hours_val <- suppressWarnings(as.numeric(parts[1]))
+      if (is.na(hours_val)) {
+        stop("Invalid time format: unable to parse hours from '", time_value, "'")
+      }
+      hours <- hours_val
     }
+    
     if (length(parts) >= 4 && parts[4] == "min") {
-      minutes <- as.numeric(parts[3])
+      minutes_val <- suppressWarnings(as.numeric(parts[3]))
+      if (is.na(minutes_val)) {
+        stop("Invalid time format: unable to parse minutes from '", time_value, "'")
+      }
+      minutes <- minutes_val
     } else if (length(parts) >= 2 && parts[2] == "min") {
-      minutes <- as.numeric(parts[1])
+      minutes_val <- suppressWarnings(as.numeric(parts[1]))
+      if (is.na(minutes_val)) {
+        stop("Invalid time format: unable to parse minutes from '", time_value, "'")
+      }
+      minutes <- minutes_val
     }
+    
     return(hours * 60 + minutes)
   } else {
     stop("time_value must be numeric (hours) or character (format: 'XX hr XX min')")
