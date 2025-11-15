@@ -7,6 +7,7 @@
 fa_plot_prices(
   price_summary,
   title = "Flight Prices by Date",
+  subtitle = NULL,
   highlight_best = TRUE,
   ...
 )
@@ -17,25 +18,32 @@ flight results that can be passed to \code{\link{fa_summarize_prices}}.}
 
 \item{title}{Character. Plot title. Default is "Flight Prices by Date".}
 
+\item{subtitle}{Character. Plot subtitle. Default is NULL (auto-generated).}
+
 \item{highlight_best}{Logical. If TRUE, highlights the cheapest date(s) with
-a marker. Default is TRUE.}
+a larger point. Default is TRUE.}
 
 \item{...}{Additional arguments passed to \code{\link{fa_summarize_prices}}
 if price_summary is not already a summary table.}
 }
 \value{
-Invisibly returns the price summary data frame used for plotting.
+A ggplot2 plot object that can be further customized or saved.
 }
 \description{
-Creates a line plot showing price trends across dates for different origins/cities.
+Creates a modern line plot showing price trends across dates for different origins/cities.
 This visualizes the output from \code{\link{fa_summarize_prices}}, making it easy
 to compare prices across dates and identify the best travel dates visually.
-The cheapest date is highlighted with a marker.
+The cheapest date for each origin is highlighted with a larger point.
+
+Uses ggplot2 for a polished, publication-ready aesthetic with colorblind-friendly
+colors and clear typography.
 }
 \examples{
+\dontrun{
 # Plot price summary
 fa_plot_prices(sample_flights)
 
 # With custom title
 fa_plot_prices(sample_flights, title = "Flight Prices: BOM/DEL to JFK")
+}
 }

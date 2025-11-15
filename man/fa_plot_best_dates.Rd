@@ -7,6 +7,7 @@
 fa_plot_best_dates(
   best_dates,
   title = "Best Travel Dates by Price",
+  subtitle = NULL,
   ...
 )
 }
@@ -16,22 +17,28 @@ flight results that can be passed to \code{\link{fa_find_best_dates}}.}
 
 \item{title}{Character. Plot title. Default is "Best Travel Dates by Price".}
 
+\item{subtitle}{Character. Plot subtitle. Default is NULL (auto-generated).}
+
 \item{...}{Additional arguments passed to \code{\link{fa_find_best_dates}}
 if best_dates is not already a result from that function.}
 }
 \value{
-Invisibly returns the best dates data frame used for plotting.
+A ggplot2 plot object that can be further customized or saved.
 }
 \description{
-Creates a bar chart showing the best (cheapest) travel dates identified by
-\code{\link{fa_find_best_dates}}. Each bar represents a date-origin combination,
-with bars colored by origin airport. This makes it easy to visually compare
-the best options and see which dates and origins offer the lowest prices.
+Creates a modern visualization showing the best (cheapest) travel dates identified by
+\code{\link{fa_find_best_dates}}. Uses a lollipop chart style that clearly shows
+the price range and highlights the best options by origin and date.
+
+Uses ggplot2 for a polished, publication-ready aesthetic with colorblind-friendly
+colors and clear typography.
 }
 \examples{
+\dontrun{
 # Plot best dates
 fa_plot_best_dates(sample_flights, n = 5)
 
 # With filters
 fa_plot_best_dates(sample_flights, n = 5, max_stops = 0)
+}
 }

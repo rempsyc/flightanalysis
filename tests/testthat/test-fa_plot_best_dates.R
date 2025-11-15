@@ -1,4 +1,7 @@
 test_that("fa_plot_best_dates works with best_dates input", {
+  skip_if_not_installed("ggplot2")
+  skip_if_not_installed("scales")
+  
   # Create mock best_dates result
   best_dates <- data.frame(
     departure_date = c("2025-12-18", "2025-12-19", "2025-12-20"),
@@ -9,17 +12,16 @@ test_that("fa_plot_best_dates works with best_dates input", {
     stringsAsFactors = FALSE
   )
   
-  # Should run without error
-  expect_silent({
-    result <- fa_plot_best_dates(best_dates)
-  })
-  
-  # Should return the data invisibly
-  expect_true(is.data.frame(result))
-  expect_equal(nrow(result), 3)
+  # Should run without error and return a ggplot object
+  result <- fa_plot_best_dates(best_dates)
+  expect_s3_class(result, "gg")
+  expect_s3_class(result, "ggplot")
 })
 
 test_that("fa_plot_best_dates works with raw flight data", {
+  skip_if_not_installed("ggplot2")
+  skip_if_not_installed("scales")
+  
   # Create mock flight data
   results <- data.frame(
     Airport = rep(c("BOM", "DEL"), each = 3),
@@ -29,14 +31,14 @@ test_that("fa_plot_best_dates works with raw flight data", {
   )
   
   # Should create best_dates and plot
-  expect_silent({
-    result <- fa_plot_best_dates(results, n = 3)
-  })
-  
-  expect_true(is.data.frame(result))
+  result <- fa_plot_best_dates(results, n = 3)
+  expect_s3_class(result, "gg")
 })
 
 test_that("fa_plot_best_dates handles custom title", {
+  skip_if_not_installed("ggplot2")
+  skip_if_not_installed("scales")
+  
   best_dates <- data.frame(
     departure_date = c("2025-12-18"),
     departure_time = c("10:00"),
@@ -47,12 +49,15 @@ test_that("fa_plot_best_dates handles custom title", {
   )
   
   # Should accept custom title
-  expect_silent({
-    fa_plot_best_dates(best_dates, title = "Custom Title")
-  })
+  result <- fa_plot_best_dates(best_dates, title = "Custom Title")
+  expect_s3_class(result, "gg")
+  expect_equal(result$labels$title, "Custom Title")
 })
 
 test_that("fa_plot_best_dates handles data without origin", {
+  skip_if_not_installed("ggplot2")
+  skip_if_not_installed("scales")
+  
   # Create data without origin column
   best_dates <- data.frame(
     date = c("2025-12-18", "2025-12-19"),
@@ -62,14 +67,14 @@ test_that("fa_plot_best_dates handles data without origin", {
   )
   
   # Should work without origin column
-  expect_silent({
-    result <- fa_plot_best_dates(best_dates)
-  })
-  
-  expect_true(is.data.frame(result))
+  result <- fa_plot_best_dates(best_dates)
+  expect_s3_class(result, "gg")
 })
 
 test_that("fa_plot_best_dates handles single date", {
+  skip_if_not_installed("ggplot2")
+  skip_if_not_installed("scales")
+  
   best_dates <- data.frame(
     departure_date = c("2025-12-18"),
     departure_time = c("10:00"),
@@ -80,14 +85,14 @@ test_that("fa_plot_best_dates handles single date", {
   )
   
   # Should work with single date
-  expect_silent({
-    result <- fa_plot_best_dates(best_dates)
-  })
-  
-  expect_true(is.data.frame(result))
+  result <- fa_plot_best_dates(best_dates)
+  expect_s3_class(result, "gg")
 })
 
 test_that("fa_plot_best_dates errors on empty data", {
+  skip_if_not_installed("ggplot2")
+  skip_if_not_installed("scales")
+  
   # Create empty data frame
   best_dates <- data.frame(
     departure_date = character(0),
@@ -103,6 +108,9 @@ test_that("fa_plot_best_dates errors on empty data", {
 })
 
 test_that("fa_plot_best_dates handles multiple origins", {
+  skip_if_not_installed("ggplot2")
+  skip_if_not_installed("scales")
+  
   # Create data with multiple origins
   best_dates <- data.frame(
     departure_date = rep(c("2025-12-18", "2025-12-19"), each = 2),
@@ -114,10 +122,6 @@ test_that("fa_plot_best_dates handles multiple origins", {
   )
   
   # Should work with multiple origins
-  expect_silent({
-    result <- fa_plot_best_dates(best_dates)
-  })
-  
-  expect_true(is.data.frame(result))
-  expect_equal(nrow(result), 4)
+  result <- fa_plot_best_dates(best_dates)
+  expect_s3_class(result, "gg")
 })

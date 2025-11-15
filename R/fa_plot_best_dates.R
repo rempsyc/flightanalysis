@@ -1,32 +1,52 @@
 #' Plot Best Travel Dates
 #'
 #' @description
-#' Creates a bar chart showing the best (cheapest) travel dates identified by
-#' \code{\link{fa_find_best_dates}}. Each bar represents a date-origin combination,
-#' with bars colored by origin airport. This makes it easy to visually compare
-#' the best options and see which dates and origins offer the lowest prices.
+#' Creates a modern visualization showing the best (cheapest) travel dates identified by
+#' \code{\link{fa_find_best_dates}}. Uses a lollipop chart style that clearly shows
+#' the price range and highlights the best options by origin and date.
+#'
+#' Uses ggplot2 for a polished, publication-ready aesthetic with colorblind-friendly
+#' colors and clear typography.
 #'
 #' @param best_dates A data frame from \code{\link{fa_find_best_dates}} or
 #'   flight results that can be passed to \code{\link{fa_find_best_dates}}.
 #' @param title Character. Plot title. Default is "Best Travel Dates by Price".
+#' @param subtitle Character. Plot subtitle. Default is NULL (auto-generated).
 #' @param ... Additional arguments passed to \code{\link{fa_find_best_dates}}
 #'   if best_dates is not already a result from that function.
 #'
-#' @return Invisibly returns the best dates data frame used for plotting.
+#' @return A ggplot2 plot object that can be further customized or saved.
 #'
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' # Plot best dates
 #' fa_plot_best_dates(sample_flights, n = 5)
 #'
 #' # With filters
 #' fa_plot_best_dates(sample_flights, n = 5, max_stops = 0)
+#' }
 fa_plot_best_dates <- function(
   best_dates,
   title = "Best Travel Dates by Price",
+  subtitle = NULL,
   ...
 ) {
+  # Check if ggplot2 is available
+  if (!requireNamespace("ggplot2", quietly = TRUE)) {
+    stop(
+      "Package 'ggplot2' is required for plotting. ",
+      "Please install it with: install.packages('ggplot2')"
+    )
+  }
+  if (!requireNamespace("scales", quietly = TRUE)) {
+    stop(
+      "Package 'scales' is required for plotting. ",
+      "Please install it with: install.packages('scales')"
+    )
+  }
+  
   # If not already a best_dates result, create it
   if (!("price" %in% names(best_dates))) {
     best_dates <- fa_find_best_dates(best_dates, ...)
@@ -36,78 +56,111 @@ fa_plot_best_dates <- function(
     stop("No data to plot after filtering")
   }
   
-  # Extract relevant columns
-  has_origin <- "origin" %in% names(best_dates)
+  # Prepare data for plotting
+  plot_data <- best_dates
   
-  # Create labels for x-axis
-  if ("departure_date" %in% names(best_dates) && "departure_time" %in% names(best_dates)) {
-    # Use date and time for label
-    date_labels <- paste0(
-      format(as.Date(best_dates$departure_date), "%m/%d"),
-      "\n",
-      best_dates$departure_time
-    )
-  } else if ("date" %in% names(best_dates)) {
-    # Use just date
-    date_labels <- format(as.Date(best_dates$date), "%m/%d")
-  } else if ("departure_date" %in% names(best_dates)) {
-    date_labels <- format(as.Date(best_dates$departure_date), "%m/%d")
+  # Create date labels
+  if ("departure_date" %in% names(plot_data)) {
+    plot_data$date_label <- format(as.Date(plot_data$departure_date), "%b %d")
+    if ("departure_time" %in% names(plot_data)) {
+      plot_data$date_label <- paste0(
+        plot_data$date_label,
+        "\n",
+        plot_data$departure_time
+      )
+    }
+  } else if ("date" %in% names(plot_data)) {
+    plot_data$date_label <- format(as.Date(plot_data$date), "%b %d")
   } else {
-    # Fallback to row numbers
-    date_labels <- seq_len(nrow(best_dates))
+    plot_data$date_label <- as.character(seq_len(nrow(plot_data)))
   }
   
-  # Get prices
-  prices <- best_dates$price
-  
-  # Set up colors by origin if available
+  # Add origin label if available
+  has_origin <- "origin" %in% names(plot_data)
   if (has_origin) {
-    origins <- best_dates$origin
-    unique_origins <- unique(origins)
-    colors <- c("blue", "red", "green", "purple", "orange", "brown")
-    origin_colors <- colors[seq_along(unique_origins) %% length(colors) + 1]
-    names(origin_colors) <- unique_origins
-    bar_colors <- origin_colors[origins]
+    plot_data$origin_label <- plot_data$origin
   } else {
-    bar_colors <- "steelblue"
+    plot_data$origin_label <- "All"
   }
   
-  # Create bar plot
-  bar_positions <- barplot(
-    prices,
-    names.arg = date_labels,
-    col = bar_colors,
-    border = NA,
-    main = title,
-    xlab = if ("departure_time" %in% names(best_dates)) "Date & Time" else "Date",
-    ylab = "Price ($)",
-    las = 1,
-    cex.names = 0.8
+  # Sort by price for better visualization
+  plot_data <- plot_data[order(plot_data$price), ]
+  plot_data$rank <- seq_len(nrow(plot_data))
+  
+  # Define colorblind-friendly palette
+  color_palette <- c(
+    "#E69F00", # Orange
+    "#56B4E9", # Sky Blue
+    "#009E73", # Bluish Green
+    "#F0E442", # Yellow
+    "#0072B2", # Blue
+    "#D55E00", # Vermillion
+    "#CC79A7", # Reddish Purple
+    "#999999"  # Gray
   )
   
-  # Add price labels on top of bars
-  text(
-    bar_positions,
-    prices + max(prices) * 0.02,
-    labels = paste0("$", prices),
-    cex = 0.8,
-    font = 2
-  )
-  
-  # Add legend if we have multiple origins
-  if (has_origin && length(unique_origins) > 1) {
-    legend(
-      "topright",
-      legend = unique_origins,
-      fill = origin_colors,
-      border = NA,
-      cex = 0.8,
-      bg = "white"
+  # Create subtitle if not provided
+  if (is.null(subtitle)) {
+    min_price <- min(plot_data$price)
+    max_price <- max(plot_data$price)
+    subtitle <- sprintf(
+      "Price range: $%d - $%d across top options",
+      round(min_price),
+      round(max_price)
     )
   }
   
-  # Add grid for readability
-  grid(nx = NA, ny = NULL)
+  # Create lollipop chart
+  p <- ggplot2::ggplot(
+    plot_data,
+    ggplot2::aes(x = rank, y = price, color = origin_label)
+  ) +
+    ggplot2::geom_segment(
+      ggplot2::aes(x = rank, xend = rank, y = 0, yend = price),
+      linewidth = 1.5,
+      alpha = 0.7
+    ) +
+    ggplot2::geom_point(size = 5) +
+    ggplot2::geom_text(
+      ggplot2::aes(label = scales::dollar(price)),
+      vjust = -1,
+      size = 3.5,
+      fontface = "bold",
+      show.legend = FALSE
+    ) +
+    ggplot2::scale_color_manual(values = color_palette) +
+    ggplot2::scale_y_continuous(
+      labels = scales::dollar_format(),
+      expand = ggplot2::expansion(mult = c(0, 0.15))
+    ) +
+    ggplot2::scale_x_continuous(
+      breaks = plot_data$rank,
+      labels = plot_data$date_label
+    ) +
+    ggplot2::labs(
+      title = title,
+      subtitle = subtitle,
+      x = "Departure Date",
+      y = "Price (USD)",
+      color = "Origin"
+    ) +
+    ggplot2::theme_minimal(base_size = 13) +
+    ggplot2::theme(
+      plot.title = ggplot2::element_text(face = "bold", size = 16),
+      plot.subtitle = ggplot2::element_text(color = "grey40", size = 11),
+      panel.grid.major.x = ggplot2::element_blank(),
+      panel.grid.minor = ggplot2::element_blank(),
+      legend.position = "bottom",
+      legend.title = ggplot2::element_text(face = "bold"),
+      axis.title = ggplot2::element_text(face = "bold"),
+      axis.text.x = ggplot2::element_text(angle = 0, hjust = 0.5, size = 9),
+      plot.margin = ggplot2::margin(10, 10, 10, 10)
+    )
   
-  invisible(best_dates)
+  # Hide legend if only one origin
+  if (!has_origin || length(unique(plot_data$origin_label)) == 1) {
+    p <- p + ggplot2::theme(legend.position = "none")
+  }
+  
+  return(p)
 }
