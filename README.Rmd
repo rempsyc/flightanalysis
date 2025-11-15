@@ -104,6 +104,7 @@ fa_summarize_prices(flights) |>
 # Find the cheapest dates
 fa_find_best_dates(
   flights, 
+  n = 5,
   by = "min",
   price_max = 1400,
   max_stops = 1,

@@ -27,7 +27,8 @@ by Kaya Celebi.
 You can install the development version of flightanalysis from GitHub:
 
 ``` r
-install.packages('flightanalysis', repos = c('https://rempsyc.r-universe.dev', 'https://cloud.r-project.org'))
+install.packages('flightanalysis', 
+  repos = c('https://rempsyc.r-universe.dev', 'https://cloud.r-project.org'))
 
 # Or if you need the version from the last hour, install through `remotes`
 # install.packages("remotes")
@@ -84,8 +85,8 @@ flights <- fa_fetch_flights(query)
     ##   Segment 1/2: JFK -> IST on 2025-12-18
     ##   [OK] Successfully parsed 7 flights
     ##   Segment 2/2: IST -> JFK on 2026-01-02
-    ##   [OK] Successfully parsed 9 flights
-    ##   [OK] Total flights retrieved: 16
+    ##   [OK] Successfully parsed 8 flights
+    ##   [OK] Total flights retrieved: 15
 
 ``` r
 # View the flight data
@@ -95,12 +96,12 @@ head(flights$data) |>
 
 | departure_datetime | arrival_datetime | origin | destination | airlines | travel_time | price | num_stops | layover | access_date | co2_emission_kg | emission_diff_pct |
 |:---|:---|:---|:---|:---|:---|---:|---:|:---|:---|---:|---:|
-| 2025-12-18 21:20:00 | 2025-12-19 16:55:00 | JFK | IST | KLMDelta | 11 hr 35 min | 1470 | 1 | 1 hr 5 min AMS | 2025-11-14 19:44:40 | 444 | NA |
-| 2025-12-18 00:20:00 | 2025-12-18 18:10:00 | JFK | IST | Turkish AirlinesJetBlue | 9 hr 50 min | 1692 | 0 | NA | 2025-11-14 19:44:40 | 528 | NA |
-| 2025-12-18 12:50:00 | 2025-12-19 06:45:00 | JFK | IST | Turkish Airlines | 9 hr 55 min | 1692 | 0 | NA | 2025-11-14 19:44:40 | 414 | NA |
-| 2025-12-18 20:05:00 | 2025-12-19 14:05:00 | JFK | IST | Price graph | 10 hr | 1722 | 0 | NA | 2025-11-14 19:44:40 | 528 | NA |
-| 2025-12-18 01:00:00 | 2025-12-19 03:50:00 | JFK | IST | Air FranceDelta, KLM | 18 hr 50 min | 1244 | 1 | 8 hr 15 min CDG | 2025-11-14 19:44:40 | 551 | 0 |
-| 2025-12-18 16:40:00 | 2025-12-19 16:55:00 | JFK | IST | Delta, KLM | 16 hr 15 min | 1470 | 1 | 5 hr 40 min AMS | 2025-11-14 19:44:40 | 450 | NA |
+| 2025-12-18 21:20:00 | 2025-12-19 16:55:00 | JFK | IST | KLMDelta | 11 hr 35 min | 1470 | 1 | 1 hr 5 min AMS | 2025-11-15 11:32:25 | 444 | NA |
+| 2025-12-18 00:20:00 | 2025-12-18 18:10:00 | JFK | IST | Turkish AirlinesJetBlue | 9 hr 50 min | 1692 | 0 | NA | 2025-11-15 11:32:25 | 528 | NA |
+| 2025-12-18 12:50:00 | 2025-12-19 06:45:00 | JFK | IST | Turkish Airlines | 9 hr 55 min | 1692 | 0 | NA | 2025-11-15 11:32:25 | 414 | NA |
+| 2025-12-18 20:05:00 | 2025-12-19 14:05:00 | JFK | IST | Price graph | 10 hr | 1722 | 0 | NA | 2025-11-15 11:32:25 | 528 | NA |
+| 2025-12-18 01:00:00 | 2025-12-19 03:50:00 | JFK | IST | Air FranceDelta, KLM | 18 hr 50 min | 1244 | 1 | 8 hr 15 min CDG | 2025-11-15 11:32:25 | 551 | 0 |
+| 2025-12-18 16:40:00 | 2025-12-19 16:55:00 | JFK | IST | Delta, KLM | 16 hr 15 min | 1470 | 1 | 5 hr 40 min AMS | 2025-11-15 11:32:25 | 450 | NA |
 
 **Why chromote?**
 
@@ -131,16 +132,16 @@ flights <- fa_fetch_flights(queries)
     ## Scraping 2 objects...
     ## 
     ## [1/2]   Segment 1/5: BOM -> JFK on 2025-12-18
-    ##   [OK] Successfully parsed 12 flights
+    ##   [OK] Successfully parsed 13 flights
     ##   Segment 2/5: BOM -> JFK on 2025-12-19
-    ##   [OK] Successfully parsed 10 flights
+    ##   [OK] Successfully parsed 12 flights
     ##   Segment 3/5: BOM -> JFK on 2025-12-20
-    ##   [OK] Successfully parsed 10 flights
+    ##   [OK] Successfully parsed 9 flights
     ##   Segment 4/5: BOM -> JFK on 2025-12-21
     ##   [OK] Successfully parsed 8 flights
     ##   Segment 5/5: BOM -> JFK on 2025-12-22
-    ##   [OK] Successfully parsed 9 flights
-    ##   [OK] Total flights retrieved: 49
+    ##   [OK] Successfully parsed 8 flights
+    ##   [OK] Total flights retrieved: 50
     ## [2/2]   Segment 1/5: DEL -> JFK on 2025-12-18
     ##   [OK] Successfully parsed 8 flights
     ##   Segment 2/5: DEL -> JFK on 2025-12-19
@@ -150,8 +151,8 @@ flights <- fa_fetch_flights(queries)
     ##   Segment 4/5: DEL -> JFK on 2025-12-21
     ##   [OK] Successfully parsed 9 flights
     ##   Segment 5/5: DEL -> JFK on 2025-12-22
-    ##   [OK] Successfully parsed 8 flights
-    ##   [OK] Total flights retrieved: 44
+    ##   [OK] Successfully parsed 9 flights
+    ##   [OK] Total flights retrieved: 45
 
 ``` r
 # Create summary table (City × Date with prices)
@@ -161,14 +162,15 @@ fa_summarize_prices(flights) |>
 
 | City | Origin | 2025-12-18 | 2025-12-19 | 2025-12-20 | 2025-12-21 | 2025-12-22 | Average_Price |
 |:---|:---|:---|:---|:---|:---|:---|:---|
-| Mumbai | BOM | \$361 | \$365 | \$478 | \$413 | \$365 | \$396 |
+| Mumbai | BOM | \$361 | \$365 | \$478 | \$413 | \$413 | \$406 |
 | Delhi | DEL | \$361 | \$361 | \$463 | \$463 | \$373 | \$404 |
-| Best | Best | X | X | X | X | X |  |
+| Best | Day | X |  |  |  |  |  |
 
 ``` r
 # Find the cheapest dates
 fa_find_best_dates(
   flights, 
+  n = 5,
   by = "min",
   price_max = 1400,
   max_stops = 1,
@@ -180,15 +182,10 @@ fa_find_best_dates(
 | origin | price | num_stops | layover | travel_time | co2_emission_kg | airlines | n_routes | departure_date | departure_time |
 |:---|---:|---:|:---|:---|---:|:---|---:|:---|:---|
 | BOM | 365 | 1 | 3 hr 15 min AUH | 21 hr 15 min | 844 | Etihad | 1 | 2025-12-19 | 04:40:00 |
-| BOM | 365 | 1 | 3 hr 15 min AUH | 21 hr 15 min | 845 | Etihad | 1 | 2025-12-22 | 04:40:00 |
-| DEL | 393 | 1 | 2 hr 45 min AUH | 21 hr 30 min | 871 | Etihad | 1 | 2025-12-18 | 04:25:00 |
 | DEL | 393 | 1 | 3 hr 30 min AUH | 22 hr 35 min | 843 | Etihad | 1 | 2025-12-19 | 20:55:00 |
 | DEL | 408 | 1 | 2 hr CDG | 19 hr 45 min | 794 | Air FranceDelta, KLM | 1 | 2025-12-18 | 01:30:00 |
 | BOM | 413 | 1 | 3 hr 15 min AUH | 21 hr 15 min | 852 | Etihad | 1 | 2025-12-18 | 04:40:00 |
 | BOM | 413 | 1 | 2 hr 5 min AUH | 20 hr 15 min | 763 | Akasa Air, Etihad | 1 | 2025-12-19 | 23:15:00 |
-| BOM | 413 | 1 | 2 hr 5 min AUH | 20 hr 15 min | 763 | Akasa Air, Etihad | 1 | 2025-12-20 | 23:15:00 |
-| BOM | 413 | 1 | 2 hr 5 min AUH | 20 hr 15 min | 763 | Akasa Air, Etihad | 1 | 2025-12-22 | 23:15:00 |
-| BOM | 418 | 1 | 3 hr 55 min IST | 21 hr 55 min | 811 | IndiGo, Turkish Airlines | 2 | 2025-12-18 | 06:45:00 |
 
 **Key Features:**
 
