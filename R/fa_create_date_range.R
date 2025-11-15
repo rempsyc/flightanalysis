@@ -39,7 +39,7 @@
 #' for (i in seq_along(queries)) {
 #'   results[[i]] <- fa_fetch_flights(queries[[i]])
 #' }
-#' 
+#'
 #' # Combine all results
 #' all_data <- do.call(rbind, lapply(results, function(x) x$data))
 #' }
@@ -66,7 +66,9 @@ fa_create_date_range <- function(origin, dest, date_min, date_max) {
   }
 
   if (!inherits(date_min, "Date") || !inherits(date_max, "Date")) {
-    stop("date_min and date_max must be Date objects or character strings in YYYY-MM-DD format")
+    stop(
+      "date_min and date_max must be Date objects or character strings in YYYY-MM-DD format"
+    )
   }
 
   if (date_min > date_max) {
@@ -84,23 +86,23 @@ fa_create_date_range <- function(origin, dest, date_min, date_max) {
     for (date in dates_char) {
       args <- c(args, list(origin, dest, date))
     }
-    
+
     query <- do.call(fa_define_query, args)
     return(query)
   }
-  
+
   # If multiple origins, create separate query object for each origin
   query_list <- list()
-  
+
   for (orig in origin) {
     # Build chain-trip arguments for this origin
     args <- list()
     for (date in dates_char) {
       args <- c(args, list(orig, dest, date))
     }
-    
+
     query_list[[orig]] <- do.call(fa_define_query, args)
   }
-  
+
   return(query_list)
 }
