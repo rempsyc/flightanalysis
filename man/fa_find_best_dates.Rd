@@ -69,9 +69,6 @@ when planning a flexible trip. Supports filtering by various criteria
 such as departure time, airlines, travel time, stops, and emissions.
 }
 \examples{
-# Using sample data
-data(sample_flights)
-
 # Find best dates
 fa_find_best_dates(sample_flights, n = 3, by = "min")
 

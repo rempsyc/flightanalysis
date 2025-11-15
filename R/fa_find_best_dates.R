@@ -39,12 +39,9 @@
 #' @export
 #'
 #' @examples
-#' # Using sample data
-#' data(sample_flights)
-#' 
 #' # Find best dates
 #' fa_find_best_dates(sample_flights, n = 3, by = "min")
-#' 
+#'
 #' # With filters
 #' fa_find_best_dates(
 #'   sample_flights,
@@ -102,16 +99,28 @@ fa_find_best_dates <- function(
 
   # Normalize column names for direct data frame input
   # If we have lowercase columns (from direct sample_flights), create uppercase versions
-  if ("price" %in% names(flight_results) && !"Price" %in% names(flight_results)) {
+  if (
+    "price" %in% names(flight_results) && !"Price" %in% names(flight_results)
+  ) {
     flight_results$Price <- flight_results$price
   }
-  
-  if ("departure_datetime" %in% names(flight_results) && !"Date" %in% names(flight_results)) {
-    flight_results$Date <- as.character(as.Date(flight_results$departure_datetime))
+
+  if (
+    "departure_datetime" %in%
+      names(flight_results) &&
+      !"Date" %in% names(flight_results)
+  ) {
+    flight_results$Date <- as.character(as.Date(
+      flight_results$departure_datetime
+    ))
   }
-  
+
   # If origin column exists but not Airport/Origin (uppercase), add it
-  if ("origin" %in% names(flight_results) && !any(c("Origin", "Airport") %in% names(flight_results))) {
+  if (
+    "origin" %in%
+      names(flight_results) &&
+      !any(c("Origin", "Airport") %in% names(flight_results))
+  ) {
     flight_results$Origin <- flight_results$origin
   }
 
@@ -190,17 +199,22 @@ fa_find_best_dates <- function(
 
   if (!is.null(max_layover) && "layover" %in% names(flight_results)) {
     # Parse layover time using helper function (treat NA/empty as 0)
-    flight_results$layover_minutes <- sapply(flight_results$layover, function(x) {
-      if (is.na(x) || x == "NA") {
-        return(0)
+    flight_results$layover_minutes <- sapply(
+      flight_results$layover,
+      function(x) {
+        if (is.na(x) || x == "NA") {
+          return(0)
+        }
+        parse_time_to_minutes(x)
       }
-      parse_time_to_minutes(x)
-    })
+    )
 
     # Parse max_layover as a single string
     max_layover_minutes <- parse_time_to_minutes(max_layover)
 
-    flight_results <- flight_results[flight_results$layover_minutes <= max_layover_minutes, ]
+    flight_results <- flight_results[
+      flight_results$layover_minutes <= max_layover_minutes,
+    ]
     flight_results$layover_minutes <- NULL
   }
 
@@ -338,7 +352,11 @@ fa_find_best_dates <- function(
       emissions_agg <- tryCatch(
         {
           stats::aggregate(
-            stats::as.formula(paste("co2_emission_kg ~", grouping_col, "+ Origin")),
+            stats::as.formula(paste(
+              "co2_emission_kg ~",
+              grouping_col,
+              "+ Origin"
+            )),
             data = flight_results,
             FUN = function(x) round(mean(x, na.rm = TRUE), 0)
           )
@@ -578,15 +596,28 @@ fa_find_best_dates <- function(
 
   # Now sort the selected n by departure time/date for display
   if ("departure_time" %in% names(date_summary)) {
-    date_summary <- date_summary[order(date_summary$departure_date, date_summary$departure_time), ]
+    date_summary <- date_summary[
+      order(date_summary$departure_date, date_summary$departure_time),
+    ]
   } else if ("date" %in% names(date_summary)) {
     date_summary <- date_summary[order(date_summary$date), ]
   }
 
   # Reorder columns to put departure_date and departure_time first
-  if ("departure_date" %in% names(date_summary) && "departure_time" %in% names(date_summary)) {
-    other_cols <- setdiff(names(date_summary), c("departure_date", "departure_time"))
-    date_summary <- date_summary[, c("departure_date", "departure_time", other_cols)]
+  if (
+    "departure_date" %in%
+      names(date_summary) &&
+      "departure_time" %in% names(date_summary)
+  ) {
+    other_cols <- setdiff(
+      names(date_summary),
+      c("departure_date", "departure_time")
+    )
+    date_summary <- date_summary[, c(
+      "departure_date",
+      "departure_time",
+      other_cols
+    )]
   }
 
   rownames(date_summary) <- NULL
