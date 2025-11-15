@@ -117,26 +117,40 @@ fa_summarize_prices <- function(
   names(flight_results)[names(flight_results) == "Airport"] <- "Origin"
 
   # Apply filters (same as fa_find_best_dates)
-  if (!is.null(time_min) && "departure_datetime" %in% names(flight_results)) {
-    time_min_parsed <- as.POSIXct(
-      paste("1970-01-01", time_min),
-      format = "%Y-%m-%d %H:%M"
-    )
-    flight_results <- flight_results[
-      format(flight_results$departure_datetime, "%H:%M") >=
-        format(time_min_parsed, "%H:%M"),
-    ]
+  if (!is.null(time_min)) {
+    if ("departure_time" %in% names(flight_results)) {
+      flight_results <- flight_results[
+        flight_results$departure_time >= time_min,
+      ]
+    } else if ("departure_datetime" %in% names(flight_results)) {
+      # Backward compatibility for old format
+      time_min_parsed <- as.POSIXct(
+        paste("1970-01-01", time_min),
+        format = "%Y-%m-%d %H:%M"
+      )
+      flight_results <- flight_results[
+        format(flight_results$departure_datetime, "%H:%M") >=
+          format(time_min_parsed, "%H:%M"),
+      ]
+    }
   }
 
-  if (!is.null(time_max) && "departure_datetime" %in% names(flight_results)) {
-    time_max_parsed <- as.POSIXct(
-      paste("1970-01-01", time_max),
-      format = "%Y-%m-%d %H:%M"
-    )
-    flight_results <- flight_results[
-      format(flight_results$departure_datetime, "%H:%M") <=
-        format(time_max_parsed, "%H:%M"),
-    ]
+  if (!is.null(time_max)) {
+    if ("departure_time" %in% names(flight_results)) {
+      flight_results <- flight_results[
+        flight_results$departure_time <= time_max,
+      ]
+    } else if ("departure_datetime" %in% names(flight_results)) {
+      # Backward compatibility for old format
+      time_max_parsed <- as.POSIXct(
+        paste("1970-01-01", time_max),
+        format = "%Y-%m-%d %H:%M"
+      )
+      flight_results <- flight_results[
+        format(flight_results$departure_datetime, "%H:%M") <=
+          format(time_max_parsed, "%H:%M"),
+      ]
+    }
   }
 
   if (!is.null(airlines) && "airlines" %in% names(flight_results)) {

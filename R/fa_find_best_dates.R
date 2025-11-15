@@ -98,7 +98,6 @@ fa_find_best_dates <- function(
   }
 
   # Normalize column names for direct data frame input
-  # If we have lowercase columns (from direct sample_flights), create uppercase versions
   if (
     "price" %in% names(flight_results) && !"Price" %in% names(flight_results)
   ) {
@@ -106,16 +105,21 @@ fa_find_best_dates <- function(
   }
 
   if (
+    "departure_date" %in% names(flight_results) &&
+      !"Date" %in% names(flight_results)
+  ) {
+    flight_results$Date <- flight_results$departure_date
+  } else if (
     "departure_datetime" %in%
       names(flight_results) &&
       !"Date" %in% names(flight_results)
   ) {
+    # Backward compatibility for old format
     flight_results$Date <- as.character(as.Date(
       flight_results$departure_datetime
     ))
   }
 
-  # If origin column exists but not Airport/Origin (uppercase), add it
   if (
     "origin" %in%
       names(flight_results) &&
@@ -138,26 +142,40 @@ fa_find_best_dates <- function(
   }
 
   # Apply filters
-  if (!is.null(time_min) && "departure_datetime" %in% names(flight_results)) {
-    time_min_parsed <- as.POSIXct(
-      paste("1970-01-01", time_min),
-      format = "%Y-%m-%d %H:%M"
-    )
-    flight_results <- flight_results[
-      format(flight_results$departure_datetime, "%H:%M") >=
-        format(time_min_parsed, "%H:%M"),
-    ]
+  if (!is.null(time_min)) {
+    if ("departure_time" %in% names(flight_results)) {
+      flight_results <- flight_results[
+        flight_results$departure_time >= time_min,
+      ]
+    } else if ("departure_datetime" %in% names(flight_results)) {
+      # Backward compatibility for old format
+      time_min_parsed <- as.POSIXct(
+        paste("1970-01-01", time_min),
+        format = "%Y-%m-%d %H:%M"
+      )
+      flight_results <- flight_results[
+        format(flight_results$departure_datetime, "%H:%M") >=
+          format(time_min_parsed, "%H:%M"),
+      ]
+    }
   }
 
-  if (!is.null(time_max) && "departure_datetime" %in% names(flight_results)) {
-    time_max_parsed <- as.POSIXct(
-      paste("1970-01-01", time_max),
-      format = "%Y-%m-%d %H:%M"
-    )
-    flight_results <- flight_results[
-      format(flight_results$departure_datetime, "%H:%M") <=
-        format(time_max_parsed, "%H:%M"),
-    ]
+  if (!is.null(time_max)) {
+    if ("departure_time" %in% names(flight_results)) {
+      flight_results <- flight_results[
+        flight_results$departure_time <= time_max,
+      ]
+    } else if ("departure_datetime" %in% names(flight_results)) {
+      # Backward compatibility for old format
+      time_max_parsed <- as.POSIXct(
+        paste("1970-01-01", time_max),
+        format = "%Y-%m-%d %H:%M"
+      )
+      flight_results <- flight_results[
+        format(flight_results$departure_datetime, "%H:%M") <=
+          format(time_max_parsed, "%H:%M"),
+      ]
+    }
   }
 
   if (!is.null(airlines) && "airlines" %in% names(flight_results)) {
@@ -236,6 +254,15 @@ fa_find_best_dates <- function(
     stop("by must be one of: 'mean', 'median', 'min'")
   }
 
+  # Create a combined datetime column for grouping if we have split columns
+  if ("departure_date" %in% names(flight_results) &&
+      "departure_time" %in% names(flight_results)) {
+    flight_results$departure_datetime <- as.POSIXct(
+      paste(flight_results$departure_date, flight_results$departure_time),
+      format = "%Y-%m-%d %H:%M"
+    )
+  }
+  
   # Use departure_datetime if available, otherwise fall back to Date
   grouping_col <- if ("departure_datetime" %in% names(flight_results)) {
     "departure_datetime"
