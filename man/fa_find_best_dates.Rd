@@ -69,20 +69,20 @@ when planning a flexible trip. Supports filtering by various criteria
 such as departure time, airlines, travel time, stops, and emissions.
 }
 \examples{
-\dontrun{
-# Basic usage
-queries <- fa_define_query_range(c("BOM", "DEL"), "JFK", "2025-12-28", "2026-01-02")
-flights <- fa_fetch_flights(queries)
-fa_find_best_dates(flights, n = 5, by = "min")
+# Using sample data
+data(sample_query)
+data(sample_flights)
+
+# Attach flight data to query object
+sample_query$data <- sample_flights
+
+# Find best dates
+fa_find_best_dates(sample_query, n = 3, by = "min")
 
 # With filters
 fa_find_best_dates(
-  flights,
-  n = 5,
-  time_min = "08:00",
-  time_max = "20:00",
-  max_stops = 1,
-  max_emissions = 500
+  sample_query,
+  n = 2,
+  max_stops = 0
 )
-}
 }

@@ -43,13 +43,13 @@
 #' # Using sample data
 #' data(sample_query)
 #' data(sample_flights)
-#' 
+#'
 #' # Attach flight data to query object
 #' sample_query$data <- sample_flights
-#' 
+#'
 #' # Create summary table
 #' fa_summarize_prices(sample_query)
-#' 
+#'
 #' # With filters
 #' fa_summarize_prices(
 #'   sample_query,
@@ -177,17 +177,22 @@ fa_summarize_prices <- function(
 
   if (!is.null(max_layover) && "layover" %in% names(flight_results)) {
     # Parse layover time using helper function (treat NA/empty as 0)
-    flight_results$layover_minutes <- sapply(flight_results$layover, function(x) {
-      if (is.na(x) || x == "NA") {
-        return(0)
+    flight_results$layover_minutes <- sapply(
+      flight_results$layover,
+      function(x) {
+        if (is.na(x) || x == "NA") {
+          return(0)
+        }
+        parse_time_to_minutes(x)
       }
-      parse_time_to_minutes(x)
-    })
+    )
 
     # Parse max_layover as a single string
     max_layover_minutes <- parse_time_to_minutes(max_layover)
 
-    flight_results <- flight_results[flight_results$layover_minutes <= max_layover_minutes, ]
+    flight_results <- flight_results[
+      flight_results$layover_minutes <= max_layover_minutes,
+    ]
     flight_results$layover_minutes <- NULL
   }
 
@@ -298,7 +303,7 @@ fa_summarize_prices <- function(
   best_row <- wide_data[1, , drop = FALSE]
   best_row[1, ] <- NA
   best_row$City <- "Best"
-  best_row$Origin <- "Best"
+  best_row$Origin <- "Day"
 
   if ("Comment" %in% names(best_row)) {
     best_row$Comment <- ""
@@ -316,10 +321,10 @@ fa_summarize_prices <- function(
       all_prices <- c(all_prices, col_vals[!is.na(col_vals)])
     }
   }
-  
+
   # Get the global minimum price
   global_min <- min(all_prices, na.rm = TRUE)
-  
+
   # Mark only the ONE column that contains this minimum price
   found_min <- FALSE
   for (col in date_names_sorted) {

@@ -72,18 +72,19 @@ Supports filtering by various criteria such as departure time, airlines,
 travel time, stops, and emissions.
 }
 \examples{
-\dontrun{
-# Basic usage
-queries <- fa_define_query_range(c("BOM", "DEL"), "JFK", "2025-12-28", "2026-01-02")
-flights <- fa_fetch_flights(queries)
-fa_summarize_prices(flights)
+# Using sample data
+data(sample_query)
+data(sample_flights)
+
+# Attach flight data to query object
+sample_query$data <- sample_flights
+
+# Create summary table
+fa_summarize_prices(sample_query)
 
 # With filters
-summary_table <- fa_summarize_prices(
-  queries,
-  time_min = "08:00",
-  time_max = "20:00",
-  max_stops = 1
+fa_summarize_prices(
+  sample_query,
+  max_stops = 0
 )
-}
 }

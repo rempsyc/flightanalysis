@@ -25,7 +25,8 @@ An R package for analyzing, forecasting, and collecting flight data and prices f
 You can install the development version of flightanalysis from GitHub:
 
 ```{r eval=FALSE}
-install.packages('flightanalysis', repos = c('https://rempsyc.r-universe.dev', 'https://cloud.r-project.org'))
+install.packages('flightanalysis', 
+  repos = c('https://rempsyc.r-universe.dev', 'https://cloud.r-project.org'))
 
 # Or if you need the version from the last hour, install through `remotes`
 # install.packages("remotes")

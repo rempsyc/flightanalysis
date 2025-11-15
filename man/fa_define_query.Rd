@@ -21,7 +21,6 @@ Defines a flight query for Google Flights. Supports one-way,
 round-trip, chain-trip, and perfect-chain trip types.
 }
 \examples{
-\dontrun{
 # One-way trip
 fa_define_query("JFK", "BOS", "2025-12-20")
 
@@ -30,5 +29,4 @@ fa_define_query("JFK", "YUL", "2025-12-20", "2025-12-25")
 
 # Chain-trip
 fa_define_query("JFK", "YYZ", "2025-12-20", "RDU", "LGA", "2025-12-25")
-}
 }
