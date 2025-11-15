@@ -6,8 +6,6 @@
 #' when planning a flexible trip. Supports filtering by various criteria
 #' such as departure time, airlines, travel time, stops, and emissions.
 #'
-#' @importFrom stats as.formula
-#'
 #' @param results Either:
 #'   - A data frame with columns: Date and Price (and optionally other filter columns)
 #'   - A list of flight querys (from fa_create_date_range with multiple origins)
@@ -222,7 +220,7 @@ fa_find_best_dates <- function(
   # Aggregate by datetime/date and origin (if Origin column exists)
   if ("Origin" %in% names(results)) {
     # Build aggregation formula dynamically
-    agg_formula <- as.formula(paste("Price ~", grouping_col, "+ Origin"))
+    agg_formula <- stats::as.formula(paste("Price ~", grouping_col, "+ Origin"))
     
     # Aggregate price
     date_summary <- stats::aggregate(
@@ -246,7 +244,7 @@ fa_find_best_dates <- function(
     # Add additional information columns if available
     if ("num_stops" %in% names(results)) {
       stops_agg <- stats::aggregate(
-        as.formula(paste("num_stops ~", grouping_col, "+ Origin")),
+        stats::as.formula(paste("num_stops ~", grouping_col, "+ Origin")),
         data = results,
         FUN = function(x) round(mean(x, na.rm = TRUE), 1)
       )
@@ -256,7 +254,7 @@ fa_find_best_dates <- function(
     if ("layover" %in% names(results)) {
       # For layover, take the most common value
       layover_agg <- stats::aggregate(
-        as.formula(paste("layover ~", grouping_col, "+ Origin")),
+        stats::as.formula(paste("layover ~", grouping_col, "+ Origin")),
         data = results,
         FUN = function(x) {
           x <- x[!is.na(x) & x != "NA"]
@@ -270,7 +268,7 @@ fa_find_best_dates <- function(
     if ("travel_time" %in% names(results)) {
       # For travel_time, take the most common value
       travel_agg <- stats::aggregate(
-        as.formula(paste("travel_time ~", grouping_col, "+ Origin")),
+        stats::as.formula(paste("travel_time ~", grouping_col, "+ Origin")),
         data = results,
         FUN = function(x) {
           x <- x[!is.na(x)]
@@ -283,7 +281,7 @@ fa_find_best_dates <- function(
     
     if ("co2_emission_kg" %in% names(results)) {
       emissions_agg <- stats::aggregate(
-        as.formula(paste("co2_emission_kg ~", grouping_col, "+ Origin")),
+        stats::as.formula(paste("co2_emission_kg ~", grouping_col, "+ Origin")),
         data = results,
         FUN = function(x) round(mean(x, na.rm = TRUE), 0)
       )
@@ -293,7 +291,7 @@ fa_find_best_dates <- function(
     if ("airlines" %in% names(results)) {
       # For airlines, take the most common value
       airlines_agg <- stats::aggregate(
-        as.formula(paste("airlines ~", grouping_col, "+ Origin")),
+        stats::as.formula(paste("airlines ~", grouping_col, "+ Origin")),
         data = results,
         FUN = function(x) {
           x <- x[!is.na(x)]
@@ -306,7 +304,7 @@ fa_find_best_dates <- function(
     
     # Count number of routes per datetime/date (total across all origins)
     route_counts <- stats::aggregate(
-      as.formula(paste("Price ~", grouping_col)),
+      stats::as.formula(paste("Price ~", grouping_col)),
       data = results,
       FUN = function(x) sum(!is.na(x))
     )
@@ -316,7 +314,7 @@ fa_find_best_dates <- function(
     date_summary <- merge(date_summary, route_counts, by = grouping_col)
   } else {
     # Aggregate by datetime/date only (no Origin column)
-    agg_formula <- as.formula(paste("Price ~", grouping_col))
+    agg_formula <- stats::as.formula(paste("Price ~", grouping_col))
     
     date_summary <- stats::aggregate(
       agg_formula,
@@ -334,7 +332,7 @@ fa_find_best_dates <- function(
     # Add additional information columns if available
     if ("num_stops" %in% names(results)) {
       stops_agg <- stats::aggregate(
-        as.formula(paste("num_stops ~", grouping_col)),
+        stats::as.formula(paste("num_stops ~", grouping_col)),
         data = results,
         FUN = function(x) round(mean(x, na.rm = TRUE), 1)
       )
@@ -343,7 +341,7 @@ fa_find_best_dates <- function(
     
     if ("layover" %in% names(results)) {
       layover_agg <- stats::aggregate(
-        as.formula(paste("layover ~", grouping_col)),
+        stats::as.formula(paste("layover ~", grouping_col)),
         data = results,
         FUN = function(x) {
           x <- x[!is.na(x) & x != "NA"]
@@ -356,7 +354,7 @@ fa_find_best_dates <- function(
     
     if ("travel_time" %in% names(results)) {
       travel_agg <- stats::aggregate(
-        as.formula(paste("travel_time ~", grouping_col)),
+        stats::as.formula(paste("travel_time ~", grouping_col)),
         data = results,
         FUN = function(x) {
           x <- x[!is.na(x)]
@@ -369,7 +367,7 @@ fa_find_best_dates <- function(
     
     if ("co2_emission_kg" %in% names(results)) {
       emissions_agg <- stats::aggregate(
-        as.formula(paste("co2_emission_kg ~", grouping_col)),
+        stats::as.formula(paste("co2_emission_kg ~", grouping_col)),
         data = results,
         FUN = function(x) round(mean(x, na.rm = TRUE), 0)
       )
@@ -378,7 +376,7 @@ fa_find_best_dates <- function(
     
     if ("airlines" %in% names(results)) {
       airlines_agg <- stats::aggregate(
-        as.formula(paste("airlines ~", grouping_col)),
+        stats::as.formula(paste("airlines ~", grouping_col)),
         data = results,
         FUN = function(x) {
           x <- x[!is.na(x)]
@@ -403,6 +401,10 @@ fa_find_best_dates <- function(
 
   # Split departure_datetime into departure_date and departure_time if it exists
   if ("departure_datetime" %in% names(date_summary)) {
+    # Ensure it's a POSIXct object before formatting
+    if (!inherits(date_summary$departure_datetime, "POSIXct")) {
+      date_summary$departure_datetime <- as.POSIXct(date_summary$departure_datetime)
+    }
     date_summary$departure_date <- as.Date(date_summary$departure_datetime)
     date_summary$departure_time <- format(date_summary$departure_datetime, "%H:%M:%S")
     # Remove the original departure_datetime column
