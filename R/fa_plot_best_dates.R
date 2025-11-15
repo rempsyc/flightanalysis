@@ -111,16 +111,17 @@ fa_plot_best_dates <- function(
   }
   
   # Create lollipop chart
+  # Note: Using variables rank, price, origin_label for NSE in ggplot2
   p <- ggplot2::ggplot(
     plot_data,
     ggplot2::aes(x = rank, y = price, color = origin_label)
   ) +
     ggplot2::geom_segment(
       ggplot2::aes(x = rank, xend = rank, y = 0, yend = price),
-      linewidth = 1.5,
-      alpha = 0.7
+      linewidth = 2.5,
+      alpha = 0.8
     ) +
-    ggplot2::geom_point(size = 5) +
+    ggplot2::geom_point(size = 7) +
     ggplot2::geom_text(
       ggplot2::aes(label = scales::dollar(price)),
       vjust = -1,

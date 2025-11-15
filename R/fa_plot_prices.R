@@ -98,8 +98,9 @@ fa_plot_prices <- function(
   plot_data <- plot_data[!is.na(plot_data$price), ]
   
   # Identify minimum price for each origin
+  # Note: Using variables price, origin, is_min for NSE in ggplot2
   if (highlight_best) {
-    min_prices <- aggregate(price ~ origin, data = plot_data, FUN = min)
+    min_prices <- stats::aggregate(price ~ origin, data = plot_data, FUN = min)
     names(min_prices) <- c("origin", "min_price")
     plot_data <- merge(plot_data, min_prices, by = "origin", all.x = TRUE)
     plot_data$is_min <- plot_data$price == plot_data$min_price
@@ -132,16 +133,20 @@ fa_plot_prices <- function(
   }
   
   # Create the plot
+  # Note: Using variables date, price, origin_label, is_min for NSE in ggplot2
   p <- ggplot2::ggplot(
     plot_data,
     ggplot2::aes(x = date, y = price, color = origin_label, group = origin_label)
   ) +
-    ggplot2::geom_line(linewidth = 1.2) +
+    ggplot2::geom_line(linewidth = 2) +
     ggplot2::geom_point(
       ggplot2::aes(size = is_min),
+      shape = 21,  # Circle with border and fill
+      fill = "white",  # White fill for all points
+      stroke = 2,  # Thicker border
       show.legend = FALSE
     ) +
-    ggplot2::scale_size_manual(values = c("FALSE" = 2, "TRUE" = 4)) +
+    ggplot2::scale_size_manual(values = c("FALSE" = 3, "TRUE" = 8)) +
     ggplot2::scale_color_manual(values = color_palette) +
     ggplot2::scale_y_continuous(
       labels = scales::dollar_format(),
