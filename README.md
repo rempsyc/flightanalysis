@@ -159,13 +159,13 @@ fa_find_best_dates(
   knitr::kable()
 ```
 
-| departure_date | departure_time | origin | price | num_stops | layover | travel_time | co2_emission_kg | airlines | n_routes |
-|:---|:---|:---|---:|---:|:---|:---|---:|:---|---:|
-| 2025-12-18 | 01:30 | DEL | 408 | 1 | 2 hr CDG | 19 hr 45 min | 794 | Air France, Delta, KLM | 1 |
-| 2025-12-18 | 04:40 | BOM | 413 | 1 | 3 hr 15 min AUH | 21 hr 15 min | 852 | Etihad | 1 |
-| 2025-12-19 | 04:40 | BOM | 365 | 1 | 3 hr 15 min AUH | 21 hr 15 min | 844 | Etihad | 1 |
-| 2025-12-19 | 20:55 | DEL | 393 | 1 | 3 hr 30 min AUH | 22 hr 35 min | 843 | Etihad | 1 |
-| 2025-12-19 | 23:15 | BOM | 413 | 1 | 2 hr 5 min AUH | 20 hr 15 min | 763 | Akasa Air, Etihad | 1 |
+| departure_date | departure_time | origin | price | num_stops | layover | travel_time | co2_emission_kg | airlines | arrival_date | arrival_time | n_routes |
+|:---|:---|:---|---:|---:|:---|:---|---:|:---|:---|:---|---:|
+| 2025-12-18 | 01:30 | DEL | 408 | 1 | 2 hr CDG | 19 hr 45 min | 794 | Air France, Delta, KLM | 2025-12-18 | 10:45 | 1 |
+| 2025-12-18 | 04:40 | BOM | 413 | 1 | 3 hr 15 min AUH | 21 hr 15 min | 852 | Etihad | 2025-12-18 | 15:25 | 1 |
+| 2025-12-19 | 04:40 | BOM | 365 | 1 | 3 hr 15 min AUH | 21 hr 15 min | 844 | Etihad | 2025-12-19 | 15:25 | 1 |
+| 2025-12-19 | 20:55 | DEL | 393 | 1 | 3 hr 30 min AUH | 22 hr 35 min | 843 | Etihad | 2025-12-19 | 09:00 | 1 |
+| 2025-12-19 | 23:15 | BOM | 413 | 1 | 2 hr 5 min AUH | 20 hr 15 min | 763 | Akasa Air, Etihad | 2025-12-19 | 09:00 | 1 |
 
 ## Original Python Package
 
