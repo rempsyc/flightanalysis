@@ -57,8 +57,8 @@ Default is NULL (no filter).}
 }
 \value{
 A data frame with columns: departure_date, departure_time (or date if datetime not available),
-  origin, price (average/median/min), n_routes, num_stops, layover, travel_time,
-  co2_emission_kg, and airlines. All column names are lowercase.
+  arrival_date, arrival_time, origin, price (average/median/min), n_routes, num_stops, layover, 
+  travel_time, co2_emission_kg, and airlines. All column names are lowercase.
   Returns the top N dates with best (lowest) prices, sorted by departure time for display.
   Additional columns are aggregated using mean/median for numeric values and most common value for categorical.
 }

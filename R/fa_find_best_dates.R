@@ -31,8 +31,8 @@
 #' @param max_emissions Numeric. Maximum CO2 emissions in kg. Default is NULL (no filter).
 #'
 #' @return A data frame with columns: departure_date, departure_time (or date if datetime not available),
-#'   origin, price (average/median/min), n_routes, num_stops, layover, travel_time,
-#'   co2_emission_kg, and airlines. All column names are lowercase.
+#'   arrival_date, arrival_time, origin, price (average/median/min), n_routes, num_stops, layover, 
+#'   travel_time, co2_emission_kg, and airlines. All column names are lowercase.
 #'   Returns the top N dates with best (lowest) prices, sorted by departure time for display.
 #'   Additional columns are aggregated using mean/median for numeric values and most common value for categorical.
 #'
@@ -428,6 +428,62 @@ fa_find_best_dates <- function(
       }
     }
 
+    if ("arrival_date" %in% names(flight_results)) {
+      # For arrival_date, take the most common value
+      arrival_date_agg <- tryCatch(
+        {
+          stats::aggregate(
+            stats::as.formula(paste("arrival_date ~", grouping_col, "+ Origin")),
+            data = flight_results,
+            FUN = function(x) {
+              x <- x[!is.na(x)]
+              if (length(x) == 0) {
+                return(NA_character_)
+              }
+              names(sort(table(x), decreasing = TRUE))[1]
+            }
+          )
+        },
+        error = function(e) NULL
+      )
+      if (!is.null(arrival_date_agg)) {
+        date_summary <- merge(
+          date_summary,
+          arrival_date_agg,
+          by = c(grouping_col, "Origin"),
+          all.x = TRUE
+        )
+      }
+    }
+
+    if ("arrival_time" %in% names(flight_results)) {
+      # For arrival_time, take the most common value
+      arrival_time_agg <- tryCatch(
+        {
+          stats::aggregate(
+            stats::as.formula(paste("arrival_time ~", grouping_col, "+ Origin")),
+            data = flight_results,
+            FUN = function(x) {
+              x <- x[!is.na(x)]
+              if (length(x) == 0) {
+                return(NA_character_)
+              }
+              names(sort(table(x), decreasing = TRUE))[1]
+            }
+          )
+        },
+        error = function(e) NULL
+      )
+      if (!is.null(arrival_time_agg)) {
+        date_summary <- merge(
+          date_summary,
+          arrival_time_agg,
+          by = c(grouping_col, "Origin"),
+          all.x = TRUE
+        )
+      }
+    }
+
     # Count number of routes per datetime/date (total across all origins)
     route_counts <- stats::aggregate(
       stats::as.formula(paste("Price ~", grouping_col)),
@@ -573,6 +629,62 @@ fa_find_best_dates <- function(
         date_summary <- merge(
           date_summary,
           airlines_agg,
+          by = grouping_col,
+          all.x = TRUE
+        )
+      }
+    }
+
+    if ("arrival_date" %in% names(flight_results)) {
+      # For arrival_date, take the most common value
+      arrival_date_agg <- tryCatch(
+        {
+          stats::aggregate(
+            stats::as.formula(paste("arrival_date ~", grouping_col)),
+            data = flight_results,
+            FUN = function(x) {
+              x <- x[!is.na(x)]
+              if (length(x) == 0) {
+                return(NA_character_)
+              }
+              names(sort(table(x), decreasing = TRUE))[1]
+            }
+          )
+        },
+        error = function(e) NULL
+      )
+      if (!is.null(arrival_date_agg)) {
+        date_summary <- merge(
+          date_summary,
+          arrival_date_agg,
+          by = grouping_col,
+          all.x = TRUE
+        )
+      }
+    }
+
+    if ("arrival_time" %in% names(flight_results)) {
+      # For arrival_time, take the most common value
+      arrival_time_agg <- tryCatch(
+        {
+          stats::aggregate(
+            stats::as.formula(paste("arrival_time ~", grouping_col)),
+            data = flight_results,
+            FUN = function(x) {
+              x <- x[!is.na(x)]
+              if (length(x) == 0) {
+                return(NA_character_)
+              }
+              names(sort(table(x), decreasing = TRUE))[1]
+            }
+          )
+        },
+        error = function(e) NULL
+      )
+      if (!is.null(arrival_time_agg)) {
+        date_summary <- merge(
+          date_summary,
+          arrival_time_agg,
           by = grouping_col,
           all.x = TRUE
         )
