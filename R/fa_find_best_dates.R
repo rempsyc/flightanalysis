@@ -247,94 +247,129 @@ fa_find_best_dates <- function(
 
     # Add additional information columns if available
     if ("num_stops" %in% names(flight_results)) {
-      stops_agg <- stats::aggregate(
-        stats::as.formula(paste("num_stops ~", grouping_col, "+ Origin")),
-        data = flight_results,
-        FUN = function(x) round(mean(x, na.rm = TRUE), 1)
+      stops_agg <- tryCatch(
+        {
+          stats::aggregate(
+            stats::as.formula(paste("num_stops ~", grouping_col, "+ Origin")),
+            data = flight_results,
+            FUN = function(x) round(mean(x, na.rm = TRUE), 1)
+          )
+        },
+        error = function(e) NULL
       )
-      date_summary <- merge(
-        date_summary,
-        stops_agg,
-        by = c(grouping_col, "Origin"),
-        all.x = TRUE
-      )
+      if (!is.null(stops_agg)) {
+        date_summary <- merge(
+          date_summary,
+          stops_agg,
+          by = c(grouping_col, "Origin"),
+          all.x = TRUE
+        )
+      }
     }
 
     if ("layover" %in% names(flight_results)) {
       # For layover, take the most common value
-      layover_agg <- stats::aggregate(
-        stats::as.formula(paste("layover ~", grouping_col, "+ Origin")),
-        data = flight_results,
-        FUN = function(x) {
-          x <- x[!is.na(x) & x != "NA"]
-          if (length(x) == 0) {
-            return(NA_character_)
-          }
-          names(sort(table(x), decreasing = TRUE))[1]
-        }
+      layover_agg <- tryCatch(
+        {
+          stats::aggregate(
+            stats::as.formula(paste("layover ~", grouping_col, "+ Origin")),
+            data = flight_results,
+            FUN = function(x) {
+              x <- x[!is.na(x) & x != "NA"]
+              if (length(x) == 0) {
+                return(NA_character_)
+              }
+              names(sort(table(x), decreasing = TRUE))[1]
+            }
+          )
+        },
+        error = function(e) NULL
       )
-      date_summary <- merge(
-        date_summary,
-        layover_agg,
-        by = c(grouping_col, "Origin"),
-        all.x = TRUE
-      )
+      if (!is.null(layover_agg)) {
+        date_summary <- merge(
+          date_summary,
+          layover_agg,
+          by = c(grouping_col, "Origin"),
+          all.x = TRUE
+        )
+      }
     }
 
     if ("travel_time" %in% names(flight_results)) {
       # For travel_time, take the most common value
-      travel_agg <- stats::aggregate(
-        stats::as.formula(paste("travel_time ~", grouping_col, "+ Origin")),
-        data = flight_results,
-        FUN = function(x) {
-          x <- x[!is.na(x)]
-          if (length(x) == 0) {
-            return(NA_character_)
-          }
-          names(sort(table(x), decreasing = TRUE))[1]
-        }
+      travel_agg <- tryCatch(
+        {
+          stats::aggregate(
+            stats::as.formula(paste("travel_time ~", grouping_col, "+ Origin")),
+            data = flight_results,
+            FUN = function(x) {
+              x <- x[!is.na(x)]
+              if (length(x) == 0) {
+                return(NA_character_)
+              }
+              names(sort(table(x), decreasing = TRUE))[1]
+            }
+          )
+        },
+        error = function(e) NULL
       )
-      date_summary <- merge(
-        date_summary,
-        travel_agg,
-        by = c(grouping_col, "Origin"),
-        all.x = TRUE
-      )
+      if (!is.null(travel_agg)) {
+        date_summary <- merge(
+          date_summary,
+          travel_agg,
+          by = c(grouping_col, "Origin"),
+          all.x = TRUE
+        )
+      }
     }
 
     if ("co2_emission_kg" %in% names(flight_results)) {
-      emissions_agg <- stats::aggregate(
-        stats::as.formula(paste("co2_emission_kg ~", grouping_col, "+ Origin")),
-        data = flight_results,
-        FUN = function(x) round(mean(x, na.rm = TRUE), 0)
+      emissions_agg <- tryCatch(
+        {
+          stats::aggregate(
+            stats::as.formula(paste("co2_emission_kg ~", grouping_col, "+ Origin")),
+            data = flight_results,
+            FUN = function(x) round(mean(x, na.rm = TRUE), 0)
+          )
+        },
+        error = function(e) NULL
       )
-      date_summary <- merge(
-        date_summary,
-        emissions_agg,
-        by = c(grouping_col, "Origin"),
-        all.x = TRUE
-      )
+      if (!is.null(emissions_agg)) {
+        date_summary <- merge(
+          date_summary,
+          emissions_agg,
+          by = c(grouping_col, "Origin"),
+          all.x = TRUE
+        )
+      }
     }
 
     if ("airlines" %in% names(flight_results)) {
       # For airlines, take the most common value
-      airlines_agg <- stats::aggregate(
-        stats::as.formula(paste("airlines ~", grouping_col, "+ Origin")),
-        data = flight_results,
-        FUN = function(x) {
-          x <- x[!is.na(x)]
-          if (length(x) == 0) {
-            return(NA_character_)
-          }
-          names(sort(table(x), decreasing = TRUE))[1]
-        }
+      airlines_agg <- tryCatch(
+        {
+          stats::aggregate(
+            stats::as.formula(paste("airlines ~", grouping_col, "+ Origin")),
+            data = flight_results,
+            FUN = function(x) {
+              x <- x[!is.na(x)]
+              if (length(x) == 0) {
+                return(NA_character_)
+              }
+              names(sort(table(x), decreasing = TRUE))[1]
+            }
+          )
+        },
+        error = function(e) NULL
       )
-      date_summary <- merge(
-        date_summary,
-        airlines_agg,
-        by = c(grouping_col, "Origin"),
-        all.x = TRUE
-      )
+      if (!is.null(airlines_agg)) {
+        date_summary <- merge(
+          date_summary,
+          airlines_agg,
+          by = c(grouping_col, "Origin"),
+          all.x = TRUE
+        )
+      }
     }
 
     # Count number of routes per datetime/date (total across all origins)
@@ -366,91 +401,126 @@ fa_find_best_dates <- function(
 
     # Add additional information columns if available
     if ("num_stops" %in% names(flight_results)) {
-      stops_agg <- stats::aggregate(
-        stats::as.formula(paste("num_stops ~", grouping_col)),
-        data = flight_results,
-        FUN = function(x) round(mean(x, na.rm = TRUE), 1)
+      stops_agg <- tryCatch(
+        {
+          stats::aggregate(
+            stats::as.formula(paste("num_stops ~", grouping_col)),
+            data = flight_results,
+            FUN = function(x) round(mean(x, na.rm = TRUE), 1)
+          )
+        },
+        error = function(e) NULL
       )
-      date_summary <- merge(
-        date_summary,
-        stops_agg,
-        by = grouping_col,
-        all.x = TRUE
-      )
+      if (!is.null(stops_agg)) {
+        date_summary <- merge(
+          date_summary,
+          stops_agg,
+          by = grouping_col,
+          all.x = TRUE
+        )
+      }
     }
 
     if ("layover" %in% names(flight_results)) {
-      layover_agg <- stats::aggregate(
-        stats::as.formula(paste("layover ~", grouping_col)),
-        data = flight_results,
-        FUN = function(x) {
-          x <- x[!is.na(x) & x != "NA"]
-          if (length(x) == 0) {
-            return(NA_character_)
-          }
-          names(sort(table(x), decreasing = TRUE))[1]
-        }
+      layover_agg <- tryCatch(
+        {
+          stats::aggregate(
+            stats::as.formula(paste("layover ~", grouping_col)),
+            data = flight_results,
+            FUN = function(x) {
+              x <- x[!is.na(x) & x != "NA"]
+              if (length(x) == 0) {
+                return(NA_character_)
+              }
+              names(sort(table(x), decreasing = TRUE))[1]
+            }
+          )
+        },
+        error = function(e) NULL
       )
-      date_summary <- merge(
-        date_summary,
-        layover_agg,
-        by = grouping_col,
-        all.x = TRUE
-      )
+      if (!is.null(layover_agg)) {
+        date_summary <- merge(
+          date_summary,
+          layover_agg,
+          by = grouping_col,
+          all.x = TRUE
+        )
+      }
     }
 
     if ("travel_time" %in% names(flight_results)) {
-      travel_agg <- stats::aggregate(
-        stats::as.formula(paste("travel_time ~", grouping_col)),
-        data = flight_results,
-        FUN = function(x) {
-          x <- x[!is.na(x)]
-          if (length(x) == 0) {
-            return(NA_character_)
-          }
-          names(sort(table(x), decreasing = TRUE))[1]
-        }
+      travel_agg <- tryCatch(
+        {
+          stats::aggregate(
+            stats::as.formula(paste("travel_time ~", grouping_col)),
+            data = flight_results,
+            FUN = function(x) {
+              x <- x[!is.na(x)]
+              if (length(x) == 0) {
+                return(NA_character_)
+              }
+              names(sort(table(x), decreasing = TRUE))[1]
+            }
+          )
+        },
+        error = function(e) NULL
       )
-      date_summary <- merge(
-        date_summary,
-        travel_agg,
-        by = grouping_col,
-        all.x = TRUE
-      )
+      if (!is.null(travel_agg)) {
+        date_summary <- merge(
+          date_summary,
+          travel_agg,
+          by = grouping_col,
+          all.x = TRUE
+        )
+      }
     }
 
     if ("co2_emission_kg" %in% names(flight_results)) {
-      emissions_agg <- stats::aggregate(
-        stats::as.formula(paste("co2_emission_kg ~", grouping_col)),
-        data = flight_results,
-        FUN = function(x) round(mean(x, na.rm = TRUE), 0)
+      emissions_agg <- tryCatch(
+        {
+          stats::aggregate(
+            stats::as.formula(paste("co2_emission_kg ~", grouping_col)),
+            data = flight_results,
+            FUN = function(x) round(mean(x, na.rm = TRUE), 0)
+          )
+        },
+        error = function(e) NULL
       )
-      date_summary <- merge(
-        date_summary,
-        emissions_agg,
-        by = grouping_col,
-        all.x = TRUE
-      )
+      if (!is.null(emissions_agg)) {
+        date_summary <- merge(
+          date_summary,
+          emissions_agg,
+          by = grouping_col,
+          all.x = TRUE
+        )
+      }
     }
 
     if ("airlines" %in% names(flight_results)) {
-      airlines_agg <- stats::aggregate(
-        stats::as.formula(paste("airlines ~", grouping_col)),
-        data = flight_results,
-        FUN = function(x) {
-          x <- x[!is.na(x)]
-          if (length(x) == 0) {
-            return(NA_character_)
-          }
-          names(sort(table(x), decreasing = TRUE))[1]
-        }
+      airlines_agg <- tryCatch(
+        {
+          stats::aggregate(
+            stats::as.formula(paste("airlines ~", grouping_col)),
+            data = flight_results,
+            FUN = function(x) {
+              x <- x[!is.na(x)]
+              if (length(x) == 0) {
+                return(NA_character_)
+              }
+              names(sort(table(x), decreasing = TRUE))[1]
+            }
+          )
+        },
+        error = function(e) NULL
       )
-      date_summary <- merge(
-        date_summary,
-        airlines_agg,
-        by = grouping_col,
-        all.x = TRUE
-      )
+      if (!is.null(airlines_agg)) {
+        date_summary <- merge(
+          date_summary,
+          airlines_agg,
+          by = grouping_col,
+          all.x = TRUE
+        )
+      }
     }
 
     # Count number of routes per datetime/date
