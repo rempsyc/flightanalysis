@@ -23,12 +23,12 @@ round-trip, chain-trip, and perfect-chain trip types.
 \examples{
 \dontrun{
 # One-way trip
-query1 <- fa_define_query("JFK", "BOS", "2025-12-20")
+fa_define_query("JFK", "BOS", "2025-12-20")
 
 # Round-trip
-query2 <- fa_define_query("JFK", "YUL", "2025-12-20", "2025-12-25")
+fa_define_query("JFK", "YUL", "2025-12-20", "2025-12-25")
 
 # Chain-trip
-query3 <- fa_define_query("JFK", "YYZ", "2025-12-20", "RDU", "LGA", "2025-12-25")
+fa_define_query("JFK", "YYZ", "2025-12-20", "RDU", "LGA", "2025-12-25")
 }
 }

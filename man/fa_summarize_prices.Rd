@@ -47,7 +47,7 @@ Filters flights departing at or before this time. Default is NULL (no filter).}
 
 \item{price_max}{Numeric. Maximum price. Default is NULL (no filter).}
 
-\item{travel_time_max}{Numeric or character. Maximum travel time. 
+\item{travel_time_max}{Numeric or character. Maximum travel time.
 If numeric, interpreted as hours. If character, use format "XX hr XX min".
 Default is NULL (no filter).}
 
@@ -73,11 +73,9 @@ travel time, stops, and emissions.
 \examples{
 \dontrun{
 # Basic usage
-queries <- fa_create_date_range(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
-for (code in names(queries)) {
-  queries[[code]] <- fa_fetch_flights(queries[[code]])
-}
-summary_table <- fa_summarize_prices(queries)
+queries <- fa_create_date_range(c("BOM", "DEL"), "JFK", "2025-12-28", "2026-01-02")
+flights <- fa_fetch_flights(queries)
+fa_summarize_prices(flights)
 
 # With filters
 summary_table <- fa_summarize_prices(

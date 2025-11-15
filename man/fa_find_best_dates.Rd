@@ -43,7 +43,7 @@ Filters flights departing at or before this time. Default is NULL (no filter).}
 
 \item{price_max}{Numeric. Maximum price. Default is NULL (no filter).}
 
-\item{travel_time_max}{Numeric or character. Maximum travel time. 
+\item{travel_time_max}{Numeric or character. Maximum travel time.
 If numeric, interpreted as hours. If character, use format "XX hr XX min".
 Default is NULL (no filter).}
 
@@ -56,7 +56,7 @@ Default is NULL (no filter).}
 }
 \value{
 A data frame with columns: departure_date, departure_time (or date if datetime not available),
-  origin, price (average/median/min), n_routes, num_stops, layover, travel_time, 
+  origin, price (average/median/min), n_routes, num_stops, layover, travel_time,
   co2_emission_kg, and airlines. All column names are lowercase.
   Sorted by price (cheapest first). Additional columns are aggregated using
   mean/median for numeric values and most common value for categorical.
@@ -70,17 +70,15 @@ such as departure time, airlines, travel time, stops, and emissions.
 \examples{
 \dontrun{
 # Basic usage
-queries <- fa_create_date_range(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
-for (code in names(queries)) {
-  queries[[code]] <- fa_fetch_flights(queries[[code]])
-}
-best_dates <- fa_find_best_dates(queries, n = 5, by = "min")
+queries <- fa_create_date_range(c("BOM", "DEL"), "JFK", "2025-12-28", "2026-01-02")
+flights <- fa_fetch_flights(queries)
+fa_find_best_dates(flights, n = 5, by = "min")
 
 # With filters
-best_dates <- fa_find_best_dates(
-  queries, 
-  n = 5, 
-  time_min = "08:00", 
+fa_find_best_dates(
+  flights,
+  n = 5,
+  time_min = "08:00",
   time_max = "20:00",
   max_stops = 1,
   max_emissions = 500

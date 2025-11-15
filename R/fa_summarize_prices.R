@@ -25,7 +25,7 @@
 #' @param airlines Character vector. Filter by specific airlines. Default is NULL (no filter).
 #' @param price_min Numeric. Minimum price. Default is NULL (no filter).
 #' @param price_max Numeric. Maximum price. Default is NULL (no filter).
-#' @param travel_time_max Numeric or character. Maximum travel time. 
+#' @param travel_time_max Numeric or character. Maximum travel time.
 #'   If numeric, interpreted as hours. If character, use format "XX hr XX min".
 #'   Default is NULL (no filter).
 #' @param max_stops Integer. Maximum number of stops. Default is NULL (no filter).
@@ -41,11 +41,9 @@
 #' @examples
 #' \dontrun{
 #' # Basic usage
-#' queries <- fa_create_date_range(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
-#' for (code in names(queries)) {
-#'   queries[[code]] <- fa_fetch_flights(queries[[code]])
-#' }
-#' summary_table <- fa_summarize_prices(queries)
+#' queries <- fa_create_date_range(c("BOM", "DEL"), "JFK", "2025-12-28", "2026-01-02")
+#' flights <- fa_fetch_flights(queries)
+#' fa_summarize_prices(flights)
 #'
 #' # With filters
 #' summary_table <- fa_summarize_prices(
@@ -104,67 +102,90 @@ fa_summarize_prices <- function(
       paste(required_cols, collapse = ", ")
     ))
   }
-  
+
   # Rename Airport to Origin for consistency
   names(results)[names(results) == "Airport"] <- "Origin"
 
   # Apply filters (same as fa_find_best_dates)
   if (!is.null(time_min) && "departure_datetime" %in% names(results)) {
-    time_min_parsed <- as.POSIXct(paste("1970-01-01", time_min), format = "%Y-%m-%d %H:%M")
-    results <- results[format(results$departure_datetime, "%H:%M") >= format(time_min_parsed, "%H:%M"), ]
+    time_min_parsed <- as.POSIXct(
+      paste("1970-01-01", time_min),
+      format = "%Y-%m-%d %H:%M"
+    )
+    results <- results[
+      format(results$departure_datetime, "%H:%M") >=
+        format(time_min_parsed, "%H:%M"),
+    ]
   }
-  
+
   if (!is.null(time_max) && "departure_datetime" %in% names(results)) {
-    time_max_parsed <- as.POSIXct(paste("1970-01-01", time_max), format = "%Y-%m-%d %H:%M")
-    results <- results[format(results$departure_datetime, "%H:%M") <= format(time_max_parsed, "%H:%M"), ]
+    time_max_parsed <- as.POSIXct(
+      paste("1970-01-01", time_max),
+      format = "%Y-%m-%d %H:%M"
+    )
+    results <- results[
+      format(results$departure_datetime, "%H:%M") <=
+        format(time_max_parsed, "%H:%M"),
+    ]
   }
-  
+
   if (!is.null(airlines) && "airlines" %in% names(results)) {
     airline_filter <- sapply(results$airlines, function(x) {
       any(sapply(airlines, function(a) grepl(a, x, ignore.case = TRUE)))
     })
     results <- results[airline_filter, ]
   }
-  
+
   if (!is.null(price_min)) {
     results <- results[results$Price >= price_min, ]
   }
-  
+
   if (!is.null(price_max)) {
     results <- results[results$Price <= price_max, ]
   }
-  
+
   if (!is.null(travel_time_max) && "travel_time" %in% names(results)) {
     # Parse travel time using helper function
-    results$travel_time_minutes <- sapply(results$travel_time, parse_time_to_minutes)
-    
+    results$travel_time_minutes <- sapply(
+      results$travel_time,
+      parse_time_to_minutes
+    )
+
     # Convert travel_time_max to minutes using helper function
     max_minutes <- parse_time_to_minutes(travel_time_max)
-    
-    results <- results[!is.na(results$travel_time_minutes) & results$travel_time_minutes <= max_minutes, ]
+
+    results <- results[
+      !is.na(results$travel_time_minutes) &
+        results$travel_time_minutes <= max_minutes,
+    ]
     results$travel_time_minutes <- NULL
   }
-  
+
   if (!is.null(max_stops) && "num_stops" %in% names(results)) {
     results <- results[results$num_stops <= max_stops, ]
   }
-  
+
   if (!is.null(max_layover) && "layover" %in% names(results)) {
     # Parse layover time using helper function (treat NA/empty as 0)
     results$layover_minutes <- sapply(results$layover, function(x) {
-      if (is.na(x) || x == "NA") return(0)
+      if (is.na(x) || x == "NA") {
+        return(0)
+      }
       parse_time_to_minutes(x)
     })
-    
+
     # Parse max_layover as a single string
     max_layover_minutes <- parse_time_to_minutes(max_layover)
-    
+
     results <- results[results$layover_minutes <= max_layover_minutes, ]
     results$layover_minutes <- NULL
   }
-  
+
   if (!is.null(max_emissions) && "co2_emission_kg" %in% names(results)) {
-    results <- results[!is.na(results$co2_emission_kg) & results$co2_emission_kg <= max_emissions, ]
+    results <- results[
+      !is.na(results$co2_emission_kg) &
+        results$co2_emission_kg <= max_emissions,
+    ]
   }
 
   # Check if we have any data after filtering
@@ -268,11 +289,11 @@ fa_summarize_prices <- function(
   best_row[1, ] <- NA
   best_row$City <- "Best"
   best_row$Origin <- "Best"
-  
+
   if ("Comment" %in% names(best_row)) {
     best_row$Comment <- ""
   }
-  
+
   # For each date column, check if it has the minimum price
   for (col in date_names_sorted) {
     if (col %in% names(wide_data)) {
@@ -289,7 +310,7 @@ fa_summarize_prices <- function(
       best_row[[col]] <- ifelse(any(is_min), "X", "")
     }
   }
-  
+
   # Average_Price column should be empty for Best row
   best_row$Average_Price <- ""
 
@@ -309,7 +330,7 @@ fa_summarize_prices <- function(
       wide_data[[col]] <- formatted_vals
     }
   }
-  
+
   # Append the "Best" row at the bottom
   wide_data <- rbind(wide_data, best_row)
   rownames(wide_data) <- NULL
