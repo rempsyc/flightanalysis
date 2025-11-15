@@ -43,7 +43,7 @@ filter_placeholder_rows <- function(data) {
 #' Internal helper that extracts data from query objects (single or list),
 #' filters placeholder rows, and formats for use with fa_summarize_prices and fa_find_best_dates.
 #'
-#' @param scrapes A single query object or a named list of query objects
+#' @param scrapes A single query object, a flight_results object, or a named list of query objects
 #'
 #' @return A data frame with columns: Airport, Date, Price, City (if named list), 
 #'   and additional columns: departure_datetime, airlines, travel_time, num_stops, 
@@ -51,6 +51,13 @@ filter_placeholder_rows <- function(data) {
 #'
 #' @keywords internal
 extract_data_from_scrapes <- function(scrapes) {
+  # Handle flight_results objects - use the merged data and query structure
+  if (inherits(scrapes, "flight_results")) {
+    # Extract the list of queries (excluding the $data element)
+    query_list <- scrapes[setdiff(names(scrapes), "data")]
+    scrapes <- query_list
+  }
+  
   # Ensure we have a list
   if (inherits(scrapes, "flight_query")) {
     # For single query object, try to extract origin from the data

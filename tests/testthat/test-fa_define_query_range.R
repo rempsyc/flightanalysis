@@ -1,29 +1,11 @@
-test_that("fa_create_date_range is deprecated but still works", {
-  # Test that the deprecated function shows a warning
-  expect_warning(
-    query <- fa_create_date_range(
-      origin = "BOM",
-      dest = "JFK",
-      date_min = "2025-12-18",
-      date_max = "2025-12-20"
-    ),
-    "deprecated"
-  )
-  
-  # But still returns a valid query object
-  expect_true(inherits(query, "flight_query") || inherits(query, "Scrape"))
-})
-
-test_that("fa_create_date_range creates valid query object for single origin", {
+test_that("fa_define_query_range creates valid query object for single origin", {
   # Single origin - should return one query object
-  suppressWarnings({
-    query <- fa_create_date_range(
-      origin = "BOM",
-      dest = "JFK",
-      date_min = "2025-12-18",
-      date_max = "2025-12-20"
-    )
-  })
+  query <- fa_define_query_range(
+    origin = "BOM",
+    dest = "JFK",
+    date_min = "2025-12-18",
+    date_max = "2025-12-20"
+  )
 
   # Check it's a query object
   expect_true(inherits(query, "flight_query") || inherits(query, "Scrape"))
@@ -47,16 +29,14 @@ test_that("fa_create_date_range creates valid query object for single origin", {
   expect_true(all(dates == sort(dates)))
 })
 
-test_that("fa_create_date_range creates list for multiple origins", {
+test_that("fa_define_query_range creates list for multiple origins", {
   # Multiple origins - should return list of query objects
-  suppressWarnings({
-    queries <- fa_create_date_range(
-      origin = c("BOM", "DEL"),
-      dest = "JFK",
-      date_min = "2025-12-18",
-      date_max = "2025-12-20"
-    )
-  })
+  queries <- fa_define_query_range(
+    origin = c("BOM", "DEL"),
+    dest = "JFK",
+    date_min = "2025-12-18",
+    date_max = "2025-12-20"
+  )
 
   # Check it's a list
   expect_true(is.list(queries))
@@ -91,31 +71,27 @@ test_that("fa_create_date_range creates list for multiple origins", {
   expect_true(all(del_dates == sort(del_dates)))
 })
 
-test_that("fa_create_date_range validates inputs", {
+test_that("fa_define_query_range validates inputs", {
   # Invalid airport code
-  suppressWarnings({
-    expect_error(
-      fa_create_date_range(
-        origin = c("BO"),
-        dest = "JFK",
-        date_min = "2025-12-18",
-        date_max = "2025-12-20"
-      ),
-      "All airport codes must be 3 characters"
-    )
-  })
+  expect_error(
+    fa_define_query_range(
+      origin = c("BO"),
+      dest = "JFK",
+      date_min = "2025-12-18",
+      date_max = "2025-12-20"
+    ),
+    "All airport codes must be 3 characters"
+  )
 
   # Invalid date order
-  suppressWarnings({
-    expect_error(
-      fa_create_date_range(
-        origin = "BOM",
-        dest = "JFK",
-        date_min = "2025-12-20",
-        date_max = "2025-12-18"
-      ),
-      "date_min must be before or equal to date_max"
-    )
-  })
+  expect_error(
+    fa_define_query_range(
+      origin = "BOM",
+      dest = "JFK",
+      date_min = "2025-12-20",
+      date_max = "2025-12-18"
+    ),
+    "date_min must be before or equal to date_max"
+  )
 })
 
