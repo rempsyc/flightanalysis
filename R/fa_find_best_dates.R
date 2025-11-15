@@ -31,10 +31,12 @@
 #' @param max_emissions Numeric. Maximum CO2 emissions in kg. Default is NULL (no filter).
 #'
 #' @return A data frame with columns: departure_date, departure_time (or date if datetime not available),
-#'   arrival_date, arrival_time, origin, price (average/median/min), n_routes, num_stops, layover, 
-#'   travel_time, co2_emission_kg, and airlines. All column names are lowercase.
+#'   origin, price (average/median/min), n_routes, num_stops, layover, 
+#'   travel_time, co2_emission_kg, airlines, arrival_date, arrival_time. All column names are lowercase.
 #'   Returns the top N dates with best (lowest) prices, sorted by departure time for display.
 #'   Additional columns are aggregated using mean/median for numeric values and most common value for categorical.
+#'   Note: arrival_date and arrival_time represent the most common values when multiple flights are aggregated
+#'   and may not correspond exactly to the specific departure times shown.
 #'
 #' @export
 #'
@@ -131,7 +133,7 @@ fa_find_best_dates <- function(
   required_cols <- c("Date", "Price")
   if (!all(required_cols %in% names(flight_results))) {
     stop(sprintf(
-      "flight_results must contain columns: %s (or lowercase equivalents: date/departure_datetime, price)",
+      "flight_results must contain columns: %s (or lowercase equivalents: departure_date/departure_datetime, price)",
       paste(required_cols, collapse = ", ")
     ))
   }
@@ -742,21 +744,17 @@ fa_find_best_dates <- function(
     date_summary <- date_summary[order(date_summary$date), ]
   }
 
-  # Reorder columns to put departure_date and departure_time first
+  # Reorder columns to put departure and arrival date/time first as documented
   if (
     "departure_date" %in%
       names(date_summary) &&
       "departure_time" %in% names(date_summary)
   ) {
-    other_cols <- setdiff(
-      names(date_summary),
-      c("departure_date", "departure_time")
-    )
-    date_summary <- date_summary[, c(
-      "departure_date",
-      "departure_time",
-      other_cols
-    )]
+    # Define preferred column order
+    priority_cols <- c("departure_date", "departure_time", "arrival_date", "arrival_time")
+    existing_priority <- intersect(priority_cols, names(date_summary))
+    other_cols <- setdiff(names(date_summary), priority_cols)
+    date_summary <- date_summary[, c(existing_priority, other_cols)]
   }
 
   rownames(date_summary) <- NULL

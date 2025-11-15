@@ -140,7 +140,7 @@ fa_summarize_prices <- function(
   required_cols <- c("Date", "Price")
   if (!all(required_cols %in% names(flight_results))) {
     stop(sprintf(
-      "flight_results must contain columns: %s (or lowercase equivalents: date/departure_date/departure_datetime, price)",
+      "flight_results must contain columns: %s (or lowercase equivalents: departure_date/departure_datetime, price)",
       paste(required_cols, collapse = ", ")
     ))
   }
