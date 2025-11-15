@@ -1,7 +1,7 @@
 # Sample Multiple Origin Queries
 
 Sample query objects for multiple origins created with
-\`fa_create_date_range()\`. Demonstrates searching multiple airports
+\`fa_define_query_range()\`. Demonstrates searching multiple airports
 over a date range.
 
 ## Usage

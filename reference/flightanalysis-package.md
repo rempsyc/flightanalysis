@@ -30,7 +30,7 @@ and collect data regarding flights and prices. Current features include:
 
   Execute flight queries (requires chromote)
 
-- [`fa_create_date_range`](https://rempsyc.github.io/flightanalysis/reference/fa_create_date_range.md):
+- [`fa_define_query_range`](https://rempsyc.github.io/flightanalysis/reference/fa_define_query_range.md):
 
   Create queries for flexible date search
 

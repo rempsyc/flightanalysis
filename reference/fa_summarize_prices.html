@@ -17,7 +17,7 @@ travel time, stops, and emissions."><meta property="og:image" content="https://r
 
     <a class="navbar-brand me-2" href="../index.html">flightanalysis</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,7 +54,7 @@ travel time, stops, and emissions.</p>
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fa_summarize_prices</span><span class="op">(</span></span>
-<span>  <span class="va">results</span>,</span>
+<span>  <span class="va">flight_results</span>,</span>
 <span>  include_comment <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  currency_symbol <span class="op">=</span> <span class="st">"$"</span>,</span>
 <span>  round_prices <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -74,11 +74,12 @@ travel time, stops, and emissions.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-results">results<a class="anchor" aria-label="anchor" href="#arg-results"></a></dt>
+<dl><dt id="arg-flight-results">flight_results<a class="anchor" aria-label="anchor" href="#arg-flight-results"></a></dt>
 <dd><p>Either:
 - A data frame with columns: City, Airport, Date, Price, and optionally Comment (Airport will be renamed to Origin)
-- A list of flight queries (from fa_create_date_range with multiple origins)
-- A single flight query (from fa_create_date_range with single origin)</p></dd>
+- A flight_results object (from fa_fetch_flights with multiple origins)
+- A list of flight queries (from fa_define_query_range with multiple origins)
+- A single flight query (from fa_define_query_range with single origin)</p></dd>
 
 
 <dt id="arg-include-comment">include_comment<a class="anchor" aria-label="anchor" href="#arg-include-comment"></a></dt>
@@ -145,20 +146,29 @@ Default is NULL (no filter).</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="co"># Basic usage</span></span></span>
-<span class="r-in"><span><span class="va">queries</span> <span class="op">&lt;-</span> <span class="fu"><a href="fa_create_date_range.html">fa_create_date_range</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BOM"</span>, <span class="st">"DEL"</span><span class="op">)</span>, <span class="st">"JFK"</span>, <span class="st">"2025-12-28"</span>, <span class="st">"2026-01-02"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">flights</span> <span class="op">&lt;-</span> <span class="fu"><a href="fa_fetch_flights.html">fa_fetch_flights</a></span><span class="op">(</span><span class="va">queries</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">fa_summarize_prices</span><span class="op">(</span><span class="va">flights</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Using sample data</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">sample_query</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">sample_flights</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Attach flight data to query object</span></span></span>
+<span class="r-in"><span><span class="va">sample_query</span><span class="op">$</span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">sample_flights</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Create summary table</span></span></span>
+<span class="r-in"><span><span class="fu">fa_summarize_prices</span><span class="op">(</span><span class="va">sample_query</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       City Origin 2025-12-20 2025-12-21 2025-12-27 Average_Price</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 New York    JFK       $650       $580       &lt;NA&gt;          $615</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 Istanbul    IST       &lt;NA&gt;       &lt;NA&gt;       $620          $620</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3     Best    Day                     X                         </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># With filters</span></span></span>
-<span class="r-in"><span><span class="va">summary_table</span> <span class="op">&lt;-</span> <span class="fu">fa_summarize_prices</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">queries</span>,</span></span>
-<span class="r-in"><span>  time_min <span class="op">=</span> <span class="st">"08:00"</span>,</span></span>
-<span class="r-in"><span>  time_max <span class="op">=</span> <span class="st">"20:00"</span>,</span></span>
-<span class="r-in"><span>  max_stops <span class="op">=</span> <span class="fl">1</span></span></span>
+<span class="r-in"><span><span class="fu">fa_summarize_prices</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">sample_query</span>,</span></span>
+<span class="r-in"><span>  max_stops <span class="op">=</span> <span class="fl">0</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       City Origin 2025-12-20 2025-12-27 Average_Price</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 New York    JFK       $650       &lt;NA&gt;          $650</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 Istanbul    IST       &lt;NA&gt;       $620          $620</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3     Best    Day                     X              </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

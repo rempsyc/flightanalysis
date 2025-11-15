@@ -25,14 +25,23 @@ A flight query object (S3 class "flight_query")
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
 # One-way trip
 fa_define_query("JFK", "BOS", "2025-12-20")
+#> Flight Query( {Not Yet Fetched}
+#> 2025-12-20: JFK --> BOS
+#> )
 
 # Round-trip
 fa_define_query("JFK", "YUL", "2025-12-20", "2025-12-25")
+#> Flight Query( {Not Yet Fetched}
+#> 2025-12-20: JFK --> YUL
+#> 2025-12-25: YUL --> JFK
+#> )
 
 # Chain-trip
 fa_define_query("JFK", "YYZ", "2025-12-20", "RDU", "LGA", "2025-12-25")
-} # }
+#> Flight Query( {Not Yet Fetched}
+#> 2025-12-20: JFK --> YYZ
+#> 2025-12-25: RDU --> LGA
+#> )
 ```

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">flightanalysis</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,19 +32,73 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.1.0" id="flightanalysis-210-development">flightanalysis 2.1.0 (Development)<a class="anchor" aria-label="anchor" href="#flightanalysis-210-development"></a></h2>
+<div class="section level3">
+<h3 id="api-improvements-2-1-0">API Improvements<a class="anchor" aria-label="anchor" href="#api-improvements-2-1-0"></a></h3>
+<div class="section level4">
+<h4 id="breaking-changes-2-1-0">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-2-1-0"></a></h4>
+<ul><li>
+<strong>Function Rename</strong>: <code>fa_create_date_range()</code> has been renamed to <code><a href="../reference/fa_define_query_range.html">fa_define_query_range()</a></code> for consistency with <code><a href="../reference/fa_define_query.html">fa_define_query()</a></code>. The old function has been removed.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="new-features-2-1-0">New Features<a class="anchor" aria-label="anchor" href="#new-features-2-1-0"></a></h4>
+<ul><li>
+<strong>flight_results Class</strong>: When fetching data for multiple queries (e.g., from <code><a href="../reference/fa_define_query_range.html">fa_define_query_range()</a></code>), <code><a href="../reference/fa_fetch_flights.html">fa_fetch_flights()</a></code> now returns a <code>flight_results</code> object that:
+<ul><li>Contains a merged <code>$data</code> field with all flight data accessible directly</li>
+<li>Preserves individual query objects as named elements (e.g., <code>$BOM</code>, <code>$DEL</code>)</li>
+<li>Has a dedicated print method for better display</li>
+</ul></li>
+</ul></div>
+<div class="section level4">
+<h4 id="enhancements-2-1-0">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-2-1-0"></a></h4>
+<ul><li>
+<strong>Parameter Renaming</strong>: <code><a href="../reference/fa_summarize_prices.html">fa_summarize_prices()</a></code> and <code><a href="../reference/fa_find_best_dates.html">fa_find_best_dates()</a></code> now use <code>flight_results</code> as the parameter name instead of <code>results</code> for clarity and type safety</li>
+<li>
+<strong>Improved Documentation</strong>: Updated all examples and documentation to use the new function names</li>
+<li>
+<strong>Better Data Access</strong>: No need to manually merge data from multiple origins - access unified data via <code>flights$data</code> directly</li>
+</ul></div>
+<div class="section level4">
+<h4 id="example-2-1-0">Example<a class="anchor" aria-label="anchor" href="#example-2-1-0"></a></h4>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Create queries for multiple origins</span></span>
+<span><span class="va">queries</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fa_define_query_range.html">fa_define_query_range</a></span><span class="op">(</span></span>
+<span>  origin <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BOM"</span>, <span class="st">"DEL"</span><span class="op">)</span>,</span>
+<span>  dest <span class="op">=</span> <span class="st">"JFK"</span>,</span>
+<span>  date_min <span class="op">=</span> <span class="st">"2025-12-18"</span>,</span>
+<span>  date_max <span class="op">=</span> <span class="st">"2025-12-22"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Fetch data - returns flight_results object with merged data</span></span>
+<span><span class="va">flights</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fa_fetch_flights.html">fa_fetch_flights</a></span><span class="op">(</span><span class="va">queries</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Access merged data directly</span></span>
+<span><span class="va">flights</span><span class="op">$</span><span class="va">data</span></span>
+<span></span>
+<span><span class="co"># Or access individual origin data</span></span>
+<span><span class="va">flights</span><span class="op">$</span><span class="va">BOM</span><span class="op">$</span><span class="va">data</span></span>
+<span><span class="va">flights</span><span class="op">$</span><span class="va">DEL</span><span class="op">$</span><span class="va">data</span></span>
+<span></span>
+<span><span class="co"># Use with analysis functions</span></span>
+<span><span class="fu"><a href="../reference/fa_summarize_prices.html">fa_summarize_prices</a></span><span class="op">(</span><span class="va">flights</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/fa_find_best_dates.html">fa_find_best_dates</a></span><span class="op">(</span><span class="va">flights</span>, n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.0.0" id="flightanalysis-200">flightanalysis 2.0.0<a class="anchor" aria-label="anchor" href="#flightanalysis-200"></a></h2>
 <div class="section level3">
 <h3 id="major-api-redesign-2-0-0">Major API Redesign<a class="anchor" aria-label="anchor" href="#major-api-redesign-2-0-0"></a></h3>
 <p>This release represents a complete redesign of the package API following Tidyverse conventions with consistent <code>fa_</code> prefixing for all user-facing functions.</p>
 <div class="section level4">
 <h4 id="core-functions-2-0-0">Core Functions<a class="anchor" aria-label="anchor" href="#core-functions-2-0-0"></a></h4>
-<p><strong>Query Creation:</strong> - <code><a href="../reference/fa_define_query.html">fa_define_query()</a></code> - Create flight query objects for one-way, round-trip, chain-trip, or perfect-chain searches - <code><a href="../reference/fa_create_date_range.html">fa_create_date_range()</a></code> - Create query objects for multiple origins and dates</p>
+<p><strong>Query Creation:</strong> - <code><a href="../reference/fa_define_query.html">fa_define_query()</a></code> - Create flight query objects for one-way, round-trip, chain-trip, or perfect-chain searches - <code><a href="../reference/fa_define_query_range.html">fa_define_query_range()</a></code> - Create query objects for multiple origins and dates</p>
 <p><strong>Data Fetching:</strong> - <code><a href="../reference/fa_fetch_flights.html">fa_fetch_flights()</a></code> - Fetch flight data from Google Flights using chromote</p>
 <p><strong>Analysis Functions:</strong> - <code><a href="../reference/fa_summarize_prices.html">fa_summarize_prices()</a></code> - Create wide summary table showing prices by city/airport and date - <code><a href="../reference/fa_find_best_dates.html">fa_find_best_dates()</a></code> - Identify cheapest travel dates across routes</p>
 </div>
 <div class="section level4">
 <h4 id="example-usage-2-0-0">Example Usage<a class="anchor" aria-label="anchor" href="#example-usage-2-0-0"></a></h4>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rempsyc/flightanalysis" class="external-link">flightanalysis</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Create a query</span></span>
@@ -59,9 +113,9 @@
 </div>
 <div class="section level4">
 <h4 id="date-range-search-2-0-0">Date Range Search<a class="anchor" aria-label="anchor" href="#date-range-search-2-0-0"></a></h4>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Search multiple origins over a date range</span></span>
-<span><span class="va">queries</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fa_create_date_range.html">fa_create_date_range</a></span><span class="op">(</span></span>
+<span><span class="va">queries</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fa_define_query_range.html">fa_define_query_range</a></span><span class="op">(</span></span>
 <span>  origin <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BOM"</span>, <span class="st">"DEL"</span>, <span class="st">"VNS"</span><span class="op">)</span>,</span>
 <span>  dest <span class="op">=</span> <span class="st">"JFK"</span>,</span>
 <span>  date_min <span class="op">=</span> <span class="st">"2025-12-18"</span>,</span>
@@ -85,7 +139,7 @@
 <h4 id="package-organization-2-0-0">Package Organization<a class="anchor" aria-label="anchor" href="#package-organization-2-0-0"></a></h4>
 <ul><li>Functions organized by purpose:
 <ul><li>
-<code>fa_create_date_range.R</code> - Date range query creation</li>
+<code>fa_define_query_range.R</code> - Date range query creation</li>
 <li>
 <code>fa_summarize_prices.R</code> - Price summary tables</li>
 <li>

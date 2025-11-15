@@ -1,5 +1,69 @@
 # Changelog
 
+## flightanalysis 2.1.0 (Development)
+
+### API Improvements
+
+#### Breaking Changes
+
+- **Function Rename**: `fa_create_date_range()` has been renamed to
+  [`fa_define_query_range()`](https://rempsyc.github.io/flightanalysis/reference/fa_define_query_range.md)
+  for consistency with
+  [`fa_define_query()`](https://rempsyc.github.io/flightanalysis/reference/fa_define_query.md).
+  The old function has been removed.
+
+#### New Features
+
+- **flight_results Class**: When fetching data for multiple queries
+  (e.g., from
+  [`fa_define_query_range()`](https://rempsyc.github.io/flightanalysis/reference/fa_define_query_range.md)),
+  [`fa_fetch_flights()`](https://rempsyc.github.io/flightanalysis/reference/fa_fetch_flights.md)
+  now returns a `flight_results` object that:
+  - Contains a merged `$data` field with all flight data accessible
+    directly
+  - Preserves individual query objects as named elements (e.g., `$BOM`,
+    `$DEL`)
+  - Has a dedicated print method for better display
+
+#### Enhancements
+
+- **Parameter Renaming**:
+  [`fa_summarize_prices()`](https://rempsyc.github.io/flightanalysis/reference/fa_summarize_prices.md)
+  and
+  [`fa_find_best_dates()`](https://rempsyc.github.io/flightanalysis/reference/fa_find_best_dates.md)
+  now use `flight_results` as the parameter name instead of `results`
+  for clarity and type safety
+- **Improved Documentation**: Updated all examples and documentation to
+  use the new function names
+- **Better Data Access**: No need to manually merge data from multiple
+  origins - access unified data via `flights$data` directly
+
+#### Example
+
+``` r
+# Create queries for multiple origins
+queries <- fa_define_query_range(
+  origin = c("BOM", "DEL"),
+  dest = "JFK",
+  date_min = "2025-12-18",
+  date_max = "2025-12-22"
+)
+
+# Fetch data - returns flight_results object with merged data
+flights <- fa_fetch_flights(queries)
+
+# Access merged data directly
+flights$data
+
+# Or access individual origin data
+flights$BOM$data
+flights$DEL$data
+
+# Use with analysis functions
+fa_summarize_prices(flights)
+fa_find_best_dates(flights, n = 5)
+```
+
 ## flightanalysis 2.0.0
 
 ### Major API Redesign
@@ -14,7 +78,7 @@ user-facing functions.
 [`fa_define_query()`](https://rempsyc.github.io/flightanalysis/reference/fa_define_query.md) -
 Create flight query objects for one-way, round-trip, chain-trip, or
 perfect-chain searches -
-[`fa_create_date_range()`](https://rempsyc.github.io/flightanalysis/reference/fa_create_date_range.md) -
+[`fa_define_query_range()`](https://rempsyc.github.io/flightanalysis/reference/fa_define_query_range.md) -
 Create query objects for multiple origins and dates
 
 **Data Fetching:** -
@@ -47,7 +111,7 @@ best <- fa_find_best_dates(result, n = 5)
 
 ``` r
 # Search multiple origins over a date range
-queries <- fa_create_date_range(
+queries <- fa_define_query_range(
   origin = c("BOM", "DEL", "VNS"),
   dest = "JFK",
   date_min = "2025-12-18",
@@ -74,7 +138,7 @@ Converts flight objects to data frames
 #### Package Organization
 
 - Functions organized by purpose:
-  - `fa_create_date_range.R` - Date range query creation
+  - `fa_define_query_range.R` - Date range query creation
   - `fa_summarize_prices.R` - Price summary tables
   - `fa_find_best_dates.R` - Best date identification
   - `filter_placeholder_rows.R` - Data cleaning helpers

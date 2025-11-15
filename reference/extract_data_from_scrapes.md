@@ -14,7 +14,8 @@ extract_data_from_scrapes(scrapes)
 
 - scrapes:
 
-  A single query object or a named list of query objects
+  A single query object, a flight_results object, or a named list of
+  query objects
 
 ## Value
 
