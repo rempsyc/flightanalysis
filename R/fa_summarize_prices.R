@@ -9,7 +9,7 @@
 #' travel time, stops, and emissions.
 #'
 #' @param flight_results Either:
-#'   - A data frame with columns: City, Airport, Date, Price, and optionally Comment (Airport will be renamed to Origin)
+#'   - A data frame with columns: Date and Price (and optionally other filter columns)
 #'   - A flight_results object (from fa_fetch_flights with multiple origins)
 #'   - A list of flight queries (from fa_define_query_range with multiple origins)
 #'   - A single flight query (from fa_define_query_range with single origin)
@@ -45,7 +45,7 @@
 #'
 #' # With filters
 #' fa_summarize_prices(
-#'   sample_query,
+#'   sample_flights,
 #'   max_stops = 0
 #' )
 fa_summarize_prices <- function(
@@ -98,10 +98,49 @@ fa_summarize_prices <- function(
     )
   }
 
-  required_cols <- c("City", "Airport", "Date", "Price")
+  # Normalize column names for direct data frame input
+  if (
+    "price" %in% names(flight_results) && !"Price" %in% names(flight_results)
+  ) {
+    flight_results$Price <- flight_results$price
+  }
+
+  if (
+    "departure_date" %in% names(flight_results) &&
+      !"Date" %in% names(flight_results)
+  ) {
+    flight_results$Date <- flight_results$departure_date
+  } else if (
+    "departure_datetime" %in%
+      names(flight_results) &&
+      !"Date" %in% names(flight_results)
+  ) {
+    # Backward compatibility for old format
+    flight_results$Date <- as.character(as.Date(
+      flight_results$departure_datetime
+    ))
+  }
+
+  if (
+    "origin" %in%
+      names(flight_results) &&
+      !any(c("Airport") %in% names(flight_results))
+  ) {
+    flight_results$Airport <- flight_results$origin
+  }
+
+  # Add City column if not present (use origin as fallback)
+  if (
+    !"City" %in% names(flight_results) &&
+      "origin" %in% names(flight_results)
+  ) {
+    flight_results$City <- flight_results$origin
+  }
+
+  required_cols <- c("Date", "Price")
   if (!all(required_cols %in% names(flight_results))) {
     stop(sprintf(
-      "flight_results must contain columns: %s",
+      "flight_results must contain columns: %s (or lowercase equivalents: date/departure_date/departure_datetime, price)",
       paste(required_cols, collapse = ", ")
     ))
   }

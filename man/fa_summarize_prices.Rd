@@ -22,7 +22,7 @@ fa_summarize_prices(
 }
 \arguments{
 \item{flight_results}{Either:
-- A data frame with columns: City, Airport, Date, Price, and optionally Comment (Airport will be renamed to Origin)
+- A data frame with columns: Date and Price (and optionally other filter columns)
 - A flight_results object (from fa_fetch_flights with multiple origins)
 - A list of flight queries (from fa_define_query_range with multiple origins)
 - A single flight query (from fa_define_query_range with single origin)}
@@ -72,15 +72,12 @@ Supports filtering by various criteria such as departure time, airlines,
 travel time, stops, and emissions.
 }
 \examples{
-# Attach flight data to query object
-sample_query$data <- sample_flights
-
 # Create summary table
-fa_summarize_prices(sample_query)
+fa_summarize_prices(sample_flights)
 
 # With filters
 fa_summarize_prices(
-  sample_query,
+  sample_flights,
   max_stops = 0
 )
 }
