@@ -15,6 +15,7 @@ prices from Google Flights.
 - Flexible date search across multiple airports and date ranges
 - Summary tables showing prices by city and date
 - Automatic identification of cheapest travel dates
+- Visualization functions for price trends and best dates
 
 ## Installation
 
@@ -166,6 +167,18 @@ fa_find_best_dates(
 | 2025-12-19 | 04:40 | BOM | 365 | 1 | 3 hr 15 min AUH | 21 hr 15 min | 844 | Etihad | 2025-12-19 | 15:25 | 1 |
 | 2025-12-19 | 20:55 | DEL | 393 | 1 | 3 hr 30 min AUH | 22 hr 35 min | 843 | Etihad | 2025-12-19 | 09:00 | 1 |
 | 2025-12-19 | 23:15 | BOM | 413 | 1 | 2 hr 5 min AUH | 20 hr 15 min | 763 | Akasa Air, Etihad | 2025-12-19 | 09:00 | 1 |
+
+## Visualizing Price Data
+
+The package includes plotting functions to visualize price trends and best dates:
+
+``` r
+# Plot price trends across dates
+fa_plot_prices(flights, title = "Flight Prices: BOM/DEL to JFK")
+
+# Plot best travel dates
+fa_plot_best_dates(flights, n = 5, by = "min")
+```
 
 ## Original Python Package
 
