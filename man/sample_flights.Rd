@@ -5,10 +5,12 @@
 \alias{sample_flights}
 \title{Sample Flight Data}
 \format{
-A data frame with 6 rows and 12 variables:
+A data frame with 6 rows and 14 variables:
 \describe{
-  \item{departure_datetime}{POSIXct departure date and time}
-  \item{arrival_datetime}{POSIXct arrival date and time}
+  \item{departure_date}{Character, departure date (YYYY-MM-DD)}
+  \item{departure_time}{Character, departure time (HH:MM)}
+  \item{arrival_date}{Character, arrival date (YYYY-MM-DD)}
+  \item{arrival_time}{Character, arrival time (HH:MM)}
   \item{origin}{Character, 3-letter origin airport code}
   \item{destination}{Character, 3-letter destination airport code}
   \item{airlines}{Character, airline name(s)}
@@ -16,7 +18,7 @@ A data frame with 6 rows and 12 variables:
   \item{price}{Numeric, ticket price in USD}
   \item{num_stops}{Integer, number of stops}
   \item{layover}{Character, layover details (NA if nonstop)}
-  \item{access_date}{POSIXct, when data was accessed}
+  \item{access_date}{Character, when data was accessed}
   \item{co2_emission_kg}{Numeric, CO2 emissions in kg}
   \item{emission_diff_pct}{Numeric, emission difference percentage}
 }
@@ -31,12 +33,8 @@ like `fa_find_best_dates()` and `fa_summarize_prices()` without internet access.
 \examples{
 data(sample_flights)
 head(sample_flights)
-# Use with analysis functions by attaching to a query object
-\dontrun{
-data(sample_query)
-sample_query$data <- sample_flights
-fa_find_best_dates(sample_query, n = 3)
-fa_summarize_prices(sample_query)
-}
+# Use with analysis functions directly
+fa_find_best_dates(sample_flights, n = 3)
+fa_summarize_prices(sample_flights)
 }
 \keyword{datasets}

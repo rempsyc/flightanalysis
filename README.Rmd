@@ -51,7 +51,7 @@ query
 flights <- fa_fetch_flights(query)
 
 # View the flight data
-head(flights$data) |>
+head(flights$data[1:11]) |>
   knitr::kable()
 ```
 

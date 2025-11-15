@@ -186,7 +186,17 @@ classify_arg <- function(flight, arg) {
     # Check for airline (but filter out CO2-related text and environmental messages)
     val <- strsplit(arg, ",")[[1]]
     val <- sapply(val, function(elem) strsplit(elem, "Operated")[[1]][1])
-    flight$airline <- paste(val, collapse = ",")
+    
+    # Fix malformed airline concatenations by adding commas between capitalized words
+    airline_str <- paste(val, collapse = ",")
+    
+    # Add comma between concatenated airlines
+    # First handle acronyms/all-caps followed by capitalized words (e.g., "KLMDelta" -> "KLM, Delta")
+    # But avoid splitting known compound airline names like JetBlue, AirAsia, etc.
+    # Only apply splitting if we see clear concatenation patterns (all caps followed by cap+lowercase)
+    airline_str <- gsub("([A-Z]{3,})([A-Z][a-z])", "\\1, \\2", airline_str)
+    
+    flight$airline <- airline_str
   } else {
     flight$trash <- c(flight$trash, list(arg))
   }
@@ -226,8 +236,10 @@ print.flight_record <- function(x, ...) {
 #' @keywords internal
 flights_to_dataframe <- function(flights) {
   data <- data.frame(
-    departure_datetime = character(),
-    arrival_datetime = character(),
+    departure_date = character(),
+    departure_time = character(),
+    arrival_date = character(),
+    arrival_time = character(),
     origin = character(),
     destination = character(),
     airlines = character(),
@@ -243,13 +255,23 @@ flights_to_dataframe <- function(flights) {
 
   for (flight in flights) {
     row <- data.frame(
-      departure_datetime = if (!is.null(flight$time_leave)) {
-        format(flight$time_leave, "%Y-%m-%d %H:%M:%S")
+      departure_date = if (!is.null(flight$time_leave)) {
+        format(flight$time_leave, "%Y-%m-%d")
       } else {
         NA
       },
-      arrival_datetime = if (!is.null(flight$time_arrive)) {
-        format(flight$time_arrive, "%Y-%m-%d %H:%M:%S")
+      departure_time = if (!is.null(flight$time_leave)) {
+        format(flight$time_leave, "%H:%M")
+      } else {
+        NA
+      },
+      arrival_date = if (!is.null(flight$time_arrive)) {
+        format(flight$time_arrive, "%Y-%m-%d")
+      } else {
+        NA
+      },
+      arrival_time = if (!is.null(flight$time_arrive)) {
+        format(flight$time_arrive, "%H:%M")
       } else {
         NA
       },

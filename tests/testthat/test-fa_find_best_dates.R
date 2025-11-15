@@ -206,3 +206,34 @@ test_that("fa_find_best_dates supports filtering by stops", {
   expect_equal(nrow(best), 1)
   expect_equal(best$price[1], 500)
 })
+
+test_that("fa_find_best_dates works with direct data frame input", {
+  # Test with direct data frame (like sample_flights) with lowercase columns
+  direct_data <- data.frame(
+    departure_datetime = as.POSIXct(c(
+      "2025-12-18 10:00:00",
+      "2025-12-18 12:00:00",
+      "2025-12-19 14:00:00"
+    )),
+    origin = c("JFK", "JFK", "JFK"),
+    destination = c("IST", "IST", "IST"),
+    airlines = c("Turkish Airlines", "Lufthansa", "Air France"),
+    price = c(650, 720, 695),
+    num_stops = c(0, 1, 1),
+    travel_time = c("13 hr 0 min", "13 hr 15 min", "13 hr 15 min"),
+    stringsAsFactors = FALSE
+  )
+  
+  # Should work directly without wrapping in query object
+  best <- fa_find_best_dates(direct_data, n = 2, by = "min")
+  
+  expect_true(is.data.frame(best))
+  expect_true("departure_date" %in% names(best) || "date" %in% names(best))
+  expect_true("price" %in% names(best))
+  expect_equal(nrow(best), 2)
+  
+  # Test with filtering by max_stops
+  best_direct <- fa_find_best_dates(direct_data, n = 5, max_stops = 0)
+  expect_equal(nrow(best_direct), 1)
+  expect_equal(best_direct$price[1], 650)
+})

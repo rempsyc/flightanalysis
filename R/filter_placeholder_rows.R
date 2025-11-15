@@ -104,7 +104,10 @@ extract_data_from_scrapes <- function(scrapes) {
       data$Airport <- NA_character_
     }
 
-    if ("departure_datetime" %in% names(data)) {
+    if ("departure_date" %in% names(data)) {
+      data$Date <- data$departure_date
+    } else if ("departure_datetime" %in% names(data)) {
+      # Backward compatibility for old format
       data$Date <- as.character(as.Date(data$departure_datetime))
     } else {
       data$Date <- NA_character_
@@ -129,8 +132,18 @@ extract_data_from_scrapes <- function(scrapes) {
     # Preserve additional columns if they exist
     additional_cols <- c()
     
-    if ("departure_datetime" %in% names(data)) {
+    if ("departure_date" %in% names(data) && "departure_time" %in% names(data)) {
+      additional_cols <- c(additional_cols, "departure_date", "departure_time")
+    } else if ("departure_datetime" %in% names(data)) {
+      # Backward compatibility for old format
       additional_cols <- c(additional_cols, "departure_datetime")
+    }
+    
+    if ("arrival_date" %in% names(data) && "arrival_time" %in% names(data)) {
+      additional_cols <- c(additional_cols, "arrival_date", "arrival_time")
+    } else if ("arrival_datetime" %in% names(data)) {
+      # Backward compatibility for old format
+      additional_cols <- c(additional_cols, "arrival_datetime")
     }
     
     if ("airlines" %in% names(data)) {

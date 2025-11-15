@@ -57,10 +57,12 @@ Default is NULL (no filter).}
 }
 \value{
 A data frame with columns: departure_date, departure_time (or date if datetime not available),
-  origin, price (average/median/min), n_routes, num_stops, layover, travel_time,
-  co2_emission_kg, and airlines. All column names are lowercase.
+  origin, price (average/median/min), n_routes, num_stops, layover, 
+  travel_time, co2_emission_kg, airlines, arrival_date, arrival_time. All column names are lowercase.
   Returns the top N dates with best (lowest) prices, sorted by departure time for display.
   Additional columns are aggregated using mean/median for numeric values and most common value for categorical.
+  Note: arrival_date and arrival_time represent the most common values when multiple flights are aggregated
+  and may not correspond exactly to the specific departure times shown.
 }
 \description{
 Identifies and returns the top N dates with the cheapest average prices
@@ -69,19 +71,12 @@ when planning a flexible trip. Supports filtering by various criteria
 such as departure time, airlines, travel time, stops, and emissions.
 }
 \examples{
-# Using sample data
-data(sample_query)
-data(sample_flights)
-
-# Attach flight data to query object
-sample_query$data <- sample_flights
-
 # Find best dates
-fa_find_best_dates(sample_query, n = 3, by = "min")
+fa_find_best_dates(sample_flights, n = 3, by = "min")
 
 # With filters
 fa_find_best_dates(
-  sample_query,
+  sample_flights,
   n = 2,
   max_stops = 0
 )
