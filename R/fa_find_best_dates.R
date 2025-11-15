@@ -602,7 +602,7 @@ fa_find_best_dates <- function(
     date_summary$departure_date <- as.Date(date_summary$departure_datetime)
     date_summary$departure_time <- format(
       date_summary$departure_datetime,
-      "%H:%M:%S"
+      "%H:%M"
     )
     # Remove the original departure_datetime column
     date_summary$departure_datetime <- NULL

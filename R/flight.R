@@ -190,8 +190,10 @@ classify_arg <- function(flight, arg) {
     # Fix malformed airline concatenations by adding commas between capitalized words
     airline_str <- paste(val, collapse = ",")
     
-    # Add comma between concatenated airlines (e.g., "KLMDelta" -> "KLM, Delta")
-    # Pattern: lowercase letter followed by uppercase letter
+    # Add comma between concatenated airlines
+    # First handle acronyms/all-caps followed by capitalized words (e.g., "KLMDelta" -> "KLM, Delta")
+    airline_str <- gsub("([A-Z]+)([A-Z][a-z])", "\\1, \\2", airline_str)
+    # Then handle normal concatenations (e.g., "AirlinesDelta" -> "Airlines, Delta")
     airline_str <- gsub("([a-z])([A-Z])", "\\1, \\2", airline_str)
     
     flight$airline <- airline_str
