@@ -101,7 +101,13 @@ fa_summarize_prices(flights) |>
   knitr::kable()
 
 # Find the cheapest dates
-fa_find_best_dates(flights, by = "min") |>
+fa_find_best_dates(
+  flights, 
+  by = "min",
+  price_max = 1400,
+  max_stops = 1,
+  travel_time_max = 26  # 26 hours (numeric = hours, or use "26 hr" format)
+  ) |>
   knitr::kable()
 ```
 

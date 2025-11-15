@@ -17,19 +17,15 @@
 #' @examples
 #' \dontrun{
 #' query <- fa_define_query("JFK", "IST", "2025-12-20", "2025-12-25")
-#' result <- fa_fetch_flights(query)
-#' result$data
+#' flights <- fa_fetch_flights(query)
+#' flights$data
 #' }
 fa_fetch_flights <- function(
   queries,
   verbose = TRUE
 ) {
-
-
   # Track if input was a single query object
-  # Accept both new "flight_query" and legacy "Scrape" classes
-  single_object <- inherits(queries, "flight_query") ||
-    inherits(queries, "Scrape")
+  single_object <- inherits(queries, "flight_query")
 
   # Ensure queries is a list
   if (single_object) {
@@ -450,7 +446,10 @@ clean_results <- function(result, date, verbose = TRUE) {
     tryCatch(
       {
         # Use do.call to unpack the vector so each element becomes a separate argument
-        flights[[i]] <- do.call(flight_record, c(list(date), as.list(flight_data)))
+        flights[[i]] <- do.call(
+          flight_record,
+          c(list(date), as.list(flight_data))
+        )
       },
       error = function(e) {
         # Silent failure for individual flights - they'll be filtered out

@@ -45,7 +45,9 @@ filter_placeholder_rows <- function(data) {
 #'
 #' @param scrapes A single query object or a named list of query objects
 #'
-#' @return A data frame with columns: Airport, Date, Price, and City (if named list)
+#' @return A data frame with columns: Airport, Date, Price, City (if named list), 
+#'   and additional columns: departure_datetime, airlines, travel_time, num_stops, 
+#'   layover, co2_emission_kg (when available)
 #'
 #' @keywords internal
 extract_data_from_scrapes <- function(scrapes) {
@@ -117,8 +119,36 @@ extract_data_from_scrapes <- function(scrapes) {
     # Try to convert airport codes to city names using airportr if available
     data$City <- airport_to_city(data$Airport, data$City)
 
-    # Select only needed columns
-    data <- data[, c("City", "Airport", "Date", "Price"), drop = FALSE]
+    # Preserve additional columns if they exist
+    additional_cols <- c()
+    
+    if ("departure_datetime" %in% names(data)) {
+      additional_cols <- c(additional_cols, "departure_datetime")
+    }
+    
+    if ("airlines" %in% names(data)) {
+      additional_cols <- c(additional_cols, "airlines")
+    }
+    
+    if ("travel_time" %in% names(data)) {
+      additional_cols <- c(additional_cols, "travel_time")
+    }
+    
+    if ("num_stops" %in% names(data)) {
+      additional_cols <- c(additional_cols, "num_stops")
+    }
+    
+    if ("layover" %in% names(data)) {
+      additional_cols <- c(additional_cols, "layover")
+    }
+    
+    if ("co2_emission_kg" %in% names(data)) {
+      additional_cols <- c(additional_cols, "co2_emission_kg")
+    }
+
+    # Select needed columns (always include base columns, plus any additional ones available)
+    base_cols <- c("City", "Airport", "Date", "Price")
+    data <- data[, c(base_cols, additional_cols), drop = FALSE]
 
     all_data[[i]] <- data
   }
@@ -129,6 +159,12 @@ extract_data_from_scrapes <- function(scrapes) {
       Airport = character(),
       Date = character(),
       Price = numeric(),
+      departure_datetime = as.POSIXct(character()),
+      airlines = character(),
+      travel_time = character(),
+      num_stops = integer(),
+      layover = character(),
+      co2_emission_kg = numeric(),
       stringsAsFactors = FALSE
     ))
   }
@@ -163,4 +199,64 @@ airport_to_city <- function(airport_codes, fallback = airport_codes) {
     fallback
   })
   return(result)
+}
+
+#' Parse Time Duration to Minutes
+#'
+#' @description
+#' Internal helper function to parse time duration strings or numeric values to minutes.
+#' Handles both numeric (hours) and character ("XX hr XX min") formats.
+#'
+#' @param time_value Numeric or character. If numeric, interpreted as hours.
+#'   If character, parsed as "XX hr XX min" format.
+#'
+#' @return Numeric value in minutes
+#'
+#' @keywords internal
+parse_time_to_minutes <- function(time_value) {
+  # Handle NA and "NA" string values
+  if (is.na(time_value) || (is.character(time_value) && time_value == "NA")) {
+    return(NA_real_)
+  }
+  
+  if (is.numeric(time_value)) {
+    # If numeric, interpret as hours and convert to minutes
+    return(time_value * 60)
+  } else if (is.character(time_value)) {
+    # Handle empty strings
+    if (time_value == "" || nchar(trimws(time_value)) == 0) {
+      return(NA_real_)
+    }
+    
+    # If character, parse the format "XX hr XX min", "XX hr", or "XX min"
+    parts <- strsplit(time_value, " ")[[1]]
+    hours <- 0
+    minutes <- 0
+    
+    if (length(parts) >= 2 && parts[2] == "hr") {
+      hours_val <- suppressWarnings(as.numeric(parts[1]))
+      if (is.na(hours_val)) {
+        stop("Invalid time format: unable to parse hours from '", time_value, "'")
+      }
+      hours <- hours_val
+    }
+    
+    if (length(parts) >= 4 && parts[4] == "min") {
+      minutes_val <- suppressWarnings(as.numeric(parts[3]))
+      if (is.na(minutes_val)) {
+        stop("Invalid time format: unable to parse minutes from '", time_value, "'")
+      }
+      minutes <- minutes_val
+    } else if (length(parts) >= 2 && parts[2] == "min") {
+      minutes_val <- suppressWarnings(as.numeric(parts[1]))
+      if (is.na(minutes_val)) {
+        stop("Invalid time format: unable to parse minutes from '", time_value, "'")
+      }
+      minutes <- minutes_val
+    }
+    
+    return(hours * 60 + minutes)
+  } else {
+    stop("time_value must be numeric (hours) or character (format: 'XX hr XX min')")
+  }
 }
