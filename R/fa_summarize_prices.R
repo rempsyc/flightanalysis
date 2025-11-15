@@ -294,20 +294,40 @@ fa_summarize_prices <- function(
     best_row$Comment <- ""
   }
 
-  # For each date column, check if it has the minimum price
+  # Find the absolute minimum price across ALL date columns
+  all_prices <- c()
   for (col in date_names_sorted) {
     if (col %in% names(wide_data)) {
-      # Extract numeric values (remove currency symbol if already formatted)
       col_vals <- wide_data[[col]]
       # Convert to numeric
       if (is.character(col_vals)) {
         col_vals <- as.numeric(gsub("[^0-9.]", "", col_vals))
       }
-      min_val <- min(col_vals, na.rm = TRUE)
-      # Check if current column value equals minimum
-      is_min <- !is.na(col_vals) & col_vals == min_val
-      # Mark with "X" if minimum, otherwise empty string
-      best_row[[col]] <- ifelse(any(is_min), "X", "")
+      all_prices <- c(all_prices, col_vals[!is.na(col_vals)])
+    }
+  }
+  
+  # Get the global minimum price
+  global_min <- min(all_prices, na.rm = TRUE)
+  
+  # Mark only the ONE column that contains this minimum price
+  found_min <- FALSE
+  for (col in date_names_sorted) {
+    if (col %in% names(wide_data) && !found_min) {
+      col_vals <- wide_data[[col]]
+      # Convert to numeric
+      if (is.character(col_vals)) {
+        col_vals <- as.numeric(gsub("[^0-9.]", "", col_vals))
+      }
+      # Check if this column contains the global minimum
+      if (any(!is.na(col_vals) & col_vals == global_min)) {
+        best_row[[col]] <- "X"
+        found_min <- TRUE
+      } else {
+        best_row[[col]] <- ""
+      }
+    } else if (col %in% names(wide_data)) {
+      best_row[[col]] <- ""
     }
   }
 
