@@ -34,7 +34,7 @@ fa_fetch_flights(query)\`
 ``` r
 if (FALSE) { # \dontrun{
 query <- fa_define_query("JFK", "IST", "2025-12-20", "2025-12-25")
-result <- fa_fetch_flights(query)
-result$data
+flights <- fa_fetch_flights(query)
+flights$data
 } # }
 ```

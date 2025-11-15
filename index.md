@@ -100,12 +100,12 @@ head(flights$data) |>
 
 | departure_datetime  | arrival_datetime    | origin | destination | airlines                | travel_time  | price | num_stops | layover         | access_date         | co2_emission_kg | emission_diff_pct |
 |:--------------------|:--------------------|:-------|:------------|:------------------------|:-------------|------:|----------:|:----------------|:--------------------|----------------:|------------------:|
-| 2025-12-18 21:20:00 | 2025-12-19 16:55:00 | JFK    | IST         | KLMDelta                | 11 hr 35 min |  1470 |         1 | 1 hr 5 min AMS  | 2025-11-14 13:22:37 |             444 |                NA |
-| 2025-12-18 00:20:00 | 2025-12-18 18:10:00 | JFK    | IST         | Turkish AirlinesJetBlue | 9 hr 50 min  |  1692 |         0 | NA              | 2025-11-14 13:22:37 |             528 |                NA |
-| 2025-12-18 12:50:00 | 2025-12-19 06:45:00 | JFK    | IST         | Turkish Airlines        | 9 hr 55 min  |  1692 |         0 | NA              | 2025-11-14 13:22:37 |             414 |                NA |
-| 2025-12-18 20:05:00 | 2025-12-19 14:05:00 | JFK    | IST         | Price graph             | 10 hr        |  1722 |         0 | NA              | 2025-11-14 13:22:37 |             528 |                NA |
-| 2025-12-18 01:00:00 | 2025-12-19 03:50:00 | JFK    | IST         | Air FranceDelta, KLM    | 18 hr 50 min |  1244 |         1 | 8 hr 15 min CDG | 2025-11-14 13:22:37 |             551 |                 0 |
-| 2025-12-18 16:40:00 | 2025-12-19 16:55:00 | JFK    | IST         | Delta, KLM              | 16 hr 15 min |  1470 |         1 | 5 hr 40 min AMS | 2025-11-14 13:22:37 |             450 |                NA |
+| 2025-12-18 21:20:00 | 2025-12-19 16:55:00 | JFK    | IST         | KLMDelta                | 11 hr 35 min |  1470 |         1 | 1 hr 5 min AMS  | 2025-11-14 19:44:40 |             444 |                NA |
+| 2025-12-18 00:20:00 | 2025-12-18 18:10:00 | JFK    | IST         | Turkish AirlinesJetBlue | 9 hr 50 min  |  1692 |         0 | NA              | 2025-11-14 19:44:40 |             528 |                NA |
+| 2025-12-18 12:50:00 | 2025-12-19 06:45:00 | JFK    | IST         | Turkish Airlines        | 9 hr 55 min  |  1692 |         0 | NA              | 2025-11-14 19:44:40 |             414 |                NA |
+| 2025-12-18 20:05:00 | 2025-12-19 14:05:00 | JFK    | IST         | Price graph             | 10 hr        |  1722 |         0 | NA              | 2025-11-14 19:44:40 |             528 |                NA |
+| 2025-12-18 01:00:00 | 2025-12-19 03:50:00 | JFK    | IST         | Air FranceDelta, KLM    | 18 hr 50 min |  1244 |         1 | 8 hr 15 min CDG | 2025-11-14 19:44:40 |             551 |                 0 |
+| 2025-12-18 16:40:00 | 2025-12-19 16:55:00 | JFK    | IST         | Delta, KLM              | 16 hr 15 min |  1470 |         1 | 5 hr 40 min AMS | 2025-11-14 19:44:40 |             450 |                NA |
 
 **Why chromote?**
 
@@ -137,16 +137,16 @@ flights <- fa_fetch_flights(queries)
 ## Scraping 2 objects...
 ## 
 ## [1/2]   Segment 1/5: BOM -> JFK on 2025-12-18
-##   [OK] Successfully parsed 10 flights
+##   [OK] Successfully parsed 12 flights
 ##   Segment 2/5: BOM -> JFK on 2025-12-19
-##   [OK] Successfully parsed 11 flights
+##   [OK] Successfully parsed 10 flights
 ##   Segment 3/5: BOM -> JFK on 2025-12-20
 ##   [OK] Successfully parsed 10 flights
 ##   Segment 4/5: BOM -> JFK on 2025-12-21
 ##   [OK] Successfully parsed 8 flights
 ##   Segment 5/5: BOM -> JFK on 2025-12-22
 ##   [OK] Successfully parsed 9 flights
-##   [OK] Total flights retrieved: 48
+##   [OK] Total flights retrieved: 49
 ## [2/2]   Segment 1/5: DEL -> JFK on 2025-12-18
 ##   [OK] Successfully parsed 8 flights
 ##   Segment 2/5: DEL -> JFK on 2025-12-19
@@ -166,24 +166,36 @@ fa_summarize_prices(flights) |>
   knitr::kable()
 ```
 
-| City   | Airport | 2025-12-18 | 2025-12-19 | 2025-12-20 | 2025-12-21 | 2025-12-22 | Average_Price |
-|:-------|:--------|:-----------|:-----------|:-----------|:-----------|:-----------|:--------------|
-| Mumbai | BOM     | \$361      | \$413      | \$477      | \$413      | \$365      | \$406         |
-| Delhi  | DEL     | \$361      | \$361      | \$469      | \$463      | \$373      | \$405         |
+| City   | Origin | 2025-12-18 | 2025-12-19 | 2025-12-20 | 2025-12-21 | 2025-12-22 | Average_Price |
+|:-------|:-------|:-----------|:-----------|:-----------|:-----------|:-----------|:--------------|
+| Mumbai | BOM    | \$361      | \$365      | \$478      | \$413      | \$365      | \$396         |
+| Delhi  | DEL    | \$361      | \$361      | \$463      | \$463      | \$373      | \$404         |
+| Best   | Best   | X          | X          | X          | X          | X          |               |
 
 ``` r
 # Find the cheapest dates
-fa_find_best_dates(flights, by = "min") |>
+fa_find_best_dates(
+  flights, 
+  by = "min",
+  price_max = 1400,
+  max_stops = 1,
+  travel_time_max = 26  # 26 hours (numeric = hours, or use "26 hr" format)
+  ) |>
   knitr::kable()
 ```
 
-| Date       | Price | N_Routes |
-|:-----------|------:|---------:|
-| 2025-12-18 |   361 |       16 |
-| 2025-12-19 |   361 |       19 |
-| 2025-12-22 |   365 |       15 |
-| 2025-12-21 |   413 |       15 |
-| 2025-12-20 |   469 |       17 |
+| origin | price | num_stops | layover         | travel_time  | co2_emission_kg | airlines                 | n_routes | departure_date | departure_time |
+|:-------|------:|----------:|:----------------|:-------------|----------------:|:-------------------------|---------:|:---------------|:---------------|
+| BOM    |   365 |         1 | 3 hr 15 min AUH | 21 hr 15 min |             844 | Etihad                   |        1 | 2025-12-19     | 04:40:00       |
+| BOM    |   365 |         1 | 3 hr 15 min AUH | 21 hr 15 min |             845 | Etihad                   |        1 | 2025-12-22     | 04:40:00       |
+| DEL    |   393 |         1 | 2 hr 45 min AUH | 21 hr 30 min |             871 | Etihad                   |        1 | 2025-12-18     | 04:25:00       |
+| DEL    |   393 |         1 | 3 hr 30 min AUH | 22 hr 35 min |             843 | Etihad                   |        1 | 2025-12-19     | 20:55:00       |
+| DEL    |   408 |         1 | 2 hr CDG        | 19 hr 45 min |             794 | Air FranceDelta, KLM     |        1 | 2025-12-18     | 01:30:00       |
+| BOM    |   413 |         1 | 3 hr 15 min AUH | 21 hr 15 min |             852 | Etihad                   |        1 | 2025-12-18     | 04:40:00       |
+| BOM    |   413 |         1 | 2 hr 5 min AUH  | 20 hr 15 min |             763 | Akasa Air, Etihad        |        1 | 2025-12-19     | 23:15:00       |
+| BOM    |   413 |         1 | 2 hr 5 min AUH  | 20 hr 15 min |             763 | Akasa Air, Etihad        |        1 | 2025-12-20     | 23:15:00       |
+| BOM    |   413 |         1 | 2 hr 5 min AUH  | 20 hr 15 min |             763 | Akasa Air, Etihad        |        1 | 2025-12-22     | 23:15:00       |
+| BOM    |   418 |         1 | 3 hr 55 min IST | 21 hr 55 min |             811 | IndiGo, Turkish Airlines |        2 | 2025-12-18     | 06:45:00       |
 
 **Key Features:**
 

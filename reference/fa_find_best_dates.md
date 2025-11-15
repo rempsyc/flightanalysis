@@ -2,21 +2,36 @@
 
 Identifies and returns the top N dates with the cheapest average prices
 across all routes. This helps quickly identify the best travel dates
-when planning a flexible trip.
+when planning a flexible trip. Supports filtering by various criteria
+such as departure time, airlines, travel time, stops, and emissions.
 
 ## Usage
 
 ``` r
-fa_find_best_dates(results, n = 10, by = "min")
+fa_find_best_dates(
+  results,
+  n = 10,
+  by = "min",
+  time_min = NULL,
+  time_max = NULL,
+  airlines = NULL,
+  price_min = NULL,
+  price_max = NULL,
+  travel_time_max = NULL,
+  max_stops = NULL,
+  max_layover = NULL,
+  max_emissions = NULL
+)
 ```
 
 ## Arguments
 
 - results:
 
-  Either: - A data frame with columns: Date and Price - A list of flight
-  querys (from fa_create_date_range with multiple origins) - A single
-  flight query (from fa_create_date_range with single origin)
+  Either: - A data frame with columns: Date and Price (and optionally
+  other filter columns) - A list of flight queries (from
+  fa_create_date_range with multiple origins) - A single flight query
+  (from fa_create_date_range with single origin)
 
 - n:
 
@@ -26,26 +41,76 @@ fa_find_best_dates(results, n = 10, by = "min")
 
   Character. How to calculate best dates: "mean" (average price across
   routes), "median", or "min" (lowest price on that date). Default is
-  "mean".
+  "min".
+
+- time_min:
+
+  Character. Minimum departure time in "HH:MM" format (24-hour). Filters
+  flights departing at or after this time. Default is NULL (no filter).
+
+- time_max:
+
+  Character. Maximum departure time in "HH:MM" format (24-hour). Filters
+  flights departing at or before this time. Default is NULL (no filter).
+
+- airlines:
+
+  Character vector. Filter by specific airlines. Default is NULL (no
+  filter).
+
+- price_min:
+
+  Numeric. Minimum price. Default is NULL (no filter).
+
+- price_max:
+
+  Numeric. Maximum price. Default is NULL (no filter).
+
+- travel_time_max:
+
+  Numeric or character. Maximum travel time. If numeric, interpreted as
+  hours. If character, use format "XX hr XX min". Default is NULL (no
+  filter).
+
+- max_stops:
+
+  Integer. Maximum number of stops. Default is NULL (no filter).
+
+- max_layover:
+
+  Character. Maximum layover time in format "XX hr XX min". Default is
+  NULL (no filter).
+
+- max_emissions:
+
+  Numeric. Maximum CO2 emissions in kg. Default is NULL (no filter).
 
 ## Value
 
-A data frame with columns: Date, Price (average/median/min), and
-N_Routes (number of routes with data for that date). Sorted by price
-(cheapest first).
+A data frame with columns: departure_date, departure_time (or date if
+datetime not available), origin, price (average/median/min), n_routes,
+num_stops, layover, travel_time, co2_emission_kg, and airlines. All
+column names are lowercase. Sorted by price (cheapest first). Additional
+columns are aggregated using mean/median for numeric values and most
+common value for categorical.
 
 ## Examples
 
 ``` r
 if (FALSE) { # \dontrun{
-# Option 1: Pass list of flight querys directly
-queries <- fa_create_date_range(c("BOM", "DEL"), "JFK", "2025-12-18", "2026-01-05")
-for (code in names(queries)) {
-  queries[[code]] <- fa_fetch_flights(queries[[code]])
-}
-best_dates <- fa_find_best_dates(queries, n = 5, by = "mean")
+# Basic usage
+queries <- fa_create_date_range(c("BOM", "DEL"), "JFK", "2025-12-28", "2026-01-02")
+flights <- fa_fetch_flights(queries)
+fa_find_best_dates(flights, n = 5, by = "min")
 
-# Option 2: Pass processed data frame
-best_dates <- fa_find_best_dates(my_data_frame, n = 5, by = "mean")
+# With filters
+fa_find_best_dates(
+  flights,
+  n = 5,
+  time_min = "08:00",
+  time_max = "20:00",
+  max_stops = 1,
+  max_emissions = 500
+)
 } # }
 ```
