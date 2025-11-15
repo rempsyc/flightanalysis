@@ -39,22 +39,22 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' # Basic usage
-#' queries <- fa_define_query_range(c("BOM", "DEL"), "JFK", "2025-12-28", "2026-01-02")
-#' flights <- fa_fetch_flights(queries)
-#' fa_find_best_dates(flights, n = 5, by = "min")
-#'
+#' # Using sample data
+#' data(sample_query)
+#' data(sample_flights)
+#' 
+#' # Attach flight data to query object
+#' sample_query$data <- sample_flights
+#' 
+#' # Find best dates
+#' fa_find_best_dates(sample_query, n = 3, by = "min")
+#' 
 #' # With filters
 #' fa_find_best_dates(
-#'   flights,
-#'   n = 5,
-#'   time_min = "08:00",
-#'   time_max = "20:00",
-#'   max_stops = 1,
-#'   max_emissions = 500
+#'   sample_query,
+#'   n = 2,
+#'   max_stops = 0
 #' )
-#' }
 fa_find_best_dates <- function(
   flight_results,
   n = 10,
@@ -70,8 +70,16 @@ fa_find_best_dates <- function(
   max_emissions = NULL
 ) {
   # Handle different input types
-  # Check for flight query FIRST (before is.list, since flight queries are lists)
-  if (inherits(flight_results, "flight_query")) {
+  # Check for flight_results object FIRST
+  if (inherits(flight_results, "flight_results")) {
+    # Extract the merged data directly
+    if (is.null(flight_results$data) || nrow(flight_results$data) == 0) {
+      stop(
+        "flight_results object contains no data. Please run fa_fetch_flights() first to fetch flight data."
+      )
+    }
+    flight_results <- extract_data_from_scrapes(flight_results)
+  } else if (inherits(flight_results, "flight_query")) {
     # Validate flight query has data
     if (is.null(flight_results$data) || nrow(flight_results$data) == 0) {
       stop(
@@ -87,12 +95,12 @@ fa_find_best_dates <- function(
       flight_results <- extract_data_from_scrapes(flight_results)
     } else {
       stop(
-        "flight_results must be a data frame, a flight query, or a list of flight queries"
+        "flight_results must be a data frame, a flight_results object, a flight query, or a list of flight queries"
       )
     }
   } else if (!is.data.frame(flight_results)) {
     stop(
-      "flight_results must be a data frame, a flight query, or a list of flight queries"
+      "flight_results must be a data frame, a flight_results object, a flight query, or a list of flight queries"
     )
   }
 

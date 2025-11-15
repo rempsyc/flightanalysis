@@ -17,34 +17,24 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' # Single origin - returns one query object
 #' query <- fa_define_query_range(
 #'   origin = "BOM",
 #'   dest = "JFK",
 #'   date_min = "2025-12-18",
-#'   date_max = "2026-01-05"
+#'   date_max = "2025-12-20"
 #' )
-#' result <- fa_fetch_flights(query)
+#' print(query)
 #'
-#' # Multiple origins - returns list of query objects
+#' # Multiple origins - returns named list of query objects
 #' queries <- fa_define_query_range(
-#'   origin = c("BOM", "DEL", "VNS"),
+#'   origin = c("BOM", "DEL"),
 #'   dest = "JFK",
 #'   date_min = "2025-12-18",
-#'   date_max = "2026-01-05"
+#'   date_max = "2025-12-20"
 #' )
-#'
-#' # Fetch data for all origins - returns flight_results object with merged data
-#' flights <- fa_fetch_flights(queries)
-#' 
-#' # Access merged data from all origins
-#' flights$data
-#' 
-#' # Or access individual origin data
-#' flights$BOM$data
-#' flights$DEL$data
-#' }
+#' names(queries)
+#' print(queries$BOM)
 fa_define_query_range <- function(origin, dest, date_min, date_max) {
   # Validate inputs
   if (!is.character(origin) || length(origin) == 0) {

@@ -14,7 +14,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' # One-way trip
 #' fa_define_query("JFK", "BOS", "2025-12-20")
 #'
@@ -23,7 +22,6 @@
 #'
 #' # Chain-trip
 #' fa_define_query("JFK", "YYZ", "2025-12-20", "RDU", "LGA", "2025-12-25")
-#' }
 fa_define_query <- function(...) {
   args <- list(...)
 
