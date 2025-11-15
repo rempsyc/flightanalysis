@@ -40,18 +40,14 @@
 #'
 #' @examples
 #' # Using sample data
-#' data(sample_query)
 #' data(sample_flights)
 #' 
-#' # Attach flight data to query object
-#' sample_query$data <- sample_flights
-#' 
 #' # Find best dates
-#' fa_find_best_dates(sample_query, n = 3, by = "min")
+#' fa_find_best_dates(sample_flights, n = 3, by = "min")
 #' 
 #' # With filters
 #' fa_find_best_dates(
-#'   sample_query,
+#'   sample_flights,
 #'   n = 2,
 #'   max_stops = 0
 #' )
@@ -104,10 +100,25 @@ fa_find_best_dates <- function(
     )
   }
 
+  # Normalize column names for direct data frame input
+  # If we have lowercase columns (from direct sample_flights), create uppercase versions
+  if ("price" %in% names(flight_results) && !"Price" %in% names(flight_results)) {
+    flight_results$Price <- flight_results$price
+  }
+  
+  if ("departure_datetime" %in% names(flight_results) && !"Date" %in% names(flight_results)) {
+    flight_results$Date <- as.character(as.Date(flight_results$departure_datetime))
+  }
+  
+  # If origin column exists but not Airport/Origin (uppercase), add it
+  if ("origin" %in% names(flight_results) && !any(c("Origin", "Airport") %in% names(flight_results))) {
+    flight_results$Origin <- flight_results$origin
+  }
+
   required_cols <- c("Date", "Price")
   if (!all(required_cols %in% names(flight_results))) {
     stop(sprintf(
-      "flight_results must contain columns: %s",
+      "flight_results must contain columns: %s (or lowercase equivalents: date/departure_datetime, price)",
       paste(required_cols, collapse = ", ")
     ))
   }

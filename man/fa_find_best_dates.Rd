@@ -70,18 +70,14 @@ such as departure time, airlines, travel time, stops, and emissions.
 }
 \examples{
 # Using sample data
-data(sample_query)
 data(sample_flights)
 
-# Attach flight data to query object
-sample_query$data <- sample_flights
-
 # Find best dates
-fa_find_best_dates(sample_query, n = 3, by = "min")
+fa_find_best_dates(sample_flights, n = 3, by = "min")
 
 # With filters
 fa_find_best_dates(
-  sample_query,
+  sample_flights,
   n = 2,
   max_stops = 0
 )
