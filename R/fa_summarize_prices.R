@@ -40,15 +40,8 @@
 #' @export
 #'
 #' @examples
-#' # Using sample data
-#' data(sample_query)
-#' data(sample_flights)
-#'
-#' # Attach flight data to query object
-#' sample_query$data <- sample_flights
-#'
 #' # Create summary table
-#' fa_summarize_prices(sample_query)
+#' fa_summarize_prices(sample_flights)
 #'
 #' # With filters
 #' fa_summarize_prices(

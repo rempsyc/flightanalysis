@@ -72,10 +72,6 @@ Supports filtering by various criteria such as departure time, airlines,
 travel time, stops, and emissions.
 }
 \examples{
-# Using sample data
-data(sample_query)
-data(sample_flights)
-
 # Attach flight data to query object
 sample_query$data <- sample_flights
 
