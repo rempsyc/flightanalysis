@@ -90,43 +90,43 @@ fa_find_best_dates(
 
 A data frame with columns: departure_date, departure_time (or date if
 datetime not available), origin, price (average/median/min), n_routes,
-num_stops, layover, travel_time, co2_emission_kg, and airlines. All
-column names are lowercase. Returns the top N dates with best (lowest)
-prices, sorted by departure time for display. Additional columns are
-aggregated using mean/median for numeric values and most common value
-for categorical.
+num_stops, layover, travel_time, co2_emission_kg, airlines,
+arrival_date, arrival_time. All column names are lowercase. Returns the
+top N dates with best (lowest) prices, sorted by departure time for
+display. Additional columns are aggregated using mean/median for numeric
+values and most common value for categorical. Note: arrival_date and
+arrival_time represent the most common values when multiple flights are
+aggregated and may not correspond exactly to the specific departure
+times shown.
 
 ## Examples
 
 ``` r
-# Using sample data
-data(sample_query)
-data(sample_flights)
-
-# Attach flight data to query object
-sample_query$data <- sample_flights
-
 # Find best dates
-fa_find_best_dates(sample_query, n = 3, by = "min")
-#>   departure_date departure_time origin price num_stops         layover
-#> 1     2025-12-20       14:00:00    JFK   650         0            <NA>
-#> 2     2025-12-21       03:00:00    JFK   580         1 3 hr 15 min WAW
-#> 3     2025-12-27       13:30:00    IST   620         0            <NA>
-#>    travel_time co2_emission_kg            airlines n_routes
-#> 1  13 hr 0 min             550    Turkish Airlines        1
-#> 2 13 hr 30 min             600 LOT Polish Airlines        1
-#> 3 12 hr 45 min             540    Turkish Airlines        1
+fa_find_best_dates(sample_flights, n = 3, by = "min")
+#>   departure_date departure_time arrival_date arrival_time origin price
+#> 1     2025-12-20          09:00   2025-12-20        22:00    JFK   650
+#> 2     2025-12-20          22:00   2025-12-21        11:30    JFK   580
+#> 3     2025-12-27          08:30   2025-12-27        21:15    IST   620
+#>   num_stops         layover  travel_time co2_emission_kg            airlines
+#> 1         0            <NA>  13 hr 0 min             550    Turkish Airlines
+#> 2         1 3 hr 15 min WAW 13 hr 30 min             600 LOT Polish Airlines
+#> 3         0            <NA> 12 hr 45 min             540    Turkish Airlines
+#>   n_routes
+#> 1        1
+#> 2        1
+#> 3        1
 
 # With filters
 fa_find_best_dates(
-  sample_query,
+  sample_flights,
   n = 2,
   max_stops = 0
 )
-#>   departure_date departure_time origin price num_stops  travel_time
-#> 1     2025-12-20       14:00:00    JFK   650         0  13 hr 0 min
-#> 2     2025-12-27       13:30:00    IST   620         0 12 hr 45 min
-#>   co2_emission_kg         airlines n_routes
-#> 1             550 Turkish Airlines        1
-#> 2             540 Turkish Airlines        1
+#>   departure_date departure_time arrival_date arrival_time origin price
+#> 1     2025-12-20          09:00   2025-12-20        22:00    JFK   650
+#> 2     2025-12-27          08:30   2025-12-27        21:15    IST   620
+#>   num_stops  travel_time co2_emission_kg         airlines n_routes
+#> 1         0  13 hr 0 min             550 Turkish Airlines        1
+#> 2         0 12 hr 45 min             540 Turkish Airlines        1
 ```

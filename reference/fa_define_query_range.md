@@ -38,13 +38,12 @@ multiple origins: A named list of flight query objects, one per origin.
 
 ``` r
 # Single origin - returns one query object
-query <- fa_define_query_range(
+fa_define_query_range(
   origin = "BOM",
   dest = "JFK",
   date_min = "2025-12-18",
   date_max = "2025-12-20"
 )
-print(query)
 #> Flight Query( {Not Yet Fetched}
 #> 2025-12-18: BOM --> JFK
 #> 2025-12-19: BOM --> JFK
@@ -52,18 +51,22 @@ print(query)
 #> )
 
 # Multiple origins - returns named list of query objects
-queries <- fa_define_query_range(
+fa_define_query_range(
   origin = c("BOM", "DEL"),
   dest = "JFK",
   date_min = "2025-12-18",
   date_max = "2025-12-20"
 )
-names(queries)
-#> [1] "BOM" "DEL"
-print(queries$BOM)
+#> $BOM
 #> Flight Query( {Not Yet Fetched}
 #> 2025-12-18: BOM --> JFK
 #> 2025-12-19: BOM --> JFK
 #> 2025-12-20: BOM --> JFK
+#> )
+#> $DEL
+#> Flight Query( {Not Yet Fetched}
+#> 2025-12-18: DEL --> JFK
+#> 2025-12-19: DEL --> JFK
+#> 2025-12-20: DEL --> JFK
 #> )
 ```

@@ -31,12 +31,11 @@ fa_summarize_prices(
 
 - flight_results:
 
-  Either: - A data frame with columns: City, Airport, Date, Price, and
-  optionally Comment (Airport will be renamed to Origin) - A
-  flight_results object (from fa_fetch_flights with multiple origins) -
-  A list of flight queries (from fa_define_query_range with multiple
-  origins) - A single flight query (from fa_define_query_range with
-  single origin)
+  Either: - A data frame with columns: Date and Price (and optionally
+  other filter columns) - A flight_results object (from fa_fetch_flights
+  with multiple origins) - A list of flight queries (from
+  fa_define_query_range with multiple origins) - A single flight query
+  (from fa_define_query_range with single origin)
 
 - include_comment:
 
@@ -101,27 +100,20 @@ column per date with prices, and an Average_Price column.
 ## Examples
 
 ``` r
-# Using sample data
-data(sample_query)
-data(sample_flights)
-
-# Attach flight data to query object
-sample_query$data <- sample_flights
-
 # Create summary table
-fa_summarize_prices(sample_query)
-#>       City Origin 2025-12-20 2025-12-21 2025-12-27 Average_Price
-#> 1 New York    JFK       $650       $580       <NA>          $615
-#> 2 Istanbul    IST       <NA>       <NA>       $620          $620
-#> 3     Best    Day                     X                         
+fa_summarize_prices(sample_flights)
+#>   City Origin 2025-12-20 2025-12-21 2025-12-27 Average_Price
+#> 1  JFK    JFK       $580       $695       <NA>          $638
+#> 2  IST    IST       <NA>       <NA>       $620          $620
+#> 3 Best    Day          X                                    
 
 # With filters
 fa_summarize_prices(
-  sample_query,
+  sample_flights,
   max_stops = 0
 )
-#>       City Origin 2025-12-20 2025-12-27 Average_Price
-#> 1 New York    JFK       $650       <NA>          $650
-#> 2 Istanbul    IST       <NA>       $620          $620
-#> 3     Best    Day                     X              
+#>   City Origin 2025-12-20 2025-12-27 Average_Price
+#> 1  JFK    JFK       $650       <NA>          $650
+#> 2  IST    IST       <NA>       $620          $620
+#> 3 Best    Day                     X              
 ```

@@ -76,7 +76,7 @@ travel time, stops, and emissions.</p>
 
 <dl><dt id="arg-flight-results">flight_results<a class="anchor" aria-label="anchor" href="#arg-flight-results"></a></dt>
 <dd><p>Either:
-- A data frame with columns: City, Airport, Date, Price, and optionally Comment (Airport will be renamed to Origin)
+- A data frame with columns: Date and Price (and optionally other filter columns)
 - A flight_results object (from fa_fetch_flights with multiple origins)
 - A list of flight queries (from fa_define_query_range with multiple origins)
 - A single flight query (from fa_define_query_range with single origin)</p></dd>
@@ -146,29 +146,22 @@ Default is NULL (no filter).</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Using sample data</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">sample_query</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">sample_flights</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Attach flight data to query object</span></span></span>
-<span class="r-in"><span><span class="va">sample_query</span><span class="op">$</span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">sample_flights</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Create summary table</span></span></span>
-<span class="r-in"><span><span class="fu">fa_summarize_prices</span><span class="op">(</span><span class="va">sample_query</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       City Origin 2025-12-20 2025-12-21 2025-12-27 Average_Price</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 New York    JFK       $650       $580       &lt;NA&gt;          $615</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 Istanbul    IST       &lt;NA&gt;       &lt;NA&gt;       $620          $620</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3     Best    Day                     X                         </span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Create summary table</span></span></span>
+<span class="r-in"><span><span class="fu">fa_summarize_prices</span><span class="op">(</span><span class="va">sample_flights</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   City Origin 2025-12-20 2025-12-21 2025-12-27 Average_Price</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  JFK    JFK       $580       $695       &lt;NA&gt;          $638</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  IST    IST       &lt;NA&gt;       &lt;NA&gt;       $620          $620</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 Best    Day          X                                    </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># With filters</span></span></span>
 <span class="r-in"><span><span class="fu">fa_summarize_prices</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">sample_query</span>,</span></span>
+<span class="r-in"><span>  <span class="va">sample_flights</span>,</span></span>
 <span class="r-in"><span>  max_stops <span class="op">=</span> <span class="fl">0</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       City Origin 2025-12-20 2025-12-27 Average_Price</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 New York    JFK       $650       &lt;NA&gt;          $650</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 Istanbul    IST       &lt;NA&gt;       $620          $620</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3     Best    Day                     X              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   City Origin 2025-12-20 2025-12-27 Average_Price</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  JFK    JFK       $650       &lt;NA&gt;          $650</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  IST    IST       &lt;NA&gt;       $620          $620</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 Best    Day                     X              </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
