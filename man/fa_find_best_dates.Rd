@@ -22,7 +22,7 @@ fa_find_best_dates(
 \arguments{
 \item{results}{Either:
 - A data frame with columns: Date and Price (and optionally other filter columns)
-- A list of flight querys (from fa_create_date_range with multiple origins)
+- A list of flight queries (from fa_create_date_range with multiple origins)
 - A single flight query (from fa_create_date_range with single origin)}
 
 \item{n}{Integer. Number of best dates to return. Default is 10.}

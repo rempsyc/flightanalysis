@@ -23,7 +23,7 @@ fa_summarize_prices(
 \arguments{
 \item{results}{Either:
 - A data frame with columns: City, Airport, Date, Price, and optionally Comment (Airport will be renamed to Origin)
-- A list of flight querys (from fa_create_date_range with multiple origins)
+- A list of flight queries (from fa_create_date_range with multiple origins)
 - A single flight query (from fa_create_date_range with single origin)}
 
 \item{include_comment}{Logical. If TRUE and Comment column exists, includes
