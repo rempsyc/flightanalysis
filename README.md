@@ -68,18 +68,18 @@ flights <- fa_fetch_flights(query)
 
 ``` r
 # View the flight data
-head(flights$data) |>
+head(flights$data[1:11]) |>
   knitr::kable()
 ```
 
-| departure_datetime | arrival_datetime | origin | destination | airlines | travel_time | price | num_stops | layover | access_date | co2_emission_kg | emission_diff_pct |
-|:---|:---|:---|:---|:---|:---|---:|---:|:---|:---|---:|---:|
-| 2025-12-20 22:35:00 | 2025-12-22 00:40:00 | JFK | IST | LOT | 18 hr 5 min | 1475 | 1 | 6 hr 50 min WAW | 2025-11-15 12:25:49 | 633 | NA |
-| 2025-12-20 21:20:00 | 2025-12-21 16:55:00 | JFK | IST | KLMDelta | 11 hr 35 min | 1770 | 1 | 1 hr 5 min AMS | 2025-11-15 12:25:49 | 444 | NA |
-| 2025-12-20 00:20:00 | 2025-12-20 18:10:00 | JFK | IST | Turkish AirlinesJetBlue | 9 hr 50 min | 1921 | 0 | NA | 2025-11-15 12:25:49 | 528 | NA |
-| 2025-12-20 12:50:00 | 2025-12-21 06:45:00 | JFK | IST | Turkish Airlines | 9 hr 55 min | 1952 | 0 | NA | 2025-11-15 12:25:49 | 414 | NA |
-| 2025-12-20 20:05:00 | 2025-12-21 14:05:00 | JFK | IST | Price graph | 10 hr | 1982 | 0 | NA | 2025-11-15 12:25:49 | 528 | NA |
-| 2025-12-20 01:00:00 | 2025-12-21 03:50:00 | JFK | IST | Air FranceDelta, KLM | 18 hr 50 min | 1469 | 1 | 8 hr 15 min CDG | 2025-11-15 12:25:49 | 551 | 0 |
+| departure_date | departure_time | arrival_date | arrival_time | origin | destination | airlines | travel_time | price | num_stops | layover |
+|:---|:---|:---|:---|:---|:---|:---|:---|---:|---:|:---|
+| 2025-12-20 | 22:35 | 2025-12-22 | 00:40 | JFK | IST | LOT | 18 hr 5 min | 1475 | 1 | 6 hr 50 min WAW |
+| 2025-12-20 | 21:20 | 2025-12-21 | 16:55 | JFK | IST | KLM, Delta | 11 hr 35 min | 1770 | 1 | 1 hr 5 min AMS |
+| 2025-12-20 | 00:20 | 2025-12-20 | 18:10 | JFK | IST | Turkish Airlines, Jet, Blue | 9 hr 50 min | 1921 | 0 | NA |
+| 2025-12-20 | 12:50 | 2025-12-21 | 06:45 | JFK | IST | Turkish Airlines | 9 hr 55 min | 1952 | 0 | NA |
+| 2025-12-20 | 20:05 | 2025-12-21 | 14:05 | JFK | IST | Price graph | 10 hr | 1982 | 0 | NA |
+| 2025-12-20 | 01:00 | 2025-12-21 | 03:50 | JFK | IST | Air France, Delta, KLM | 18 hr 50 min | 1469 | 1 | 8 hr 15 min CDG |
 
 The package supports multiple trip types:
 
@@ -161,11 +161,11 @@ fa_find_best_dates(
 
 | departure_date | departure_time | origin | price | num_stops | layover | travel_time | co2_emission_kg | airlines | n_routes |
 |:---|:---|:---|---:|---:|:---|:---|---:|:---|---:|
-| 2025-12-18 | 01:30:00 | DEL | 408 | 1 | 2 hr CDG | 19 hr 45 min | 794 | Air FranceDelta, KLM | 1 |
-| 2025-12-18 | 04:40:00 | BOM | 413 | 1 | 3 hr 15 min AUH | 21 hr 15 min | 852 | Etihad | 1 |
-| 2025-12-19 | 04:40:00 | BOM | 365 | 1 | 3 hr 15 min AUH | 21 hr 15 min | 844 | Etihad | 1 |
-| 2025-12-19 | 20:55:00 | DEL | 393 | 1 | 3 hr 30 min AUH | 22 hr 35 min | 843 | Etihad | 1 |
-| 2025-12-19 | 23:15:00 | BOM | 413 | 1 | 2 hr 5 min AUH | 20 hr 15 min | 763 | Akasa Air, Etihad | 1 |
+| 2025-12-18 | 01:30 | DEL | 408 | 1 | 2 hr CDG | 19 hr 45 min | 794 | Air France, Delta, KLM | 1 |
+| 2025-12-18 | 04:40 | BOM | 413 | 1 | 3 hr 15 min AUH | 21 hr 15 min | 852 | Etihad | 1 |
+| 2025-12-19 | 04:40 | BOM | 365 | 1 | 3 hr 15 min AUH | 21 hr 15 min | 844 | Etihad | 1 |
+| 2025-12-19 | 20:55 | DEL | 393 | 1 | 3 hr 30 min AUH | 22 hr 35 min | 843 | Etihad | 1 |
+| 2025-12-19 | 23:15 | BOM | 413 | 1 | 2 hr 5 min AUH | 20 hr 15 min | 763 | Akasa Air, Etihad | 1 |
 
 ## Original Python Package
 
