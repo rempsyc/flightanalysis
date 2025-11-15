@@ -53,7 +53,7 @@
 #' fa_find_best_dates(
 #'   sample_query,
 #'   n = 2,
-#'   max_stops = 1
+#'   max_stops = 0
 #' )
 fa_find_best_dates <- function(
   flight_results,
