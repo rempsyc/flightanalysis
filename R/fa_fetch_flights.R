@@ -103,12 +103,92 @@ fa_fetch_flights <- function(
 
   # Return the result
   # If a single Scrape object was passed in, return just that object
-  # Otherwise return the list
+  # Otherwise return a flight_results object with merged data
   if (single_object) {
     return(queries[[1]])
   } else {
-    return(queries)
+    # Create a flight_results object with merged data
+    result <- create_flight_results(queries)
+    return(result)
   }
+}
+
+#' Create Flight Results Object
+#'
+#' @description
+#' Creates a flight_results object from a list of flight queries.
+#' Merges data from all queries into a single data frame accessible via $data,
+#' while preserving individual query objects in named list elements.
+#'
+#' @param queries Named list of flight_query objects
+#'
+#' @return A flight_results object (S3 class) containing:
+#'   - $data: Merged data frame from all queries
+#'   - Named elements for each origin query (e.g., $BOM, $DEL)
+#'
+#' @keywords internal
+create_flight_results <- function(queries) {
+  # Merge all data from queries
+  all_data <- list()
+
+  for (i in seq_along(queries)) {
+    if (!is.null(queries[[i]]$data) && nrow(queries[[i]]$data) > 0) {
+      all_data[[i]] <- queries[[i]]$data
+    }
+  }
+
+  # Combine all data into single data frame
+  if (length(all_data) > 0) {
+    merged_data <- do.call(rbind, all_data)
+    rownames(merged_data) <- NULL
+  } else {
+    merged_data <- data.frame()
+  }
+
+  # Create result object
+  result <- c(list(data = merged_data), queries)
+  class(result) <- "flight_results"
+
+  return(result)
+}
+
+#' Print method for flight_results objects
+#' @param x A flight_results object
+#' @param ... Additional arguments (ignored)
+#' @export
+print.flight_results <- function(x, ...) {
+  cat("Flight Results\n")
+  cat("==============\n\n")
+
+  # Show merged data summary
+  if (!is.null(x$data) && nrow(x$data) > 0) {
+    cat(sprintf("Total flights: %d\n", nrow(x$data)))
+
+    # Show origins if available
+    if ("origin" %in% names(x$data)) {
+      origins <- unique(x$data$origin)
+      cat(sprintf("Origins: %s\n", paste(origins, collapse = ", ")))
+    }
+
+    # Show destinations if available
+    if ("destination" %in% names(x$data)) {
+      dests <- unique(x$data$destination)
+      cat(sprintf("Destinations: %s\n", paste(dests, collapse = ", ")))
+    }
+  } else {
+    cat("No flight data available\n")
+  }
+
+  # Show individual queries
+  query_names <- setdiff(names(x), "data")
+  if (length(query_names) > 0) {
+    cat(sprintf(
+      "\nIndividual queries: %s\n",
+      paste(query_names, collapse = ", ")
+    ))
+  }
+
+  invisible(x)
 }
 
 #' Check if Chrome/Chromium is installed

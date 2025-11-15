@@ -1,9 +1,10 @@
-#' Create Date Range Queries
+#' Define Flight Query Range
 #'
 #' @description
 #' Creates flight queries for multiple origin airports across a date range.
 #' This helper function generates all permutations of origins and dates
 #' without actually fetching data. Each origin gets its own query object.
+#' Similar to fa_define_query but for date ranges.
 #'
 #' @param origin Character vector of 3-letter airport codes to search from.
 #' @param dest Character. 3-letter destination airport code.
@@ -16,34 +17,25 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' # Single origin - returns one query object
-#' query <- fa_create_date_range(
+#' query <- fa_define_query_range(
 #'   origin = "BOM",
 #'   dest = "JFK",
 #'   date_min = "2025-12-18",
-#'   date_max = "2026-01-05"
+#'   date_max = "2025-12-20"
 #' )
-#' result <- fa_fetch_flights(query)
+#' print(query)
 #'
-#' # Multiple origins - returns list of query objects
-#' queries <- fa_create_date_range(
-#'   origin = c("BOM", "DEL", "VNS"),
+#' # Multiple origins - returns named list of query objects
+#' queries <- fa_define_query_range(
+#'   origin = c("BOM", "DEL"),
 #'   dest = "JFK",
 #'   date_min = "2025-12-18",
-#'   date_max = "2026-01-05"
+#'   date_max = "2025-12-20"
 #' )
-#'
-#' # Fetch data for each origin
-#' results <- list()
-#' for (i in seq_along(queries)) {
-#'   results[[i]] <- fa_fetch_flights(queries[[i]])
-#' }
-#'
-#' # Combine all results
-#' all_data <- do.call(rbind, lapply(results, function(x) x$data))
-#' }
-fa_create_date_range <- function(origin, dest, date_min, date_max) {
+#' names(queries)
+#' print(queries$BOM)
+fa_define_query_range <- function(origin, dest, date_min, date_max) {
   # Validate inputs
   if (!is.character(origin) || length(origin) == 0) {
     stop("origin must be a non-empty character vector")

@@ -15,7 +15,7 @@ A named list of 2 flight_query objects (BOM and DEL to JFK)
 sample_multi_origin
 }
 \description{
-Sample query objects for multiple origins created with `fa_create_date_range()`.
+Sample query objects for multiple origins created with `fa_define_query_range()`.
 Demonstrates searching multiple airports over a date range.
 }
 \examples{

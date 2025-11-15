@@ -6,10 +6,11 @@
 #' when planning a flexible trip. Supports filtering by various criteria
 #' such as departure time, airlines, travel time, stops, and emissions.
 #'
-#' @param results Either:
+#' @param flight_results Either:
 #'   - A data frame with columns: Date and Price (and optionally other filter columns)
-#'   - A list of flight queries (from fa_create_date_range with multiple origins)
-#'   - A single flight query (from fa_create_date_range with single origin)
+#'   - A flight_results object (from fa_fetch_flights with multiple origins)
+#'   - A list of flight queries (from fa_define_query_range with multiple origins)
+#'   - A single flight query (from fa_define_query_range with single origin)
 #' @param n Integer. Number of best dates to return. Default is 10.
 #' @param by Character. How to calculate best dates: "mean" (average price
 #'   across routes), "median", or "min" (lowest price on that date).
@@ -32,30 +33,30 @@
 #' @return A data frame with columns: departure_date, departure_time (or date if datetime not available),
 #'   origin, price (average/median/min), n_routes, num_stops, layover, travel_time,
 #'   co2_emission_kg, and airlines. All column names are lowercase.
-#'   Sorted by price (cheapest first). Additional columns are aggregated using
-#'   mean/median for numeric values and most common value for categorical.
+#'   Returns the top N dates with best (lowest) prices, sorted by departure time for display.
+#'   Additional columns are aggregated using mean/median for numeric values and most common value for categorical.
 #'
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' # Basic usage
-#' queries <- fa_create_date_range(c("BOM", "DEL"), "JFK", "2025-12-28", "2026-01-02")
-#' flights <- fa_fetch_flights(queries)
-#' fa_find_best_dates(flights, n = 5, by = "min")
-#'
+#' # Using sample data
+#' data(sample_query)
+#' data(sample_flights)
+#' 
+#' # Attach flight data to query object
+#' sample_query$data <- sample_flights
+#' 
+#' # Find best dates
+#' fa_find_best_dates(sample_query, n = 3, by = "min")
+#' 
 #' # With filters
 #' fa_find_best_dates(
-#'   flights,
-#'   n = 5,
-#'   time_min = "08:00",
-#'   time_max = "20:00",
-#'   max_stops = 1,
-#'   max_emissions = 500
+#'   sample_query,
+#'   n = 2,
+#'   max_stops = 0
 #' )
-#' }
 fa_find_best_dates <- function(
-  results,
+  flight_results,
   n = 10,
   by = "min",
   time_min = NULL,
@@ -69,108 +70,116 @@ fa_find_best_dates <- function(
   max_emissions = NULL
 ) {
   # Handle different input types
-  # Check for flight query FIRST (before is.list, since flight queries are lists)
-  if (inherits(results, "flight_query")) {
+  # Check for flight_results object FIRST
+  if (inherits(flight_results, "flight_results")) {
+    # Extract the merged data directly
+    if (is.null(flight_results$data) || nrow(flight_results$data) == 0) {
+      stop(
+        "flight_results object contains no data. Please run fa_fetch_flights() first to fetch flight data."
+      )
+    }
+    flight_results <- extract_data_from_scrapes(flight_results)
+  } else if (inherits(flight_results, "flight_query")) {
     # Validate flight query has data
-    if (is.null(results$data) || nrow(results$data) == 0) {
+    if (is.null(flight_results$data) || nrow(flight_results$data) == 0) {
       stop(
         "flight query contains no data. Please run fa_fetch_flights() first to fetch flight data."
       )
     }
     # Single flight query - pass directly to extract_data_from_scrapes
-    results <- extract_data_from_scrapes(results)
-  } else if (is.list(results) && !is.data.frame(results)) {
+    flight_results <- extract_data_from_scrapes(flight_results)
+  } else if (is.list(flight_results) && !is.data.frame(flight_results)) {
     # Check if it's a list of flight queries
-    if (all(sapply(results, function(x) inherits(x, "flight_query")))) {
+    if (all(sapply(flight_results, function(x) inherits(x, "flight_query")))) {
       # Extract and combine data from list of flight queries
-      results <- extract_data_from_scrapes(results)
+      flight_results <- extract_data_from_scrapes(flight_results)
     } else {
       stop(
-        "results must be a data frame, a flight query, or a list of flight queries"
+        "flight_results must be a data frame, a flight_results object, a flight query, or a list of flight queries"
       )
     }
-  } else if (!is.data.frame(results)) {
+  } else if (!is.data.frame(flight_results)) {
     stop(
-      "results must be a data frame, a flight query, or a list of flight queries"
+      "flight_results must be a data frame, a flight_results object, a flight query, or a list of flight queries"
     )
   }
 
   required_cols <- c("Date", "Price")
-  if (!all(required_cols %in% names(results))) {
+  if (!all(required_cols %in% names(flight_results))) {
     stop(sprintf(
-      "results must contain columns: %s",
+      "flight_results must contain columns: %s",
       paste(required_cols, collapse = ", ")
     ))
   }
 
   # Rename Airport to Origin for consistency
-  if ("Airport" %in% names(results)) {
-    names(results)[names(results) == "Airport"] <- "Origin"
+  if ("Airport" %in% names(flight_results)) {
+    names(flight_results)[names(flight_results) == "Airport"] <- "Origin"
   }
 
   # Apply filters
-  if (!is.null(time_min) && "departure_datetime" %in% names(results)) {
+  if (!is.null(time_min) && "departure_datetime" %in% names(flight_results)) {
     time_min_parsed <- as.POSIXct(
       paste("1970-01-01", time_min),
       format = "%Y-%m-%d %H:%M"
     )
-    results <- results[
-      format(results$departure_datetime, "%H:%M") >=
+    flight_results <- flight_results[
+      format(flight_results$departure_datetime, "%H:%M") >=
         format(time_min_parsed, "%H:%M"),
     ]
   }
 
-  if (!is.null(time_max) && "departure_datetime" %in% names(results)) {
+  if (!is.null(time_max) && "departure_datetime" %in% names(flight_results)) {
     time_max_parsed <- as.POSIXct(
       paste("1970-01-01", time_max),
       format = "%Y-%m-%d %H:%M"
     )
-    results <- results[
-      format(results$departure_datetime, "%H:%M") <=
+    flight_results <- flight_results[
+      format(flight_results$departure_datetime, "%H:%M") <=
         format(time_max_parsed, "%H:%M"),
     ]
   }
 
-  if (!is.null(airlines) && "airlines" %in% names(results)) {
+  if (!is.null(airlines) && "airlines" %in% names(flight_results)) {
     # Check if any of the specified airlines appear in the airlines column
-    airline_filter <- sapply(results$airlines, function(x) {
+    airline_filter <- sapply(flight_results$airlines, function(x) {
       any(sapply(airlines, function(a) grepl(a, x, ignore.case = TRUE)))
     })
-    results <- results[airline_filter, ]
+    flight_results <- flight_results[airline_filter, ]
   }
 
   if (!is.null(price_min)) {
-    results <- results[results$Price >= price_min, ]
+    flight_results <- flight_results[flight_results$Price >= price_min, ]
   }
 
   if (!is.null(price_max)) {
-    results <- results[results$Price <= price_max, ]
+    flight_results <- flight_results[flight_results$Price <= price_max, ]
   }
 
-  if (!is.null(travel_time_max) && "travel_time" %in% names(results)) {
+  if (!is.null(travel_time_max) && "travel_time" %in% names(flight_results)) {
     # Parse travel time using helper function
-    results$travel_time_minutes <- sapply(
-      results$travel_time,
+    flight_results$travel_time_minutes <- sapply(
+      flight_results$travel_time,
       parse_time_to_minutes
     )
 
     # Convert travel_time_max to minutes using helper function
     max_minutes <- parse_time_to_minutes(travel_time_max)
 
-    results <- results[
-      !is.na(results$travel_time_minutes) &
-        results$travel_time_minutes <= max_minutes,
+    flight_results <- flight_results[
+      !is.na(flight_results$travel_time_minutes) &
+        flight_results$travel_time_minutes <= max_minutes,
     ]
-    results$travel_time_minutes <- NULL
+    flight_results$travel_time_minutes <- NULL
   }
 
-  if (!is.null(max_stops) && "num_stops" %in% names(results)) {
-    results <- results[results$num_stops <= max_stops, ]
+  if (!is.null(max_stops) && "num_stops" %in% names(flight_results)) {
+    flight_results <- flight_results[flight_results$num_stops <= max_stops, ]
   }
 
-  if (!is.null(max_layover) && "layover" %in% names(results)) {
+  if (!is.null(max_layover) && "layover" %in% names(flight_results)) {
     # Parse layover time using helper function (treat NA/empty as 0)
-    results$layover_minutes <- sapply(results$layover, function(x) {
+    flight_results$layover_minutes <- sapply(flight_results$layover, function(x) {
       if (is.na(x) || x == "NA") {
         return(0)
       }
@@ -180,19 +189,19 @@ fa_find_best_dates <- function(
     # Parse max_layover as a single string
     max_layover_minutes <- parse_time_to_minutes(max_layover)
 
-    results <- results[results$layover_minutes <= max_layover_minutes, ]
-    results$layover_minutes <- NULL
+    flight_results <- flight_results[flight_results$layover_minutes <= max_layover_minutes, ]
+    flight_results$layover_minutes <- NULL
   }
 
-  if (!is.null(max_emissions) && "co2_emission_kg" %in% names(results)) {
-    results <- results[
-      !is.na(results$co2_emission_kg) &
-        results$co2_emission_kg <= max_emissions,
+  if (!is.null(max_emissions) && "co2_emission_kg" %in% names(flight_results)) {
+    flight_results <- flight_results[
+      !is.na(flight_results$co2_emission_kg) &
+        flight_results$co2_emission_kg <= max_emissions,
     ]
   }
 
   # Check if we have any data after filtering
-  if (nrow(results) == 0) {
+  if (nrow(flight_results) == 0) {
     stop(
       "No data available after filtering. The flight query may contain only placeholder rows or no valid flight data."
     )
@@ -203,21 +212,21 @@ fa_find_best_dates <- function(
   }
 
   # Use departure_datetime if available, otherwise fall back to Date
-  grouping_col <- if ("departure_datetime" %in% names(results)) {
+  grouping_col <- if ("departure_datetime" %in% names(flight_results)) {
     "departure_datetime"
   } else {
     "Date"
   }
 
   # Aggregate by datetime/date and origin (if Origin column exists)
-  if ("Origin" %in% names(results)) {
+  if ("Origin" %in% names(flight_results)) {
     # Build aggregation formula dynamically
     agg_formula <- stats::as.formula(paste("Price ~", grouping_col, "+ Origin"))
 
     # Aggregate price
     date_summary <- stats::aggregate(
       agg_formula,
-      data = results,
+      data = flight_results,
       FUN = function(x) {
         switch(
           by,
@@ -237,101 +246,136 @@ fa_find_best_dates <- function(
     )
 
     # Add additional information columns if available
-    if ("num_stops" %in% names(results)) {
-      stops_agg <- stats::aggregate(
-        stats::as.formula(paste("num_stops ~", grouping_col, "+ Origin")),
-        data = results,
-        FUN = function(x) round(mean(x, na.rm = TRUE), 1)
+    if ("num_stops" %in% names(flight_results)) {
+      stops_agg <- tryCatch(
+        {
+          stats::aggregate(
+            stats::as.formula(paste("num_stops ~", grouping_col, "+ Origin")),
+            data = flight_results,
+            FUN = function(x) round(mean(x, na.rm = TRUE), 1)
+          )
+        },
+        error = function(e) NULL
       )
-      date_summary <- merge(
-        date_summary,
-        stops_agg,
-        by = c(grouping_col, "Origin"),
-        all.x = TRUE
-      )
+      if (!is.null(stops_agg)) {
+        date_summary <- merge(
+          date_summary,
+          stops_agg,
+          by = c(grouping_col, "Origin"),
+          all.x = TRUE
+        )
+      }
     }
 
-    if ("layover" %in% names(results)) {
+    if ("layover" %in% names(flight_results)) {
       # For layover, take the most common value
-      layover_agg <- stats::aggregate(
-        stats::as.formula(paste("layover ~", grouping_col, "+ Origin")),
-        data = results,
-        FUN = function(x) {
-          x <- x[!is.na(x) & x != "NA"]
-          if (length(x) == 0) {
-            return(NA_character_)
-          }
-          names(sort(table(x), decreasing = TRUE))[1]
-        }
+      layover_agg <- tryCatch(
+        {
+          stats::aggregate(
+            stats::as.formula(paste("layover ~", grouping_col, "+ Origin")),
+            data = flight_results,
+            FUN = function(x) {
+              x <- x[!is.na(x) & x != "NA"]
+              if (length(x) == 0) {
+                return(NA_character_)
+              }
+              names(sort(table(x), decreasing = TRUE))[1]
+            }
+          )
+        },
+        error = function(e) NULL
       )
-      date_summary <- merge(
-        date_summary,
-        layover_agg,
-        by = c(grouping_col, "Origin"),
-        all.x = TRUE
-      )
+      if (!is.null(layover_agg)) {
+        date_summary <- merge(
+          date_summary,
+          layover_agg,
+          by = c(grouping_col, "Origin"),
+          all.x = TRUE
+        )
+      }
     }
 
-    if ("travel_time" %in% names(results)) {
+    if ("travel_time" %in% names(flight_results)) {
       # For travel_time, take the most common value
-      travel_agg <- stats::aggregate(
-        stats::as.formula(paste("travel_time ~", grouping_col, "+ Origin")),
-        data = results,
-        FUN = function(x) {
-          x <- x[!is.na(x)]
-          if (length(x) == 0) {
-            return(NA_character_)
-          }
-          names(sort(table(x), decreasing = TRUE))[1]
-        }
+      travel_agg <- tryCatch(
+        {
+          stats::aggregate(
+            stats::as.formula(paste("travel_time ~", grouping_col, "+ Origin")),
+            data = flight_results,
+            FUN = function(x) {
+              x <- x[!is.na(x)]
+              if (length(x) == 0) {
+                return(NA_character_)
+              }
+              names(sort(table(x), decreasing = TRUE))[1]
+            }
+          )
+        },
+        error = function(e) NULL
       )
-      date_summary <- merge(
-        date_summary,
-        travel_agg,
-        by = c(grouping_col, "Origin"),
-        all.x = TRUE
-      )
+      if (!is.null(travel_agg)) {
+        date_summary <- merge(
+          date_summary,
+          travel_agg,
+          by = c(grouping_col, "Origin"),
+          all.x = TRUE
+        )
+      }
     }
 
-    if ("co2_emission_kg" %in% names(results)) {
-      emissions_agg <- stats::aggregate(
-        stats::as.formula(paste("co2_emission_kg ~", grouping_col, "+ Origin")),
-        data = results,
-        FUN = function(x) round(mean(x, na.rm = TRUE), 0)
+    if ("co2_emission_kg" %in% names(flight_results)) {
+      emissions_agg <- tryCatch(
+        {
+          stats::aggregate(
+            stats::as.formula(paste("co2_emission_kg ~", grouping_col, "+ Origin")),
+            data = flight_results,
+            FUN = function(x) round(mean(x, na.rm = TRUE), 0)
+          )
+        },
+        error = function(e) NULL
       )
-      date_summary <- merge(
-        date_summary,
-        emissions_agg,
-        by = c(grouping_col, "Origin"),
-        all.x = TRUE
-      )
+      if (!is.null(emissions_agg)) {
+        date_summary <- merge(
+          date_summary,
+          emissions_agg,
+          by = c(grouping_col, "Origin"),
+          all.x = TRUE
+        )
+      }
     }
 
-    if ("airlines" %in% names(results)) {
+    if ("airlines" %in% names(flight_results)) {
       # For airlines, take the most common value
-      airlines_agg <- stats::aggregate(
-        stats::as.formula(paste("airlines ~", grouping_col, "+ Origin")),
-        data = results,
-        FUN = function(x) {
-          x <- x[!is.na(x)]
-          if (length(x) == 0) {
-            return(NA_character_)
-          }
-          names(sort(table(x), decreasing = TRUE))[1]
-        }
+      airlines_agg <- tryCatch(
+        {
+          stats::aggregate(
+            stats::as.formula(paste("airlines ~", grouping_col, "+ Origin")),
+            data = flight_results,
+            FUN = function(x) {
+              x <- x[!is.na(x)]
+              if (length(x) == 0) {
+                return(NA_character_)
+              }
+              names(sort(table(x), decreasing = TRUE))[1]
+            }
+          )
+        },
+        error = function(e) NULL
       )
-      date_summary <- merge(
-        date_summary,
-        airlines_agg,
-        by = c(grouping_col, "Origin"),
-        all.x = TRUE
-      )
+      if (!is.null(airlines_agg)) {
+        date_summary <- merge(
+          date_summary,
+          airlines_agg,
+          by = c(grouping_col, "Origin"),
+          all.x = TRUE
+        )
+      }
     }
 
     # Count number of routes per datetime/date (total across all origins)
     route_counts <- stats::aggregate(
       stats::as.formula(paste("Price ~", grouping_col)),
-      data = results,
+      data = flight_results,
       FUN = function(x) sum(!is.na(x))
     )
     names(route_counts)[2] <- "N_Routes"
@@ -344,7 +388,7 @@ fa_find_best_dates <- function(
 
     date_summary <- stats::aggregate(
       agg_formula,
-      data = results,
+      data = flight_results,
       FUN = function(x) {
         switch(
           by,
@@ -356,98 +400,133 @@ fa_find_best_dates <- function(
     )
 
     # Add additional information columns if available
-    if ("num_stops" %in% names(results)) {
-      stops_agg <- stats::aggregate(
-        stats::as.formula(paste("num_stops ~", grouping_col)),
-        data = results,
-        FUN = function(x) round(mean(x, na.rm = TRUE), 1)
+    if ("num_stops" %in% names(flight_results)) {
+      stops_agg <- tryCatch(
+        {
+          stats::aggregate(
+            stats::as.formula(paste("num_stops ~", grouping_col)),
+            data = flight_results,
+            FUN = function(x) round(mean(x, na.rm = TRUE), 1)
+          )
+        },
+        error = function(e) NULL
       )
-      date_summary <- merge(
-        date_summary,
-        stops_agg,
-        by = grouping_col,
-        all.x = TRUE
-      )
+      if (!is.null(stops_agg)) {
+        date_summary <- merge(
+          date_summary,
+          stops_agg,
+          by = grouping_col,
+          all.x = TRUE
+        )
+      }
     }
 
-    if ("layover" %in% names(results)) {
-      layover_agg <- stats::aggregate(
-        stats::as.formula(paste("layover ~", grouping_col)),
-        data = results,
-        FUN = function(x) {
-          x <- x[!is.na(x) & x != "NA"]
-          if (length(x) == 0) {
-            return(NA_character_)
-          }
-          names(sort(table(x), decreasing = TRUE))[1]
-        }
+    if ("layover" %in% names(flight_results)) {
+      layover_agg <- tryCatch(
+        {
+          stats::aggregate(
+            stats::as.formula(paste("layover ~", grouping_col)),
+            data = flight_results,
+            FUN = function(x) {
+              x <- x[!is.na(x) & x != "NA"]
+              if (length(x) == 0) {
+                return(NA_character_)
+              }
+              names(sort(table(x), decreasing = TRUE))[1]
+            }
+          )
+        },
+        error = function(e) NULL
       )
-      date_summary <- merge(
-        date_summary,
-        layover_agg,
-        by = grouping_col,
-        all.x = TRUE
-      )
+      if (!is.null(layover_agg)) {
+        date_summary <- merge(
+          date_summary,
+          layover_agg,
+          by = grouping_col,
+          all.x = TRUE
+        )
+      }
     }
 
-    if ("travel_time" %in% names(results)) {
-      travel_agg <- stats::aggregate(
-        stats::as.formula(paste("travel_time ~", grouping_col)),
-        data = results,
-        FUN = function(x) {
-          x <- x[!is.na(x)]
-          if (length(x) == 0) {
-            return(NA_character_)
-          }
-          names(sort(table(x), decreasing = TRUE))[1]
-        }
+    if ("travel_time" %in% names(flight_results)) {
+      travel_agg <- tryCatch(
+        {
+          stats::aggregate(
+            stats::as.formula(paste("travel_time ~", grouping_col)),
+            data = flight_results,
+            FUN = function(x) {
+              x <- x[!is.na(x)]
+              if (length(x) == 0) {
+                return(NA_character_)
+              }
+              names(sort(table(x), decreasing = TRUE))[1]
+            }
+          )
+        },
+        error = function(e) NULL
       )
-      date_summary <- merge(
-        date_summary,
-        travel_agg,
-        by = grouping_col,
-        all.x = TRUE
-      )
+      if (!is.null(travel_agg)) {
+        date_summary <- merge(
+          date_summary,
+          travel_agg,
+          by = grouping_col,
+          all.x = TRUE
+        )
+      }
     }
 
-    if ("co2_emission_kg" %in% names(results)) {
-      emissions_agg <- stats::aggregate(
-        stats::as.formula(paste("co2_emission_kg ~", grouping_col)),
-        data = results,
-        FUN = function(x) round(mean(x, na.rm = TRUE), 0)
+    if ("co2_emission_kg" %in% names(flight_results)) {
+      emissions_agg <- tryCatch(
+        {
+          stats::aggregate(
+            stats::as.formula(paste("co2_emission_kg ~", grouping_col)),
+            data = flight_results,
+            FUN = function(x) round(mean(x, na.rm = TRUE), 0)
+          )
+        },
+        error = function(e) NULL
       )
-      date_summary <- merge(
-        date_summary,
-        emissions_agg,
-        by = grouping_col,
-        all.x = TRUE
-      )
+      if (!is.null(emissions_agg)) {
+        date_summary <- merge(
+          date_summary,
+          emissions_agg,
+          by = grouping_col,
+          all.x = TRUE
+        )
+      }
     }
 
-    if ("airlines" %in% names(results)) {
-      airlines_agg <- stats::aggregate(
-        stats::as.formula(paste("airlines ~", grouping_col)),
-        data = results,
-        FUN = function(x) {
-          x <- x[!is.na(x)]
-          if (length(x) == 0) {
-            return(NA_character_)
-          }
-          names(sort(table(x), decreasing = TRUE))[1]
-        }
+    if ("airlines" %in% names(flight_results)) {
+      airlines_agg <- tryCatch(
+        {
+          stats::aggregate(
+            stats::as.formula(paste("airlines ~", grouping_col)),
+            data = flight_results,
+            FUN = function(x) {
+              x <- x[!is.na(x)]
+              if (length(x) == 0) {
+                return(NA_character_)
+              }
+              names(sort(table(x), decreasing = TRUE))[1]
+            }
+          )
+        },
+        error = function(e) NULL
       )
-      date_summary <- merge(
-        date_summary,
-        airlines_agg,
-        by = grouping_col,
-        all.x = TRUE
-      )
+      if (!is.null(airlines_agg)) {
+        date_summary <- merge(
+          date_summary,
+          airlines_agg,
+          by = grouping_col,
+          all.x = TRUE
+        )
+      }
     }
 
     # Count number of routes per datetime/date
     route_counts <- stats::aggregate(
       agg_formula,
-      data = results,
+      data = flight_results,
       FUN = function(x) sum(!is.na(x))
     )
     names(route_counts)[2] <- "N_Routes"
@@ -476,12 +555,27 @@ fa_find_best_dates <- function(
   # Standardize column names to lowercase
   names(date_summary) <- tolower(names(date_summary))
 
-  # Sort by price
-  date_summary <- date_summary[order(date_summary$price), ]
+  # Sort by price first to identify the best n dates
+  if ("price" %in% names(date_summary)) {
+    date_summary <- date_summary[order(date_summary$price), ]
+  }
 
   # Return top n
   if (n < nrow(date_summary)) {
     date_summary <- date_summary[1:n, ]
+  }
+
+  # Now sort the selected n by departure time/date for display
+  if ("departure_time" %in% names(date_summary)) {
+    date_summary <- date_summary[order(date_summary$departure_date, date_summary$departure_time), ]
+  } else if ("date" %in% names(date_summary)) {
+    date_summary <- date_summary[order(date_summary$date), ]
+  }
+
+  # Reorder columns to put departure_date and departure_time first
+  if ("departure_date" %in% names(date_summary) && "departure_time" %in% names(date_summary)) {
+    other_cols <- setdiff(names(date_summary), c("departure_date", "departure_time"))
+    date_summary <- date_summary[, c("departure_date", "departure_time", other_cols)]
   }
 
   rownames(date_summary) <- NULL

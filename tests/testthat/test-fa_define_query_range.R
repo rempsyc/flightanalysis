@@ -1,6 +1,6 @@
-test_that("fa_create_date_range creates valid query object for single origin", {
+test_that("fa_define_query_range creates valid query object for single origin", {
   # Single origin - should return one query object
-  query <- fa_create_date_range(
+  query <- fa_define_query_range(
     origin = "BOM",
     dest = "JFK",
     date_min = "2025-12-18",
@@ -29,9 +29,9 @@ test_that("fa_create_date_range creates valid query object for single origin", {
   expect_true(all(dates == sort(dates)))
 })
 
-test_that("fa_create_date_range creates list for multiple origins", {
+test_that("fa_define_query_range creates list for multiple origins", {
   # Multiple origins - should return list of query objects
-  queries <- fa_create_date_range(
+  queries <- fa_define_query_range(
     origin = c("BOM", "DEL"),
     dest = "JFK",
     date_min = "2025-12-18",
@@ -71,10 +71,10 @@ test_that("fa_create_date_range creates list for multiple origins", {
   expect_true(all(del_dates == sort(del_dates)))
 })
 
-test_that("fa_create_date_range validates inputs", {
+test_that("fa_define_query_range validates inputs", {
   # Invalid airport code
   expect_error(
-    fa_create_date_range(
+    fa_define_query_range(
       origin = c("BO"),
       dest = "JFK",
       date_min = "2025-12-18",
@@ -85,7 +85,7 @@ test_that("fa_create_date_range validates inputs", {
 
   # Invalid date order
   expect_error(
-    fa_create_date_range(
+    fa_define_query_range(
       origin = "BOM",
       dest = "JFK",
       date_min = "2025-12-20",

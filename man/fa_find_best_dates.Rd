@@ -5,7 +5,7 @@
 \title{Find Best Travel Dates}
 \usage{
 fa_find_best_dates(
-  results,
+  flight_results,
   n = 10,
   by = "min",
   time_min = NULL,
@@ -20,10 +20,11 @@ fa_find_best_dates(
 )
 }
 \arguments{
-\item{results}{Either:
+\item{flight_results}{Either:
 - A data frame with columns: Date and Price (and optionally other filter columns)
-- A list of flight queries (from fa_create_date_range with multiple origins)
-- A single flight query (from fa_create_date_range with single origin)}
+- A flight_results object (from fa_fetch_flights with multiple origins)
+- A list of flight queries (from fa_define_query_range with multiple origins)
+- A single flight query (from fa_define_query_range with single origin)}
 
 \item{n}{Integer. Number of best dates to return. Default is 10.}
 
@@ -58,8 +59,8 @@ Default is NULL (no filter).}
 A data frame with columns: departure_date, departure_time (or date if datetime not available),
   origin, price (average/median/min), n_routes, num_stops, layover, travel_time,
   co2_emission_kg, and airlines. All column names are lowercase.
-  Sorted by price (cheapest first). Additional columns are aggregated using
-  mean/median for numeric values and most common value for categorical.
+  Returns the top N dates with best (lowest) prices, sorted by departure time for display.
+  Additional columns are aggregated using mean/median for numeric values and most common value for categorical.
 }
 \description{
 Identifies and returns the top N dates with the cheapest average prices
@@ -68,20 +69,20 @@ when planning a flexible trip. Supports filtering by various criteria
 such as departure time, airlines, travel time, stops, and emissions.
 }
 \examples{
-\dontrun{
-# Basic usage
-queries <- fa_create_date_range(c("BOM", "DEL"), "JFK", "2025-12-28", "2026-01-02")
-flights <- fa_fetch_flights(queries)
-fa_find_best_dates(flights, n = 5, by = "min")
+# Using sample data
+data(sample_query)
+data(sample_flights)
+
+# Attach flight data to query object
+sample_query$data <- sample_flights
+
+# Find best dates
+fa_find_best_dates(sample_query, n = 3, by = "min")
 
 # With filters
 fa_find_best_dates(
-  flights,
-  n = 5,
-  time_min = "08:00",
-  time_max = "20:00",
-  max_stops = 1,
-  max_emissions = 500
+  sample_query,
+  n = 2,
+  max_stops = 0
 )
-}
 }
