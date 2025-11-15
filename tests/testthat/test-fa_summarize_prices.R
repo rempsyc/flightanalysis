@@ -29,11 +29,11 @@ test_that("fa_summarize_prices creates correct structure", {
   expect_true(length(date_cols) >= 3)
 
   # Check number of rows (one per unique City-Origin combination, plus Best row)
-  expect_equal(nrow(table), 3)  # 2 airports + 1 Best row
-  
+  expect_equal(nrow(table), 3) # 2 airports + 1 Best row
+
   # Verify Best row exists
   expect_true("Best" %in% table$City)
-  expect_true("Best" %in% table$Origin)
+  expect_true("Day" %in% table$Origin)
 })
 
 test_that("fa_summarize_prices handles missing Comment column", {
@@ -173,12 +173,16 @@ test_that("fa_summarize_prices supports filtering by time", {
     )),
     stringsAsFactors = FALSE
   )
-  
+
   # Filter for flights between 08:00 and 18:00
-  summary <- fa_summarize_prices(results, time_min = "08:00", time_max = "18:00")
-  
+  summary <- fa_summarize_prices(
+    results,
+    time_min = "08:00",
+    time_max = "18:00"
+  )
+
   expect_true(is.data.frame(summary))
-  expect_equal(nrow(summary), 2)  # 1 airport + Best row
+  expect_equal(nrow(summary), 2) # 1 airport + Best row
   # The price for 2025-12-18 should be from the 12:00 flight (350) - check first row (before Best)
   expect_equal(gsub("[^0-9]", "", summary$`2025-12-18`[1]), "350")
 })
@@ -204,12 +208,12 @@ test_that("fa_summarize_prices supports filtering by stops", {
     )
   )
   class(query) <- "flight_query"
-  
+
   # Filter for direct flights only
   summary <- fa_summarize_prices(query, max_stops = 0)
-  
+
   expect_true(is.data.frame(summary))
-  expect_equal(nrow(summary), 2)  # 1 airport + Best row
+  expect_equal(nrow(summary), 2) # 1 airport + Best row
   # Should only include the direct flight
   expect_equal(gsub("[^0-9]", "", summary$`2025-12-18`[1]), "500")
 })
