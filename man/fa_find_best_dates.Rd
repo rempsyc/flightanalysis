@@ -59,7 +59,7 @@ Default is NULL (no filter).}
 A data frame with columns: departure_date, departure_time (or date if datetime not available),
   origin, price (average/median/min), n_routes, num_stops, layover, travel_time,
   co2_emission_kg, and airlines. All column names are lowercase.
-  Sorted by price (cheapest first). Additional columns are aggregated using
+  Sorted by departure time. Additional columns are aggregated using
   mean/median for numeric values and most common value for categorical.
 }
 \description{

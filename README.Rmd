@@ -9,13 +9,10 @@ output:
 
 An R package for analyzing, forecasting, and collecting flight data and prices from Google Flights. 
 
-**Credits:** This package is an R implementation inspired by the original Python package [google-flight-analysis](https://github.com/celebi-pkg/flight-analysis) by Kaya Celebi.
-
 ## Features
 
 - Detailed scraping and querying tools for Google Flights using chromote
 - Support for multiple trip types: one-way, round-trip, chain-trip, and perfect-chain
-- Driver-free web scraping using Chrome DevTools Protocol
 - Flexible date search across multiple airports and date ranges
 - Summary tables showing prices by city and date
 - Automatic identification of cheapest travel dates
@@ -41,30 +38,14 @@ remotes::install_github("rempsyc/flightanalysis")
 library(flightanalysis)
 ```
 
-### Creating Flight Queries
+### Creating Flight Queries and Fetching the Data
 
-The main scraping function that makes up the backbone of most functionalities is `fa_define_query()`. It serves as a data object, preserving the flight information as well as meta-data from your query.
+The main scraping function that makes up the backbone of most functionalities is `fa_define_query()`. It serves as a data object, preserving the flight information as well as meta-data from your query. `fa_fetch_flights()` then fetches flight information from that query.
 
 ```{r eval=TRUE}
 # Round-trip
-query <- fa_define_query("JFK", "IST", "2025-07-20", "2025-08-20")
+query <- fa_define_query("JFK", "IST", "2025-12-20", "2026-01-05")
 query
-```
-
-The package supports multiple trip types:
-
-- **One-way**: `fa_define_query("JFK", "IST", "2025-07-20")`
-- **Round-trip**: `fa_define_query("JFK", "IST", "2025-07-20", "2025-08-20")`
-- **Chain-trip**: `fa_define_query("JFK", "IST", "2025-08-20", "RDU", "LGA", "2025-12-25")`
-- **Perfect-chain**: `fa_define_query("JFK", "2025-09-20", "IST", "2025-09-25", "JFK")`
-
-### Scraping Data
-
-The package includes full web scraping functionality using **chromote**:
-
-```{r eval=TRUE}
-# Create a query
-query <- fa_define_query("JFK", "IST", "2025-12-18", "2026-01-02")
 
 # Fetch the flight data
 flights <- fa_fetch_flights(query)
@@ -74,12 +55,12 @@ head(flights$data) |>
   knitr::kable()
 ```
 
-**Why chromote?**
+The package supports multiple trip types:
 
-- ✅ No external driver files needed (uses Chrome DevTools Protocol directly)
-- ✅ More reliable - no driver version mismatches or port conflicts
-- ✅ Works on all platforms (Windows, macOS, Linux)
-- ✅ Fully headless by default
+- **One-way**: `fa_define_query("JFK", "IST", "2025-07-20")`
+- **Round-trip**: `fa_define_query("JFK", "IST", "2025-07-20", "2025-08-20")`
+- **Chain-trip**: `fa_define_query("JFK", "IST", "2025-08-20", "RDU", "LGA", "2025-12-25")`
+- **Perfect-chain**: `fa_define_query("JFK", "2025-09-20", "IST", "2025-09-25", "JFK")`
 
 ## Flexible Date Search
 
@@ -113,25 +94,7 @@ fa_find_best_dates(
   knitr::kable()
 ```
 
-**Key Features:**
-
-- Search multiple origin airports and dates efficiently
-- Create wide summary tables for easy price comparison
-- Identify cheapest travel dates automatically
-- Direct query object support - no manual data processing needed
-
-## Development Status
-
-This is a complete R port of the Python package. The core data structures and API are fully implemented. Web scraping functionality uses chromote (Chrome DevTools Protocol), which provides driver-free browser automation without the configuration overhead of RSelenium.
-
-## License
-
-MIT License
-
 ## Original Python Package
 
-This is a port of the [google-flight-analysis](https://github.com/celebi-pkg/flight-analysis) Python package by Kaya Celebi.
+**Credits:** This package is an R implementation inspired by the original Python package [google-flight-analysis](https://github.com/celebi-pkg/flight-analysis) by Kaya Celebi.
 
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
