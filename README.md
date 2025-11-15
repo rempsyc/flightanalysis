@@ -117,7 +117,7 @@ dates:
 
 ``` r
 # Create query objects for multiple origins and dates
-queries <- fa_create_date_range(
+queries <- fa_define_query_range(
   origin = c("BOM", "DEL"),
   dest = "JFK",
   date_min = "2025-12-18",

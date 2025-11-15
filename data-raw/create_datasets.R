@@ -40,7 +40,7 @@ sample_flights <- data.frame(
 usethis::use_data(sample_flights, overwrite = TRUE)
 
 # Sample 3: Multiple origin queries
-sample_multi_origin <- fa_create_date_range(
+sample_multi_origin <- fa_define_query_range(
   origin = c("BOM", "DEL"),
   dest = "JFK",
   date_min = "2025-12-18",
