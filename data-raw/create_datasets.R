@@ -52,7 +52,80 @@ sample_multi_origin <- fa_define_query_range(
 )
 usethis::use_data(sample_multi_origin, overwrite = TRUE)
 
+# Sample 4: Rich sample_flight_results for impressive visualizations
+# 5 airports over 10 days with varied pricing and travel times
+set.seed(123)
+dates <- seq(as.Date("2025-12-18"), as.Date("2025-12-27"), by = "day")
+origins <- c("BOM", "DEL", "VNS", "PAT", "GAY")
+destination <- "JFK"
+
+# Generate realistic flight data
+flights_data <- data.frame()
+for (origin in origins) {
+  # Base travel time varies by origin (Mumbai shortest, Gaya longest)
+  base_travel_time <- switch(origin,
+    "BOM" = 15.5,
+    "DEL" = 16.0,
+    "VNS" = 17.5,
+    "PAT" = 18.0,
+    "GAY" = 18.5
+  )
+  
+  # Base price varies by origin
+  base_price <- switch(origin,
+    "BOM" = 600,
+    "DEL" = 580,
+    "VNS" = 650,
+    "PAT" = 680,
+    "GAY" = 700
+  )
+  
+  for (date in as.character(dates)) {
+    # Add some randomness to make it realistic
+    travel_time_hrs <- base_travel_time + runif(1, -0.5, 1.0)
+    travel_time_min <- floor((travel_time_hrs %% 1) * 60)
+    travel_time_str <- sprintf("%d hr %d min", floor(travel_time_hrs), travel_time_min)
+    
+    # Price varies by date (higher on weekends)
+    is_weekend <- weekdays(as.Date(date)) %in% c("Saturday", "Sunday")
+    price_variation <- ifelse(is_weekend, 1.15, 1.0)
+    price <- round(base_price * price_variation + rnorm(1, 0, 30))
+    
+    # Randomize other fields
+    num_stops <- sample(0:2, 1, prob = c(0.5, 0.4, 0.1))
+    
+    flights_data <- rbind(flights_data, data.frame(
+      departure_date = date,
+      departure_time = sprintf("%02d:%02d", sample(6:22, 1), sample(c(0, 15, 30, 45), 1)),
+      arrival_date = date,
+      arrival_time = sprintf("%02d:%02d", sample(6:22, 1), sample(c(0, 15, 30, 45), 1)),
+      origin = origin,
+      destination = destination,
+      airlines = sample(c("Air India", "United", "Lufthansa", "Emirates", "Turkish Airlines"), 1),
+      travel_time = travel_time_str,
+      price = price,
+      num_stops = num_stops,
+      layover = ifelse(num_stops > 0, 
+                      sprintf("%d hr %d min %s", 
+                              sample(2:5, 1), 
+                              sample(c(0, 15, 30, 45), 1),
+                              sample(c("FRA", "LHR", "DXB", "IST"), 1)),
+                      NA),
+      access_date = format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+      co2_emission_kg = round(400 + travel_time_hrs * 30 + rnorm(1, 0, 20)),
+      emission_diff_pct = round(runif(1, -5, 15), 1),
+      stringsAsFactors = FALSE
+    ))
+  }
+}
+
+# Create proper flight_results object
+sample_flight_results <- list(data = flights_data)
+class(sample_flight_results) <- "flight_results"
+usethis::use_data(sample_flight_results, overwrite = TRUE)
+
 cat("✓ All sample datasets created successfully!\n")
 cat("  - sample_query: Simple round-trip query\n")
 cat("  - sample_flights: Sample flight data (6 flights)\n")
 cat("  - sample_multi_origin: Multiple origin queries\n")
+cat("  - sample_flight_results: Rich dataset (5 origins, 10 days, 50 flights)\n")

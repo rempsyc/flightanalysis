@@ -2,15 +2,16 @@
 #'
 #' @description
 #' Creates a modern line plot showing price trends across dates for different origins/cities.
-#' This visualizes the output from \code{\link{fa_summarize_prices}}, making it easy
-#' to compare prices across dates and identify the best travel dates visually.
-#' Point sizes can vary based on price (default, cheaper = bigger) or other variables.
+#' Works best with flight_results objects from \code{\link{fa_fetch_flights}}, which
+#' enables features like size_by and annotations. Can also visualize pre-summarized data
+#' from \code{\link{fa_summarize_prices}}.
 #'
 #' Uses ggplot2 for a polished, publication-ready aesthetic with colorblind-friendly
 #' colors and clear typography.
 #'
-#' @param price_summary A data frame from \code{\link{fa_summarize_prices}} or
-#'   flight results that can be passed to \code{\link{fa_summarize_prices}}.
+#' @param price_summary A flight_results object (recommended) or a data frame from
+#'   \code{\link{fa_summarize_prices}}. Using flight_results enables all features
+#'   including size_by and annotations.
 #' @param title Character. Plot title. Default is NULL (auto-generated with flight context).
 #' @param subtitle Character. Plot subtitle. Default is NULL (auto-generated with lowest price info).
 #' @param size_by Character. Name of column from raw flight data to use for
@@ -38,30 +39,27 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Plot price summary
-#' fa_plot_prices(sample_flights)
+#' # Basic plot with auto-generated title and subtitle
+#' fa_plot_prices(sample_flight_results)
 #'
-#' # With custom title and annotations (using ggrepel)
-#' fa_plot_prices(sample_flights,
-#'                title = "Flight Prices: BOM/DEL to JFK",
-#'                annotate_col = "travel_time")
-#'
-#' # With point size based on travel time
-#' fa_plot_prices(sample_flights,
+#' # With point size based on travel time and annotations
+#' fa_plot_prices(sample_flight_results,
 #'                size_by = "travel_time",
-#'                annotate_col = "travel_time")
+#'                annotate_col = "num_stops")
+#'
+#' # Size by number of stops
+#' fa_plot_prices(sample_flight_results,
+#'                size_by = "num_stops")
 #'
 #' # With annotations centered on points (no ggrepel)
-#' fa_plot_prices(sample_flights,
+#' fa_plot_prices(sample_flight_results,
+#'                size_by = "travel_time",
 #'                annotate_col = "travel_time",
 #'                use_ggrepel = FALSE)
 #'
-#' # Without maximum price annotation
-#' fa_plot_prices(sample_flights,
-#'                show_max_annotation = FALSE)
-#'
-#' # With both max and min price annotations
-#' fa_plot_prices(sample_flights,
+#' # Custom title and both price annotations
+#' fa_plot_prices(sample_flight_results,
+#'                title = "Custom Title",
 #'                show_max_annotation = TRUE,
 #'                show_min_annotation = TRUE)
 #' }
@@ -95,12 +93,18 @@ fa_plot_prices <- function(
   has_annotations <- !is.null(annotate_col)
   has_custom_size <- !is.null(size_by) && size_by != "price"
 
-  # If not already a summary table, create it
-  if (!all(c("City", "Origin") %in% names(price_summary))) {
+  # Extract raw data from flight_results object if available
+  if (inherits(price_summary, "flight_results")) {
+    raw_data <- price_summary$data
+    price_summary <- fa_summarize_prices(price_summary, ...)
+  } else if (!all(c("City", "Origin") %in% names(price_summary))) {
+    # If not already a summary table and not a flight_results object
     # Keep raw data for annotations or custom sizing if requested
     if (has_annotations || has_custom_size) {
-      # Store the raw data before summarizing
-      raw_data <- price_summary$data
+      # Check if it has a $data component (might be a list structure)
+      if (is.list(price_summary) && "data" %in% names(price_summary)) {
+        raw_data <- price_summary$data
+      }
     }
     price_summary <- fa_summarize_prices(price_summary, ...)
   }
