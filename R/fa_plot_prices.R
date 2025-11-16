@@ -69,7 +69,7 @@ fa_plot_prices <- function(
   price_summary,
   title = "Flight Prices by Date",
   subtitle = NULL,
-  size_by = "price",
+  size_by = NULL,
   annotate_col = NULL,
   use_ggrepel = TRUE,
   show_max_annotation = TRUE,
@@ -197,7 +197,8 @@ fa_plot_prices <- function(
 
     # Get size_by value for the cheapest flight on each date-origin combo
     if (
-      "date" %in% names(raw_data) &&
+      "date" %in%
+        names(raw_data) &&
         "origin" %in% names(raw_data) &&
         "price" %in% names(raw_data)
     ) {
@@ -393,7 +394,7 @@ fa_plot_prices <- function(
     min_origin <- plot_data$origin[min_idx]
     min_price <- plot_data$price[min_idx]
     min_date <- plot_data$date[min_idx]
-    
+
     # Customize subtitle based on size_by parameter
     if (is.null(size_by)) {
       point_note <- ""
@@ -402,7 +403,7 @@ fa_plot_prices <- function(
     } else {
       point_note <- paste0(" (Point size varies by ", size_by, ")")
     }
-    
+
     subtitle <- sprintf(
       "Lowest price: $%d from %s on %s%s",
       round(min_price),
@@ -415,27 +416,27 @@ fa_plot_prices <- function(
   # Create the base plot with consistent data ordering
   # Lines: use plot_data ordered by date and origin (already done above)
   # Points: will be drawn later with ordering by point_size
-  
+
   # Draw lines first with explicitly ordered data
   line_data <- plot_data[order(plot_data$date, plot_data$origin), ]
-  
+
   # For points: arrange so smaller points are drawn last (on top)
   # For price sizing: larger point_size (higher price) should be drawn first
   # For other metrics: depends on the meaning, but generally larger values drawn first
   if (!is.null(size_by) && size_by == "price") {
     # For price: larger point_size (expensive) drawn first, smaller (cheap) drawn last (on top)
     point_data <- plot_data[order(-plot_data$point_size), ]
-    size_trans <- "reverse"  # Inverse relationship: high price = small point
+    size_trans <- "reverse" # Inverse relationship: high price = small point
   } else if (!is.null(size_by)) {
     # For other metrics: smaller point_size drawn last (on top)
     point_data <- plot_data[order(-plot_data$point_size), ]
-    size_trans <- "identity"  # Direct relationship
+    size_trans <- "identity" # Direct relationship
   } else {
     # Uniform sizing
     point_data <- plot_data
     size_trans <- "identity"
   }
-  
+
   # Create the plot
   # Note: Using variables date, price, origin_label, point_size for NSE in ggplot2
   p <- ggplot2::ggplot(
@@ -448,7 +449,7 @@ fa_plot_prices <- function(
     )
   ) +
     ggplot2::geom_line(linewidth = 2)
-  
+
   # Add points with explicit data ordering
   if (!is.null(size_by)) {
     p <- p +
@@ -476,7 +477,7 @@ fa_plot_prices <- function(
         show.legend = FALSE
       )
   }
-  
+
   # Add remaining scales and theme
   p <- p +
     ggplot2::scale_color_manual(values = color_palette) +
@@ -512,26 +513,27 @@ fa_plot_prices <- function(
     max_idx <- which.max(plot_data$price)
     max_price <- plot_data$price[max_idx]
     max_date <- plot_data$date[max_idx]
-    
+
     # Calculate data-dependent offsets
-    price_range <- max(plot_data$price, na.rm = TRUE) - min(plot_data$price, na.rm = TRUE)
-    
+    price_range <- max(plot_data$price, na.rm = TRUE) -
+      min(plot_data$price, na.rm = TRUE)
+
     # Vertical offset above the max point (about 8% of price range)
     bar_y_offset <- price_range * 0.08
     bar_y <- max_price + bar_y_offset
-    
+
     # Label position (slightly above the bar)
     label_y_offset <- price_range * 0.04
     label_y <- bar_y + label_y_offset
-    
+
     # Bar width in days (0.5 days on each side = 1 day total)
     bar_width <- 0.5
     bar_xmin <- max_date - bar_width
     bar_xmax <- max_date + bar_width
-    
+
     # Format price for label (with comma separator)
     max_price_label <- scales::dollar_format()(max_price)
-    
+
     # Add horizontal bar annotation (thin black line)
     p <- p +
       ggplot2::annotate(
@@ -555,33 +557,34 @@ fa_plot_prices <- function(
         vjust = 0
       )
   }
-  
+
   # Add minimum price annotation if requested
   if (show_min_annotation) {
     # Find the row with minimum price
     min_idx <- which.min(plot_data$price)
     min_price <- plot_data$price[min_idx]
     min_date <- plot_data$date[min_idx]
-    
+
     # Calculate data-dependent offsets
-    price_range <- max(plot_data$price, na.rm = TRUE) - min(plot_data$price, na.rm = TRUE)
-    
+    price_range <- max(plot_data$price, na.rm = TRUE) -
+      min(plot_data$price, na.rm = TRUE)
+
     # Vertical offset below the min point (about 8% of price range)
     bar_y_offset <- price_range * 0.08
     bar_y <- min_price - bar_y_offset
-    
+
     # Label position (slightly below the bar)
     label_y_offset <- price_range * 0.04
     label_y <- bar_y - label_y_offset
-    
+
     # Bar width in days (0.5 days on each side = 1 day total)
     bar_width <- 0.5
     bar_xmin <- min_date - bar_width
     bar_xmax <- min_date + bar_width
-    
+
     # Format price for label (with comma separator)
     min_price_label <- scales::dollar_format()(min_price)
-    
+
     # Add horizontal bar annotation (thin black line)
     p <- p +
       ggplot2::annotate(
@@ -605,7 +608,7 @@ fa_plot_prices <- function(
         vjust = 1
       )
   }
-  
+
   # Add annotations if requested and available
   # This is added as a layer on top of the existing plot, avoiding duplication
   if (has_annotations && "annot_display" %in% names(plot_data)) {
