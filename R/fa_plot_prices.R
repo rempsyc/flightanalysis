@@ -61,7 +61,8 @@ fa_plot_prices <- function(
   # If not already a summary table, create it
   if (!all(c("City", "Origin") %in% names(price_summary))) {
     # Keep raw data for annotations if requested
-    if (has_annotations && annotate_col %in% names(price_summary)) {
+    if (has_annotations) {
+      # Store the raw data before summarizing
       raw_data <- price_summary
     }
     price_summary <- fa_summarize_prices(price_summary, ...)
@@ -109,22 +110,42 @@ fa_plot_prices <- function(
   plot_data <- plot_data[!is.na(plot_data$price), ]
   
   # Add annotation data if available
-  if (has_annotations && !is.null(raw_data)) {
-    # Get the cheapest flight for each origin-date combination for annotation
+  if (has_annotations && !is.null(raw_data) && annotate_col %in% names(raw_data)) {
+    # Prepare date column for merging
     if ("departure_date" %in% names(raw_data)) {
       raw_data$date <- as.Date(raw_data$departure_date)
     } else if ("Date" %in% names(raw_data)) {
       raw_data$date <- as.Date(raw_data$Date)
+    } else {
+      # Try to use existing date column
+      if ("date" %in% names(raw_data)) {
+        raw_data$date <- as.Date(raw_data$date)
+      }
     }
     
-    # Get annotation value for the cheapest flight on each date
-    if ("origin" %in% names(raw_data) && annotate_col %in% names(raw_data)) {
-      annot_data <- raw_data[, c("date", "origin", "price", annotate_col)]
+    # Prepare origin column for merging
+    if (!("origin" %in% names(raw_data))) {
+      if ("Airport" %in% names(raw_data)) {
+        raw_data$origin <- raw_data$Airport
+      } else if ("Origin" %in% names(raw_data)) {
+        raw_data$origin <- raw_data$Origin
+      }
+    }
+    
+    # Get annotation value for the cheapest flight on each date-origin combo
+    if ("date" %in% names(raw_data) && "origin" %in% names(raw_data)) {
+      # Ensure price column exists
+      if (!("price" %in% names(raw_data)) && "Price" %in% names(raw_data)) {
+        raw_data$price <- raw_data$Price
+      }
+      
+      annot_data <- raw_data[, c("date", "origin", "price", annotate_col), drop = FALSE]
       # Get the row with minimum price for each date-origin combo
       annot_data <- do.call(rbind, lapply(split(annot_data, paste(annot_data$date, annot_data$origin)), function(x) {
         x[which.min(x$price), ]
       }))
-      plot_data <- merge(plot_data, annot_data[, c("date", "origin", annotate_col)], 
+      # Merge annotations into plot_data
+      plot_data <- merge(plot_data, annot_data[, c("date", "origin", annotate_col), drop = FALSE], 
                         by = c("date", "origin"), all.x = TRUE)
     }
   }
@@ -169,7 +190,7 @@ fa_plot_prices <- function(
     ) +
     # Size varies inversely with price: cheaper = bigger
     ggplot2::scale_size_continuous(
-      range = c(8, 2),  # Max size for min price, min size for max price
+      range = c(2, 8),  # Min size for max price, max size for min price
       trans = "reverse"
     ) +
     ggplot2::scale_color_manual(values = color_palette) +
