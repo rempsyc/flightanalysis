@@ -364,11 +364,30 @@ fa_plot_prices <- function(
       plot_data$point_size <- plot_data$price
     } else if ("size_value" %in% names(plot_data)) {
       # For other columns: use the raw value
-      # Try to convert to numeric if possible
-      plot_data$point_size <- suppressWarnings(as.numeric(plot_data$size_value))
-      # If conversion fails, use rank
-      if (all(is.na(plot_data$point_size))) {
-        plot_data$point_size <- as.numeric(as.factor(plot_data$size_value))
+      # Special handling for travel_time format "XX hr YY min"
+      if (size_by == "travel_time" || grepl("time", size_by, ignore.case = TRUE)) {
+        # Convert "16 hr 30 min" to total hours (16.5)
+        plot_data$point_size <- sapply(plot_data$size_value, function(x) {
+          if (is.na(x)) return(NA)
+          x_str <- as.character(x)
+          # Extract hours
+          hours <- as.numeric(gsub("^.*?(\\d+)\\s*hr.*$", "\\1", x_str, ignore.case = TRUE))
+          if (is.na(hours)) hours <- 0
+          # Extract minutes if present
+          if (grepl("min", x_str, ignore.case = TRUE)) {
+            minutes <- as.numeric(gsub("^.*?(\\d+)\\s*min.*$", "\\1", x_str, ignore.case = TRUE))
+            if (is.na(minutes)) minutes <- 0
+            return(hours + minutes / 60)
+          }
+          return(hours)
+        })
+      } else {
+        # Try to convert to numeric if possible
+        plot_data$point_size <- suppressWarnings(as.numeric(plot_data$size_value))
+        # If conversion fails, use rank
+        if (all(is.na(plot_data$point_size))) {
+          plot_data$point_size <- as.numeric(as.factor(plot_data$size_value))
+        }
       }
     } else {
       # Fallback: use price

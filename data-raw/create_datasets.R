@@ -119,8 +119,21 @@ for (origin in origins) {
   }
 }
 
-# Create proper flight_results object
+# Create proper flight_results object with query structure
+# We need to create mock query objects for each origin
 sample_flight_results <- list(data = flights_data)
+
+# Add mock query objects for each origin (required by extract_data_from_scrapes)
+for (origin in origins) {
+  origin_data <- flights_data[flights_data$origin == origin, ]
+  sample_flight_results[[origin]] <- list(
+    data = origin_data,
+    origin = origin,
+    dest = destination
+  )
+  class(sample_flight_results[[origin]]) <- "flight_query"
+}
+
 class(sample_flight_results) <- "flight_results"
 usethis::use_data(sample_flight_results, overwrite = TRUE)
 
