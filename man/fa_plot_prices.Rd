@@ -9,6 +9,7 @@ fa_plot_prices(
   title = "Flight Prices by Date",
   subtitle = NULL,
   annotate_col = NULL,
+  use_ggrepel = TRUE,
   ...
 )
 }
@@ -23,6 +24,10 @@ flight results that can be passed to \code{\link{fa_summarize_prices}}.}
 \item{annotate_col}{Character. Name of column from raw flight data to use for
 point annotations (e.g., "travel_time", "num_stops"). Only works when passing
 raw flight data, not summary tables. Default is NULL (no annotations).}
+
+\item{use_ggrepel}{Logical. If TRUE, uses ggrepel for non-overlapping label
+positioning (requires ggrepel package). If FALSE, labels are centered on points
+and may overlap when there are many data points. Default is TRUE.}
 
 \item{...}{Additional arguments passed to \code{\link{fa_summarize_prices}}
 if price_summary is not already a summary table.}
@@ -44,9 +49,14 @@ colors and clear typography.
 # Plot price summary
 fa_plot_prices(sample_flights)
 
-# With custom title and annotations
+# With custom title and annotations (using ggrepel)
 fa_plot_prices(sample_flights,
                title = "Flight Prices: BOM/DEL to JFK",
                annotate_col = "travel_time")
+
+# With annotations centered on points (no ggrepel)
+fa_plot_prices(sample_flights,
+               annotate_col = "travel_time",
+               use_ggrepel = FALSE)
 }
 }

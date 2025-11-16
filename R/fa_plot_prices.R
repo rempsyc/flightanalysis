@@ -16,6 +16,9 @@
 #' @param annotate_col Character. Name of column from raw flight data to use for
 #'   point annotations (e.g., "travel_time", "num_stops"). Only works when passing
 #'   raw flight data, not summary tables. Default is NULL (no annotations).
+#' @param use_ggrepel Logical. If TRUE, uses ggrepel for non-overlapping label
+#'   positioning (requires ggrepel package). If FALSE, labels are centered on points
+#'   and may overlap when there are many data points. Default is TRUE.
 #' @param ... Additional arguments passed to \code{\link{fa_summarize_prices}}
 #'   if price_summary is not already a summary table.
 #'
@@ -28,16 +31,22 @@
 #' # Plot price summary
 #' fa_plot_prices(sample_flights)
 #'
-#' # With custom title and annotations
+#' # With custom title and annotations (using ggrepel)
 #' fa_plot_prices(sample_flights,
 #'                title = "Flight Prices: BOM/DEL to JFK",
 #'                annotate_col = "travel_time")
+#'
+#' # With annotations centered on points (no ggrepel)
+#' fa_plot_prices(sample_flights,
+#'                annotate_col = "travel_time",
+#'                use_ggrepel = FALSE)
 #' }
 fa_plot_prices <- function(
   price_summary,
   title = "Flight Prices by Date",
   subtitle = NULL,
   annotate_col = NULL,
+  use_ggrepel = TRUE,
   ...
 ) {
   # Check if ggplot2 is available
@@ -294,8 +303,8 @@ fa_plot_prices <- function(
 
   # Add annotations if requested and available
   if (has_annotations && "annot_display" %in% names(plot_data)) {
-    # Check if ggrepel is available
-    if (requireNamespace("ggrepel", quietly = TRUE)) {
+    # Check if user wants ggrepel and if it's available
+    if (use_ggrepel && requireNamespace("ggrepel", quietly = TRUE)) {
       # Use ggrepel for non-overlapping labels
       # Calculate label size based on point size (price)
       # Normalize price to size range for labels: smaller for expensive, larger for cheap
@@ -367,13 +376,15 @@ fa_plot_prices <- function(
           max.overlaps = Inf
         )
     } else {
-      # Fallback to geom_text if ggrepel not available
+      # Use centered labels (no ggrepel) - labels may overlap
+      # This is cleaner when there are lots of data points
       p <- p +
         ggplot2::geom_text(
           ggplot2::aes(label = annot_display),
           size = 3,
           fontface = "bold",
-          vjust = -1.5,
+          vjust = 0.5,  # Center vertically
+          hjust = 0.5,  # Center horizontally
           show.legend = FALSE,
           color = "black"
         )
