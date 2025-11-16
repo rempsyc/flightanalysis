@@ -6,7 +6,7 @@
 \usage{
 fa_plot_prices(
   price_summary,
-  title = "Flight Prices by Date",
+  title = NULL,
   subtitle = NULL,
   size_by = NULL,
   annotate_col = NULL,
@@ -17,17 +17,18 @@ fa_plot_prices(
 )
 }
 \arguments{
-\item{price_summary}{A data frame from \code{\link{fa_summarize_prices}} or
-flight results that can be passed to \code{\link{fa_summarize_prices}}.}
+\item{price_summary}{A flight_results object (recommended) or a data frame from
+\code{\link{fa_summarize_prices}}. Using flight_results enables all features
+including size_by and annotations.}
 
-\item{title}{Character. Plot title. Default is "Flight Prices by Date".}
+\item{title}{Character. Plot title. Default is NULL (auto-generated with flight context).}
 
-\item{subtitle}{Character. Plot subtitle. Default is NULL (auto-generated).}
+\item{subtitle}{Character. Plot subtitle. Default is NULL (auto-generated with lowest price info).}
 
 \item{size_by}{Character. Name of column from raw flight data to use for
-point sizing. Can be "price" (default), a column name like "travel_time",
-or NULL for uniform sizing. When using a column name, only works when passing
-raw flight data, not summary tables. Default is "price".}
+point sizing. Can be "price", a column name like "travel_time",
+or NULL for uniform sizing (default). When using a column name, only works when passing
+raw flight data, not summary tables. Default is NULL.}
 
 \item{annotate_col}{Character. Name of column from raw flight data to use for
 point annotations (e.g., "travel_time", "num_stops"). Only works when passing
@@ -53,39 +54,36 @@ A ggplot2 plot object that can be further customized or saved.
 }
 \description{
 Creates a modern line plot showing price trends across dates for different origins/cities.
-This visualizes the output from \code{\link{fa_summarize_prices}}, making it easy
-to compare prices across dates and identify the best travel dates visually.
-Point sizes can vary based on price (default, cheaper = bigger) or other variables.
+Works best with flight_results objects from \code{\link{fa_fetch_flights}}, which
+enables features like size_by and annotations. Can also visualize pre-summarized data
+from \code{\link{fa_summarize_prices}}.
 
 Uses ggplot2 for a polished, publication-ready aesthetic with colorblind-friendly
 colors and clear typography.
 }
 \examples{
 \dontrun{
-# Plot price summary
-fa_plot_prices(sample_flights)
+# Basic plot with auto-generated title and subtitle
+fa_plot_prices(sample_flight_results)
 
-# With custom title and annotations (using ggrepel)
-fa_plot_prices(sample_flights,
-               title = "Flight Prices: BOM/DEL to JFK",
-               annotate_col = "travel_time")
-
-# With point size based on travel time
-fa_plot_prices(sample_flights,
+# With point size based on travel time and annotations
+fa_plot_prices(sample_flight_results,
                size_by = "travel_time",
-               annotate_col = "travel_time")
+               annotate_col = "num_stops")
+
+# Size by number of stops
+fa_plot_prices(sample_flight_results,
+               size_by = "num_stops")
 
 # With annotations centered on points (no ggrepel)
-fa_plot_prices(sample_flights,
+fa_plot_prices(sample_flight_results,
+               size_by = "travel_time",
                annotate_col = "travel_time",
                use_ggrepel = FALSE)
 
-# Without maximum price annotation
-fa_plot_prices(sample_flights,
-               show_max_annotation = FALSE)
-
-# With both max and min price annotations
-fa_plot_prices(sample_flights,
+# Custom title and both price annotations
+fa_plot_prices(sample_flight_results,
+               title = "Custom Title",
                show_max_annotation = TRUE,
                show_min_annotation = TRUE)
 }
