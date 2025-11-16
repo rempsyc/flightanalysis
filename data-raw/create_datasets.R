@@ -104,16 +104,22 @@ for (origin in origins) {
       # Use a smooth curve that peaks around position 0.75 (Jan 1-2)
       spike_factor <- 1 + 2.5 * (1 - abs(position - 0.75) * 1.5)
       spike_factor <- max(1.3, min(4.5, spike_factor))  # Cap between 1.3x and 4.5x
+      
+      # Increase noise/variation during holiday period
+      # Higher variation = more realistic "busy period" behavior
+      noise_sd <- 80 + (spike_factor - 1.3) * 40  # 80-160 range based on spike intensity
     } else {
       spike_factor <- 1.0
+      # Lower noise during non-holiday period
+      noise_sd <- 30
     }
     
     # Weekend adjustment
     is_weekend <- weekdays(date_obj) %in% c("Saturday", "Sunday")
     weekend_factor <- ifelse(is_weekend, 1.1, 1.0)
     
-    # Final price with spike, weekend adjustment, and randomness
-    price <- round(base_price * spike_factor * weekend_factor + rnorm(1, 0, 30))
+    # Final price with spike, weekend adjustment, and increased randomness during holidays
+    price <- round(base_price * spike_factor * weekend_factor + rnorm(1, 0, noise_sd))
     
     # Randomize other fields
     num_stops <- sample(0:2, 1, prob = c(0.5, 0.4, 0.1))
