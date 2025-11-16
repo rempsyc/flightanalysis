@@ -1,5 +1,5 @@
 
-# Flight Analysis - R Package
+# Flight Analysis: Find the best flights
 
 An R package for analyzing, forecasting, and collecting flight data and
 prices from Google Flights.
@@ -46,25 +46,19 @@ preserving the flight information as well as meta-data from your query.
 # Round-trip
 query <- fa_define_query("JFK", "IST", "2025-12-20", "2026-01-05")
 query
-```
+#> Flight Query( {Not Yet Fetched}
+#> 2025-12-20: JFK --> IST
+#> 2026-01-05: IST --> JFK
+#> )
 
-    ## Flight Query( {Not Yet Fetched}
-    ## 2025-12-20: JFK --> IST
-    ## 2026-01-05: IST --> JFK
-    ## )
-
-``` r
 # Fetch the flight data
 flights <- fa_fetch_flights(query)
-```
+#>   Segment 1/2: JFK -> IST on 2025-12-20
+#>   [OK] Successfully parsed 8 flights
+#>   Segment 2/2: IST -> JFK on 2026-01-05
+#>   [OK] Successfully parsed 7 flights
+#>   [OK] Total flights retrieved: 15
 
-    ##   Segment 1/2: JFK -> IST on 2025-12-20
-    ##   [OK] Successfully parsed 8 flights
-    ##   Segment 2/2: IST -> JFK on 2026-01-05
-    ##   [OK] Successfully parsed 7 flights
-    ##   [OK] Total flights retrieved: 15
-
-``` r
 # View the flight data
 head(flights$data[1:11]) |>
   knitr::kable()
@@ -105,34 +99,31 @@ queries <- fa_define_query_range(
 
 # Fetch all flights
 flights <- fa_fetch_flights(queries)
-```
+#> Scraping 2 objects...
+#> 
+#> [1/2]   Segment 1/5: BOM -> JFK on 2025-12-18
+#>   [OK] Successfully parsed 14 flights
+#>   Segment 2/5: BOM -> JFK on 2025-12-19
+#>   [OK] Successfully parsed 12 flights
+#>   Segment 3/5: BOM -> JFK on 2025-12-20
+#>   [OK] Successfully parsed 9 flights
+#>   Segment 4/5: BOM -> JFK on 2025-12-21
+#>   [OK] Successfully parsed 8 flights
+#>   Segment 5/5: BOM -> JFK on 2025-12-22
+#>   [OK] Successfully parsed 8 flights
+#>   [OK] Total flights retrieved: 51
+#> [2/2]   Segment 1/5: DEL -> JFK on 2025-12-18
+#>   [OK] Successfully parsed 8 flights
+#>   Segment 2/5: DEL -> JFK on 2025-12-19
+#>   [OK] Successfully parsed 10 flights
+#>   Segment 3/5: DEL -> JFK on 2025-12-20
+#>   [OK] Successfully parsed 9 flights
+#>   Segment 4/5: DEL -> JFK on 2025-12-21
+#>   [OK] Successfully parsed 9 flights
+#>   Segment 5/5: DEL -> JFK on 2025-12-22
+#>   [OK] Successfully parsed 10 flights
+#>   [OK] Total flights retrieved: 46
 
-    ## Scraping 2 objects...
-    ## 
-    ## [1/2]   Segment 1/5: BOM -> JFK on 2025-12-18
-    ##   [OK] Successfully parsed 14 flights
-    ##   Segment 2/5: BOM -> JFK on 2025-12-19
-    ##   [OK] Successfully parsed 12 flights
-    ##   Segment 3/5: BOM -> JFK on 2025-12-20
-    ##   [OK] Successfully parsed 10 flights
-    ##   Segment 4/5: BOM -> JFK on 2025-12-21
-    ##   [OK] Successfully parsed 8 flights
-    ##   Segment 5/5: BOM -> JFK on 2025-12-22
-    ##   [OK] Successfully parsed 8 flights
-    ##   [OK] Total flights retrieved: 52
-    ## [2/2]   Segment 1/5: DEL -> JFK on 2025-12-18
-    ##   [OK] Successfully parsed 8 flights
-    ##   Segment 2/5: DEL -> JFK on 2025-12-19
-    ##   [OK] Successfully parsed 10 flights
-    ##   Segment 3/5: DEL -> JFK on 2025-12-20
-    ##   [OK] Successfully parsed 9 flights
-    ##   Segment 4/5: DEL -> JFK on 2025-12-21
-    ##   [OK] Successfully parsed 9 flights
-    ##   Segment 5/5: DEL -> JFK on 2025-12-22
-    ##   [OK] Successfully parsed 10 flights
-    ##   [OK] Total flights retrieved: 46
-
-``` r
 # Create summary table (City × Date with prices)
 fa_summarize_prices(flights) |>
   knitr::kable()
@@ -145,6 +136,7 @@ fa_summarize_prices(flights) |>
 | Best | Day | X |  |  |  |  |  |
 
 ``` r
+
 # Find the cheapest dates
 fa_find_best_dates(
   flights, 
@@ -177,14 +169,15 @@ fa_plot_prices(flights,
                annotate_col = "travel_time")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+<img src="man/figures/README-plots-1.png" width="100%" />
 
 ``` r
+
 # Plot best travel dates
 fa_plot_best_dates(flights)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-5-2.png)<!-- -->
+<img src="man/figures/README-plots-2.png" width="100%" />
 
 ## Original Python Package
 

@@ -3,7 +3,7 @@ output:
   github_document
 ---
 
-# Flight Analysis - R Package
+# Flight Analysis: Find the best flights
 
 An R package for analyzing, forecasting, and collecting flight data and prices from Google Flights. 
 
@@ -20,7 +20,16 @@ An R package for analyzing, forecasting, and collecting flight data and prices f
 
 You can install the development version of flightanalysis from GitHub:
 
-```{r eval=FALSE}
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+```{r install, eval=FALSE}
 install.packages('flightanalysis', 
   repos = c('https://rempsyc.r-universe.dev', 'https://cloud.r-project.org'))
 
@@ -33,7 +42,7 @@ remotes::install_github("rempsyc/flightanalysis")
 
 ### Loading the Package
 
-```{r eval=TRUE}
+```{r library, eval=TRUE}
 library(flightanalysis)
 ```
 
@@ -41,7 +50,7 @@ library(flightanalysis)
 
 The main scraping function that makes up the backbone of most functionalities is `fa_define_query()`. It serves as a data object, preserving the flight information as well as meta-data from your query. `fa_fetch_flights()` then fetches flight information from that query.
 
-```{r eval=TRUE}
+```{r fa_define_query, eval=TRUE}
 # Round-trip
 query <- fa_define_query("JFK", "IST", "2025-12-20", "2026-01-05")
 query
@@ -65,7 +74,7 @@ The package supports multiple trip types:
 
 The package supports flexible date search across multiple airports and dates:
 
-```{r eval=TRUE}
+```{r fa_define_query_range, eval=TRUE}
 # Create query objects for multiple origins and dates
 queries <- fa_define_query_range(
   origin = c("BOM", "DEL"),
@@ -97,7 +106,7 @@ fa_find_best_dates(
 
 The package includes plotting functions to visualize price trends and best dates:
 
-```{r eval=TRUE}
+```{r plots, eval=TRUE}
 # Plot price trends across dates
 fa_plot_prices(flights, 
                title = "Flight Prices: BOM/DEL to JFK",
