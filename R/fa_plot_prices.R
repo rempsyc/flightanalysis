@@ -63,7 +63,7 @@ fa_plot_prices <- function(
     # Keep raw data for annotations if requested
     if (has_annotations) {
       # Store the raw data before summarizing
-      raw_data <- price_summary
+      raw_data <- price_summary$data
     }
     price_summary <- fa_summarize_prices(price_summary, ...)
   }
@@ -120,7 +120,9 @@ fa_plot_prices <- function(
 
   # Add annotation data if available
   if (
-    has_annotations && !is.null(raw_data) && annotate_col %in% names(raw_data)
+    has_annotations &&
+      !is.null(raw_data) &&
+      annotate_col %in% names(raw_data)
   ) {
     # Prepare date column for merging
     if (!("date" %in% names(raw_data))) {
