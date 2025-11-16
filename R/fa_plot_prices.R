@@ -9,10 +9,10 @@
 #' Uses ggplot2 for a polished, publication-ready aesthetic with colorblind-friendly
 #' colors and clear typography.
 #'
+#' @importFrom stats aggregate median
 #' @param price_summary A flight_results object (recommended) or a data frame from
 #'   \code{\link{fa_summarize_prices}}. Using flight_results enables all features
 #'   including size_by and annotations.
-#' @importFrom stats aggregate median
 #' @param title Character. Plot title. Default is NULL (auto-generated with flight context).
 #' @param subtitle Character. Plot subtitle. Default is NULL (auto-generated with lowest price info).
 #' @param size_by Character. Name of column from raw flight data to use for

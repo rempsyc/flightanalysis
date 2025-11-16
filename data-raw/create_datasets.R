@@ -152,8 +152,8 @@ for (origin in origins) {
       noise_sd <- 30
     }
 
-    # Weekend adjustment
-    is_weekend <- weekdays(date_obj) %in% c("Saturday", "Sunday")
+    # Weekend adjustment (locale-independent)
+    is_weekend <- as.POSIXlt(date_obj)$wday %in% c(0, 6) # 0=Sunday, 6=Saturday
     weekend_factor <- ifelse(is_weekend, 1.1, 1.0)
 
     # Final price with spike, weekend adjustment, and increased randomness during holidays
@@ -230,5 +230,5 @@ cat("  - sample_query: Simple round-trip query\n")
 cat("  - sample_flights: Sample flight data (6 flights)\n")
 cat("  - sample_multi_origin: Multiple origin queries\n")
 cat(
-  "  - sample_flight_results: Rich dataset (5 origins, 10 days, 50 flights)\n"
+  "  - sample_flight_results: Rich dataset (5 origins, 19 days, 95 flights)\n"
 )
