@@ -365,25 +365,45 @@ fa_plot_prices <- function(
     } else if ("size_value" %in% names(plot_data)) {
       # For other columns: use the raw value
       # Special handling for travel_time format "XX hr YY min"
-      if (size_by == "travel_time" || grepl("time", size_by, ignore.case = TRUE)) {
+      if (
+        size_by == "travel_time" || grepl("time", size_by, ignore.case = TRUE)
+      ) {
         # Convert "16 hr 30 min" to total hours (16.5)
         plot_data$point_size <- sapply(plot_data$size_value, function(x) {
-          if (is.na(x)) return(NA)
+          if (is.na(x)) {
+            return(NA)
+          }
           x_str <- as.character(x)
           # Extract hours
-          hours <- as.numeric(gsub("^.*?(\\d+)\\s*hr.*$", "\\1", x_str, ignore.case = TRUE))
-          if (is.na(hours)) hours <- 0
+          hours <- as.numeric(gsub(
+            "^.*?(\\d+)\\s*hr.*$",
+            "\\1",
+            x_str,
+            ignore.case = TRUE
+          ))
+          if (is.na(hours)) {
+            hours <- 0
+          }
           # Extract minutes if present
           if (grepl("min", x_str, ignore.case = TRUE)) {
-            minutes <- as.numeric(gsub("^.*?(\\d+)\\s*min.*$", "\\1", x_str, ignore.case = TRUE))
-            if (is.na(minutes)) minutes <- 0
+            minutes <- as.numeric(gsub(
+              "^.*?(\\d+)\\s*min.*$",
+              "\\1",
+              x_str,
+              ignore.case = TRUE
+            ))
+            if (is.na(minutes)) {
+              minutes <- 0
+            }
             return(hours + minutes / 60)
           }
           return(hours)
         })
       } else {
         # Try to convert to numeric if possible
-        plot_data$point_size <- suppressWarnings(as.numeric(plot_data$size_value))
+        plot_data$point_size <- suppressWarnings(as.numeric(
+          plot_data$size_value
+        ))
         # If conversion fails, use rank
         if (all(is.na(plot_data$point_size))) {
           plot_data$point_size <- as.numeric(as.factor(plot_data$size_value))
@@ -410,13 +430,13 @@ fa_plot_prices <- function(
     )
     # Sort by the summary statistic (smaller values first for better visual order)
     origin_order <- origin_order[order(origin_order$point_size), ]
-    
+
     # Reorder the origin factor in plot_data
     plot_data$origin <- factor(
       plot_data$origin,
       levels = origin_order$origin
     )
-    
+
     # Also update origin_label to maintain the same order
     plot_data$origin_label <- factor(
       plot_data$origin_label,
@@ -442,11 +462,11 @@ fa_plot_prices <- function(
   # Subtitle: Lowest price information
   auto_title <- NULL
   auto_subtitle <- NULL
-  
+
   # Extract unique origins
   origins_list <- unique(plot_data$origin)
   origins_str <- paste(origins_list, collapse = "/")
-  
+
   # Try to extract destination from raw_data if available
   destination_str <- NULL
   if (!is.null(raw_data)) {
@@ -458,7 +478,7 @@ fa_plot_prices <- function(
       if (length(dest) > 0) destination_str <- paste(dest, collapse = "/")
     }
   }
-  
+
   # Get date range
   dates <- sort(unique(plot_data$date))
   if (length(dates) > 1) {
@@ -470,7 +490,7 @@ fa_plot_prices <- function(
   } else {
     date_range_str <- format(dates[1], "%b %d")
   }
-  
+
   # Construct auto title (flight context)
   if (!is.null(destination_str)) {
     auto_title <- sprintf(
@@ -486,7 +506,7 @@ fa_plot_prices <- function(
       date_range_str
     )
   }
-  
+
   # Construct auto subtitle (lowest price info)
   min_idx <- which.min(plot_data$price)
   min_origin <- plot_data$origin[min_idx]
@@ -498,7 +518,7 @@ fa_plot_prices <- function(
     min_origin,
     format(min_date, "%b %d")
   )
-  
+
   # Use provided title/subtitle or auto-generated ones
   if (is.null(title)) {
     title <- auto_title
@@ -555,7 +575,7 @@ fa_plot_prices <- function(
   if (!is.null(size_by)) {
     # Calculate min and max for legend breaks
     point_size_range <- range(plot_data$point_size, na.rm = TRUE)
-    
+
     p <- p +
       ggplot2::geom_point(
         data = point_data,
@@ -563,7 +583,7 @@ fa_plot_prices <- function(
         shape = 21, # Circle with border and fill
         fill = "white", # White fill for all points
         stroke = 2, # Thicker border
-        show.legend = TRUE  # Show legend for size
+        show.legend = TRUE # Show legend for size
       ) +
       ggplot2::scale_size_continuous(
         name = size_label,
