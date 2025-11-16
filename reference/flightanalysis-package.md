@@ -70,4 +70,4 @@ Useful links:
 
 Authors:
 
-- Kaya Celebi <kayacelebi17@gmail.com> \[funder\]
+- Kaya Celebi <kayacelebi17@gmail.com>

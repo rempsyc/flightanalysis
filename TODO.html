@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">flightanalysis</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,6 +33,45 @@
 
 <div id="todo-list" class="section level1">
 
+<div class="section level2">
+<h2 id="breaking-changes-for-next-pr">Breaking Changes for Next PR<a class="anchor" aria-label="anchor" href="#breaking-changes-for-next-pr"></a></h2>
+<p>Make all data processing functions only work with <code>flight_results</code> objects (no backward compatibility):</p>
+<ul class="task-list"><li>
+<label><input type="checkbox"><strong>fa_summarize_prices</strong>: Remove support for direct data frame input</label>
+<ul><li>Keep only <code>flight_results</code> object handling</li>
+<li>Remove <code>else if (is.data.frame(flight_results))</code> branch</li>
+<li>Update documentation to reflect flight_results-only support</li>
+</ul></li>
+<li>
+<label><input type="checkbox"><strong>fa_plot_prices</strong>: Remove support for pre-summarized data</label>
+<ul><li>Require <code>flight_results</code> objects only</li>
+<li>Remove backward compatibility code for direct data frame/list input</li>
+<li>Update documentation and parameter description</li>
+</ul></li>
+<li>
+<label><input type="checkbox"><strong>fa_find_best_dates</strong>: Remove support for direct data frame input</label>
+<ul><li>Keep only <code>flight_results</code> object handling</li>
+<li>Update documentation</li>
+</ul></li>
+<li>
+<label><input type="checkbox"><strong>Update all examples</strong>:</label>
+<ul><li>Replace <code>sample_flights</code> usage with <code>sample_flight_results</code> where applicable</li>
+<li>Update vignettes if any exist</li>
+</ul></li>
+<li>
+<label><input type="checkbox"><strong>Update tests</strong>:</label>
+<ul><li>Add tests for flight_results-only validation</li>
+<li>Add clear error messages when incorrect input types are provided</li>
+</ul></li>
+<li>
+<label><input type="checkbox"><strong>Documentation updates</strong>:</label>
+<ul><li>Update README with flight_results-only workflow</li>
+<li>Add migration guide for users upgrading from old version</li>
+<li>Clarify that <code>sample_flights</code> is kept for demonstration but main functions require <code>flight_results</code>
+</li>
+</ul></li>
+</ul><p><strong>Note</strong>: This is a BREAKING CHANGE - bump to version 3.0.0</p>
+</div>
 </div>
 
   </main></div>

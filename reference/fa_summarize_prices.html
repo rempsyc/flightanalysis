@@ -17,7 +17,7 @@ travel time, stops, and emissions."><meta property="og:image" content="https://r
 
     <a class="navbar-brand me-2" href="../index.html">flightanalysis</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -147,11 +147,35 @@ Default is NULL (no filter).</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Create summary table</span></span></span>
-<span class="r-in"><span><span class="fu">fa_summarize_prices</span><span class="op">(</span><span class="va">sample_flights</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   City Origin 2025-12-20 2025-12-21 2025-12-27 Average_Price</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  JFK    JFK       $580       $695       &lt;NA&gt;          $638</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  IST    IST       &lt;NA&gt;       &lt;NA&gt;       $620          $620</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 Best    Day          X                                    </span>
+<span class="r-in"><span><span class="fu">fa_summarize_prices</span><span class="op">(</span><span class="va">sample_flight_results</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       City Origin 2025-12-18 2025-12-19 2025-12-20 2025-12-21 2025-12-22</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   Mumbai    BOM       $624       $587       $658       $609       $625</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2    Delhi    DEL       $564       $591       $647       $671       $541</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3     Gaya    GAY       $716       $668       $816       $778       $704</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4    Patna    PAT       $679       $634       $697       $715       $697</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 Varanasi    VNS       $635       $609       $679       $722       $653</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6     Best    Day                                                      X</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2025-12-23 2025-12-24 2025-12-25 2025-12-26 2025-12-27 2025-12-28 2025-12-29</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1       $679       $778       $961     $1,031     $1,353     $1,539     $1,715</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2       $643       $853       $692     $  955     $1,364     $1,464     $1,359</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3       $857       $926       $990     $1,218     $1,711     $1,751     $1,846</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4       $851       $900       $979     $1,114     $1,467     $1,641     $1,658</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5       $811       $901       $910     $  939     $1,393     $1,880     $1,772</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6                                                                             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2025-12-30 2025-12-31 2026-01-01 2026-01-02 2026-01-03 2026-01-04 2026-01-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1     $1,872     $2,011     $1,846     $1,648     $1,640       $615       $618</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2     $1,878     $2,195     $1,672     $1,375     $1,606       $694       $567</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3     $2,127     $2,438     $2,083     $1,994     $2,098       $767       $674</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4     $2,178     $2,480     $2,210     $1,938     $1,983       $784       $668</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5     $1,979     $2,006     $2,079     $1,960     $1,947       $754       $664</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6                                                                             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Average_Price</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1        $1,127</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2        $1,070</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3        $1,324</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4        $1,278</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5        $1,226</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6              </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># With filters</span></span></span>
 <span class="r-in"><span><span class="fu">fa_summarize_prices</span><span class="op">(</span></span></span>

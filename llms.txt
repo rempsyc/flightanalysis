@@ -212,6 +212,8 @@ by Kaya Celebi.
   : Print method for flight_record objects
 - [`print(`*`<flight_results>`*`)`](https://rempsyc.github.io/flightanalysis/reference/print.flight_results.md)
   : Print method for flight_results objects
+- [`sample_flight_results`](https://rempsyc.github.io/flightanalysis/reference/sample_flight_results.md)
+  : Sample Flight Results Dataset
 - [`sample_flights`](https://rempsyc.github.io/flightanalysis/reference/sample_flights.md)
   : Sample Flight Data
 - [`sample_multi_origin`](https://rempsyc.github.io/flightanalysis/reference/sample_multi_origin.md)

@@ -1,11 +1,11 @@
 # Plot Price Summary
 
 Creates a modern line plot showing price trends across dates for
-different origins/cities. This visualizes the output from
-[`fa_summarize_prices`](https://rempsyc.github.io/flightanalysis/reference/fa_summarize_prices.md),
-making it easy to compare prices across dates and identify the best
-travel dates visually. Point sizes vary inversely with price (cheaper
-flights = bigger points).
+different origins/cities. Works best with flight_results objects from
+[`fa_fetch_flights`](https://rempsyc.github.io/flightanalysis/reference/fa_fetch_flights.md),
+which enables features like size_by and annotations. Can also visualize
+pre-summarized data from
+[`fa_summarize_prices`](https://rempsyc.github.io/flightanalysis/reference/fa_summarize_prices.md).
 
 Uses ggplot2 for a polished, publication-ready aesthetic with
 colorblind-friendly colors and clear typography.
@@ -15,8 +15,9 @@ colorblind-friendly colors and clear typography.
 ``` r
 fa_plot_prices(
   price_summary,
-  title = "Flight Prices by Date",
+  title = NULL,
   subtitle = NULL,
+  size_by = NULL,
   annotate_col = NULL,
   use_ggrepel = TRUE,
   show_max_annotation = TRUE,
@@ -29,18 +30,27 @@ fa_plot_prices(
 
 - price_summary:
 
-  A data frame from
-  [`fa_summarize_prices`](https://rempsyc.github.io/flightanalysis/reference/fa_summarize_prices.md)
-  or flight results that can be passed to
+  A flight_results object (recommended) or a data frame from
   [`fa_summarize_prices`](https://rempsyc.github.io/flightanalysis/reference/fa_summarize_prices.md).
+  Using flight_results enables all features including size_by and
+  annotations.
 
 - title:
 
-  Character. Plot title. Default is "Flight Prices by Date".
+  Character. Plot title. Default is NULL (auto-generated with flight
+  context).
 
 - subtitle:
 
-  Character. Plot subtitle. Default is NULL (auto-generated).
+  Character. Plot subtitle. Default is NULL (auto-generated with lowest
+  price info).
+
+- size_by:
+
+  Character. Name of column from raw flight data to use for point
+  sizing. Can be "price", a column name like "travel_time", or NULL for
+  uniform sizing (default). When using a column name, only works when
+  passing raw flight data, not summary tables. Default is NULL.
 
 - annotate_col:
 
@@ -81,25 +91,27 @@ A ggplot2 plot object that can be further customized or saved.
 
 ``` r
 if (FALSE) { # \dontrun{
-# Plot price summary
-fa_plot_prices(sample_flights)
+# Basic plot with auto-generated title and subtitle
+fa_plot_prices(sample_flight_results)
 
-# With custom title and annotations (using ggrepel)
-fa_plot_prices(sample_flights,
-               title = "Flight Prices: BOM/DEL to JFK",
-               annotate_col = "travel_time")
+# With point size based on travel time and annotations
+fa_plot_prices(sample_flight_results,
+               size_by = "travel_time",
+               annotate_col = "num_stops")
+
+# Size by number of stops
+fa_plot_prices(sample_flight_results,
+               size_by = "num_stops")
 
 # With annotations centered on points (no ggrepel)
-fa_plot_prices(sample_flights,
+fa_plot_prices(sample_flight_results,
+               size_by = "travel_time",
                annotate_col = "travel_time",
                use_ggrepel = FALSE)
 
-# Without maximum price annotation
-fa_plot_prices(sample_flights,
-               show_max_annotation = FALSE)
-
-# With both max and min price annotations
-fa_plot_prices(sample_flights,
+# Custom title and both price annotations
+fa_plot_prices(sample_flight_results,
+               title = "Custom Title",
                show_max_annotation = TRUE,
                show_min_annotation = TRUE)
 } # }

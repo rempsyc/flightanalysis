@@ -90,12 +90,12 @@ head(sample_flights)
 #> 5    Turkish Airlines 12 hr 45 min   620         0            <NA>
 #> 6     United Airlines 13 hr 15 min   685         1 3 hr 10 min EWR
 #>           access_date co2_emission_kg emission_diff_pct
-#> 1 2025-11-15 18:06:44             550                 5
-#> 2 2025-11-15 18:06:44             580                10
-#> 3 2025-11-15 18:06:44             600                15
-#> 4 2025-11-15 18:06:44             570                 8
-#> 5 2025-11-15 18:06:44             540                 3
-#> 6 2025-11-15 18:06:44             575                 9
+#> 1 2025-11-16 16:19:56             550                 5
+#> 2 2025-11-16 16:19:56             580                10
+#> 3 2025-11-16 16:19:56             600                15
+#> 4 2025-11-16 16:19:56             570                 8
+#> 5 2025-11-16 16:19:56             540                 3
+#> 6 2025-11-16 16:19:56             575                 9
 # Use with analysis functions directly
 fa_find_best_dates(sample_flights, n = 3)
 #>   departure_date departure_time arrival_date arrival_time origin price
