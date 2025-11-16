@@ -1,10 +1,8 @@
-# flightanalysis: Google Flight Analysis and Scraping
+# flightanalysis: Find the best flights
 
 Tools and models for users to analyze, forecast, and collect data
 regarding flights and prices. Features include detailed scraping and
-querying tools for Google Flights, ability to store data locally or to
-SQL tables, and base analytical tools/methods for price
-forecasting/summary.
+querying tools for Google Flights.
 
 This package provides tools and models for users to analyze, forecast,
 and collect data regarding flights and prices. Current features include:
