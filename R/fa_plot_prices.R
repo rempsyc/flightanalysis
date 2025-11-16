@@ -29,7 +29,7 @@
 #' fa_plot_prices(sample_flights)
 #'
 #' # With custom title and annotations
-#' fa_plot_prices(sample_flights, 
+#' fa_plot_prices(sample_flights,
 #'                title = "Flight Prices: BOM/DEL to JFK",
 #'                annotate_col = "travel_time")
 #' }
@@ -53,11 +53,11 @@ fa_plot_prices <- function(
       "Please install it with: install.packages('scales')"
     )
   }
-  
+
   # Store raw data for annotations if provided
   raw_data <- NULL
   has_annotations <- !is.null(annotate_col)
-  
+
   # If not already a summary table, create it
   if (!all(c("City", "Origin") %in% names(price_summary))) {
     # Keep raw data for annotations if requested
@@ -67,31 +67,40 @@ fa_plot_prices <- function(
     }
     price_summary <- fa_summarize_prices(price_summary, ...)
   }
-  
+
   # Remove the "Best" row if present
   price_summary <- price_summary[price_summary$City != "Best", ]
-  
+
   if (nrow(price_summary) == 0) {
     stop("No data to plot after filtering")
   }
-  
+
   # Identify date columns (format YYYY-MM-DD)
-  date_cols <- grep("^[0-9]{4}-[0-9]{2}-[0-9]{2}$", names(price_summary), value = TRUE)
-  
+  date_cols <- grep(
+    "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+    names(price_summary),
+    value = TRUE
+  )
+
   if (length(date_cols) == 0) {
     stop("No date columns found in price_summary")
   }
-  
+
   # Extract price values (remove currency symbols and convert to numeric)
   price_data <- price_summary[, date_cols, drop = FALSE]
   for (col in date_cols) {
     price_data[[col]] <- as.numeric(gsub("[^0-9.]", "", price_data[[col]]))
   }
-  
+
   # Convert to long format for ggplot2
   plot_data <- data.frame()
   for (i in seq_len(nrow(price_summary))) {
-    origin_label <- paste0(price_summary$City[i], " (", price_summary$Origin[i], ")")
+    origin_label <- paste0(
+      price_summary$City[i],
+      " (",
+      price_summary$Origin[i],
+      ")"
+    )
     for (j in seq_along(date_cols)) {
       plot_data <- rbind(
         plot_data,
@@ -105,12 +114,14 @@ fa_plot_prices <- function(
       )
     }
   }
-  
+
   # Remove any NA prices
   plot_data <- plot_data[!is.na(plot_data$price), ]
-  
+
   # Add annotation data if available
-  if (has_annotations && !is.null(raw_data) && annotate_col %in% names(raw_data)) {
+  if (
+    has_annotations && !is.null(raw_data) && annotate_col %in% names(raw_data)
+  ) {
     # Prepare date column for merging
     if ("departure_date" %in% names(raw_data)) {
       raw_data$date <- as.Date(raw_data$departure_date)
@@ -122,7 +133,7 @@ fa_plot_prices <- function(
         raw_data$date <- as.Date(raw_data$date)
       }
     }
-    
+
     # Prepare origin column for merging
     if (!("origin" %in% names(raw_data))) {
       if ("Airport" %in% names(raw_data)) {
@@ -131,25 +142,38 @@ fa_plot_prices <- function(
         raw_data$origin <- raw_data$Origin
       }
     }
-    
+
     # Get annotation value for the cheapest flight on each date-origin combo
     if ("date" %in% names(raw_data) && "origin" %in% names(raw_data)) {
       # Ensure price column exists
       if (!("price" %in% names(raw_data)) && "Price" %in% names(raw_data)) {
         raw_data$price <- raw_data$Price
       }
-      
-      annot_data <- raw_data[, c("date", "origin", "price", annotate_col), drop = FALSE]
+
+      annot_data <- raw_data[,
+        c("date", "origin", "price", annotate_col),
+        drop = FALSE
+      ]
       # Get the row with minimum price for each date-origin combo
-      annot_data <- do.call(rbind, lapply(split(annot_data, paste(annot_data$date, annot_data$origin)), function(x) {
-        x[which.min(x$price), ]
-      }))
+      annot_data <- do.call(
+        rbind,
+        lapply(
+          split(annot_data, paste(annot_data$date, annot_data$origin)),
+          function(x) {
+            x[which.min(x$price), ]
+          }
+        )
+      )
       # Merge annotations into plot_data
-      plot_data <- merge(plot_data, annot_data[, c("date", "origin", annotate_col), drop = FALSE], 
-                        by = c("date", "origin"), all.x = TRUE)
+      plot_data <- merge(
+        plot_data,
+        annot_data[, c("date", "origin", annotate_col), drop = FALSE],
+        by = c("date", "origin"),
+        all.x = TRUE
+      )
     }
   }
-  
+
   # Define colorblind-friendly palette
   # Using a palette similar to Okabe-Ito or viridis
   color_palette <- c(
@@ -160,9 +184,9 @@ fa_plot_prices <- function(
     "#0072B2", # Blue
     "#D55E00", # Vermillion
     "#CC79A7", # Reddish Purple
-    "#999999"  # Gray
+    "#999999" # Gray
   )
-  
+
   # Create subtitle if not provided
   if (is.null(subtitle)) {
     min_origin <- plot_data$origin[which.min(plot_data$price)]
@@ -173,24 +197,29 @@ fa_plot_prices <- function(
       min_origin
     )
   }
-  
+
   # Create the plot
   # Note: Using variables date, price, origin_label for NSE in ggplot2
   p <- ggplot2::ggplot(
     plot_data,
-    ggplot2::aes(x = date, y = price, color = origin_label, group = origin_label)
+    ggplot2::aes(
+      x = date,
+      y = price,
+      color = origin_label,
+      group = origin_label
+    )
   ) +
     ggplot2::geom_line(linewidth = 2) +
     ggplot2::geom_point(
       ggplot2::aes(size = price),
-      shape = 21,  # Circle with border and fill
-      fill = "white",  # White fill for all points
-      stroke = 2,  # Thicker border
+      shape = 21, # Circle with border and fill
+      fill = "white", # White fill for all points
+      stroke = 2, # Thicker border
       show.legend = FALSE
     ) +
     # Size varies inversely with price: cheaper = bigger
     ggplot2::scale_size_continuous(
-      range = c(2, 8),  # Min size for max price, max size for min price
+      range = c(2, 8), # Min size for max price, max size for min price
       trans = "reverse"
     ) +
     ggplot2::scale_color_manual(values = color_palette) +
@@ -219,17 +248,18 @@ fa_plot_prices <- function(
       axis.title = ggplot2::element_text(face = "bold"),
       plot.margin = ggplot2::margin(10, 10, 10, 10)
     )
-  
+
   # Add annotations if requested and available
   if (has_annotations && annotate_col %in% names(plot_data)) {
-    p <- p + ggplot2::geom_text(
-      ggplot2::aes(label = .data[[annotate_col]]),
-      size = 2.5,
-      vjust = -1.5,
-      show.legend = FALSE,
-      color = "grey30"
-    )
+    p <- p +
+      ggplot2::geom_text(
+        ggplot2::aes(label = .data[[annotate_col]]),
+        size = 2.5,
+        vjust = -1.5,
+        show.legend = FALSE,
+        color = "grey30"
+      )
   }
-  
+
   return(p)
 }

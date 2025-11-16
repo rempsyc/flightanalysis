@@ -101,10 +101,12 @@ The package includes plotting functions to visualize price trends and best dates
 
 ```{r eval=FALSE}
 # Plot price trends across dates
-fa_plot_prices(flights, title = "Flight Prices: BOM/DEL to JFK")
+fa_plot_prices(flights, 
+               title = "Flight Prices: BOM/DEL to JFK",
+               annotate_col = "travel_time")
 
 # Plot best travel dates
-fa_plot_best_dates(flights, n = 5, by = "min")
+fa_plot_best_dates(flights)
 ```
 
 ## Original Python Package
