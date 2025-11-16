@@ -5,8 +5,6 @@ output:
 
 # Flight Analysis - R Package
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
 An R package for analyzing, forecasting, and collecting flight data and prices from Google Flights. 
 
 ## Features
@@ -99,7 +97,7 @@ fa_find_best_dates(
 
 The package includes plotting functions to visualize price trends and best dates:
 
-```{r eval=FALSE}
+```{r eval=TRUE}
 # Plot price trends across dates
 fa_plot_prices(flights, 
                title = "Flight Prices: BOM/DEL to JFK",
