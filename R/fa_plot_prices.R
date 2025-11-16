@@ -199,20 +199,30 @@ fa_plot_prices <- function(
 
       # Simplify annotation labels (e.g., "20 hr 15 min" -> "20h")
       # Create simplified version for display
-      annot_merge$annot_display <- sapply(annot_merge[[annotate_col]], function(x) {
-        if (is.na(x)) return(NA)
-        x_str <- as.character(x)
-        # Extract first number (assumes format like "20 hr" or "20 hr 15 min" or just "0")
-        # For travel_time, extract hours
-        if (grepl("hr", x_str, ignore.case = TRUE)) {
-          # Extract the hour value
-          hour_val <- gsub("^.*?(\\d+)\\s*hr.*$", "\\1", x_str, ignore.case = TRUE)
-          return(paste0(hour_val, "h"))
+      annot_merge$annot_display <- sapply(
+        annot_merge[[annotate_col]],
+        function(x) {
+          if (is.na(x)) {
+            return(NA)
+          }
+          x_str <- as.character(x)
+          # Extract first number (assumes format like "20 hr" or "20 hr 15 min" or just "0")
+          # For travel_time, extract hours
+          if (grepl("hr", x_str, ignore.case = TRUE)) {
+            # Extract the hour value
+            hour_val <- gsub(
+              "^.*?(\\d+)\\s*hr.*$",
+              "\\1",
+              x_str,
+              ignore.case = TRUE
+            )
+            return(paste0(hour_val, "h"))
+          }
+          # For numeric values (like num_stops), just return as-is
+          return(x_str)
         }
-        # For numeric values (like num_stops), just return as-is
-        return(x_str)
-      })
-      
+      )
+
       # Merge annotations into plot_data
       plot_data <- merge(
         plot_data,
@@ -243,7 +253,7 @@ fa_plot_prices <- function(
     min_price <- plot_data$price[min_idx]
     min_date <- plot_data$date[min_idx]
     subtitle <- sprintf(
-      "Lowest price: $%d from %s on %s",
+      "Lowest price: $%d from %s on %s (Cheaper flights are shown with larger points)",
       round(min_price),
       min_origin,
       format(min_date, "%b %d")
@@ -271,7 +281,8 @@ fa_plot_prices <- function(
     ) +
     # Size varies inversely with price: cheaper = bigger
     ggplot2::scale_size_continuous(
-      range = c(2, 8), # Min size for max price, max size for min price
+      name = "Lower price = bigger point",
+      range = c(2, 7), # Min size for max price, max size for min price
       trans = "reverse"
     ) +
     ggplot2::scale_color_manual(values = color_palette) +
@@ -310,9 +321,11 @@ fa_plot_prices <- function(
       # Normalize price to size range for labels: smaller for expensive, larger for cheap
       price_range <- range(plot_data$price, na.rm = TRUE)
       # Map price inversely to label size (2-4 range)
-      plot_data$label_size <- 4 - 2 * (plot_data$price - price_range[1]) / 
-        (price_range[2] - price_range[1])
-      
+      plot_data$label_size <- 4 -
+        2 *
+          (plot_data$price - price_range[1]) /
+          (price_range[2] - price_range[1])
+
       # Create a new ggplot with updated data that includes label_size
       p <- ggplot2::ggplot(
         plot_data,
@@ -363,7 +376,7 @@ fa_plot_prices <- function(
         ) +
         ggrepel::geom_text_repel(
           ggplot2::aes(label = annot_display),
-          size = 3.5,  # Fixed base size
+          size = 3.5, # Fixed base size
           fontface = "bold",
           show.legend = FALSE,
           color = "black",
@@ -383,8 +396,8 @@ fa_plot_prices <- function(
           ggplot2::aes(label = annot_display),
           size = 3,
           fontface = "bold",
-          vjust = 0.5,  # Center vertically
-          hjust = 0.5,  # Center horizontally
+          vjust = 0.5, # Center vertically
+          hjust = 0.5, # Center horizontally
           show.legend = FALSE,
           color = "black"
         )
