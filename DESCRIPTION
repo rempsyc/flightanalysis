@@ -1,6 +1,6 @@
 Package: flightanalysis
 Title: Google Flight Analysis and Scraping
-Version: 2.1.0
+Version: 2.1.1
 Authors@R: c(
     person("Rémi", "Thériault", email = "remi.theriault@mail.mcgill.ca", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-4315-6788")),
@@ -22,6 +22,9 @@ Imports:
     airportr
 Suggests:
     testthat (>= 3.0.0),
-    knitr
+    knitr,
+    ggplot2,
+    scales,
+    ggrepel
 URL: https://github.com/rempsyc/flightanalysis, https://rempsyc.github.io/flightanalysis/
 BugReports: https://github.com/rempsyc/flightanalysis/issues

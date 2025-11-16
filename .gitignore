@@ -18,6 +18,7 @@ src/google_flight_analysis/dev.py
 .Rdata
 .httr-oauth
 .DS_Store
+Rplots.pdf
 flightanalysis_1.0.0.tar.gz
 README.html
 docs
