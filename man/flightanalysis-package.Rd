@@ -56,7 +56,7 @@ Useful links:
 
 Authors:
 \itemize{
-  \item Kaya Celebi \email{kayacelebi17@gmail.com} [funder]
+  \item Kaya Celebi \email{kayacelebi17@gmail.com}
 }
 
 }

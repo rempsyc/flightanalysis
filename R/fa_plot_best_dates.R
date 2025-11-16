@@ -123,7 +123,7 @@ fa_plot_best_dates <- function(
     ) +
     ggplot2::geom_point(size = 7) +
     ggplot2::geom_text(
-      ggplot2::aes(label = scales::dollar(price)),
+      ggplot2::aes(label = scales::label_dollar()(price)),
       vjust = -1,
       size = 3.5,
       fontface = "bold",

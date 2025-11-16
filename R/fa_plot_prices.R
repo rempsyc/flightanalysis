@@ -2,17 +2,23 @@
 #'
 #' @description
 #' Creates a modern line plot showing price trends across dates for different origins/cities.
-#' This visualizes the output from \code{\link{fa_summarize_prices}}, making it easy
-#' to compare prices across dates and identify the best travel dates visually.
-#' Point sizes vary inversely with price (cheaper flights = bigger points).
+#' Works best with flight_results objects from \code{\link{fa_fetch_flights}}, which
+#' enables features like size_by and annotations. Can also visualize pre-summarized data
+#' from \code{\link{fa_summarize_prices}}.
 #'
 #' Uses ggplot2 for a polished, publication-ready aesthetic with colorblind-friendly
 #' colors and clear typography.
 #'
-#' @param price_summary A data frame from \code{\link{fa_summarize_prices}} or
-#'   flight results that can be passed to \code{\link{fa_summarize_prices}}.
-#' @param title Character. Plot title. Default is "Flight Prices by Date".
-#' @param subtitle Character. Plot subtitle. Default is NULL (auto-generated).
+#' @importFrom stats aggregate median
+#' @param price_summary A flight_results object (recommended) or a data frame from
+#'   \code{\link{fa_summarize_prices}}. Using flight_results enables all features
+#'   including size_by and annotations.
+#' @param title Character. Plot title. Default is NULL (auto-generated with flight context).
+#' @param subtitle Character. Plot subtitle. Default is NULL (auto-generated with lowest price info).
+#' @param size_by Character. Name of column from raw flight data to use for
+#'   point sizing. Can be "price", a column name like "travel_time",
+#'   or NULL for uniform sizing (default). When using a column name, only works when passing
+#'   raw flight data, not summary tables. Default is NULL.
 #' @param annotate_col Character. Name of column from raw flight data to use for
 #'   point annotations (e.g., "travel_time", "num_stops"). Only works when passing
 #'   raw flight data, not summary tables. Default is NULL (no annotations).
@@ -34,32 +40,35 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Plot price summary
-#' fa_plot_prices(sample_flights)
+#' # Basic plot with auto-generated title and subtitle
+#' fa_plot_prices(sample_flight_results)
 #'
-#' # With custom title and annotations (using ggrepel)
-#' fa_plot_prices(sample_flights,
-#'                title = "Flight Prices: BOM/DEL to JFK",
-#'                annotate_col = "travel_time")
+#' # With point size based on travel time and annotations
+#' fa_plot_prices(sample_flight_results,
+#'                size_by = "travel_time",
+#'                annotate_col = "num_stops")
+#'
+#' # Size by number of stops
+#' fa_plot_prices(sample_flight_results,
+#'                size_by = "num_stops")
 #'
 #' # With annotations centered on points (no ggrepel)
-#' fa_plot_prices(sample_flights,
+#' fa_plot_prices(sample_flight_results,
+#'                size_by = "travel_time",
 #'                annotate_col = "travel_time",
 #'                use_ggrepel = FALSE)
 #'
-#' # Without maximum price annotation
-#' fa_plot_prices(sample_flights,
-#'                show_max_annotation = FALSE)
-#'
-#' # With both max and min price annotations
-#' fa_plot_prices(sample_flights,
+#' # Custom title and both price annotations
+#' fa_plot_prices(sample_flight_results,
+#'                title = "Custom Title",
 #'                show_max_annotation = TRUE,
 #'                show_min_annotation = TRUE)
 #' }
 fa_plot_prices <- function(
   price_summary,
-  title = "Flight Prices by Date",
+  title = NULL,
   subtitle = NULL,
+  size_by = NULL,
   annotate_col = NULL,
   use_ggrepel = TRUE,
   show_max_annotation = TRUE,
@@ -80,16 +89,23 @@ fa_plot_prices <- function(
     )
   }
 
-  # Store raw data for annotations if provided
+  # Store raw data for annotations or size_by if provided
   raw_data <- NULL
   has_annotations <- !is.null(annotate_col)
+  has_custom_size <- !is.null(size_by) && size_by != "price"
 
-  # If not already a summary table, create it
-  if (!all(c("City", "Origin") %in% names(price_summary))) {
-    # Keep raw data for annotations if requested
-    if (has_annotations) {
-      # Store the raw data before summarizing
-      raw_data <- price_summary$data
+  # Extract raw data from flight_results object if available
+  if (inherits(price_summary, "flight_results")) {
+    raw_data <- price_summary$data
+    price_summary <- fa_summarize_prices(price_summary, ...)
+  } else if (!all(c("City", "Origin") %in% names(price_summary))) {
+    # If not already a summary table and not a flight_results object
+    # Keep raw data for annotations or custom sizing if requested
+    if (has_annotations || has_custom_size) {
+      # Check if it has a $data component (might be a list structure)
+      if (is.list(price_summary) && "data" %in% names(price_summary)) {
+        raw_data <- price_summary$data
+      }
     }
     price_summary <- fa_summarize_prices(price_summary, ...)
   }
@@ -143,6 +159,93 @@ fa_plot_prices <- function(
 
   # Remove any NA prices
   plot_data <- plot_data[!is.na(plot_data$price), ]
+
+  # Order plot_data explicitly for consistent line drawing
+  # Lines are drawn in data order, so we order by date and origin for consistency
+  plot_data <- plot_data[order(plot_data$date, plot_data$origin), ]
+
+  # Add size_by data if using a custom column
+  if (
+    has_custom_size &&
+      !is.null(raw_data) &&
+      size_by %in% names(raw_data)
+  ) {
+    # Prepare date column for merging
+    if (!("date" %in% names(raw_data))) {
+      if ("departure_date" %in% names(raw_data)) {
+        raw_data$date <- as.Date(raw_data$departure_date)
+      } else if ("Date" %in% names(raw_data)) {
+        raw_data$date <- as.Date(raw_data$Date)
+      }
+    } else {
+      raw_data$date <- as.Date(raw_data$date)
+    }
+
+    # Prepare origin column for merging
+    if (!("origin" %in% names(raw_data))) {
+      if ("Airport" %in% names(raw_data)) {
+        raw_data$origin <- raw_data$Airport
+      } else if ("Origin" %in% names(raw_data)) {
+        raw_data$origin <- raw_data$Origin
+      } else if ("City" %in% names(raw_data)) {
+        # Fallback: use City if no origin columns
+        raw_data$origin <- raw_data$City
+      }
+    }
+
+    # Ensure price column exists
+    if (!("price" %in% names(raw_data))) {
+      if ("Price" %in% names(raw_data)) {
+        raw_data$price <- raw_data$Price
+      }
+    }
+
+    # Get size_by value for the cheapest flight on each date-origin combo
+    if (
+      "date" %in%
+        names(raw_data) &&
+        "origin" %in% names(raw_data) &&
+        "price" %in% names(raw_data)
+    ) {
+      # Select only needed columns
+      size_data <- raw_data[,
+        c("date", "origin", "price", size_by),
+        drop = FALSE
+      ]
+
+      # Get the row with minimum price for each date-origin combo
+      size_data <- do.call(
+        rbind,
+        lapply(
+          split(size_data, paste(size_data$date, size_data$origin)),
+          function(x) {
+            x[which.min(x$price), ]
+          }
+        )
+      )
+
+      # Create a version with just the size_by value for merging
+      size_merge <- size_data[,
+        c("date", "origin", size_by),
+        drop = FALSE
+      ]
+      names(size_merge)[3] <- "size_value"
+
+      # Ensure both date columns are the same class
+      size_merge$date <- as.Date(size_merge$date)
+
+      # Merge size data into plot_data
+      plot_data <- merge(
+        plot_data,
+        size_merge,
+        by = c("date", "origin"),
+        all.x = TRUE
+      )
+
+      # Re-order after merge
+      plot_data <- plot_data[order(plot_data$date, plot_data$origin), ]
+    }
+  }
 
   # Add annotation data if available
   if (
@@ -247,7 +350,99 @@ fa_plot_prices <- function(
         by = c("date", "origin"),
         all.x = TRUE
       )
+
+      # Re-order after merge
+      plot_data <- plot_data[order(plot_data$date, plot_data$origin), ]
     }
+  }
+
+  # Compute point_size column based on size_by parameter
+  # This will be used for both sizing and ordering (smaller points on top)
+  if (!is.null(size_by)) {
+    if (size_by == "price") {
+      # For price: lower values get bigger points (inverse relationship)
+      # We'll use the inverse when setting the scale
+      plot_data$point_size <- plot_data$price
+    } else if ("size_value" %in% names(plot_data)) {
+      # For other columns: use the raw value
+      # Special handling for travel_time format "XX hr YY min"
+      if (
+        size_by == "travel_time" || grepl("time", size_by, ignore.case = TRUE)
+      ) {
+        # Convert "16 hr 30 min" to total hours (16.5)
+        plot_data$point_size <- sapply(plot_data$size_value, function(x) {
+          if (is.na(x)) {
+            return(NA)
+          }
+          x_str <- as.character(x)
+          # Extract hours
+          hours <- as.numeric(gsub(
+            "^.*?(\\d+)\\s*hr.*$",
+            "\\1",
+            x_str,
+            ignore.case = TRUE
+          ))
+          if (is.na(hours)) {
+            hours <- 0
+          }
+          # Extract minutes if present
+          if (grepl("min", x_str, ignore.case = TRUE)) {
+            minutes <- as.numeric(gsub(
+              "^.*?(\\d+)\\s*min.*$",
+              "\\1",
+              x_str,
+              ignore.case = TRUE
+            ))
+            if (is.na(minutes)) {
+              minutes <- 0
+            }
+            return(hours + minutes / 60)
+          }
+          return(hours)
+        })
+      } else {
+        # Try to convert to numeric if possible
+        plot_data$point_size <- suppressWarnings(as.numeric(
+          plot_data$size_value
+        ))
+        # If conversion fails, use rank
+        if (all(is.na(plot_data$point_size))) {
+          plot_data$point_size <- as.numeric(as.factor(plot_data$size_value))
+        }
+      }
+    } else {
+      # Fallback: use price
+      plot_data$point_size <- plot_data$price
+    }
+  } else {
+    # Uniform sizing if size_by is NULL
+    plot_data$point_size <- 1
+  }
+
+  # Reorder origin factor based on size_by metric for better line stacking
+  # This ensures lines are drawn in a semantically meaningful order
+  if (!is.null(size_by) && "point_size" %in% names(plot_data)) {
+    # Compute summary statistic per origin (median of point_size)
+    origin_order <- aggregate(
+      point_size ~ origin,
+      data = plot_data,
+      FUN = median,
+      na.rm = TRUE
+    )
+    # Sort by the summary statistic (smaller values first for better visual order)
+    origin_order <- origin_order[order(origin_order$point_size), ]
+
+    # Reorder the origin factor in plot_data
+    plot_data$origin <- factor(
+      plot_data$origin,
+      levels = origin_order$origin
+    )
+
+    # Also update origin_label to maintain the same order
+    plot_data$origin_label <- factor(
+      plot_data$origin_label,
+      levels = unique(plot_data$origin_label[order(plot_data$origin)])
+    )
   }
 
   # Define colorblind-friendly palette
@@ -263,24 +458,111 @@ fa_plot_prices <- function(
     "#999999" # Gray
   )
 
-  # Create subtitle if not provided
-  if (is.null(subtitle)) {
-    min_idx <- which.min(plot_data$price)
-    min_origin <- plot_data$origin[min_idx]
-    min_price <- plot_data$price[min_idx]
-    min_date <- plot_data$date[min_idx]
-    subtitle <- sprintf(
-      "Lowest price: $%d from %s on %s (Cheaper flights are shown with larger points)",
-      round(min_price),
-      min_origin,
-      format(min_date, "%b %d")
+  # Auto-generate title and subtitle if not provided
+  # Title: Flight context (origins, destination, date range)
+  # Subtitle: Lowest price information
+  auto_title <- NULL
+  auto_subtitle <- NULL
+
+  # Extract unique origins
+  origins_list <- unique(plot_data$origin)
+  origins_str <- paste(origins_list, collapse = "/")
+
+  # Try to extract destination from raw_data if available
+  destination_str <- NULL
+  if (!is.null(raw_data)) {
+    if ("destination" %in% names(raw_data)) {
+      dest <- unique(raw_data$destination)
+      if (length(dest) > 0) destination_str <- paste(dest, collapse = "/")
+    } else if ("Destination" %in% names(raw_data)) {
+      dest <- unique(raw_data$Destination)
+      if (length(dest) > 0) destination_str <- paste(dest, collapse = "/")
+    }
+  }
+
+  # Get date range
+  dates <- sort(unique(plot_data$date))
+  if (length(dates) > 1) {
+    date_range_str <- sprintf(
+      "%s-%s",
+      format(min(dates), "%b %d"),
+      format(max(dates), "%b %d")
+    )
+  } else {
+    date_range_str <- format(dates[1], "%b %d")
+  }
+
+  # Construct auto title (flight context)
+  if (!is.null(destination_str)) {
+    auto_title <- sprintf(
+      "Cheapest Flight Prices for %s to %s over %s",
+      origins_str,
+      destination_str,
+      date_range_str
+    )
+  } else {
+    auto_title <- sprintf(
+      "Cheapest Flight Prices from %s over %s",
+      origins_str,
+      date_range_str
     )
   }
 
+  # Construct auto subtitle (lowest price info)
+  min_idx <- which.min(plot_data$price)
+  min_origin <- plot_data$origin[min_idx]
+  min_price <- plot_data$price[min_idx]
+  min_date <- plot_data$date[min_idx]
+  auto_subtitle <- sprintf(
+    "Lowest price: $%d from %s on %s",
+    round(min_price),
+    min_origin,
+    format(min_date, "%b %d")
+  )
+
+  # Use provided title/subtitle or auto-generated ones
+  if (is.null(title)) {
+    title <- auto_title
+  }
+  if (is.null(subtitle)) {
+    subtitle <- auto_subtitle
+  }
+
+  # Create the base plot with consistent data ordering
+  # Lines: use plot_data ordered by date and origin (reordered above if size_by is set)
+  # Points: will be drawn later with ordering by point_size
+
+  # Draw lines first with explicitly ordered data by date and origin
+  # If origin was reordered above, this will reflect that order
+  line_data <- plot_data[order(plot_data$date, plot_data$origin), ]
+
+  # For points: arrange so smaller points are drawn last (on top)
+  # Use origin as secondary sort key to maintain consistency
+  if (!is.null(size_by) && size_by == "price") {
+    # For price: larger point_size (expensive) drawn first, smaller (cheap) drawn last (on top)
+    point_data <- plot_data[order(-plot_data$point_size, plot_data$origin), ]
+    size_trans <- "reverse" # Inverse relationship: high price = small point
+    # Capitalize and clean up label
+    size_label <- "Price"
+  } else if (!is.null(size_by)) {
+    # For other metrics: smaller point_size drawn last (on top)
+    point_data <- plot_data[order(-plot_data$point_size, plot_data$origin), ]
+    size_trans <- "identity" # Direct relationship
+    # Capitalize and clean up label (e.g., "travel_time" -> "Travel Time")
+    clean_name <- gsub("_", " ", size_by)
+    clean_name <- tools::toTitleCase(clean_name)
+    size_label <- clean_name
+  } else {
+    # Uniform sizing
+    point_data <- plot_data
+    size_trans <- "identity"
+    size_label <- NULL
+  }
+
   # Create the plot
-  # Note: Using variables date, price, origin_label for NSE in ggplot2
+  # Note: Using variables date, price, origin_label, point_size for NSE in ggplot2
   p <- ggplot2::ggplot(
-    plot_data,
+    line_data,
     ggplot2::aes(
       x = date,
       y = price,
@@ -288,20 +570,47 @@ fa_plot_prices <- function(
       group = origin_label
     )
   ) +
-    ggplot2::geom_line(linewidth = 2) +
-    ggplot2::geom_point(
-      ggplot2::aes(size = price),
-      shape = 21, # Circle with border and fill
-      fill = "white", # White fill for all points
-      stroke = 2, # Thicker border
-      show.legend = FALSE
-    ) +
-    # Size varies inversely with price: cheaper = bigger
-    ggplot2::scale_size_continuous(
-      name = "Lower price = bigger point",
-      range = c(2, 7), # Min size for max price, max size for min price
-      trans = "reverse"
-    ) +
+    ggplot2::geom_line(linewidth = 2)
+
+  # Add points with explicit data ordering
+  if (!is.null(size_by)) {
+    # Calculate min and max for legend breaks
+    point_size_range <- range(plot_data$point_size, na.rm = TRUE)
+
+    p <- p +
+      ggplot2::geom_point(
+        data = point_data,
+        ggplot2::aes(size = point_size),
+        shape = 21, # Circle with border and fill
+        fill = "white", # White fill for all points
+        stroke = 2, # Thicker border
+        show.legend = TRUE # Show legend for size
+      ) +
+      ggplot2::scale_size_continuous(
+        name = size_label,
+        range = c(2, 7),
+        trans = size_trans,
+        breaks = point_size_range,
+        labels = round(point_size_range),
+        guide = ggplot2::guide_legend(
+          override.aes = list(stroke = 1, fill = "white")
+        )
+      )
+  } else {
+    # Uniform size points
+    p <- p +
+      ggplot2::geom_point(
+        data = point_data,
+        size = 5,
+        shape = 21,
+        fill = "white",
+        stroke = 2,
+        show.legend = FALSE
+      )
+  }
+
+  # Add remaining scales and theme
+  p <- p +
     ggplot2::scale_color_manual(values = color_palette) +
     ggplot2::scale_y_continuous(
       labels = scales::dollar_format(),
@@ -335,26 +644,27 @@ fa_plot_prices <- function(
     max_idx <- which.max(plot_data$price)
     max_price <- plot_data$price[max_idx]
     max_date <- plot_data$date[max_idx]
-    
+
     # Calculate data-dependent offsets
-    price_range <- max(plot_data$price, na.rm = TRUE) - min(plot_data$price, na.rm = TRUE)
-    
+    price_range <- max(plot_data$price, na.rm = TRUE) -
+      min(plot_data$price, na.rm = TRUE)
+
     # Vertical offset above the max point (about 8% of price range)
     bar_y_offset <- price_range * 0.08
     bar_y <- max_price + bar_y_offset
-    
+
     # Label position (slightly above the bar)
     label_y_offset <- price_range * 0.04
     label_y <- bar_y + label_y_offset
-    
+
     # Bar width in days (0.5 days on each side = 1 day total)
     bar_width <- 0.5
     bar_xmin <- max_date - bar_width
     bar_xmax <- max_date + bar_width
-    
+
     # Format price for label (with comma separator)
     max_price_label <- scales::dollar_format()(max_price)
-    
+
     # Add horizontal bar annotation (thin black line)
     p <- p +
       ggplot2::annotate(
@@ -378,33 +688,34 @@ fa_plot_prices <- function(
         vjust = 0
       )
   }
-  
+
   # Add minimum price annotation if requested
   if (show_min_annotation) {
     # Find the row with minimum price
     min_idx <- which.min(plot_data$price)
     min_price <- plot_data$price[min_idx]
     min_date <- plot_data$date[min_idx]
-    
+
     # Calculate data-dependent offsets
-    price_range <- max(plot_data$price, na.rm = TRUE) - min(plot_data$price, na.rm = TRUE)
-    
+    price_range <- max(plot_data$price, na.rm = TRUE) -
+      min(plot_data$price, na.rm = TRUE)
+
     # Vertical offset below the min point (about 8% of price range)
     bar_y_offset <- price_range * 0.08
     bar_y <- min_price - bar_y_offset
-    
+
     # Label position (slightly below the bar)
     label_y_offset <- price_range * 0.04
     label_y <- bar_y - label_y_offset
-    
+
     # Bar width in days (0.5 days on each side = 1 day total)
     bar_width <- 0.5
     bar_xmin <- min_date - bar_width
     bar_xmax <- min_date + bar_width
-    
+
     # Format price for label (with comma separator)
     min_price_label <- scales::dollar_format()(min_price)
-    
+
     # Add horizontal bar annotation (thin black line)
     p <- p +
       ggplot2::annotate(
@@ -428,69 +739,14 @@ fa_plot_prices <- function(
         vjust = 1
       )
   }
-  
+
   # Add annotations if requested and available
+  # This is added as a layer on top of the existing plot, avoiding duplication
   if (has_annotations && "annot_display" %in% names(plot_data)) {
     # Check if user wants ggrepel and if it's available
     if (use_ggrepel && requireNamespace("ggrepel", quietly = TRUE)) {
       # Use ggrepel for non-overlapping labels
-      # Calculate label size based on point size (price)
-      # Normalize price to size range for labels: smaller for expensive, larger for cheap
-      price_range <- range(plot_data$price, na.rm = TRUE)
-      # Map price inversely to label size (2-4 range)
-      plot_data$label_size <- 4 -
-        2 *
-          (plot_data$price - price_range[1]) /
-          (price_range[2] - price_range[1])
-
-      # Create a new ggplot with updated data that includes label_size
-      p <- ggplot2::ggplot(
-        plot_data,
-        ggplot2::aes(
-          x = date,
-          y = price,
-          color = origin_label,
-          group = origin_label
-        )
-      ) +
-        ggplot2::geom_line(linewidth = 2) +
-        ggplot2::geom_point(
-          ggplot2::aes(size = price),
-          shape = 21,
-          fill = "white",
-          stroke = 2,
-          show.legend = FALSE
-        ) +
-        ggplot2::scale_size_continuous(
-          range = c(2, 8),
-          trans = "reverse"
-        ) +
-        ggplot2::scale_color_manual(values = color_palette) +
-        ggplot2::scale_y_continuous(
-          labels = scales::dollar_format(),
-          expand = ggplot2::expansion(mult = c(0.05, 0.15))
-        ) +
-        ggplot2::scale_x_date(
-          date_labels = "%b %d",
-          date_breaks = "1 day"
-        ) +
-        ggplot2::labs(
-          title = title,
-          subtitle = subtitle,
-          x = "Departure Date",
-          y = "Price (USD)",
-          color = "Origin"
-        ) +
-        ggplot2::theme_minimal(base_size = 13) +
-        ggplot2::theme(
-          plot.title = ggplot2::element_text(face = "bold", size = 16),
-          plot.subtitle = ggplot2::element_text(color = "grey40", size = 11),
-          panel.grid.minor = ggplot2::element_blank(),
-          legend.position = "bottom",
-          legend.title = ggplot2::element_text(face = "bold"),
-          axis.title = ggplot2::element_text(face = "bold"),
-          plot.margin = ggplot2::margin(10, 10, 10, 10)
-        ) +
+      p <- p +
         ggrepel::geom_text_repel(
           ggplot2::aes(label = annot_display),
           size = 3.5, # Fixed base size
@@ -519,6 +775,33 @@ fa_plot_prices <- function(
           color = "black"
         )
     }
+    
+    # Add explanatory caption for annotations in top-left corner
+    # Clean up column name for display (e.g., "num_stops" -> "Number of Stops")
+    annot_label <- gsub("_", " ", annotate_col)
+    annot_label <- tools::toTitleCase(annot_label)
+    caption_text <- sprintf("Point labels: %s", annot_label)
+    
+    # Get plot limits for positioning
+    date_range <- range(plot_data$date, na.rm = TRUE)
+    price_range_full <- range(plot_data$price, na.rm = TRUE)
+    
+    # Position in top-left: 5% from left edge, 95% up from bottom
+    caption_x <- date_range[1] + as.numeric(diff(date_range)) * 0.05
+    caption_y <- price_range_full[1] + diff(price_range_full) * 0.95
+    
+    p <- p +
+      ggplot2::annotate(
+        "text",
+        x = caption_x,
+        y = caption_y,
+        label = caption_text,
+        hjust = 0,
+        vjust = 1,
+        size = 3.5,
+        color = "grey30",
+        fontface = "italic"
+      )
   }
 
   return(p)

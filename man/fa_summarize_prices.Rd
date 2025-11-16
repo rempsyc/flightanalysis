@@ -73,7 +73,7 @@ travel time, stops, and emissions.
 }
 \examples{
 # Create summary table
-fa_summarize_prices(sample_flights)
+fa_summarize_prices(sample_flight_results)
 
 # With filters
 fa_summarize_prices(

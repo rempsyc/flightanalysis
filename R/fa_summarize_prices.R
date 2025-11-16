@@ -41,7 +41,7 @@
 #'
 #' @examples
 #' # Create summary table
-#' fa_summarize_prices(sample_flights)
+#' fa_summarize_prices(sample_flight_results)
 #'
 #' # With filters
 #' fa_summarize_prices(
@@ -106,7 +106,8 @@ fa_summarize_prices <- function(
   }
 
   if (
-    "departure_date" %in% names(flight_results) &&
+    "departure_date" %in%
+      names(flight_results) &&
       !"Date" %in% names(flight_results)
   ) {
     flight_results$Date <- flight_results$departure_date

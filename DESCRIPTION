@@ -1,10 +1,10 @@
 Package: flightanalysis
 Title: Find the best flights
-Version: 2.1.1
+Version: 2.1.2
 Authors@R: c(
     person("Rémi", "Thériault", email = "remi.theriault@mail.mcgill.ca", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-4315-6788")),
-    person("Kaya", "Celebi", email = "kayacelebi17@gmail.com", role = c("aut", "fnd"))
+    person("Kaya", "Celebi", email = "kayacelebi17@gmail.com", role = "aut")
     )
 Description: Tools and models for users to analyze, forecast, and collect data 
     regarding flights and prices. Features include detailed scraping and 
