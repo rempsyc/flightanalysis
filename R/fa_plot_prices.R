@@ -775,6 +775,33 @@ fa_plot_prices <- function(
           color = "black"
         )
     }
+    
+    # Add explanatory caption for annotations in top-left corner
+    # Clean up column name for display (e.g., "num_stops" -> "Number of Stops")
+    annot_label <- gsub("_", " ", annotate_col)
+    annot_label <- tools::toTitleCase(annot_label)
+    caption_text <- sprintf("Point labels: %s", annot_label)
+    
+    # Get plot limits for positioning
+    date_range <- range(plot_data$date, na.rm = TRUE)
+    price_range_full <- range(plot_data$price, na.rm = TRUE)
+    
+    # Position in top-left: 5% from left edge, 95% up from bottom
+    caption_x <- date_range[1] + as.numeric(diff(date_range)) * 0.05
+    caption_y <- price_range_full[1] + diff(price_range_full) * 0.95
+    
+    p <- p +
+      ggplot2::annotate(
+        "text",
+        x = caption_x,
+        y = caption_y,
+        label = caption_text,
+        hjust = 0,
+        vjust = 1,
+        size = 3.5,
+        color = "grey30",
+        fontface = "italic"
+      )
   }
 
   return(p)
