@@ -2,7 +2,7 @@
 "_PACKAGE"
 
 # Suppress R CMD check notes for ggplot2 NSE variables
-utils::globalVariables(c("price", "origin", "origin_label", "date", "rank", ".data", "annot_display"))
+utils::globalVariables(c("price", "origin", "origin_label", "date", "rank", "date_label", ".data", "annot_display", "point_size"))
 
 #' flightanalysis: Google Flight Analysis and Scraping
 #'
