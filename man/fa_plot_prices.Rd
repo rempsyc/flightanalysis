@@ -45,7 +45,7 @@ colors and clear typography.
 fa_plot_prices(sample_flights)
 
 # With custom title and annotations
-fa_plot_prices(sample_flights, 
+fa_plot_prices(sample_flights,
                title = "Flight Prices: BOM/DEL to JFK",
                annotate_col = "travel_time")
 }
