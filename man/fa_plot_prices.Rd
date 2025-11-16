@@ -10,6 +10,7 @@ fa_plot_prices(
   subtitle = NULL,
   annotate_col = NULL,
   use_ggrepel = TRUE,
+  show_max_annotation = TRUE,
   ...
 )
 }
@@ -28,6 +29,10 @@ raw flight data, not summary tables. Default is NULL (no annotations).}
 \item{use_ggrepel}{Logical. If TRUE, uses ggrepel for non-overlapping label
 positioning (requires ggrepel package). If FALSE, labels are centered on points
 and may overlap when there are many data points. Default is TRUE.}
+
+\item{show_max_annotation}{Logical. If TRUE, adds a data-journalism-style
+annotation for the maximum price with a horizontal bar and formatted price label.
+The annotation is subtle and clean (no arrows or boxes). Default is TRUE.}
 
 \item{...}{Additional arguments passed to \code{\link{fa_summarize_prices}}
 if price_summary is not already a summary table.}
@@ -58,5 +63,9 @@ fa_plot_prices(sample_flights,
 fa_plot_prices(sample_flights,
                annotate_col = "travel_time",
                use_ggrepel = FALSE)
+
+# Without maximum price annotation
+fa_plot_prices(sample_flights,
+               show_max_annotation = FALSE)
 }
 }

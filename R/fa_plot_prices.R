@@ -19,6 +19,9 @@
 #' @param use_ggrepel Logical. If TRUE, uses ggrepel for non-overlapping label
 #'   positioning (requires ggrepel package). If FALSE, labels are centered on points
 #'   and may overlap when there are many data points. Default is TRUE.
+#' @param show_max_annotation Logical. If TRUE, adds a data-journalism-style
+#'   annotation for the maximum price with a horizontal bar and formatted price label.
+#'   The annotation is subtle and clean (no arrows or boxes). Default is TRUE.
 #' @param ... Additional arguments passed to \code{\link{fa_summarize_prices}}
 #'   if price_summary is not already a summary table.
 #'
@@ -40,6 +43,10 @@
 #' fa_plot_prices(sample_flights,
 #'                annotate_col = "travel_time",
 #'                use_ggrepel = FALSE)
+#'
+#' # Without maximum price annotation
+#' fa_plot_prices(sample_flights,
+#'                show_max_annotation = FALSE)
 #' }
 fa_plot_prices <- function(
   price_summary,
@@ -47,6 +54,7 @@ fa_plot_prices <- function(
   subtitle = NULL,
   annotate_col = NULL,
   use_ggrepel = TRUE,
+  show_max_annotation = TRUE,
   ...
 ) {
   # Check if ggplot2 is available
@@ -312,6 +320,56 @@ fa_plot_prices <- function(
       plot.margin = ggplot2::margin(10, 10, 10, 10)
     )
 
+  # Add maximum price annotation if requested
+  if (show_max_annotation) {
+    # Find the row with maximum price
+    max_idx <- which.max(plot_data$price)
+    max_price <- plot_data$price[max_idx]
+    max_date <- plot_data$date[max_idx]
+    
+    # Calculate data-dependent offsets
+    price_range <- max(plot_data$price, na.rm = TRUE) - min(plot_data$price, na.rm = TRUE)
+    
+    # Vertical offset above the max point (about 8% of price range)
+    bar_y_offset <- price_range * 0.08
+    bar_y <- max_price + bar_y_offset
+    
+    # Label position (slightly above the bar)
+    label_y_offset <- price_range * 0.04
+    label_y <- bar_y + label_y_offset
+    
+    # Bar width in days (0.5 days on each side = 1 day total)
+    bar_width <- 0.5
+    bar_xmin <- max_date - bar_width
+    bar_xmax <- max_date + bar_width
+    
+    # Format price for label (with comma separator)
+    max_price_label <- scales::dollar(max_price, accuracy = 1)
+    
+    # Add horizontal bar annotation (thin black line)
+    p <- p +
+      ggplot2::annotate(
+        "segment",
+        x = bar_xmin,
+        xend = bar_xmax,
+        y = bar_y,
+        yend = bar_y,
+        color = "black",
+        linewidth = 0.8
+      ) +
+      # Add price label above the bar
+      ggplot2::annotate(
+        "text",
+        x = max_date,
+        y = label_y,
+        label = max_price_label,
+        fontface = "bold",
+        size = 4,
+        color = "black",
+        vjust = 0
+      )
+  }
+  
   # Add annotations if requested and available
   if (has_annotations && "annot_display" %in% names(plot_data)) {
     # Check if user wants ggrepel and if it's available
