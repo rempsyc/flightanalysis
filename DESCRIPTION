@@ -24,6 +24,7 @@ Suggests:
     testthat (>= 3.0.0),
     knitr,
     ggplot2,
-    scales
+    scales,
+    ggrepel
 URL: https://github.com/rempsyc/flightanalysis, https://rempsyc.github.io/flightanalysis/
 BugReports: https://github.com/rempsyc/flightanalysis/issues

@@ -188,6 +188,22 @@ fa_plot_prices <- function(
       annot_merge$date <- as.Date(annot_merge$date)
       plot_data$date <- as.Date(plot_data$date)
 
+      # Simplify annotation labels (e.g., "20 hr 15 min" -> "20h")
+      # Create simplified version for display
+      annot_merge$annot_display <- sapply(annot_merge[[annotate_col]], function(x) {
+        if (is.na(x)) return(NA)
+        x_str <- as.character(x)
+        # Extract first number (assumes format like "20 hr" or "20 hr 15 min" or just "0")
+        # For travel_time, extract hours
+        if (grepl("hr", x_str, ignore.case = TRUE)) {
+          # Extract the hour value
+          hour_val <- gsub("^.*?(\\d+)\\s*hr.*$", "\\1", x_str, ignore.case = TRUE)
+          return(paste0(hour_val, "h"))
+        }
+        # For numeric values (like num_stops), just return as-is
+        return(x_str)
+      })
+      
       # Merge annotations into plot_data
       plot_data <- merge(
         plot_data,
@@ -277,15 +293,91 @@ fa_plot_prices <- function(
     )
 
   # Add annotations if requested and available
-  if (has_annotations && annotate_col %in% names(plot_data)) {
-    p <- p +
-      ggplot2::geom_text(
-        ggplot2::aes(label = .data[[annotate_col]]),
-        size = 2.5,
-        vjust = -1.5,
-        show.legend = FALSE,
-        color = "grey30"
-      )
+  if (has_annotations && "annot_display" %in% names(plot_data)) {
+    # Check if ggrepel is available
+    if (requireNamespace("ggrepel", quietly = TRUE)) {
+      # Use ggrepel for non-overlapping labels
+      # Calculate label size based on point size (price)
+      # Normalize price to size range for labels: smaller for expensive, larger for cheap
+      price_range <- range(plot_data$price, na.rm = TRUE)
+      # Map price inversely to label size (2-4 range)
+      plot_data$label_size <- 4 - 2 * (plot_data$price - price_range[1]) / 
+        (price_range[2] - price_range[1])
+      
+      # Create a new ggplot with updated data that includes label_size
+      p <- ggplot2::ggplot(
+        plot_data,
+        ggplot2::aes(
+          x = date,
+          y = price,
+          color = origin_label,
+          group = origin_label
+        )
+      ) +
+        ggplot2::geom_line(linewidth = 2) +
+        ggplot2::geom_point(
+          ggplot2::aes(size = price),
+          shape = 21,
+          fill = "white",
+          stroke = 2,
+          show.legend = FALSE
+        ) +
+        ggplot2::scale_size_continuous(
+          range = c(2, 8),
+          trans = "reverse"
+        ) +
+        ggplot2::scale_color_manual(values = color_palette) +
+        ggplot2::scale_y_continuous(
+          labels = scales::dollar_format(),
+          expand = ggplot2::expansion(mult = c(0.05, 0.15))
+        ) +
+        ggplot2::scale_x_date(
+          date_labels = "%b %d",
+          date_breaks = "1 day"
+        ) +
+        ggplot2::labs(
+          title = title,
+          subtitle = subtitle,
+          x = "Departure Date",
+          y = "Price (USD)",
+          color = "Origin"
+        ) +
+        ggplot2::theme_minimal(base_size = 13) +
+        ggplot2::theme(
+          plot.title = ggplot2::element_text(face = "bold", size = 16),
+          plot.subtitle = ggplot2::element_text(color = "grey40", size = 11),
+          panel.grid.minor = ggplot2::element_blank(),
+          legend.position = "bottom",
+          legend.title = ggplot2::element_text(face = "bold"),
+          axis.title = ggplot2::element_text(face = "bold"),
+          plot.margin = ggplot2::margin(10, 10, 10, 10)
+        ) +
+        ggrepel::geom_text_repel(
+          ggplot2::aes(label = annot_display),
+          size = 3.5,  # Fixed base size
+          fontface = "bold",
+          show.legend = FALSE,
+          color = "black",
+          bg.color = "white",
+          bg.r = 0.15,
+          min.segment.length = 0,
+          box.padding = 0.3,
+          point.padding = 0.2,
+          force = 3,
+          max.overlaps = Inf
+        )
+    } else {
+      # Fallback to geom_text if ggrepel not available
+      p <- p +
+        ggplot2::geom_text(
+          ggplot2::aes(label = annot_display),
+          size = 3,
+          fontface = "bold",
+          vjust = -1.5,
+          show.legend = FALSE,
+          color = "black"
+        )
+    }
   }
 
   return(p)
