@@ -10,6 +10,10 @@
   : Fetch Flight Data
 - [`fa_find_best_dates()`](https://rempsyc.github.io/flightanalysis/reference/fa_find_best_dates.md)
   : Find Best Travel Dates
+- [`fa_plot_best_dates()`](https://rempsyc.github.io/flightanalysis/reference/fa_plot_best_dates.md)
+  : Plot Best Travel Dates
+- [`fa_plot_prices()`](https://rempsyc.github.io/flightanalysis/reference/fa_plot_prices.md)
+  : Plot Price Summary
 - [`fa_summarize_prices()`](https://rempsyc.github.io/flightanalysis/reference/fa_summarize_prices.md)
   : Create Price Summary Table
 - [`print(`*`<flight_query>`*`)`](https://rempsyc.github.io/flightanalysis/reference/print.flight_query.md)
