@@ -14,9 +14,9 @@
 #' @param title Character. Plot title. Default is "Flight Prices by Date".
 #' @param subtitle Character. Plot subtitle. Default is NULL (auto-generated).
 #' @param size_by Character. Name of column from raw flight data to use for
-#'   point sizing. Can be "price" (default), a column name like "travel_time",
-#'   or NULL for uniform sizing. When using a column name, only works when passing
-#'   raw flight data, not summary tables. Default is "price".
+#'   point sizing. Can be "price", a column name like "travel_time",
+#'   or NULL for uniform sizing (default). When using a column name, only works when passing
+#'   raw flight data, not summary tables. Default is NULL.
 #' @param annotate_col Character. Name of column from raw flight data to use for
 #'   point annotations (e.g., "travel_time", "num_stops"). Only works when passing
 #'   raw flight data, not summary tables. Default is NULL (no annotations).
@@ -375,6 +375,32 @@ fa_plot_prices <- function(
     plot_data$point_size <- 1
   }
 
+  # Reorder origin factor based on size_by metric for better line stacking
+  # This ensures lines are drawn in a semantically meaningful order
+  if (!is.null(size_by) && "point_size" %in% names(plot_data)) {
+    # Compute summary statistic per origin (median of point_size)
+    origin_order <- aggregate(
+      point_size ~ origin,
+      data = plot_data,
+      FUN = median,
+      na.rm = TRUE
+    )
+    # Sort by the summary statistic (smaller values first for better visual order)
+    origin_order <- origin_order[order(origin_order$point_size), ]
+    
+    # Reorder the origin factor in plot_data
+    plot_data$origin <- factor(
+      plot_data$origin,
+      levels = origin_order$origin
+    )
+    
+    # Also update origin_label to maintain the same order
+    plot_data$origin_label <- factor(
+      plot_data$origin_label,
+      levels = unique(plot_data$origin_label[order(plot_data$origin)])
+    )
+  }
+
   # Define colorblind-friendly palette
   # Using a palette similar to Okabe-Ito or viridis
   color_palette <- c(
@@ -390,51 +416,76 @@ fa_plot_prices <- function(
 
   # Create subtitle if not provided
   if (is.null(subtitle)) {
-    min_idx <- which.min(plot_data$price)
-    min_origin <- plot_data$origin[min_idx]
-    min_price <- plot_data$price[min_idx]
-    min_date <- plot_data$date[min_idx]
-
-    # Customize subtitle based on size_by parameter
-    if (is.null(size_by)) {
-      point_note <- ""
-    } else if (size_by == "price") {
-      point_note <- " (Cheaper flights are shown with larger points)"
-    } else {
-      point_note <- paste0(" (Point size varies by ", size_by, ")")
+    # Extract unique origins
+    origins_list <- unique(plot_data$origin)
+    origins_str <- paste(origins_list, collapse = "/")
+    
+    # Try to extract destination from raw_data if available
+    destination_str <- NULL
+    if (!is.null(raw_data)) {
+      if ("destination" %in% names(raw_data)) {
+        dest <- unique(raw_data$destination)
+        if (length(dest) > 0) destination_str <- paste(dest, collapse = "/")
+      } else if ("Destination" %in% names(raw_data)) {
+        dest <- unique(raw_data$Destination)
+        if (length(dest) > 0) destination_str <- paste(dest, collapse = "/")
+      }
     }
-
-    subtitle <- sprintf(
-      "Lowest price: $%d from %s on %s%s",
-      round(min_price),
-      min_origin,
-      format(min_date, "%b %d"),
-      point_note
-    )
+    
+    # Get date range
+    dates <- sort(unique(plot_data$date))
+    if (length(dates) > 1) {
+      date_range_str <- sprintf(
+        "%s-%s",
+        format(min(dates), "%b %d"),
+        format(max(dates), "%b %d")
+      )
+    } else {
+      date_range_str <- format(dates[1], "%b %d")
+    }
+    
+    # Construct subtitle
+    if (!is.null(destination_str)) {
+      subtitle <- sprintf(
+        "Cheapest Flight Prices for %s to %s over %s",
+        origins_str,
+        destination_str,
+        date_range_str
+      )
+    } else {
+      subtitle <- sprintf(
+        "Cheapest Flight Prices from %s over %s",
+        origins_str,
+        date_range_str
+      )
+    }
   }
 
   # Create the base plot with consistent data ordering
-  # Lines: use plot_data ordered by date and origin (already done above)
+  # Lines: use plot_data ordered by date and origin (reordered above if size_by is set)
   # Points: will be drawn later with ordering by point_size
 
-  # Draw lines first with explicitly ordered data
+  # Draw lines first with explicitly ordered data by date and origin
+  # If origin was reordered above, this will reflect that order
   line_data <- plot_data[order(plot_data$date, plot_data$origin), ]
 
   # For points: arrange so smaller points are drawn last (on top)
-  # For price sizing: larger point_size (higher price) should be drawn first
-  # For other metrics: depends on the meaning, but generally larger values drawn first
+  # Use origin as secondary sort key to maintain consistency
   if (!is.null(size_by) && size_by == "price") {
     # For price: larger point_size (expensive) drawn first, smaller (cheap) drawn last (on top)
-    point_data <- plot_data[order(-plot_data$point_size), ]
+    point_data <- plot_data[order(-plot_data$point_size, plot_data$origin), ]
     size_trans <- "reverse" # Inverse relationship: high price = small point
+    size_label <- "Price\n(cheaper = larger)"
   } else if (!is.null(size_by)) {
     # For other metrics: smaller point_size drawn last (on top)
-    point_data <- plot_data[order(-plot_data$point_size), ]
+    point_data <- plot_data[order(-plot_data$point_size, plot_data$origin), ]
     size_trans <- "identity" # Direct relationship
+    size_label <- paste0(gsub("_", " ", size_by), "\n(shorter = smaller)")
   } else {
     # Uniform sizing
     point_data <- plot_data
     size_trans <- "identity"
+    size_label <- NULL
   }
 
   # Create the plot
@@ -459,11 +510,15 @@ fa_plot_prices <- function(
         shape = 21, # Circle with border and fill
         fill = "white", # White fill for all points
         stroke = 2, # Thicker border
-        show.legend = FALSE
+        show.legend = TRUE  # Show legend for size
       ) +
       ggplot2::scale_size_continuous(
+        name = size_label,
         range = c(2, 7),
-        trans = size_trans
+        trans = size_trans,
+        guide = ggplot2::guide_legend(
+          override.aes = list(stroke = 1, fill = "white")
+        )
       )
   } else {
     # Uniform size points
