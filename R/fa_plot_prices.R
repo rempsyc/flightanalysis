@@ -22,6 +22,9 @@
 #' @param show_max_annotation Logical. If TRUE, adds a data-journalism-style
 #'   annotation for the maximum price with a horizontal bar and formatted price label.
 #'   The annotation is subtle and clean (no arrows or boxes). Default is TRUE.
+#' @param show_min_annotation Logical. If TRUE, adds a data-journalism-style
+#'   annotation for the minimum price with a horizontal bar and formatted price label.
+#'   The annotation is subtle and clean (no arrows or boxes). Default is FALSE.
 #' @param ... Additional arguments passed to \code{\link{fa_summarize_prices}}
 #'   if price_summary is not already a summary table.
 #'
@@ -47,6 +50,11 @@
 #' # Without maximum price annotation
 #' fa_plot_prices(sample_flights,
 #'                show_max_annotation = FALSE)
+#'
+#' # With both max and min price annotations
+#' fa_plot_prices(sample_flights,
+#'                show_max_annotation = TRUE,
+#'                show_min_annotation = TRUE)
 #' }
 fa_plot_prices <- function(
   price_summary,
@@ -55,6 +63,7 @@ fa_plot_prices <- function(
   annotate_col = NULL,
   use_ggrepel = TRUE,
   show_max_annotation = TRUE,
+  show_min_annotation = FALSE,
   ...
 ) {
   # Check if ggplot2 is available
@@ -344,7 +353,7 @@ fa_plot_prices <- function(
     bar_xmax <- max_date + bar_width
     
     # Format price for label (with comma separator)
-    max_price_label <- scales::dollar(max_price, accuracy = 1)
+    max_price_label <- scales::dollar_format()(max_price)
     
     # Add horizontal bar annotation (thin black line)
     p <- p +
@@ -367,6 +376,56 @@ fa_plot_prices <- function(
         size = 4,
         color = "black",
         vjust = 0
+      )
+  }
+  
+  # Add minimum price annotation if requested
+  if (show_min_annotation) {
+    # Find the row with minimum price
+    min_idx <- which.min(plot_data$price)
+    min_price <- plot_data$price[min_idx]
+    min_date <- plot_data$date[min_idx]
+    
+    # Calculate data-dependent offsets
+    price_range <- max(plot_data$price, na.rm = TRUE) - min(plot_data$price, na.rm = TRUE)
+    
+    # Vertical offset below the min point (about 8% of price range)
+    bar_y_offset <- price_range * 0.08
+    bar_y <- min_price - bar_y_offset
+    
+    # Label position (slightly below the bar)
+    label_y_offset <- price_range * 0.04
+    label_y <- bar_y - label_y_offset
+    
+    # Bar width in days (0.5 days on each side = 1 day total)
+    bar_width <- 0.5
+    bar_xmin <- min_date - bar_width
+    bar_xmax <- min_date + bar_width
+    
+    # Format price for label (with comma separator)
+    min_price_label <- scales::dollar_format()(min_price)
+    
+    # Add horizontal bar annotation (thin black line)
+    p <- p +
+      ggplot2::annotate(
+        "segment",
+        x = bar_xmin,
+        xend = bar_xmax,
+        y = bar_y,
+        yend = bar_y,
+        color = "black",
+        linewidth = 0.8
+      ) +
+      # Add price label below the bar
+      ggplot2::annotate(
+        "text",
+        x = min_date,
+        y = label_y,
+        label = min_price_label,
+        fontface = "bold",
+        size = 4,
+        color = "black",
+        vjust = 1
       )
   }
   
