@@ -11,8 +11,8 @@
 #'
 #' @param price_summary A data frame from \code{\link{fa_summarize_prices}} or
 #'   flight results that can be passed to \code{\link{fa_summarize_prices}}.
-#' @param title Character. Plot title. Default is "Flight Prices by Date".
-#' @param subtitle Character. Plot subtitle. Default is NULL (auto-generated).
+#' @param title Character. Plot title. Default is NULL (auto-generated with flight context).
+#' @param subtitle Character. Plot subtitle. Default is NULL (auto-generated with lowest price info).
 #' @param size_by Character. Name of column from raw flight data to use for
 #'   point sizing. Can be "price", a column name like "travel_time",
 #'   or NULL for uniform sizing (default). When using a column name, only works when passing
@@ -67,7 +67,7 @@
 #' }
 fa_plot_prices <- function(
   price_summary,
-  title = "Flight Prices by Date",
+  title = NULL,
   subtitle = NULL,
   size_by = NULL,
   annotate_col = NULL,
@@ -414,51 +414,74 @@ fa_plot_prices <- function(
     "#999999" # Gray
   )
 
-  # Create subtitle if not provided
+  # Auto-generate title and subtitle if not provided
+  # Title: Flight context (origins, destination, date range)
+  # Subtitle: Lowest price information
+  auto_title <- NULL
+  auto_subtitle <- NULL
+  
+  # Extract unique origins
+  origins_list <- unique(plot_data$origin)
+  origins_str <- paste(origins_list, collapse = "/")
+  
+  # Try to extract destination from raw_data if available
+  destination_str <- NULL
+  if (!is.null(raw_data)) {
+    if ("destination" %in% names(raw_data)) {
+      dest <- unique(raw_data$destination)
+      if (length(dest) > 0) destination_str <- paste(dest, collapse = "/")
+    } else if ("Destination" %in% names(raw_data)) {
+      dest <- unique(raw_data$Destination)
+      if (length(dest) > 0) destination_str <- paste(dest, collapse = "/")
+    }
+  }
+  
+  # Get date range
+  dates <- sort(unique(plot_data$date))
+  if (length(dates) > 1) {
+    date_range_str <- sprintf(
+      "%s-%s",
+      format(min(dates), "%b %d"),
+      format(max(dates), "%b %d")
+    )
+  } else {
+    date_range_str <- format(dates[1], "%b %d")
+  }
+  
+  # Construct auto title (flight context)
+  if (!is.null(destination_str)) {
+    auto_title <- sprintf(
+      "Cheapest Flight Prices for %s to %s over %s",
+      origins_str,
+      destination_str,
+      date_range_str
+    )
+  } else {
+    auto_title <- sprintf(
+      "Cheapest Flight Prices from %s over %s",
+      origins_str,
+      date_range_str
+    )
+  }
+  
+  # Construct auto subtitle (lowest price info)
+  min_idx <- which.min(plot_data$price)
+  min_origin <- plot_data$origin[min_idx]
+  min_price <- plot_data$price[min_idx]
+  min_date <- plot_data$date[min_idx]
+  auto_subtitle <- sprintf(
+    "Lowest price: $%d from %s on %s",
+    round(min_price),
+    min_origin,
+    format(min_date, "%b %d")
+  )
+  
+  # Use provided title/subtitle or auto-generated ones
+  if (is.null(title)) {
+    title <- auto_title
+  }
   if (is.null(subtitle)) {
-    # Extract unique origins
-    origins_list <- unique(plot_data$origin)
-    origins_str <- paste(origins_list, collapse = "/")
-    
-    # Try to extract destination from raw_data if available
-    destination_str <- NULL
-    if (!is.null(raw_data)) {
-      if ("destination" %in% names(raw_data)) {
-        dest <- unique(raw_data$destination)
-        if (length(dest) > 0) destination_str <- paste(dest, collapse = "/")
-      } else if ("Destination" %in% names(raw_data)) {
-        dest <- unique(raw_data$Destination)
-        if (length(dest) > 0) destination_str <- paste(dest, collapse = "/")
-      }
-    }
-    
-    # Get date range
-    dates <- sort(unique(plot_data$date))
-    if (length(dates) > 1) {
-      date_range_str <- sprintf(
-        "%s-%s",
-        format(min(dates), "%b %d"),
-        format(max(dates), "%b %d")
-      )
-    } else {
-      date_range_str <- format(dates[1], "%b %d")
-    }
-    
-    # Construct subtitle
-    if (!is.null(destination_str)) {
-      subtitle <- sprintf(
-        "Cheapest Flight Prices for %s to %s over %s",
-        origins_str,
-        destination_str,
-        date_range_str
-      )
-    } else {
-      subtitle <- sprintf(
-        "Cheapest Flight Prices from %s over %s",
-        origins_str,
-        date_range_str
-      )
-    }
+    subtitle <- auto_subtitle
   }
 
   # Create the base plot with consistent data ordering
@@ -475,12 +498,16 @@ fa_plot_prices <- function(
     # For price: larger point_size (expensive) drawn first, smaller (cheap) drawn last (on top)
     point_data <- plot_data[order(-plot_data$point_size, plot_data$origin), ]
     size_trans <- "reverse" # Inverse relationship: high price = small point
-    size_label <- "Price\n(cheaper = larger)"
+    # Capitalize and clean up label
+    size_label <- "Price"
   } else if (!is.null(size_by)) {
     # For other metrics: smaller point_size drawn last (on top)
     point_data <- plot_data[order(-plot_data$point_size, plot_data$origin), ]
     size_trans <- "identity" # Direct relationship
-    size_label <- paste0(gsub("_", " ", size_by), "\n(shorter = smaller)")
+    # Capitalize and clean up label (e.g., "travel_time" -> "Travel Time")
+    clean_name <- gsub("_", " ", size_by)
+    clean_name <- tools::toTitleCase(clean_name)
+    size_label <- clean_name
   } else {
     # Uniform sizing
     point_data <- plot_data
@@ -503,6 +530,9 @@ fa_plot_prices <- function(
 
   # Add points with explicit data ordering
   if (!is.null(size_by)) {
+    # Calculate min and max for legend breaks
+    point_size_range <- range(plot_data$point_size, na.rm = TRUE)
+    
     p <- p +
       ggplot2::geom_point(
         data = point_data,
@@ -516,6 +546,8 @@ fa_plot_prices <- function(
         name = size_label,
         range = c(2, 7),
         trans = size_trans,
+        breaks = point_size_range,
+        labels = round(point_size_range),
         guide = ggplot2::guide_legend(
           override.aes = list(stroke = 1, fill = "white")
         )
