@@ -3,8 +3,41 @@
 \docType{data}
 \name{sample_flight_results}
 \alias{sample_flight_results}
-\title{Sample Flight Results Dataset}
+\title{Sample Flight Query}
 \format{
+A flight_query object for JFK to IST round-trip
+\describe{
+  \item{origin}{List of origin airport codes}
+  \item{dest}{List of destination airport codes}
+  \item{dates}{List of travel dates}
+  \item{type}{Trip type (round-trip)}
+  \item{url}{Google Flights URLs}
+}
+
+A data frame with 6 rows and 14 variables:
+\describe{
+  \item{departure_date}{Character, departure date (YYYY-MM-DD)}
+  \item{departure_time}{Character, departure time (HH:MM)}
+  \item{arrival_date}{Character, arrival date (YYYY-MM-DD)}
+  \item{arrival_time}{Character, arrival time (HH:MM)}
+  \item{origin}{Character, 3-letter origin airport code}
+  \item{destination}{Character, 3-letter destination airport code}
+  \item{airlines}{Character, airline name(s)}
+  \item{travel_time}{Character, total travel time}
+  \item{price}{Numeric, ticket price in USD}
+  \item{num_stops}{Integer, number of stops}
+  \item{layover}{Character, layover details (NA if nonstop)}
+  \item{access_date}{Character, when data was accessed}
+  \item{co2_emission_kg}{Numeric, CO2 emissions in kg}
+  \item{emission_diff_pct}{Numeric, emission difference percentage}
+}
+
+A named list of 2 flight_query objects (BOM and DEL to JFK)
+\describe{
+  \item{BOM}{query object for Mumbai (BOM) to JFK}
+  \item{DEL}{query object for Delhi (DEL) to JFK}
+}
+
 A flight_results object (S3 class) with the following structure:
 \describe{
   \item{data}{A data frame with 95 rows (5 origins × 19 days) containing:
@@ -33,6 +66,15 @@ A flight_results object (S3 class) with the following structure:
 sample_flight_results
 }
 \description{
+A sample flight query object created with `fa_define_query()`.
+Useful for testing and documentation examples without making API calls.
+
+Sample flight data for testing analysis functions
+like `fa_find_best_dates()` and `fa_summarize_prices()` without internet access.
+
+Sample query objects for multiple origins created with `fa_define_query_range()`.
+Demonstrates searching multiple airports over a date range.
+
 A comprehensive sample dataset containing flight data from 5 Indian origins
 (BOM, DEL, VNS, PAT, GAY) to JFK spanning from December 18, 2025 to January 5, 2026.
 This dataset demonstrates realistic pricing patterns including a Christmas/New Year
@@ -58,9 +100,25 @@ This dataset is particularly useful for:
 }
 }
 \examples{
+# Sample Flight Data
+sample_query
+
+head(sample_flights)
+
+# Note: sample_flights is a data frame for demonstration purposes only.
+# Analysis functions now require flight_results objects from fa_fetch_flights().
+# Use sample_flight_results instead:
+\dontrun{
+fa_find_best_dates(sample_flight_results, n = 3)
+fa_summarize_prices(sample_flight_results)
+}
+Sample Multiple Origin Queries
+
+# Sample Flight Results Dataset
+sample_multi_origin
+
 # Load and examine the dataset
-data(sample_flight_results)
-print(sample_flight_results)
+head(sample_flight_results$data)
 
 \dontrun{
 # Plot with automatic Christmas spike visualization
