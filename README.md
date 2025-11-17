@@ -54,9 +54,9 @@ query
 # Fetch the flight data
 flights <- fa_fetch_flights(query)
 #>   Segment 1/2: JFK -> IST on 2025-12-20
-#>   [OK] Successfully parsed 8 flights
-#>   Segment 2/2: IST -> JFK on 2026-01-05
 #>   [OK] Successfully parsed 7 flights
+#>   Segment 2/2: IST -> JFK on 2026-01-05
+#>   [OK] Successfully parsed 8 flights
 #>   [OK] Total flights retrieved: 15
 
 # View the flight data
@@ -68,7 +68,7 @@ head(flights$data[1:11]) |>
 |:---|:---|:---|:---|:---|:---|:---|:---|---:|---:|:---|
 | 2025-12-20 | 22:35 | 2025-12-22 | 00:40 | JFK | IST | LOT | 18 hr 5 min | 1475 | 1 | 6 hr 50 min WAW |
 | 2025-12-20 | 21:20 | 2025-12-21 | 16:55 | JFK | IST | KLM, Delta | 11 hr 35 min | 1770 | 1 | 1 hr 5 min AMS |
-| 2025-12-20 | 00:20 | 2025-12-20 | 18:10 | JFK | IST | Turkish AirlinesJetBlue | 9 hr 50 min | 1921 | 0 | NA |
+| 2025-12-20 | 00:20 | 2025-12-20 | 18:10 | JFK | IST | Turkish Airlines | 9 hr 50 min | 1952 | 0 | NA |
 | 2025-12-20 | 12:50 | 2025-12-21 | 06:45 | JFK | IST | Turkish Airlines | 9 hr 55 min | 1952 | 0 | NA |
 | 2025-12-20 | 20:05 | 2025-12-21 | 14:05 | JFK | IST | Price graph | 10 hr | 1982 | 0 | NA |
 | 2025-12-20 | 23:30 | 2025-12-22 | 03:50 | JFK | IST | Air FranceDelta, KLM | 20 hr 20 min | 1469 | 1 | 9 hr 40 min CDG |
@@ -102,24 +102,24 @@ flights <- fa_fetch_flights(queries)
 #> Scraping 2 objects...
 #> 
 #> [1/2]   Segment 1/5: BOM -> JFK on 2025-12-18
-#>   [OK] Successfully parsed 14 flights
+#>   [OK] Successfully parsed 13 flights
 #>   Segment 2/5: BOM -> JFK on 2025-12-19
-#>   [OK] Successfully parsed 12 flights
+#>   [OK] Successfully parsed 11 flights
 #>   Segment 3/5: BOM -> JFK on 2025-12-20
-#>   [OK] Successfully parsed 9 flights
+#>   [OK] Successfully parsed 8 flights
 #>   Segment 4/5: BOM -> JFK on 2025-12-21
 #>   [OK] Successfully parsed 8 flights
 #>   Segment 5/5: BOM -> JFK on 2025-12-22
-#>   [OK] Successfully parsed 8 flights
-#>   [OK] Total flights retrieved: 51
+#>   [OK] Successfully parsed 9 flights
+#>   [OK] Total flights retrieved: 49
 #> [2/2]   Segment 1/5: DEL -> JFK on 2025-12-18
 #>   [OK] Successfully parsed 8 flights
 #>   Segment 2/5: DEL -> JFK on 2025-12-19
 #>   [OK] Successfully parsed 10 flights
 #>   Segment 3/5: DEL -> JFK on 2025-12-20
-#>   [OK] Successfully parsed 9 flights
+#>   [OK] Successfully parsed 10 flights
 #>   Segment 4/5: DEL -> JFK on 2025-12-21
-#>   [OK] Successfully parsed 9 flights
+#>   [OK] Successfully parsed 8 flights
 #>   Segment 5/5: DEL -> JFK on 2025-12-22
 #>   [OK] Successfully parsed 10 flights
 #>   [OK] Total flights retrieved: 46
@@ -131,8 +131,8 @@ fa_summarize_prices(flights) |>
 
 | City | Origin | 2025-12-18 | 2025-12-19 | 2025-12-20 | 2025-12-21 | 2025-12-22 | Average_Price |
 |:---|:---|:---|:---|:---|:---|:---|:---|
-| Mumbai | BOM | \$361 | \$365 | \$478 | \$413 | \$413 | \$406 |
-| Delhi | DEL | \$361 | \$361 | \$463 | \$463 | \$373 | \$404 |
+| Mumbai | BOM | \$361 | \$365 | \$477 | \$413 | \$413 | \$406 |
+| Delhi | DEL | \$361 | \$361 | \$463 | \$463 | \$386 | \$407 |
 | Best | Day | X |  |  |  |  |  |
 
 ``` r
@@ -154,7 +154,7 @@ fa_find_best_dates(
 | 2025-12-18 | 01:30 | 2025-12-18 | 10:45 | DEL | 408 | 1 | 2 hr CDG | 19 hr 45 min | 794 | Air FranceDelta, KLM | 1 |
 | 2025-12-18 | 04:40 | 2025-12-18 | 15:25 | BOM | 413 | 1 | 3 hr 15 min AUH | 21 hr 15 min | 852 | Etihad | 1 |
 | 2025-12-19 | 04:40 | 2025-12-19 | 15:25 | BOM | 365 | 1 | 3 hr 15 min AUH | 21 hr 15 min | 844 | Etihad | 1 |
-| 2025-12-19 | 20:55 | 2025-12-19 | 09:00 | DEL | 393 | 1 | 3 hr 30 min AUH | 22 hr 35 min | 843 | Etihad | 1 |
+| 2025-12-19 | 20:55 | 2025-12-19 | 09:00 | DEL | 392 | 1 | 3 hr 30 min AUH | 22 hr 35 min | 843 | Etihad | 1 |
 | 2025-12-19 | 23:15 | 2025-12-19 | 09:00 | BOM | 413 | 1 | 2 hr 5 min AUH | 20 hr 15 min | 763 | Akasa Air, Etihad | 1 |
 
 ## Visualizing Price Data
