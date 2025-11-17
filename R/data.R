@@ -15,7 +15,8 @@
 #'
 #' @examples
 #' sample_query
-#'
+"sample_query"
+
 #' @title Sample Flight Data
 #' @description
 #' Sample flight data for testing analysis functions
@@ -49,7 +50,8 @@
 #' fa_find_best_dates(sample_flight_results, n = 3)
 #' fa_summarize_prices(sample_flight_results)
 #' }
-#'
+"sample_flights"
+
 #' @title Sample Multiple Origin Queries
 #'
 #' @description
@@ -64,7 +66,8 @@
 #'
 #' @examples
 #' sample_multi_origin
-#'
+"sample_multi_origin"
+
 #' @title Sample Flight Results Dataset
 #' @description
 #' A comprehensive sample dataset containing flight data from 5 Indian origins
@@ -137,4 +140,4 @@
 #' # Find best dates
 #' fa_find_best_dates(sample_flight_results, n = 5)
 #' }
-#'
+"sample_flight_results"
