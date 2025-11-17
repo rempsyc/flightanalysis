@@ -4,8 +4,14 @@
 \alias{fa_define_query_range}
 \title{Define Flight Query Range}
 \usage{
-fa_define_query_range(origin = NULL, dest = NULL, date_min, date_max,
-                      origin_city = NULL, dest_city = NULL)
+fa_define_query_range(
+  origin = NULL,
+  dest = NULL,
+  date_min,
+  date_max,
+  origin_city = NULL,
+  dest_city = NULL
+)
 }
 \arguments{
 \item{origin}{Character vector of 3-letter airport codes to search from.
