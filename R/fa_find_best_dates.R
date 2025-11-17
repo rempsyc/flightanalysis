@@ -79,7 +79,7 @@ fa_find_best_dates <- function(
   
   flight_results <- extract_data_from_scrapes(flight_results)
 
-  # Normalize column names for direct data frame input
+  # Normalize column names from flight_results data
   if (
     "price" %in% names(flight_results) && !"Price" %in% names(flight_results)
   ) {
