@@ -110,6 +110,7 @@ The package includes plotting functions to visualize price trends and best dates
 # Plot price trends across dates
 fa_plot_prices(flights, 
                title = "Flight Prices: BOM/DEL to JFK",
+               size_by = "travel_time",
                annotate_col = "travel_time")
 
 # Plot best travel dates
