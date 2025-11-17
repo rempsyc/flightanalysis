@@ -157,19 +157,39 @@ test_that("fa_define_query_range accepts multiple city origins", {
   expect_true(all(unlist(queries$BOS$dest) == "LON"))
 })
 
-test_that("fa_define_query_range validates origin/origin_city exclusivity", {
-  # Cannot specify both origin and origin_city
-  expect_error(
-    fa_define_query_range(
-      origin = "BOM",
-      origin_city = "NYC",
-      dest = "JFK",
-      date_min = "2025-12-18",
-      date_max = "2025-12-20"
-    ),
-    "Cannot specify both 'origin' and 'origin_city'"
+test_that("fa_define_query_range allows combining origin and origin_city", {
+  # Can specify both origin and origin_city - they get combined
+  queries <- fa_define_query_range(
+    origin = "BOM",
+    origin_city = "NYC",
+    dest = "JFK",
+    date_min = "2025-12-18",
+    date_max = "2025-12-20"
   )
   
+  # Should return list with both BOM and NYC
+  expect_true(is.list(queries))
+  expect_equal(length(queries), 2)
+  expect_true(all(c("BOM", "NYC") %in% names(queries)))
+})
+
+test_that("fa_define_query_range removes duplicates when combining", {
+  # If same code specified in both, should only appear once
+  queries <- fa_define_query_range(
+    origin = c("BOM", "NYC"),
+    origin_city = "NYC",
+    dest = "JFK",
+    date_min = "2025-12-18",
+    date_max = "2025-12-20"
+  )
+  
+  # Should return list with BOM and NYC (NYC not duplicated)
+  expect_true(is.list(queries))
+  expect_equal(length(queries), 2)
+  expect_equal(sort(names(queries)), c("BOM", "NYC"))
+})
+
+test_that("fa_define_query_range validates at least one origin specified", {
   # Cannot specify neither origin nor origin_city
   expect_error(
     fa_define_query_range(
@@ -177,23 +197,11 @@ test_that("fa_define_query_range validates origin/origin_city exclusivity", {
       date_min = "2025-12-18",
       date_max = "2025-12-20"
     ),
-    "Must specify either 'origin' or 'origin_city'"
+    "Must specify at least one of 'origin' or 'origin_city'"
   )
 })
 
-test_that("fa_define_query_range validates dest/dest_city exclusivity", {
-  # Cannot specify both dest and dest_city
-  expect_error(
-    fa_define_query_range(
-      origin = "BOM",
-      dest = "JFK",
-      dest_city = "NYC",
-      date_min = "2025-12-18",
-      date_max = "2025-12-20"
-    ),
-    "Cannot specify both 'dest' and 'dest_city'"
-  )
-  
+test_that("fa_define_query_range validates at least one dest specified", {
   # Cannot specify neither dest nor dest_city
   expect_error(
     fa_define_query_range(
@@ -201,7 +209,20 @@ test_that("fa_define_query_range validates dest/dest_city exclusivity", {
       date_min = "2025-12-18",
       date_max = "2025-12-20"
     ),
-    "Must specify either 'dest' or 'dest_city'"
+    "Must specify at least one of 'dest' or 'dest_city'"
+  )
+})
+
+test_that("fa_define_query_range rejects multiple destinations", {
+  # Multiple destinations not yet supported
+  expect_error(
+    fa_define_query_range(
+      origin = "BOM",
+      dest = c("JFK", "LGA"),
+      date_min = "2025-12-18",
+      date_max = "2025-12-20"
+    ),
+    "Multiple destinations are not yet supported"
   )
 })
 

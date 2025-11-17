@@ -100,6 +100,16 @@ queries <- fa_define_query_range(
   date_min = "2025-12-18",
   date_max = "2025-12-22"
 )
+
+# Mix airports and cities - useful for specific + nearby options
+queries <- fa_define_query_range(
+  origin = "BOM",       # Specific Mumbai airport
+  origin_city = "NYC",  # Plus all New York area airports
+  dest = "JFK",
+  date_min = "2025-12-18",
+  date_max = "2025-12-22"
+)
+# Automatically combines and removes duplicates
 ```
 
 Common city codes include: NYC (New York), LON (London), PAR (Paris),

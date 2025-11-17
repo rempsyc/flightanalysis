@@ -11,16 +11,16 @@
 #' in a metropolitan area, similar to Google Flights.
 #'
 #' @param origin Character vector of 3-letter airport codes to search from.
-#'   Use NULL if specifying origin_city instead.
+#'   Can be combined with origin_city. Default is NULL.
 #' @param dest Character. 3-letter destination airport code.
-#'   Use NULL if specifying dest_city instead.
+#'   Can be combined with dest_city. Default is NULL.
 #' @param date_min Character or Date. Start date in "YYYY-MM-DD" format.
 #' @param date_max Character or Date. End date in "YYYY-MM-DD" format.
 #' @param origin_city Character vector of 3-letter city/metropolitan codes to search from.
 #'   Examples: "NYC" (New York area), "LON" (London area), "PAR" (Paris area).
-#'   Use NULL if specifying origin instead. Default is NULL.
-#' @param dest_city Character. 3-letter destination city/metropolitan code.
-#'   Use NULL if specifying dest instead. Default is NULL.
+#'   Can be combined with origin. Duplicates are automatically removed. Default is NULL.
+#' @param dest_city Character vector of 3-letter destination city/metropolitan codes.
+#'   Can be combined with dest. Duplicates are automatically removed. Default is NULL.
 #'
 #' @return If single origin/origin_city: A flight query object containing all dates.
 #'   If multiple origins/origin_cities: A named list of flight query objects, one per origin.
@@ -59,34 +59,40 @@
 #'   date_min = "2025-12-18",
 #'   date_max = "2025-12-20"
 #' )
+#'
+#' # Mix airports and cities - e.g., NYC area + specific airport from another city
+#' fa_define_query_range(
+#'   origin = "BOM",
+#'   origin_city = "NYC",
+#'   dest = "JFK",
+#'   date_min = "2025-12-18",
+#'   date_max = "2025-12-20"
+#' )
 fa_define_query_range <- function(origin = NULL, dest = NULL, date_min, date_max,
                                   origin_city = NULL, dest_city = NULL) {
-  # Validate inputs - must specify either origin or origin_city (not both)
+  # Validate inputs - must specify at least one origin
   if (is.null(origin) && is.null(origin_city)) {
-    stop("Must specify either 'origin' or 'origin_city'")
+    stop("Must specify at least one of 'origin' or 'origin_city'")
   }
   
-  if (!is.null(origin) && !is.null(origin_city)) {
-    stop("Cannot specify both 'origin' and 'origin_city'. Use one or the other.")
-  }
-  
-  # Must specify either dest or dest_city (not both)
+  # Must specify at least one destination
   if (is.null(dest) && is.null(dest_city)) {
-    stop("Must specify either 'dest' or 'dest_city'")
+    stop("Must specify at least one of 'dest' or 'dest_city'")
   }
   
-  if (!is.null(dest) && !is.null(dest_city)) {
-    stop("Cannot specify both 'dest' and 'dest_city'. Use one or the other.")
+  # Combine origin and origin_city, removing duplicates
+  combined_origin <- c(origin, origin_city)
+  if (!is.null(combined_origin)) {
+    combined_origin <- unique(combined_origin)
   }
+  origin <- combined_origin
   
-  # Use whichever was specified
-  if (!is.null(origin_city)) {
-    origin <- origin_city
+  # Combine dest and dest_city, removing duplicates
+  combined_dest <- c(dest, dest_city)
+  if (!is.null(combined_dest)) {
+    combined_dest <- unique(combined_dest)
   }
-  
-  if (!is.null(dest_city)) {
-    dest <- dest_city
-  }
+  dest <- combined_dest
   
   # Validate origin
   if (!is.character(origin) || length(origin) == 0) {
@@ -98,8 +104,17 @@ fa_define_query_range <- function(origin = NULL, dest = NULL, date_min, date_max
   }
 
   # Validate dest
-  if (!is.character(dest) || length(dest) != 1 || nchar(dest) != 3) {
-    stop("dest/dest_city must be a single 3-character string")
+  if (!is.character(dest) || length(dest) == 0) {
+    stop("dest/dest_city must be a non-empty character vector")
+  }
+  
+  if (any(nchar(dest) != 3)) {
+    stop("All airport/city codes must be 3 characters")
+  }
+  
+  # For now, only support single destination (as per the original design)
+  if (length(dest) > 1) {
+    stop("Multiple destinations are not yet supported. Please specify only one destination.")
   }
 
   # Convert dates to Date objects if needed
