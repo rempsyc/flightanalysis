@@ -83,6 +83,29 @@ The package supports multiple trip types:
 - **Perfect-chain**:
   `fa_define_query("JFK", "2025-09-20", "IST", "2025-09-25", "JFK")`
 
+### City-Level Searches
+
+The package supports city/metropolitan area codes (like Google Flights)
+in addition to specific airport codes. This allows you to search across
+all airports in a metropolitan area:
+
+``` r
+# Search from New York City area (JFK, LGA, EWR) to London area (all London airports)
+query <- fa_define_query("NYC", "LON", "2025-12-20", "2026-01-05")
+
+# Works with fa_define_query_range too
+queries <- fa_define_query_range(
+  origin_city = "NYC",  # All New York area airports
+  dest_city = "LON",    # All London area airports
+  date_min = "2025-12-18",
+  date_max = "2025-12-22"
+)
+```
+
+Common city codes include: NYC (New York), LON (London), PAR (Paris),
+TYO (Tokyo), BUE (Buenos Aires), CHI (Chicago), WAS (Washington DC),
+etc.
+
 ## Flexible Date Search
 
 The package supports flexible date search across multiple airports and

@@ -4,7 +4,14 @@
 #' Defines a flight query for Google Flights. Supports one-way,
 #' round-trip, chain-trip, and perfect-chain trip types.
 #'
-#' @param ... Arguments defining the trip. Format depends on trip type:
+#' Accepts both airport codes (e.g., "JFK", "LGA") and city/metropolitan codes
+#' (e.g., "NYC" for all New York City airports). City codes allow searching across
+#' multiple airports in a metropolitan area, similar to Google Flights. Common city
+#' codes include: "NYC" (New York), "LON" (London), "PAR" (Paris), "TYO" (Tokyo),
+#' "BUE" (Buenos Aires), etc.
+#'
+#' @param ... Arguments defining the trip. All location codes must be 3-letter strings
+#'   (either airport or city codes). Format depends on trip type:
 #'   - One-way: origin, dest, date
 #'   - Round-trip: origin, dest, date_leave, date_return
 #'   - Chain-trip: org1, dest1, date1, org2, dest2, date2, ...
@@ -14,11 +21,17 @@
 #' @export
 #'
 #' @examples
-#' # One-way trip
+#' # One-way trip with airport codes
 #' fa_define_query("JFK", "BOS", "2025-12-20")
 #'
-#' # Round-trip
+#' # One-way trip with city codes (searches all NYC and London airports)
+#' fa_define_query("NYC", "LON", "2025-12-20")
+#'
+#' # Round-trip with airport codes
 #' fa_define_query("JFK", "YUL", "2025-12-20", "2025-12-25")
+#'
+#' # Round-trip with city code for destination (searches all Paris airports)
+#' fa_define_query("JFK", "PAR", "2025-12-20", "2025-12-25")
 #'
 #' # Chain-trip
 #' fa_define_query("JFK", "YYZ", "2025-12-20", "RDU", "LGA", "2025-12-25")
@@ -83,10 +96,10 @@ set_properties <- function(query, args) {
   # One-way trip (3 arguments)
   if (n_args == 3) {
     if (!(nchar(args[[1]]) == 3 && is.character(args[[1]]))) {
-      stop("Origin must be 3-character string")
+      stop("Origin must be 3-character string (airport or city code)")
     }
     if (!(nchar(args[[2]]) == 3 && is.character(args[[2]]))) {
-      stop("Destination must be 3-character string")
+      stop("Destination must be 3-character string (airport or city code)")
     }
     validate_date(args[[3]], "Date")
 
@@ -98,10 +111,10 @@ set_properties <- function(query, args) {
   } else if (n_args == 4) {
     # Round-trip (4 arguments)
     if (!(nchar(args[[1]]) == 3 && is.character(args[[1]]))) {
-      stop("Origin must be 3-character string")
+      stop("Origin must be 3-character string (airport or city code)")
     }
     if (!(nchar(args[[2]]) == 3 && is.character(args[[2]]))) {
-      stop("Destination must be 3-character string")
+      stop("Destination must be 3-character string (airport or city code)")
     }
     date1 <- validate_date(args[[3]], "Date leave")
     date2 <- validate_date(args[[4]], "Date return")
@@ -128,10 +141,10 @@ set_properties <- function(query, args) {
 
     for (i in seq(1, n_args, by = 3)) {
       if (!(nchar(args[[i]]) == 3 && is.character(args[[i]]))) {
-        stop(sprintf("Argument %d must be 3-character string", i))
+        stop(sprintf("Argument %d must be 3-character string (airport or city code)", i))
       }
       if (!(nchar(args[[i + 1]]) == 3 && is.character(args[[i + 1]]))) {
-        stop(sprintf("Argument %d must be 3-character string", i + 1))
+        stop(sprintf("Argument %d must be 3-character string (airport or city code)", i + 1))
       }
       curr_date <- validate_date(
         args[[i + 2]],
@@ -160,7 +173,7 @@ set_properties <- function(query, args) {
   ) {
     # Perfect-chain (odd number >= 5, last element is 3-character string)
     if (!(nchar(args[[1]]) == 3 && is.character(args[[1]]))) {
-      stop("First argument must be 3-character string")
+      stop("First argument must be 3-character string (airport or city code)")
     }
     validate_date(args[[2]], "Second argument (date)")
 
@@ -170,7 +183,7 @@ set_properties <- function(query, args) {
 
     for (i in seq(3, n_args - 1, by = 2)) {
       if (!(nchar(args[[i]]) == 3 && is.character(args[[i]]))) {
-        stop(sprintf("Argument %d must be 3-character string", i))
+        stop(sprintf("Argument %d must be 3-character string (airport or city code)", i))
       }
       curr_date <- validate_date(
         args[[i + 1]],
@@ -188,7 +201,7 @@ set_properties <- function(query, args) {
     }
 
     if (!(nchar(args[[n_args]]) == 3 && is.character(args[[n_args]]))) {
-      stop("Last argument must be 3-character string")
+      stop("Last argument must be 3-character string (airport or city code)")
     }
     query$dest <- c(query$dest, args[[n_args]])
 
