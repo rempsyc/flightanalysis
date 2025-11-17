@@ -1,5 +1,5 @@
 Package: flightanalysis
-Title: Find the Best Flights
+Title: Find the best flights
 Version: 3.0.0
 Authors@R: c(
     person("Rémi", "Thériault", email = "remi.theriault@mail.mcgill.ca", role = c("aut", "cre"),
