@@ -4,29 +4,43 @@
 \alias{fa_define_query_range}
 \title{Define Flight Query Range}
 \usage{
-fa_define_query_range(origin, dest, date_min, date_max)
+fa_define_query_range(origin = NULL, dest = NULL, date_min, date_max,
+                      origin_city = NULL, dest_city = NULL)
 }
 \arguments{
-\item{origin}{Character vector of 3-letter airport codes to search from.}
+\item{origin}{Character vector of 3-letter airport codes to search from.
+Use NULL if specifying origin_city instead.}
 
-\item{dest}{Character. 3-letter destination airport code.}
+\item{dest}{Character. 3-letter destination airport code.
+Use NULL if specifying dest_city instead.}
 
 \item{date_min}{Character or Date. Start date in "YYYY-MM-DD" format.}
 
 \item{date_max}{Character or Date. End date in "YYYY-MM-DD" format.}
+
+\item{origin_city}{Character vector of 3-letter city/metropolitan codes to search from.
+Examples: "NYC" (New York area), "LON" (London area), "PAR" (Paris area).
+Use NULL if specifying origin instead. Default is NULL.}
+
+\item{dest_city}{Character. 3-letter destination city/metropolitan code.
+Use NULL if specifying dest instead. Default is NULL.}
 }
 \value{
-If single origin: A flight query object containing all dates.
-  If multiple origins: A named list of flight query objects, one per origin.
+If single origin/origin_city: A flight query object containing all dates.
+  If multiple origins/origin_cities: A named list of flight query objects, one per origin.
 }
 \description{
-Creates flight queries for multiple origin airports across a date range.
+Creates flight queries for multiple origin airports/cities across a date range.
 This helper function generates all permutations of origins and dates
 without actually fetching data. Each origin gets its own query object.
 Similar to fa_define_query but for date ranges.
+
+Supports both airport codes (e.g., "JFK", "LGA") and city codes (e.g., "NYC" for
+all New York City airports). City codes allow searching across multiple airports
+in a metropolitan area, similar to Google Flights.
 }
 \examples{
-# Single origin - returns one query object
+# Single airport origin - returns one query object
 fa_define_query_range(
   origin = "BOM",
   dest = "JFK",
@@ -34,10 +48,26 @@ fa_define_query_range(
   date_max = "2025-12-20"
 )
 
-# Multiple origins - returns named list of query objects
+# Multiple airport origins - returns named list of query objects
 fa_define_query_range(
   origin = c("BOM", "DEL"),
   dest = "JFK",
+  date_min = "2025-12-18",
+  date_max = "2025-12-20"
+)
+
+# City-level search - searches all airports in New York City area
+fa_define_query_range(
+  origin = "BOM",
+  dest_city = "NYC",
+  date_min = "2025-12-18",
+  date_max = "2025-12-20"
+)
+
+# Multiple city origins to city destination
+fa_define_query_range(
+  origin_city = c("NYC", "BOS"),
+  dest_city = "LON",
   date_min = "2025-12-18",
   date_max = "2025-12-20"
 )
