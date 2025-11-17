@@ -117,14 +117,14 @@ flights <- fa_fetch_flights(queries)
 #> [2/2]   Segment 1/5: DEL -> JFK on 2025-12-18
 #>   [OK] Successfully parsed 8 flights
 #>   Segment 2/5: DEL -> JFK on 2025-12-19
-#>   [OK] Successfully parsed 10 flights
+#>   [OK] Successfully parsed 9 flights
 #>   Segment 3/5: DEL -> JFK on 2025-12-20
 #>   [OK] Successfully parsed 10 flights
 #>   Segment 4/5: DEL -> JFK on 2025-12-21
 #>   [OK] Successfully parsed 8 flights
 #>   Segment 5/5: DEL -> JFK on 2025-12-22
-#>   [OK] Successfully parsed 10 flights
-#>   [OK] Total flights retrieved: 46
+#>   [OK] Successfully parsed 9 flights
+#>   [OK] Total flights retrieved: 44
 
 # Create summary table (City × Date with prices)
 fa_summarize_prices(flights) |>
@@ -168,6 +168,7 @@ best dates:
 # Plot price trends across dates
 fa_plot_prices(flights, 
                title = "Flight Prices: BOM/DEL to JFK",
+               size_by = "travel_time",
                annotate_col = "travel_time")
 ```
 

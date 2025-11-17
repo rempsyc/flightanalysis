@@ -266,14 +266,14 @@
 <span><span class="co">#&gt; [2/2]   Segment 1/5: DEL -&gt; JFK on 2025-12-18</span></span>
 <span><span class="co">#&gt;   [OK] Successfully parsed 8 flights</span></span>
 <span><span class="co">#&gt;   Segment 2/5: DEL -&gt; JFK on 2025-12-19</span></span>
-<span><span class="co">#&gt;   [OK] Successfully parsed 10 flights</span></span>
+<span><span class="co">#&gt;   [OK] Successfully parsed 9 flights</span></span>
 <span><span class="co">#&gt;   Segment 3/5: DEL -&gt; JFK on 2025-12-20</span></span>
 <span><span class="co">#&gt;   [OK] Successfully parsed 10 flights</span></span>
 <span><span class="co">#&gt;   Segment 4/5: DEL -&gt; JFK on 2025-12-21</span></span>
 <span><span class="co">#&gt;   [OK] Successfully parsed 8 flights</span></span>
 <span><span class="co">#&gt;   Segment 5/5: DEL -&gt; JFK on 2025-12-22</span></span>
-<span><span class="co">#&gt;   [OK] Successfully parsed 10 flights</span></span>
-<span><span class="co">#&gt;   [OK] Total flights retrieved: 46</span></span>
+<span><span class="co">#&gt;   [OK] Successfully parsed 9 flights</span></span>
+<span><span class="co">#&gt;   [OK] Total flights retrieved: 44</span></span>
 <span></span>
 <span><span class="co"># Create summary table (City × Date with prices)</span></span>
 <span><span class="fu"><a href="reference/fa_summarize_prices.html">fa_summarize_prices</a></span><span class="op">(</span><span class="va">flights</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -455,6 +455,7 @@
 <code class="sourceCode R"><span><span class="co"># Plot price trends across dates</span></span>
 <span><span class="fu"><a href="reference/fa_plot_prices.html">fa_plot_prices</a></span><span class="op">(</span><span class="va">flights</span>, </span>
 <span>               title <span class="op">=</span> <span class="st">"Flight Prices: BOM/DEL to JFK"</span>,</span>
+<span>               size_by <span class="op">=</span> <span class="st">"travel_time"</span>,</span>
 <span>               annotate_col <span class="op">=</span> <span class="st">"travel_time"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-plots-1.png" width="100%"></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
