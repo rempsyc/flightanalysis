@@ -17,9 +17,8 @@ fa_plot_prices(
 )
 }
 \arguments{
-\item{price_summary}{A flight_results object (recommended) or a data frame from
-\code{\link{fa_summarize_prices}}. Using flight_results enables all features
-including size_by and annotations.}
+\item{price_summary}{A flight_results object from \code{\link{fa_fetch_flights}}.
+This function no longer accepts pre-summarized data or data frames.}
 
 \item{title}{Character. Plot title. Default is NULL (auto-generated with flight context).}
 
@@ -54,9 +53,8 @@ A ggplot2 plot object that can be further customized or saved.
 }
 \description{
 Creates a modern line plot showing price trends across dates for different origins/cities.
-Works best with flight_results objects from \code{\link{fa_fetch_flights}}, which
-enables features like size_by and annotations. Can also visualize pre-summarized data
-from \code{\link{fa_summarize_prices}}.
+Requires flight_results objects from \code{\link{fa_fetch_flights}}.
+This function no longer accepts pre-summarized data or data frames.
 
 Uses ggplot2 for a polished, publication-ready aesthetic with colorblind-friendly
 colors and clear typography.

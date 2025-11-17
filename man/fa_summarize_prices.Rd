@@ -21,11 +21,8 @@ fa_summarize_prices(
 )
 }
 \arguments{
-\item{flight_results}{Either:
-- A data frame with columns: Date and Price (and optionally other filter columns)
-- A flight_results object (from fa_fetch_flights with multiple origins)
-- A list of flight queries (from fa_define_query_range with multiple origins)
-- A single flight query (from fa_define_query_range with single origin)}
+\item{flight_results}{A flight_results object from fa_fetch_flights().
+This function no longer accepts data frames or query objects directly.}
 
 \item{include_comment}{Logical. If TRUE and Comment column exists, includes
 it in the output. Default is TRUE.}
@@ -77,7 +74,7 @@ fa_summarize_prices(sample_flight_results)
 
 # With filters
 fa_summarize_prices(
-  sample_flights,
+  sample_flight_results,
   max_stops = 0
 )
 }
