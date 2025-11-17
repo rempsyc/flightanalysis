@@ -12,15 +12,15 @@ fa_plot_best_dates(
 )
 }
 \arguments{
-\item{best_dates}{A data frame from \code{\link{fa_find_best_dates}} or
-flight results that can be passed to \code{\link{fa_find_best_dates}}.}
+\item{best_dates}{A flight_results object from \code{\link{fa_fetch_flights}} or
+a data frame that is the output from \code{\link{fa_find_best_dates}}.}
 
 \item{title}{Character. Plot title. Default is "Best Travel Dates by Price".}
 
 \item{subtitle}{Character. Plot subtitle. Default is NULL (auto-generated).}
 
 \item{...}{Additional arguments passed to \code{\link{fa_find_best_dates}}
-if best_dates is not already a result from that function.}
+if best_dates is a flight_results object.}
 }
 \value{
 A ggplot2 plot object that can be further customized or saved.
@@ -36,9 +36,9 @@ colors and clear typography.
 \examples{
 \dontrun{
 # Plot best dates
-fa_plot_best_dates(sample_flights, n = 5)
+fa_plot_best_dates(sample_flight_results, n = 5)
 
 # With filters
-fa_plot_best_dates(sample_flights, n = 5, max_stops = 0)
+fa_plot_best_dates(sample_flight_results, n = 5, max_stops = 0)
 }
 }

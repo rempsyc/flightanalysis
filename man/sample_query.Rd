@@ -22,8 +22,6 @@ A sample flight query object created with `fa_define_query()`.
 Useful for testing and documentation examples without making API calls.
 }
 \examples{
-data(sample_query)
-str(sample_query)
-print(sample_query)
+sample_query
 }
 \keyword{datasets}

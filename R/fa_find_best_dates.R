@@ -6,11 +6,8 @@
 #' when planning a flexible trip. Supports filtering by various criteria
 #' such as departure time, airlines, travel time, stops, and emissions.
 #'
-#' @param flight_results Either:
-#'   - A data frame with columns: Date and Price (and optionally other filter columns)
-#'   - A flight_results object (from fa_fetch_flights with multiple origins)
-#'   - A list of flight queries (from fa_define_query_range with multiple origins)
-#'   - A single flight query (from fa_define_query_range with single origin)
+#' @param flight_results A flight_results object from fa_fetch_flights().
+#'   This function no longer accepts data frames or query objects directly.
 #' @param n Integer. Number of best dates to return. Default is 10.
 #' @param by Character. How to calculate best dates: "mean" (average price
 #'   across routes), "median", or "min" (lowest price on that date).
@@ -42,11 +39,11 @@
 #'
 #' @examples
 #' # Find best dates
-#' fa_find_best_dates(sample_flights, n = 3, by = "min")
+#' fa_find_best_dates(sample_flight_results, n = 3, by = "min")
 #'
 #' # With filters
 #' fa_find_best_dates(
-#'   sample_flights,
+#'   sample_flight_results,
 #'   n = 2,
 #'   max_stops = 0
 #' )
@@ -64,42 +61,25 @@ fa_find_best_dates <- function(
   max_layover = NULL,
   max_emissions = NULL
 ) {
-  # Handle different input types
-  # Check for flight_results object FIRST
-  if (inherits(flight_results, "flight_results")) {
-    # Extract the merged data directly
-    if (is.null(flight_results$data) || nrow(flight_results$data) == 0) {
-      stop(
-        "flight_results object contains no data. Please run fa_fetch_flights() first to fetch flight data."
-      )
-    }
-    flight_results <- extract_data_from_scrapes(flight_results)
-  } else if (inherits(flight_results, "flight_query")) {
-    # Validate flight query has data
-    if (is.null(flight_results$data) || nrow(flight_results$data) == 0) {
-      stop(
-        "flight query contains no data. Please run fa_fetch_flights() first to fetch flight data."
-      )
-    }
-    # Single flight query - pass directly to extract_data_from_scrapes
-    flight_results <- extract_data_from_scrapes(flight_results)
-  } else if (is.list(flight_results) && !is.data.frame(flight_results)) {
-    # Check if it's a list of flight queries
-    if (all(sapply(flight_results, function(x) inherits(x, "flight_query")))) {
-      # Extract and combine data from list of flight queries
-      flight_results <- extract_data_from_scrapes(flight_results)
-    } else {
-      stop(
-        "flight_results must be a data frame, a flight_results object, a flight query, or a list of flight queries"
-      )
-    }
-  } else if (!is.data.frame(flight_results)) {
+  # Validate input type - only accept flight_results objects
+  if (!inherits(flight_results, "flight_results")) {
     stop(
-      "flight_results must be a data frame, a flight_results object, a flight query, or a list of flight queries"
+      "flight_results must be a flight_results object from fa_fetch_flights().\n",
+      "This function no longer accepts data frames or query objects directly.\n",
+      "Please use fa_fetch_flights() to create a flight_results object first."
     )
   }
+  
+  # Extract the merged data from flight_results object
+  if (is.null(flight_results$data) || nrow(flight_results$data) == 0) {
+    stop(
+      "flight_results object contains no data. Please run fa_fetch_flights() first to fetch flight data."
+    )
+  }
+  
+  flight_results <- extract_data_from_scrapes(flight_results)
 
-  # Normalize column names for direct data frame input
+  # Normalize column names from flight_results data
   if (
     "price" %in% names(flight_results) && !"Price" %in% names(flight_results)
   ) {

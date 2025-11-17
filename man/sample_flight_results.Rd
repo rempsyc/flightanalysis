@@ -59,8 +59,7 @@ This dataset is particularly useful for:
 }
 \examples{
 # Load and examine the dataset
-data(sample_flight_results)
-print(sample_flight_results)
+head(sample_flight_results$data)
 
 \dontrun{
 # Plot with automatic Christmas spike visualization

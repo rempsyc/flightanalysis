@@ -1,4 +1,4 @@
-#' Sample Flight Query
+#' @title Sample Flight Query
 #'
 #' @description
 #' A sample flight query object created with `fa_define_query()`.
@@ -14,13 +14,10 @@
 #' }
 #'
 #' @examples
-#' data(sample_query)
-#' str(sample_query)
-#' print(sample_query)
+#' sample_query
 "sample_query"
 
-#' Sample Flight Data
-#'
+#' @title Sample Flight Data
 #' @description
 #' Sample flight data for testing analysis functions
 #' like `fa_find_best_dates()` and `fa_summarize_prices()` without internet access.
@@ -44,14 +41,18 @@
 #' }
 #'
 #' @examples
-#' data(sample_flights)
 #' head(sample_flights)
-#' # Use with analysis functions directly
-#' fa_find_best_dates(sample_flights, n = 3)
-#' fa_summarize_prices(sample_flights)
+#'
+#' # Note: sample_flights is a data frame for demonstration purposes only.
+#' # Analysis functions now require flight_results objects from fa_fetch_flights().
+#' # Use sample_flight_results instead:
+#' \dontrun{
+#' fa_find_best_dates(sample_flight_results, n = 3)
+#' fa_summarize_prices(sample_flight_results)
+#' }
 "sample_flights"
 
-#' Sample Multiple Origin Queries
+#' @title Sample Multiple Origin Queries
 #'
 #' @description
 #' Sample query objects for multiple origins created with `fa_define_query_range()`.
@@ -64,13 +65,10 @@
 #' }
 #'
 #' @examples
-#' data(sample_multi_origin)
-#' names(sample_multi_origin)
-#' print(sample_multi_origin$BOM)
+#' sample_multi_origin
 "sample_multi_origin"
 
-#' Sample Flight Results Dataset
-#'
+#' @title Sample Flight Results Dataset
 #' @description
 #' A comprehensive sample dataset containing flight data from 5 Indian origins
 #' (BOM, DEL, VNS, PAT, GAY) to JFK spanning from December 18, 2025 to January 5, 2026.
@@ -127,8 +125,7 @@
 #'
 #' @examples
 #' # Load and examine the dataset
-#' data(sample_flight_results)
-#' print(sample_flight_results)
+#' head(sample_flight_results$data)
 #'
 #' \dontrun{
 #' # Plot with automatic Christmas spike visualization

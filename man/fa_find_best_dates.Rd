@@ -20,11 +20,8 @@ fa_find_best_dates(
 )
 }
 \arguments{
-\item{flight_results}{Either:
-- A data frame with columns: Date and Price (and optionally other filter columns)
-- A flight_results object (from fa_fetch_flights with multiple origins)
-- A list of flight queries (from fa_define_query_range with multiple origins)
-- A single flight query (from fa_define_query_range with single origin)}
+\item{flight_results}{A flight_results object from fa_fetch_flights().
+This function no longer accepts data frames or query objects directly.}
 
 \item{n}{Integer. Number of best dates to return. Default is 10.}
 
@@ -72,11 +69,11 @@ such as departure time, airlines, travel time, stops, and emissions.
 }
 \examples{
 # Find best dates
-fa_find_best_dates(sample_flights, n = 3, by = "min")
+fa_find_best_dates(sample_flight_results, n = 3, by = "min")
 
 # With filters
 fa_find_best_dates(
-  sample_flights,
+  sample_flight_results,
   n = 2,
   max_stops = 0
 )

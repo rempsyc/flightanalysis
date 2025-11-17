@@ -31,10 +31,14 @@ Sample flight data for testing analysis functions
 like `fa_find_best_dates()` and `fa_summarize_prices()` without internet access.
 }
 \examples{
-data(sample_flights)
 head(sample_flights)
-# Use with analysis functions directly
-fa_find_best_dates(sample_flights, n = 3)
-fa_summarize_prices(sample_flights)
+
+# Note: sample_flights is a data frame for demonstration purposes only.
+# Analysis functions now require flight_results objects from fa_fetch_flights().
+# Use sample_flight_results instead:
+\dontrun{
+fa_find_best_dates(sample_flight_results, n = 3)
+fa_summarize_prices(sample_flight_results)
+}
 }
 \keyword{datasets}

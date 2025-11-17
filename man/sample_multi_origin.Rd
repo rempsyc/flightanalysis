@@ -19,8 +19,6 @@ Sample query objects for multiple origins created with `fa_define_query_range()`
 Demonstrates searching multiple airports over a date range.
 }
 \examples{
-data(sample_multi_origin)
-names(sample_multi_origin)
-print(sample_multi_origin$BOM)
+sample_multi_origin
 }
 \keyword{datasets}

@@ -2,17 +2,15 @@
 #'
 #' @description
 #' Creates a modern line plot showing price trends across dates for different origins/cities.
-#' Works best with flight_results objects from \code{\link{fa_fetch_flights}}, which
-#' enables features like size_by and annotations. Can also visualize pre-summarized data
-#' from \code{\link{fa_summarize_prices}}.
+#' Requires flight_results objects from \code{\link{fa_fetch_flights}}.
+#' This function no longer accepts pre-summarized data or data frames.
 #'
 #' Uses ggplot2 for a polished, publication-ready aesthetic with colorblind-friendly
 #' colors and clear typography.
 #'
 #' @importFrom stats aggregate median
-#' @param price_summary A flight_results object (recommended) or a data frame from
-#'   \code{\link{fa_summarize_prices}}. Using flight_results enables all features
-#'   including size_by and annotations.
+#' @param price_summary A flight_results object from \code{\link{fa_fetch_flights}}.
+#'   This function no longer accepts pre-summarized data or data frames.
 #' @param title Character. Plot title. Default is NULL (auto-generated with flight context).
 #' @param subtitle Character. Plot subtitle. Default is NULL (auto-generated with lowest price info).
 #' @param size_by Character. Name of column from raw flight data to use for
@@ -89,26 +87,22 @@ fa_plot_prices <- function(
     )
   }
 
+  # Validate input type - only accept flight_results objects
+  if (!inherits(price_summary, "flight_results")) {
+    stop(
+      "price_summary must be a flight_results object from fa_fetch_flights().\n",
+      "This function no longer accepts pre-summarized data or data frames.\n",
+      "Please use fa_fetch_flights() to create a flight_results object first."
+    )
+  }
+  
   # Store raw data for annotations or size_by if provided
-  raw_data <- NULL
+  raw_data <- price_summary$data
   has_annotations <- !is.null(annotate_col)
   has_custom_size <- !is.null(size_by) && size_by != "price"
-
-  # Extract raw data from flight_results object if available
-  if (inherits(price_summary, "flight_results")) {
-    raw_data <- price_summary$data
-    price_summary <- fa_summarize_prices(price_summary, ...)
-  } else if (!all(c("City", "Origin") %in% names(price_summary))) {
-    # If not already a summary table and not a flight_results object
-    # Keep raw data for annotations or custom sizing if requested
-    if (has_annotations || has_custom_size) {
-      # Check if it has a $data component (might be a list structure)
-      if (is.list(price_summary) && "data" %in% names(price_summary)) {
-        raw_data <- price_summary$data
-      }
-    }
-    price_summary <- fa_summarize_prices(price_summary, ...)
-  }
+  
+  # Create summary table from flight_results
+  price_summary <- fa_summarize_prices(price_summary, ...)
 
   # Remove the "Best" row if present
   price_summary <- price_summary[price_summary$City != "Best", ]
