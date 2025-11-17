@@ -3,7 +3,7 @@
 \docType{package}
 \name{flightanalysis-package}
 \alias{flightanalysis-package}
-\title{flightanalysis: Find the best flights}
+\title{flightanalysis: Find the Best Flights}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 

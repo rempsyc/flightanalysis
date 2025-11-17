@@ -2,12 +2,12 @@
 % Please edit documentation in R/filter_placeholder_rows.R
 \name{airport_to_city}
 \alias{airport_to_city}
-\title{Convert Airport Codes to City Names}
+\title{Convert Airport Codes to City Names (and vice versa)}
 \usage{
 airport_to_city(airport_codes, fallback = airport_codes)
 }
 \arguments{
-\item{airport_codes}{Character vector of IATA airport codes}
+\item{airport_codes}{Character vector of IATA airport codes or city names}
 
 \item{fallback}{Character vector of fallback values (same length as airport_codes)}
 }
@@ -16,6 +16,7 @@ Character vector of city names
 }
 \description{
 Attempts to convert IATA airport codes to city names using the airportr package.
+Also supports converting full city names to airport codes.
 Falls back to the provided fallback value if conversion fails or package is not available.
 }
 \keyword{internal}
