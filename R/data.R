@@ -1,4 +1,4 @@
-#' Sample Flight Query
+#' @title Sample Flight Query
 #'
 #' @description
 #' A sample flight query object created with `fa_define_query()`.
@@ -14,9 +14,9 @@
 #' }
 #'
 #' @examples
-#' # Sample Flight Data
 #' sample_query
 #'
+#' @title Sample Flight Data
 #' @description
 #' Sample flight data for testing analysis functions
 #' like `fa_find_best_dates()` and `fa_summarize_prices()` without internet access.
@@ -49,7 +49,8 @@
 #' fa_find_best_dates(sample_flight_results, n = 3)
 #' fa_summarize_prices(sample_flight_results)
 #' }
-#' Sample Multiple Origin Queries
+#'
+#' @title Sample Multiple Origin Queries
 #'
 #' @description
 #' Sample query objects for multiple origins created with `fa_define_query_range()`.
@@ -62,9 +63,9 @@
 #' }
 #'
 #' @examples
-#' # Sample Flight Results Dataset
 #' sample_multi_origin
 #'
+#' @title Sample Flight Results Dataset
 #' @description
 #' A comprehensive sample dataset containing flight data from 5 Indian origins
 #' (BOM, DEL, VNS, PAT, GAY) to JFK spanning from December 18, 2025 to January 5, 2026.
@@ -136,4 +137,4 @@
 #' # Find best dates
 #' fa_find_best_dates(sample_flight_results, n = 5)
 #' }
-"sample_flight_results"
+#'
