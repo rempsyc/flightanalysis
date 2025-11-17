@@ -1,19 +1,47 @@
-test_that("fa_summarize_prices creates correct structure", {
-  # Create mock results data
-  results <- data.frame(
-    City = rep(c("Mumbai", "Delhi"), each = 3),
-    Airport = rep(c("BOM", "DEL"), each = 3),
-    Dest = rep("JFK", 6),
-    Date = rep(c("2025-12-18", "2025-12-19", "2025-12-20"), 2),
-    Price = c(334, 388, 400, 315, 353, 370),
-    Comment = rep(c("Original flight", ""), each = 3),
-    stringsAsFactors = FALSE
+test_that("fa_summarize_prices creates correct structure with flight_results", {
+  # Create mock flight_results object
+  query1 <- list(
+    data = data.frame(
+      departure_date = rep(c("2025-12-18", "2025-12-19", "2025-12-20"), 1),
+      departure_time = rep("10:00", 3),
+      arrival_date = rep(c("2025-12-18", "2025-12-19", "2025-12-20"), 1),
+      arrival_time = rep("18:00", 3),
+      origin = rep("BOM", 3),
+      destination = rep("JFK", 3),
+      airlines = rep("Air India", 3),
+      price = c(334, 388, 400),
+      stringsAsFactors = FALSE
+    )
   )
+  class(query1) <- "flight_query"
+  
+  query2 <- list(
+    data = data.frame(
+      departure_date = rep(c("2025-12-18", "2025-12-19", "2025-12-20"), 1),
+      departure_time = rep("12:00", 3),
+      arrival_date = rep(c("2025-12-18", "2025-12-19", "2025-12-20"), 1),
+      arrival_time = rep("20:00", 3),
+      origin = rep("DEL", 3),
+      destination = rep("JFK", 3),
+      airlines = rep("Vistara", 3),
+      price = c(315, 353, 370),
+      stringsAsFactors = FALSE
+    )
+  )
+  class(query2) <- "flight_query"
+  
+  # Create flight_results object
+  results <- list(
+    data = rbind(query1$data, query2$data),
+    BOM = query1,
+    DEL = query2
+  )
+  class(results) <- "flight_results"
 
   # Create table
   table <- fa_summarize_prices(
     results,
-    include_comment = TRUE,
+    include_comment = FALSE,
     round_prices = TRUE
   )
 
@@ -21,7 +49,6 @@ test_that("fa_summarize_prices creates correct structure", {
   expect_true(is.data.frame(table))
   expect_true("City" %in% names(table))
   expect_true("Origin" %in% names(table))
-  expect_true("Comment" %in% names(table))
   expect_true("Average_Price" %in% names(table))
 
   # Check that we have date columns
@@ -36,7 +63,7 @@ test_that("fa_summarize_prices creates correct structure", {
   expect_true("Day" %in% table$Origin)
 })
 
-test_that("fa_summarize_prices handles missing Comment column", {
+test_that("fa_summarize_prices rejects data frame input", {
   results <- data.frame(
     City = c("Mumbai", "Delhi"),
     Airport = c("BOM", "DEL"),
@@ -46,13 +73,14 @@ test_that("fa_summarize_prices handles missing Comment column", {
     stringsAsFactors = FALSE
   )
 
-  # Should work without Comment column
-  table <- fa_summarize_prices(results, include_comment = FALSE)
-  expect_true(is.data.frame(table))
-  expect_false("Comment" %in% names(table))
+  # Should error with clear message
+  expect_error(
+    fa_summarize_prices(results, include_comment = FALSE),
+    "flight_results must be a flight_results object"
+  )
 })
 
-test_that("fa_summarize_prices accepts list of query objects", {
+test_that("fa_summarize_prices rejects list of query objects", {
   # Create mock query objects (using real structure)
   query1 <- list(
     data = data.frame(
@@ -94,18 +122,14 @@ test_that("fa_summarize_prices accepts list of query objects", {
 
   queries <- list(BOM = query1, DEL = query2)
 
-  # Create table directly from query objects
-  table <- fa_summarize_prices(queries, round_prices = TRUE)
-
-  # Check structure
-  expect_true(is.data.frame(table))
-  expect_true("City" %in% names(table))
-  expect_true("Origin" %in% names(table))
-  expect_true("Average_Price" %in% names(table))
-  expect_equal(nrow(table), 3) # One row per airport + Best row
+  # Should error with clear message
+  expect_error(
+    fa_summarize_prices(queries, round_prices = TRUE),
+    "flight_results must be a flight_results object"
+  )
 })
 
-test_that("fa_find_best_dates accepts list of query objects", {
+test_that("fa_find_best_dates rejects list of query objects", {
   # Create mock query objects (using real structure)
   query1 <- list(
     data = data.frame(
@@ -147,32 +171,36 @@ test_that("fa_find_best_dates accepts list of query objects", {
 
   queries <- list(BOM = query1, DEL = query2)
 
-  # Get best dates directly from query objects
-  best <- fa_find_best_dates(queries, n = 2, by = "mean")
-
-  # Check structure
-  expect_true(is.data.frame(best))
-  expect_true("departure_date" %in% names(best) || "date" %in% names(best))
-  expect_true("price" %in% names(best))
-  expect_true("n_routes" %in% names(best))
-  expect_equal(nrow(best), 2)
+  # Should error with clear message
+  expect_error(
+    fa_find_best_dates(queries, n = 2, by = "mean"),
+    "flight_results must be a flight_results object"
+  )
 })
 
 
 test_that("fa_summarize_prices supports filtering by time", {
-  # Create mock data with departure times
-  results <- data.frame(
-    City = c("Mumbai", "Mumbai", "Mumbai"),
-    Airport = c("BOM", "BOM", "BOM"),
-    Date = rep("2025-12-18", 3),
-    Price = c(300, 350, 400),
-    departure_datetime = as.POSIXct(c(
-      "2025-12-18 06:00:00",
-      "2025-12-18 12:00:00",
-      "2025-12-18 20:00:00"
-    )),
-    stringsAsFactors = FALSE
+  # Create mock flight_results with departure times
+  query <- list(
+    data = data.frame(
+      departure_date = rep("2025-12-18", 3),
+      departure_time = c("06:00", "12:00", "20:00"),
+      arrival_date = rep("2025-12-18", 3),
+      arrival_time = c("14:00", "20:00", "04:00"),
+      origin = rep("BOM", 3),
+      destination = rep("JFK", 3),
+      airlines = rep("Air India", 3),
+      price = c(300, 350, 400),
+      stringsAsFactors = FALSE
+    )
   )
+  class(query) <- "flight_query"
+  
+  results <- list(
+    data = query$data,
+    BOM = query
+  )
+  class(results) <- "flight_results"
 
   # Filter for flights between 08:00 and 18:00
   summary <- fa_summarize_prices(
@@ -188,17 +216,13 @@ test_that("fa_summarize_prices supports filtering by time", {
 })
 
 test_that("fa_summarize_prices supports filtering by stops", {
-  # Create mock query with num_stops
+  # Create mock flight_results with num_stops
   query <- list(
     data = data.frame(
-      departure_datetime = as.POSIXct(c(
-        "2025-12-18 10:00:00",
-        "2025-12-18 12:00:00"
-      )),
-      arrival_datetime = as.POSIXct(c(
-        "2025-12-18 18:00:00",
-        "2025-12-18 20:00:00"
-      )),
+      departure_date = rep("2025-12-18", 2),
+      departure_time = c("10:00", "12:00"),
+      arrival_date = rep("2025-12-18", 2),
+      arrival_time = c("18:00", "20:00"),
       origin = c("BOM", "BOM"),
       destination = c("JFK", "JFK"),
       airlines = c("Air India", "Emirates"),
@@ -208,9 +232,15 @@ test_that("fa_summarize_prices supports filtering by stops", {
     )
   )
   class(query) <- "flight_query"
+  
+  results <- list(
+    data = query$data,
+    BOM = query
+  )
+  class(results) <- "flight_results"
 
   # Filter for direct flights only
-  summary <- fa_summarize_prices(query, max_stops = 0)
+  summary <- fa_summarize_prices(results, max_stops = 0)
 
   expect_true(is.data.frame(summary))
   expect_equal(nrow(summary), 2) # 1 airport + Best row
