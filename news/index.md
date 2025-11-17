@@ -1,6 +1,36 @@
 # Changelog
 
-## flightanalysis 2.1.0 (Development)
+## flightanalysis 3.0.0 (Development)
+
+### Breaking Changes
+
+- **flight_results-only API**: All data processing functions
+  ([`fa_summarize_prices()`](https://rempsyc.github.io/flightanalysis/reference/fa_summarize_prices.md),
+  [`fa_plot_prices()`](https://rempsyc.github.io/flightanalysis/reference/fa_plot_prices.md),
+  and
+  [`fa_find_best_dates()`](https://rempsyc.github.io/flightanalysis/reference/fa_find_best_dates.md))
+  now **only** accept `flight_results` objects returned from
+  [`fa_fetch_flights()`](https://rempsyc.github.io/flightanalysis/reference/fa_fetch_flights.md).
+  - Removed support for direct data frame input
+  - Removed support for query object or list of query objects input
+  - Users must use
+    [`fa_fetch_flights()`](https://rempsyc.github.io/flightanalysis/reference/fa_fetch_flights.md)
+    to create `flight_results` objects before using analysis functions
+  - Clear error messages guide users to the correct workflow
+
+### Rationale
+
+This change simplifies the API by enforcing a consistent workflow: 1.
+Create queries with
+[`fa_define_query()`](https://rempsyc.github.io/flightanalysis/reference/fa_define_query.md)
+or
+[`fa_define_query_range()`](https://rempsyc.github.io/flightanalysis/reference/fa_define_query_range.md)
+2. Fetch data with
+[`fa_fetch_flights()`](https://rempsyc.github.io/flightanalysis/reference/fa_fetch_flights.md)
+to get `flight_results` objects 3. Analyze data with processing
+functions
+
+## flightanalysis 2.1.0
 
 ### API Improvements
 

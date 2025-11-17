@@ -73,7 +73,6 @@ A data frame with 6 rows and 14 variables:
 ## Examples
 
 ``` r
-data(sample_flights)
 head(sample_flights)
 #>   departure_date departure_time arrival_date arrival_time origin destination
 #> 1     2025-12-20          09:00   2025-12-20        22:00    JFK         IST
@@ -96,23 +95,12 @@ head(sample_flights)
 #> 4 2025-11-16 16:19:56             570                 8
 #> 5 2025-11-16 16:19:56             540                 3
 #> 6 2025-11-16 16:19:56             575                 9
-# Use with analysis functions directly
-fa_find_best_dates(sample_flights, n = 3)
-#>   departure_date departure_time arrival_date arrival_time origin price
-#> 1     2025-12-20          09:00   2025-12-20        22:00    JFK   650
-#> 2     2025-12-20          22:00   2025-12-21        11:30    JFK   580
-#> 3     2025-12-27          08:30   2025-12-27        21:15    IST   620
-#>   num_stops         layover  travel_time co2_emission_kg            airlines
-#> 1         0            <NA>  13 hr 0 min             550    Turkish Airlines
-#> 2         1 3 hr 15 min WAW 13 hr 30 min             600 LOT Polish Airlines
-#> 3         0            <NA> 12 hr 45 min             540    Turkish Airlines
-#>   n_routes
-#> 1        1
-#> 2        1
-#> 3        1
-fa_summarize_prices(sample_flights)
-#>   City Origin 2025-12-20 2025-12-21 2025-12-27 Average_Price
-#> 1  JFK    JFK       $580       $695       <NA>          $638
-#> 2  IST    IST       <NA>       <NA>       $620          $620
-#> 3 Best    Day          X                                    
+
+# Note: sample_flights is a data frame for demonstration purposes only.
+# Analysis functions now require flight_results objects from fa_fetch_flights().
+# Use sample_flight_results instead:
+if (FALSE) { # \dontrun{
+fa_find_best_dates(sample_flight_results, n = 3)
+fa_summarize_prices(sample_flight_results)
+} # }
 ```

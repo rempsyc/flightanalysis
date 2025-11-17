@@ -99,16 +99,28 @@ for price summary tables
 
 ``` r
 # Load and examine the dataset
-data(sample_flight_results)
-print(sample_flight_results)
-#> Flight Results
-#> ==============
-#> 
-#> Total flights: 95
-#> Origins: BOM, DEL, VNS, PAT, GAY
-#> Destinations: JFK
-#> 
-#> Individual queries: BOM, DEL, VNS, PAT, GAY
+head(sample_flight_results$data)
+#>   departure_date departure_time arrival_date arrival_time origin destination
+#> 1     2025-12-18          08:15   2025-12-18        16:00    BOM         JFK
+#> 2     2025-12-19          14:00   2025-12-19        08:45    BOM         JFK
+#> 3     2025-12-20          17:30   2025-12-20        15:00    BOM         JFK
+#> 4     2025-12-21          11:00   2025-12-21        07:00    BOM         JFK
+#> 5     2025-12-22          20:00   2025-12-22        20:15    BOM         JFK
+#> 6     2025-12-23          21:00   2025-12-23        22:15    BOM         JFK
+#>           airlines  travel_time price num_stops         layover
+#> 1         Emirates 15 hr 25 min   624         1 3 hr 15 min FRA
+#> 2           United  15 hr 3 min   587         1 4 hr 15 min FRA
+#> 3        Air India  15 hr 2 min   658         0            <NA>
+#> 4 Turkish Airlines 16 hr 17 min   609         1 5 hr 45 min DXB
+#> 5         Emirates 16 hr 13 min   625         1 4 hr 45 min IST
+#> 6         Emirates 16 hr 10 min   679         2  2 hr 0 min LHR
+#>           access_date co2_emission_kg emission_diff_pct
+#> 1 2025-11-16 16:19:56             838              -0.1
+#> 2 2025-11-16 16:19:56             878              10.9
+#> 3 2025-11-16 16:19:56             837               0.3
+#> 4 2025-11-16 16:19:56             907              11.2
+#> 5 2025-11-16 16:19:56             873               3.4
+#> 6 2025-11-16 16:19:56             884               7.0
 
 if (FALSE) { # \dontrun{
 # Plot with automatic Christmas spike visualization

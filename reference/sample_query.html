@@ -9,7 +9,7 @@ Useful for testing and documentation examples without making API calls."><meta p
 
     <a class="navbar-brand me-2" href="../index.html">flightanalysis</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,25 +66,7 @@ Useful for testing and documentation examples without making API calls.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">sample_query</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">sample_query</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> List of 6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ origin:List of 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ : chr "JFK"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ : chr "IST"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ dest  :List of 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ : chr "IST"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ : chr "JFK"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ date  :List of 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ : chr "2025-12-20"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ : chr "2025-12-27"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ data  :'data.frame':	0 obs. of  0 variables</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ url   :List of 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ : chr "https://www.google.com/travel/flights?hl=en&amp;q=Flights%20to%20IST%20from%20JFK%20on%202025-12-20%20oneway"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ : chr "https://www.google.com/travel/flights?hl=en&amp;q=Flights%20to%20JFK%20from%20IST%20on%202025-12-27%20oneway"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ type  : chr "round-trip"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  - attr(*, "class")= chr "flight_query"</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">sample_query</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">sample_query</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Flight Query( {Not Yet Fetched}</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-20: JFK --&gt; IST</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-27: IST --&gt; JFK</span>

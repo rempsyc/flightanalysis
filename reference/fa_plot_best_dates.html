@@ -15,7 +15,7 @@ colors and clear typography."><meta property="og:image" content="https://rempsyc
 
     <a class="navbar-brand me-2" href="../index.html">flightanalysis</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,8 +63,8 @@ colors and clear typography.</p>
 
 
 <dl><dt id="arg-best-dates">best_dates<a class="anchor" aria-label="anchor" href="#arg-best-dates"></a></dt>
-<dd><p>A data frame from <code><a href="fa_find_best_dates.html">fa_find_best_dates</a></code> or
-flight results that can be passed to <code><a href="fa_find_best_dates.html">fa_find_best_dates</a></code>.</p></dd>
+<dd><p>A flight_results object from <code><a href="fa_fetch_flights.html">fa_fetch_flights</a></code> or
+a data frame that is the output from <code><a href="fa_find_best_dates.html">fa_find_best_dates</a></code>.</p></dd>
 
 
 <dt id="arg-title">title<a class="anchor" aria-label="anchor" href="#arg-title"></a></dt>
@@ -77,7 +77,7 @@ flight results that can be passed to <code><a href="fa_find_best_dates.html">fa_
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Additional arguments passed to <code><a href="fa_find_best_dates.html">fa_find_best_dates</a></code>
-if best_dates is not already a result from that function.</p></dd>
+if best_dates is a flight_results object.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -89,10 +89,10 @@ if best_dates is not already a result from that function.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="co"># Plot best dates</span></span></span>
-<span class="r-in"><span><span class="fu">fa_plot_best_dates</span><span class="op">(</span><span class="va">sample_flights</span>, n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">fa_plot_best_dates</span><span class="op">(</span><span class="va">sample_flight_results</span>, n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># With filters</span></span></span>
-<span class="r-in"><span><span class="fu">fa_plot_best_dates</span><span class="op">(</span><span class="va">sample_flights</span>, n <span class="op">=</span> <span class="fl">5</span>, max_stops <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">fa_plot_best_dates</span><span class="op">(</span><span class="va">sample_flight_results</span>, n <span class="op">=</span> <span class="fl">5</span>, max_stops <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

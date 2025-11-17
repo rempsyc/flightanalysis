@@ -31,11 +31,8 @@ fa_summarize_prices(
 
 - flight_results:
 
-  Either: - A data frame with columns: Date and Price (and optionally
-  other filter columns) - A flight_results object (from fa_fetch_flights
-  with multiple origins) - A list of flight queries (from
-  fa_define_query_range with multiple origins) - A single flight query
-  (from fa_define_query_range with single origin)
+  A flight_results object from fa_fetch_flights(). This function no
+  longer accepts data frames or query objects directly.
 
 - include_comment:
 
@@ -133,11 +130,35 @@ fa_summarize_prices(sample_flight_results)
 
 # With filters
 fa_summarize_prices(
-  sample_flights,
+  sample_flight_results,
   max_stops = 0
 )
-#>   City Origin 2025-12-20 2025-12-27 Average_Price
-#> 1  JFK    JFK       $650       <NA>          $650
-#> 2  IST    IST       <NA>       $620          $620
-#> 3 Best    Day                     X              
+#>       City Origin 2025-12-18 2025-12-19 2025-12-20 2025-12-21 2025-12-22
+#> 1     Gaya    GAY       $716       $668       <NA>       <NA>       $704
+#> 2    Patna    PAT       $679       $634       $697       $715       $697
+#> 3   Mumbai    BOM       <NA>       <NA>       $658       <NA>       <NA>
+#> 4 Varanasi    VNS       <NA>       <NA>       $679       $722       $653
+#> 5    Delhi    DEL       <NA>       <NA>       <NA>       <NA>       <NA>
+#> 6     Best    Day                                                       
+#>   2025-12-23 2025-12-24 2025-12-25 2025-12-26 2025-12-27 2025-12-28 2025-12-29
+#> 1       $857       $926       <NA>     $1,218     $1,711     $1,751     $1,846
+#> 2       <NA>       $900       <NA>     $1,114     $1,467       <NA>     $1,658
+#> 3       <NA>       $778       $961       <NA>     $1,353       <NA>       <NA>
+#> 4       <NA>       <NA>       <NA>       <NA>     $1,393       <NA>       <NA>
+#> 5       <NA>       $853       $692     $  955       <NA>       <NA>       <NA>
+#> 6                                                                             
+#>   2025-12-30 2025-12-31 2026-01-01 2026-01-03 2026-01-04 2026-01-05
+#> 1     $2,127     $2,438       <NA>     $2,098       <NA>       $674
+#> 2     $2,178     $2,480     $2,210     $1,983       <NA>       $668
+#> 3       <NA>       <NA>     $1,846       <NA>       $615       $618
+#> 4     $1,979       <NA>       <NA>     $1,947       $754       <NA>
+#> 5     $1,878       <NA>     $1,672       <NA>       $694       <NA>
+#> 6                                                      X           
+#>   Average_Price
+#> 1        $1,364
+#> 2        $1,291
+#> 3        $  976
+#> 4        $1,161
+#> 5        $1,124
+#> 6              
 ```

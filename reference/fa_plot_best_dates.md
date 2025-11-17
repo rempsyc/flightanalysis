@@ -24,9 +24,9 @@ fa_plot_best_dates(
 
 - best_dates:
 
-  A data frame from
-  [`fa_find_best_dates`](https://rempsyc.github.io/flightanalysis/reference/fa_find_best_dates.md)
-  or flight results that can be passed to
+  A flight_results object from
+  [`fa_fetch_flights`](https://rempsyc.github.io/flightanalysis/reference/fa_fetch_flights.md)
+  or a data frame that is the output from
   [`fa_find_best_dates`](https://rempsyc.github.io/flightanalysis/reference/fa_find_best_dates.md).
 
 - title:
@@ -41,7 +41,7 @@ fa_plot_best_dates(
 
   Additional arguments passed to
   [`fa_find_best_dates`](https://rempsyc.github.io/flightanalysis/reference/fa_find_best_dates.md)
-  if best_dates is not already a result from that function.
+  if best_dates is a flight_results object.
 
 ## Value
 
@@ -52,9 +52,9 @@ A ggplot2 plot object that can be further customized or saved.
 ``` r
 if (FALSE) { # \dontrun{
 # Plot best dates
-fa_plot_best_dates(sample_flights, n = 5)
+fa_plot_best_dates(sample_flight_results, n = 5)
 
 # With filters
-fa_plot_best_dates(sample_flights, n = 5, max_stops = 0)
+fa_plot_best_dates(sample_flight_results, n = 5, max_stops = 0)
 } # }
 ```

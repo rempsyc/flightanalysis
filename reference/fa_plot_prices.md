@@ -1,11 +1,9 @@
 # Plot Price Summary
 
 Creates a modern line plot showing price trends across dates for
-different origins/cities. Works best with flight_results objects from
-[`fa_fetch_flights`](https://rempsyc.github.io/flightanalysis/reference/fa_fetch_flights.md),
-which enables features like size_by and annotations. Can also visualize
-pre-summarized data from
-[`fa_summarize_prices`](https://rempsyc.github.io/flightanalysis/reference/fa_summarize_prices.md).
+different origins/cities. Requires flight_results objects from
+[`fa_fetch_flights`](https://rempsyc.github.io/flightanalysis/reference/fa_fetch_flights.md).
+This function no longer accepts pre-summarized data or data frames.
 
 Uses ggplot2 for a polished, publication-ready aesthetic with
 colorblind-friendly colors and clear typography.
@@ -30,10 +28,9 @@ fa_plot_prices(
 
 - price_summary:
 
-  A flight_results object (recommended) or a data frame from
-  [`fa_summarize_prices`](https://rempsyc.github.io/flightanalysis/reference/fa_summarize_prices.md).
-  Using flight_results enables all features including size_by and
-  annotations.
+  A flight_results object from
+  [`fa_fetch_flights`](https://rempsyc.github.io/flightanalysis/reference/fa_fetch_flights.md).
+  This function no longer accepts pre-summarized data or data frames.
 
 - title:
 

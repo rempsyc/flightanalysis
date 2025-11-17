@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">flightanalysis</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,7 +32,24 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2.1.0" id="flightanalysis-210-development">flightanalysis 2.1.0 (Development)<a class="anchor" aria-label="anchor" href="#flightanalysis-210-development"></a></h2>
+<h2 class="pkg-version" data-toc-text="3.0.0" id="flightanalysis-300-development">flightanalysis 3.0.0 (Development)<a class="anchor" aria-label="anchor" href="#flightanalysis-300-development"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-3-0-0">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-3-0-0"></a></h3>
+<ul><li>
+<strong>flight_results-only API</strong>: All data processing functions (<code><a href="../reference/fa_summarize_prices.html">fa_summarize_prices()</a></code>, <code><a href="../reference/fa_plot_prices.html">fa_plot_prices()</a></code>, and <code><a href="../reference/fa_find_best_dates.html">fa_find_best_dates()</a></code>) now <strong>only</strong> accept <code>flight_results</code> objects returned from <code><a href="../reference/fa_fetch_flights.html">fa_fetch_flights()</a></code>.
+<ul><li>Removed support for direct data frame input</li>
+<li>Removed support for query object or list of query objects input</li>
+<li>Users must use <code><a href="../reference/fa_fetch_flights.html">fa_fetch_flights()</a></code> to create <code>flight_results</code> objects before using analysis functions</li>
+<li>Clear error messages guide users to the correct workflow</li>
+</ul></li>
+</ul></div>
+<div class="section level3">
+<h3 id="rationale-3-0-0">Rationale<a class="anchor" aria-label="anchor" href="#rationale-3-0-0"></a></h3>
+<p>This change simplifies the API by enforcing a consistent workflow: 1. Create queries with <code><a href="../reference/fa_define_query.html">fa_define_query()</a></code> or <code><a href="../reference/fa_define_query_range.html">fa_define_query_range()</a></code> 2. Fetch data with <code><a href="../reference/fa_fetch_flights.html">fa_fetch_flights()</a></code> to get <code>flight_results</code> objects 3. Analyze data with processing functions</p>
+</div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.1.0" id="flightanalysis-210">flightanalysis 2.1.0<a class="anchor" aria-label="anchor" href="#flightanalysis-210"></a></h2>
 <div class="section level3">
 <h3 id="api-improvements-2-1-0">API Improvements<a class="anchor" aria-label="anchor" href="#api-improvements-2-1-0"></a></h3>
 <div class="section level4">

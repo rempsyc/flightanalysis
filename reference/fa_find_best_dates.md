@@ -28,11 +28,8 @@ fa_find_best_dates(
 
 - flight_results:
 
-  Either: - A data frame with columns: Date and Price (and optionally
-  other filter columns) - A flight_results object (from fa_fetch_flights
-  with multiple origins) - A list of flight queries (from
-  fa_define_query_range with multiple origins) - A single flight query
-  (from fa_define_query_range with single origin)
+  A flight_results object from fa_fetch_flights(). This function no
+  longer accepts data frames or query objects directly.
 
 - n:
 
@@ -103,30 +100,26 @@ times shown.
 
 ``` r
 # Find best dates
-fa_find_best_dates(sample_flights, n = 3, by = "min")
+fa_find_best_dates(sample_flight_results, n = 3, by = "min")
 #>   departure_date departure_time arrival_date arrival_time origin price
-#> 1     2025-12-20          09:00   2025-12-20        22:00    JFK   650
-#> 2     2025-12-20          22:00   2025-12-21        11:30    JFK   580
-#> 3     2025-12-27          08:30   2025-12-27        21:15    IST   620
-#>   num_stops         layover  travel_time co2_emission_kg            airlines
-#> 1         0            <NA>  13 hr 0 min             550    Turkish Airlines
-#> 2         1 3 hr 15 min WAW 13 hr 30 min             600 LOT Polish Airlines
-#> 3         0            <NA> 12 hr 45 min             540    Turkish Airlines
-#>   n_routes
-#> 1        1
-#> 2        1
-#> 3        1
+#> 1     2025-12-18          08:00   2025-12-18        19:00    DEL   564
+#> 2     2025-12-22          08:00   2025-12-22        08:30    DEL   541
+#> 3     2026-01-05          07:00   2026-01-05        11:45    DEL   567
+#>   num_stops         layover  travel_time co2_emission_kg airlines n_routes
+#> 1         1 5 hr 15 min FRA 16 hr 46 min             923   United        1
+#> 2         2 4 hr 30 min DXB 15 hr 55 min             882   United        2
+#> 3         1 3 hr 45 min IST 16 hr 44 min             895   United        1
 
 # With filters
 fa_find_best_dates(
-  sample_flights,
+  sample_flight_results,
   n = 2,
   max_stops = 0
 )
 #>   departure_date departure_time arrival_date arrival_time origin price
-#> 1     2025-12-20          09:00   2025-12-20        22:00    JFK   650
-#> 2     2025-12-27          08:30   2025-12-27        21:15    IST   620
-#>   num_stops  travel_time co2_emission_kg         airlines n_routes
-#> 1         0  13 hr 0 min             550 Turkish Airlines        1
-#> 2         0 12 hr 45 min             540 Turkish Airlines        1
+#> 1     2026-01-04          14:00   2026-01-04        10:30    BOM   615
+#> 2     2026-01-05          12:45   2026-01-05        14:45    BOM   618
+#>   num_stops  travel_time co2_emission_kg  airlines n_routes
+#> 1         0 15 hr 35 min             885 Lufthansa        1
+#> 2         0 16 hr 10 min             871    United        1
 ```

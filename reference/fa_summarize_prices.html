@@ -17,7 +17,7 @@ travel time, stops, and emissions."><meta property="og:image" content="https://r
 
     <a class="navbar-brand me-2" href="../index.html">flightanalysis</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -75,11 +75,8 @@ travel time, stops, and emissions.</p>
 
 
 <dl><dt id="arg-flight-results">flight_results<a class="anchor" aria-label="anchor" href="#arg-flight-results"></a></dt>
-<dd><p>Either:
-- A data frame with columns: Date and Price (and optionally other filter columns)
-- A flight_results object (from fa_fetch_flights with multiple origins)
-- A list of flight queries (from fa_define_query_range with multiple origins)
-- A single flight query (from fa_define_query_range with single origin)</p></dd>
+<dd><p>A flight_results object from fa_fetch_flights().
+This function no longer accepts data frames or query objects directly.</p></dd>
 
 
 <dt id="arg-include-comment">include_comment<a class="anchor" aria-label="anchor" href="#arg-include-comment"></a></dt>
@@ -179,13 +176,37 @@ Default is NULL (no filter).</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># With filters</span></span></span>
 <span class="r-in"><span><span class="fu">fa_summarize_prices</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">sample_flights</span>,</span></span>
+<span class="r-in"><span>  <span class="va">sample_flight_results</span>,</span></span>
 <span class="r-in"><span>  max_stops <span class="op">=</span> <span class="fl">0</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   City Origin 2025-12-20 2025-12-27 Average_Price</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  JFK    JFK       $650       &lt;NA&gt;          $650</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  IST    IST       &lt;NA&gt;       $620          $620</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 Best    Day                     X              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       City Origin 2025-12-18 2025-12-19 2025-12-20 2025-12-21 2025-12-22</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1     Gaya    GAY       $716       $668       &lt;NA&gt;       &lt;NA&gt;       $704</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2    Patna    PAT       $679       $634       $697       $715       $697</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3   Mumbai    BOM       &lt;NA&gt;       &lt;NA&gt;       $658       &lt;NA&gt;       &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 Varanasi    VNS       &lt;NA&gt;       &lt;NA&gt;       $679       $722       $653</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5    Delhi    DEL       &lt;NA&gt;       &lt;NA&gt;       &lt;NA&gt;       &lt;NA&gt;       &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6     Best    Day                                                       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2025-12-23 2025-12-24 2025-12-25 2025-12-26 2025-12-27 2025-12-28 2025-12-29</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1       $857       $926       &lt;NA&gt;     $1,218     $1,711     $1,751     $1,846</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2       &lt;NA&gt;       $900       &lt;NA&gt;     $1,114     $1,467       &lt;NA&gt;     $1,658</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3       &lt;NA&gt;       $778       $961       &lt;NA&gt;     $1,353       &lt;NA&gt;       &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4       &lt;NA&gt;       &lt;NA&gt;       &lt;NA&gt;       &lt;NA&gt;     $1,393       &lt;NA&gt;       &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5       &lt;NA&gt;       $853       $692     $  955       &lt;NA&gt;       &lt;NA&gt;       &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6                                                                             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2025-12-30 2025-12-31 2026-01-01 2026-01-03 2026-01-04 2026-01-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1     $2,127     $2,438       &lt;NA&gt;     $2,098       &lt;NA&gt;       $674</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2     $2,178     $2,480     $2,210     $1,983       &lt;NA&gt;       $668</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3       &lt;NA&gt;       &lt;NA&gt;     $1,846       &lt;NA&gt;       $615       $618</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4     $1,979       &lt;NA&gt;       &lt;NA&gt;     $1,947       $754       &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5     $1,878       &lt;NA&gt;     $1,672       &lt;NA&gt;       $694       &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6                                                      X           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Average_Price</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1        $1,364</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2        $1,291</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3        $  976</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4        $1,161</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5        $1,124</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6              </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
