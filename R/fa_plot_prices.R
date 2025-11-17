@@ -98,6 +98,8 @@ fa_plot_prices <- function(
   
   # Store raw data for annotations or size_by if provided
   raw_data <- price_summary$data
+  has_annotations <- !is.null(annotate_col)
+  has_custom_size <- !is.null(size_by) && size_by != "price"
   
   # Create summary table from flight_results
   price_summary <- fa_summarize_prices(price_summary, ...)

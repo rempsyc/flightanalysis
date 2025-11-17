@@ -8,12 +8,12 @@
 #' Uses ggplot2 for a polished, publication-ready aesthetic with colorblind-friendly
 #' colors and clear typography.
 #'
-#' @param best_dates A data frame from \code{\link{fa_find_best_dates}} or
-#'   flight results that can be passed to \code{\link{fa_find_best_dates}}.
+#' @param best_dates A flight_results object from \code{\link{fa_fetch_flights}} or
+#'   a data frame that is the output from \code{\link{fa_find_best_dates}}.
 #' @param title Character. Plot title. Default is "Best Travel Dates by Price".
 #' @param subtitle Character. Plot subtitle. Default is NULL (auto-generated).
 #' @param ... Additional arguments passed to \code{\link{fa_find_best_dates}}
-#'   if best_dates is not already a result from that function.
+#'   if best_dates is a flight_results object.
 #'
 #' @return A ggplot2 plot object that can be further customized or saved.
 #'
@@ -22,10 +22,10 @@
 #' @examples
 #' \dontrun{
 #' # Plot best dates
-#' fa_plot_best_dates(sample_flights, n = 5)
+#' fa_plot_best_dates(sample_flight_results, n = 5)
 #'
 #' # With filters
-#' fa_plot_best_dates(sample_flights, n = 5, max_stops = 0)
+#' fa_plot_best_dates(sample_flight_results, n = 5, max_stops = 0)
 #' }
 fa_plot_best_dates <- function(
   best_dates,
@@ -47,9 +47,16 @@ fa_plot_best_dates <- function(
     )
   }
   
-  # If not already a best_dates result, create it
-  if (!("price" %in% names(best_dates))) {
+  # If it's a flight_results object, create best_dates from it
+  # If it's already a data frame with price column, use it as-is
+  if (inherits(best_dates, "flight_results")) {
     best_dates <- fa_find_best_dates(best_dates, ...)
+  } else if (!is.data.frame(best_dates) || !("price" %in% names(best_dates))) {
+    stop(
+      "best_dates must be either:\n",
+      "  - A flight_results object from fa_fetch_flights(), or\n",
+      "  - A data frame output from fa_find_best_dates()"
+    )
   }
   
   if (nrow(best_dates) == 0) {

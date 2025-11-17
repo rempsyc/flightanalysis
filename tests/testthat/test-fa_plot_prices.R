@@ -247,19 +247,32 @@ test_that("fa_plot_prices handles size_by parameter", {
 })
 
 test_that("fa_plot_prices errors on empty data", {
-  # Create data that becomes empty after filtering (only Best row)
-  summary <- data.frame(
-    City = c("Best"),
-    Origin = c("Day"),
-    `2025-12-18` = c("X"),
-    Average_Price = c(""),
-    check.names = FALSE,
-    stringsAsFactors = FALSE
+  # Create mock flight_results with data that becomes empty after processing
+  # Use a query with placeholder/invalid data
+  query <- list(
+    data = data.frame(
+      departure_date = character(0),
+      departure_time = character(0),
+      arrival_date = character(0),
+      arrival_time = character(0),
+      origin = character(0),
+      destination = character(0),
+      airlines = character(0),
+      price = numeric(0),
+      stringsAsFactors = FALSE
+    )
   )
+  class(query) <- "flight_query"
   
-  # Should error with appropriate message
+  results <- list(
+    data = query$data,
+    BOM = query
+  )
+  class(results) <- "flight_results"
+  
+  # Should error with appropriate message about no data
   expect_error(
-    fa_plot_prices(summary),
-    "No data to plot after filtering"
+    fa_plot_prices(results),
+    "flight_results object contains no data"
   )
 })
