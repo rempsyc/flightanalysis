@@ -10,8 +10,9 @@
 #' @param queries A flight query object or list of query objects (from fa_define_query())
 #' @param verbose Logical. If TRUE, shows detailed progress information (default)
 #'
-#' @return Modified query object(s) with flight data. **Important:** You must
-#'   capture the return value to get the flight data: `result <- fa_fetch_flights(query)`
+#' @return A flight_results object containing the merged flight data.
+#'   Access the data via `result$data`. **Important:** You must capture the
+#'   return value to get the flight data: `result <- fa_fetch_flights(query)`
 #' @export
 #'
 #' @examples
@@ -102,15 +103,10 @@ fa_fetch_flights <- function(
   )
 
   # Return the result
-  # If a single Scrape object was passed in, return just that object
-  # Otherwise return a flight_results object with merged data
-  if (single_object) {
-    return(queries[[1]])
-  } else {
-    # Create a flight_results object with merged data
-    result <- create_flight_results(queries)
-    return(result)
-  }
+  # Always return a flight_results object for consistency
+  # This ensures downstream functions (fa_summarize_prices, etc.) work correctly
+  result <- create_flight_results(queries)
+  return(result)
 }
 
 #' Create Flight Results Object

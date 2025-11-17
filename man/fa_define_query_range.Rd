@@ -15,10 +15,10 @@ fa_define_query_range(
 }
 \arguments{
 \item{origin}{Character vector of 3-letter airport codes to search from.
-Use NULL if specifying origin_city instead.}
+Can be combined with origin_city. Default is NULL.}
 
 \item{dest}{Character. 3-letter destination airport code.
-Use NULL if specifying dest_city instead.}
+Can be combined with dest_city. Default is NULL.}
 
 \item{date_min}{Character or Date. Start date in "YYYY-MM-DD" format.}
 
@@ -26,10 +26,10 @@ Use NULL if specifying dest_city instead.}
 
 \item{origin_city}{Character vector of 3-letter city/metropolitan codes to search from.
 Examples: "NYC" (New York area), "LON" (London area), "PAR" (Paris area).
-Use NULL if specifying origin instead. Default is NULL.}
+Can be combined with origin. Duplicates are automatically removed. Default is NULL.}
 
-\item{dest_city}{Character. 3-letter destination city/metropolitan code.
-Use NULL if specifying dest instead. Default is NULL.}
+\item{dest_city}{Character vector of 3-letter destination city/metropolitan codes.
+Can be combined with dest. Duplicates are automatically removed. Default is NULL.}
 }
 \value{
 If single origin/origin_city: A flight query object containing all dates.
@@ -74,6 +74,15 @@ fa_define_query_range(
 fa_define_query_range(
   origin_city = c("NYC", "BOS"),
   dest_city = "LON",
+  date_min = "2025-12-18",
+  date_max = "2025-12-20"
+)
+
+# Mix airports and cities - e.g., NYC area + specific airport from another city
+fa_define_query_range(
+  origin = "BOM",
+  origin_city = "NYC",
+  dest = "JFK",
   date_min = "2025-12-18",
   date_max = "2025-12-20"
 )

@@ -199,13 +199,14 @@ extract_data_from_scrapes <- function(scrapes) {
   return(combined)
 }
 
-#' Convert Airport Codes to City Names
+#' Convert Airport Codes to City Names (and vice versa)
 #'
 #' @description
 #' Attempts to convert IATA airport codes to city names using the airportr package.
+#' Also supports converting full city names to airport codes.
 #' Falls back to the provided fallback value if conversion fails or package is not available.
 #'
-#' @param airport_codes Character vector of IATA airport codes
+#' @param airport_codes Character vector of IATA airport codes or city names
 #' @param fallback Character vector of fallback values (same length as airport_codes)
 #'
 #' @return Character vector of city names
@@ -217,11 +218,67 @@ airport_to_city <- function(airport_codes, fallback = airport_codes) {
       ap <- airportr::airports
       key <- ap$IATA
       val <- ap$City
+      
+      # First try direct IATA code lookup
       out <- val[match(airport_codes, key)]
+      
+      # For items that didn't match (NA or empty), try to match as city names
+      needs_lookup <- is.na(out) | out == ""
+      if (any(needs_lookup)) {
+        # Try to find city name in the City column and return the IATA code
+        for (i in which(needs_lookup)) {
+          city_matches <- which(tolower(ap$City) == tolower(airport_codes[i]))
+          if (length(city_matches) > 0) {
+            # If we found a city name, use it directly (not the IATA code)
+            out[i] <- ap$City[city_matches[1]]
+          }
+        }
+      }
+      
       ifelse(is.na(out) | out == "", fallback, out)
     },
     error = function(e) {
       fallback
+    }
+  )
+  return(result)
+}
+
+#' Convert City Names to Airport/City Codes
+#'
+#' @description
+#' Attempts to convert full city names to 3-letter codes (either IATA airport codes
+#' or city codes) using the airportr package. This is useful for accepting user-friendly
+#' city names like "New York" and converting them to "NYC" or finding the primary
+#' airport code.
+#'
+#' @param city_names Character vector of city names
+#'
+#' @return Character vector of 3-letter codes (airport or city codes)
+#'
+#' @keywords internal
+city_name_to_code <- function(city_names) {
+  result <- tryCatch(
+    {
+      ap <- airportr::airports
+      
+      out <- character(length(city_names))
+      for (i in seq_along(city_names)) {
+        # Try exact match first (case-insensitive)
+        city_matches <- which(tolower(ap$City) == tolower(city_names[i]))
+        
+        if (length(city_matches) > 0) {
+          # Return the IATA code of the first matching airport
+          out[i] <- ap$IATA[city_matches[1]]
+        } else {
+          # Keep original if no match found
+          out[i] <- city_names[i]
+        }
+      }
+      out
+    },
+    error = function(e) {
+      city_names
     }
   )
   return(result)
