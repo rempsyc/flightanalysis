@@ -1,4 +1,45 @@
-# flightanalysis 2.1.0 (Development)
+# flightanalysis 3.0.0 (Development)
+
+## Breaking Changes
+
+- **flight_results-only API**: All data processing functions (`fa_summarize_prices()`, `fa_plot_prices()`, and `fa_find_best_dates()`) now **only** accept `flight_results` objects returned from `fa_fetch_flights()`.
+  - Removed support for direct data frame input
+  - Removed support for query object or list of query objects input
+  - Users must now use `fa_fetch_flights()` to create `flight_results` objects before using analysis functions
+  - Clear error messages guide users to the correct workflow
+
+### Migration Guide
+
+**Before (v2.x):**
+```r
+# Direct data frame input was allowed
+data <- data.frame(Date = "2025-12-18", Price = 500, ...)
+fa_summarize_prices(data)
+
+# Query objects were allowed
+query <- fa_define_query("JFK", "IST", "2025-12-20")
+fa_find_best_dates(query)
+```
+
+**After (v3.0.0):**
+```r
+# Must use fa_fetch_flights() first
+query <- fa_define_query("JFK", "IST", "2025-12-20")
+results <- fa_fetch_flights(query)  # Creates flight_results object
+fa_summarize_prices(results)
+fa_find_best_dates(results)
+```
+
+### Rationale
+
+This change simplifies the API by enforcing a consistent workflow:
+1. Create queries with `fa_define_query()` or `fa_define_query_range()`
+2. Fetch data with `fa_fetch_flights()` to get `flight_results` objects
+3. Analyze data with processing functions
+
+The `sample_flights` data frame remains available for demonstration and testing, but main functions require `flight_results` objects.
+
+# flightanalysis 2.1.0
 
 ## API Improvements
 
