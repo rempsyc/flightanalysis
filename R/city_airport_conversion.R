@@ -21,10 +21,10 @@ airport_to_city <- function(airport_codes, fallback = airport_codes) {
       ap <- airportr::airports
       key <- ap$IATA
       val <- ap$City
-      
+
       # Direct IATA code lookup
       out <- val[match(airport_codes, key)]
-      
+
       ifelse(is.na(out) | out == "", fallback, out)
     },
     error = function(e) {
@@ -56,19 +56,21 @@ city_name_to_code <- function(city_names) {
   result <- tryCatch(
     {
       ap <- airportr::airports
-      
+
       all_codes <- list()
       for (i in seq_along(city_names)) {
         # Try exact match first (case-insensitive)
         city_matches <- which(tolower(ap$City) == tolower(city_names[i]))
-        
+
         if (length(city_matches) > 0) {
           # Get all IATA codes for this city
           codes <- ap$IATA[city_matches]
-          
+
           # Filter out invalid codes (like \\N, NA, empty strings)
-          codes <- codes[!is.na(codes) & codes != "" & codes != "\\N" & nchar(codes) == 3]
-          
+          codes <- codes[
+            !is.na(codes) & codes != "" & codes != "\\N" & nchar(codes) == 3
+          ]
+
           if (length(codes) > 0) {
             all_codes[[i]] <- codes
           } else {
@@ -81,12 +83,12 @@ city_name_to_code <- function(city_names) {
         } else {
           # No match found - throw error
           stop(sprintf(
-            "City name '%s' not found in airport database. Please use a 3-letter airport or city code instead.",
+            "City name '%s' not found in airport database. Please verify spelling or use a 3-letter airport or city code instead.",
             city_names[i]
           ))
         }
       }
-      
+
       # Flatten the list to a vector
       unlist(all_codes)
     },
@@ -114,9 +116,9 @@ normalize_location_codes <- function(locations) {
   if (is.null(locations) || length(locations) == 0) {
     return(NULL)
   }
-  
+
   normalized <- character()
-  
+
   for (loc in locations) {
     # If it's already a 3-letter code, use it as-is
     if (nchar(loc) == 3) {
@@ -127,7 +129,7 @@ normalize_location_codes <- function(locations) {
       normalized <- c(normalized, codes)
     }
   }
-  
+
   # Remove duplicates and return
   unique(normalized)
 }
