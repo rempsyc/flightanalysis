@@ -83,21 +83,29 @@ normalize_query_args <- function(args) {
       
       # If it's not a 3-character code, try to convert it
       if (nchar(arg) != 3) {
-        # Try to convert city name to code (will take first airport)
-        codes <- normalize_location_codes(arg)
+        # Check if there's a metropolitan code for this city
+        metro_code <- get_metropolitan_code(arg)
         
-        # Show message if multiple airports found
-        if (length(codes) > 1) {
-          message(sprintf(
-            "Location '%s' has multiple airports: %s. Using the first one: %s",
-            arg,
-            paste(codes, collapse = ", "),
-            codes[1]
-          ))
+        if (!is.null(metro_code)) {
+          # Use the metropolitan area code (no message needed)
+          args[[i]] <- metro_code
+        } else {
+          # Try to convert city name to airport codes (expand to individual airports)
+          codes <- normalize_location_codes(arg, expand_cities = TRUE)
+          
+          # Show message if multiple airports found
+          if (length(codes) > 1) {
+            message(sprintf(
+              "Location '%s' has multiple airports: %s. Using the first one: %s",
+              arg,
+              paste(codes, collapse = ", "),
+              codes[1]
+            ))
+          }
+          
+          # Use the first code for single-location queries
+          args[[i]] <- codes[1]
         }
-        
-        # Use the first code for single-location queries
-        args[[i]] <- codes[1]
       }
     }
   }

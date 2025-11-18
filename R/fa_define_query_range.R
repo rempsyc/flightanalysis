@@ -69,11 +69,12 @@ fa_define_query_range <- function(origin, dest, date_min, date_max) {
   }
 
   # Normalize origin (convert city names to codes, expand to all airports)
-  origin <- normalize_location_codes(origin)
+  # Use expand_cities=TRUE to get individual airports instead of metropolitan codes
+  origin <- normalize_location_codes(origin, expand_cities = TRUE)
 
   # Normalize dest (convert city names to codes)
-  # For destinations, only use the first airport if a city expands to multiple
-  dest <- normalize_location_codes(dest)
+  # For destinations, expand to individual airports too so we can pick the first one
+  dest <- normalize_location_codes(dest, expand_cities = TRUE)
   
   # For now, only support single destination (as per the original design)
   # If a city name was provided and expanded to multiple airports, use only the first one

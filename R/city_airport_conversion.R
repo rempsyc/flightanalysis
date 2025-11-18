@@ -109,19 +109,69 @@ city_name_to_code <- function(city_names) {
   return(result)
 }
 
+#' Get Metropolitan Area Code for City Name
+#'
+#' @description
+#' Internal function to check if a city name has a corresponding metropolitan area code
+#' (e.g., "New York" -> "NYC", "London" -> "LON"). These codes are used by airlines
+#' and Google Flights to represent all airports in a metropolitan area.
+#'
+#' @param city_name Character string of a city name
+#'
+#' @return Metropolitan area code if it exists, NULL otherwise
+#'
+#' @keywords internal
+get_metropolitan_code <- function(city_name) {
+  # Common metropolitan area codes used by airlines and Google Flights
+  metro_codes <- list(
+    "new york" = "NYC",
+    "london" = "LON",
+    "paris" = "PAR",
+    "tokyo" = "TYO",
+    "chicago" = "CHI",
+    "washington" = "WAS",
+    "los angeles" = "LAX",
+    "san francisco" = "SFO",
+    "miami" = "MIA",
+    "houston" = "HOU",
+    "dallas" = "DFW",
+    "atlanta" = "ATL",
+    "boston" = "BOS",
+    "seattle" = "SEA",
+    "toronto" = "YTO",
+    "montreal" = "YMQ",
+    "buenos aires" = "BUE",
+    "rio de janeiro" = "RIO",
+    "sao paulo" = "SAO",
+    "moscow" = "MOW",
+    "milan" = "MIL",
+    "rome" = "ROM",
+    "berlin" = "BER",
+    "stockholm" = "STO",
+    "oslo" = "OSL"
+  )
+  
+  city_lower <- tolower(trimws(city_name))
+  metro_code <- metro_codes[[city_lower]]
+  
+  return(metro_code)
+}
+
 #' Normalize Location Codes
 #'
 #' @description
 #' Internal function to normalize a mix of airport codes, city codes, and full city names
-#' to standardized 3-letter codes. Automatically converts full city names to all their
-#' associated airport codes.
+#' to standardized 3-letter codes. Automatically converts full city names to metropolitan
+#' area codes when available (unless expand_cities=TRUE), otherwise to individual airport codes.
 #'
 #' @param locations Character vector of mixed airport codes, city codes, and city names
+#' @param expand_cities Logical. If TRUE, expands city names to all individual airports.
+#'   If FALSE (default), uses metropolitan area codes when available.
 #'
 #' @return Character vector of 3-letter codes with duplicates removed
 #'
 #' @keywords internal
-normalize_location_codes <- function(locations) {
+normalize_location_codes <- function(locations, expand_cities = FALSE) {
   if (is.null(locations) || length(locations) == 0) {
     return(NULL)
   }
@@ -133,9 +183,17 @@ normalize_location_codes <- function(locations) {
     if (nchar(loc) == 3) {
       normalized <- c(normalized, loc)
     } else {
-      # Try to convert from city name to airport codes
-      codes <- city_name_to_code(loc)
-      normalized <- c(normalized, codes)
+      # Check if there's a metropolitan area code for this city
+      metro_code <- get_metropolitan_code(loc)
+      
+      if (!is.null(metro_code) && !expand_cities) {
+        # Use the metropolitan area code
+        normalized <- c(normalized, metro_code)
+      } else {
+        # Try to convert from city name to airport codes
+        codes <- city_name_to_code(loc)
+        normalized <- c(normalized, codes)
+      }
     }
   }
 
