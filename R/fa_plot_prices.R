@@ -95,12 +95,12 @@ fa_plot_prices <- function(
       "Please use fa_fetch_flights() to create a flight_results object first."
     )
   }
-  
+
   # Store raw data for annotations or size_by if provided
   raw_data <- price_summary$data
   has_annotations <- !is.null(annotate_col)
   has_custom_size <- !is.null(size_by) && size_by != "price"
-  
+
   # Create summary table from flight_results
   price_summary <- fa_summarize_prices(price_summary, ...)
 
@@ -513,12 +513,16 @@ fa_plot_prices <- function(
     min_origin,
     format(min_date, "%b %d")
   )
-  
+
   # Add annotation label info to subtitle if annotations are present
   if (has_annotations) {
     annot_label <- gsub("_", " ", annotate_col)
     annot_label <- tools::toTitleCase(annot_label)
-    auto_subtitle <- sprintf("%s | Point labels: %s", auto_subtitle, annot_label)
+    auto_subtitle <- sprintf(
+      "%s (Point labels: %s)",
+      auto_subtitle,
+      annot_label
+    )
   }
 
   # Use provided title/subtitle or auto-generated ones

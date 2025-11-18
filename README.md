@@ -61,8 +61,8 @@ flights <- fa_fetch_flights(query)
 #>   Segment 1/2: NYC -> LON on 2025-12-20
 #>   [OK] Successfully parsed 7 flights
 #>   Segment 2/2: LON -> NYC on 2026-01-05
-#>   [OK] Successfully parsed 16 flights
-#>   [OK] Total flights retrieved: 23
+#>   [OK] Successfully parsed 18 flights
+#>   [OK] Total flights retrieved: 25
 
 # View the flight data
 head(flights$data[1:11]) |>
@@ -113,7 +113,7 @@ fa_summarize_prices(flights) |>
 | City | Origin | 2025-12-18 | 2025-12-19 | 2025-12-20 | 2025-12-21 | 2025-12-22 | Average_Price |
 |:---|:---|:---|:---|:---|:---|:---|:---|
 | Mumbai | BOM | \$419 | \$503 | \$539 | \$465 | \$442 | \$474 |
-| Delhi | DEL | \$420 | \$420 | \$470 | \$510 | \$445 | \$453 |
+| Delhi | DEL | \$420 | \$420 | \$493 | \$510 | \$445 | \$458 |
 | Best | Day | X |  |  |  |  |  |
 
 ``` r
@@ -135,8 +135,8 @@ fa_find_best_dates(
 | 2025-12-18 | 10:40 | 2025-12-18 | 19:30 | BOM | 442 | 1 | 1 hr LHR | 19 hr 20 min | 792 | Virgin Atlantic, Delta | 1 |
 | 2025-12-19 | 19:10 | 2025-12-19 | 06:00 | BOM | 434 | 1 | 2 hr 40 min DEL | 21 hr 20 min | 991 | IndiGo, American | 1 |
 | 2025-12-19 | 20:55 | 2025-12-19 | 09:00 | DEL | 451 | 1 | 3 hr 30 min AUH | 22 hr 35 min | 843 | Etihad | 1 |
+| 2025-12-21 | 18:00 | 2025-12-22 | 06:00 | BOM | 465 | 1 | 3 hr 40 min DEL | 22 hr 30 min | 991 | IndiGo, American | 1 |
 | 2025-12-22 | 10:40 | 2025-12-22 | 22:55 | BOM | 442 | 1 | 4 hr 25 min LHR | 22 hr 45 min | 796 | Virgin Atlantic, Delta | 1 |
-| 2025-12-23 | 20:55 | 2025-12-23 | 09:00 | DEL | 451 | 1 | 3 hr 30 min AUH | 22 hr 35 min | 802 | Etihad | 1 |
 
 ## Visualizing Price Data
 
