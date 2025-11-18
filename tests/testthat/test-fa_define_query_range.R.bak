@@ -71,83 +71,18 @@ test_that("fa_define_query_range creates list for multiple origins", {
   expect_true(all(del_dates == sort(del_dates)))
 })
 
-test_that("fa_define_query_range accepts city codes", {
-  # City code as origin
-  query <- fa_define_query_range(
-    origin = "NYC",
-    dest = "JFK",
-    date_min = "2025-12-18",
-    date_max = "2025-12-20"
-  )
-
-  expect_true(inherits(query, "flight_query") || inherits(query, "Scrape"))
-  expect_equal(query$type, "chain-trip")
-  expect_true(all(unlist(query$origin) == "NYC"))
-  expect_true(all(unlist(query$dest) == "JFK"))
-})
-
-test_that("fa_define_query_range accepts full city names for single-airport cities", {
-  # Use a city that has only one major airport
-  # Mumbai = BOM
-  query <- fa_define_query_range(
-    origin = "Mumbai",
-    dest = "JFK",
-    date_min = "2025-12-18",
-    date_max = "2025-12-20"
-  )
-
-  expect_true(inherits(query, "flight_query") || inherits(query, "Scrape"))
-  expect_true(all(unlist(query$origin) == "BOM"))
-  expect_true(all(unlist(query$dest) == "JFK"))
-})
-
-test_that("fa_define_query_range expands city names to multiple airports in origin", {
-  # "New York" should expand to multiple airports: JFK, LGA, EWR, etc.
-  queries <- fa_define_query_range(
-    origin = "New York",
-    dest = "JFK",
-    date_min = "2025-12-18",
-    date_max = "2025-12-20"
-  )
-
-  # Should return a list with multiple queries (one for each NY airport)
-  expect_true(is.list(queries))
-  expect_true(length(queries) > 1)
-  
-  # Names should be airport codes like LGA, JFK, etc.
-  expect_true(all(nchar(names(queries)) == 3))
-})
-
-test_that("fa_define_query_range handles mixed formats", {
-  # Mix of city codes, airport codes, and city names
-  queries <- fa_define_query_range(
-    origin = c("NYC", "BOM"),
-    dest = "JFK",
-    date_min = "2025-12-18",
-    date_max = "2025-12-19"
-  )
-
-  expect_true(is.list(queries))
-  expect_equal(length(queries), 2)
-  expect_true(all(c("NYC", "BOM") %in% names(queries)))
-})
-
-test_that("fa_define_query_range removes duplicates", {
-  # If same code specified multiple times, should only appear once
-  queries <- fa_define_query_range(
-    origin = c("BOM", "NYC", "NYC"),
-    dest = "JFK",
-    date_min = "2025-12-18",
-    date_max = "2025-12-20"
-  )
-
-  # Should return list with BOM and NYC (NYC not duplicated)
-  expect_true(is.list(queries))
-  expect_equal(length(queries), 2)
-  expect_equal(sort(names(queries)), c("BOM", "NYC"))
-})
-
 test_that("fa_define_query_range validates inputs", {
+  # Invalid airport code
+  expect_error(
+    fa_define_query_range(
+      origin = c("BO"),
+      dest = "JFK",
+      date_min = "2025-12-18",
+      date_max = "2025-12-20"
+    ),
+    "All airport/city codes must be 3 characters"
+  )
+
   # Invalid date order
   expect_error(
     fa_define_query_range(
@@ -158,51 +93,136 @@ test_that("fa_define_query_range validates inputs", {
     ),
     "date_min must be before or equal to date_max"
   )
+})
+
+test_that("fa_define_query_range accepts city codes with origin_city parameter", {
+  # Single city origin - should return one query object
+  query <- fa_define_query_range(
+    origin_city = "NYC",
+    dest = "JFK",
+    date_min = "2025-12-18",
+    date_max = "2025-12-20"
+  )
+
+  # Check it's a query object
+  expect_true(inherits(query, "flight_query") || inherits(query, "Scrape"))
+  expect_equal(query$type, "chain-trip")
+
+  # All origins should be NYC (city code)
+  expect_true(all(unlist(query$origin) == "NYC"))
   
-  # Missing origin
+  # All destinations should be JFK
+  expect_true(all(unlist(query$dest) == "JFK"))
+})
+
+test_that("fa_define_query_range accepts city codes with dest_city parameter", {
+  # Airport origin to city destination
+  query <- fa_define_query_range(
+    origin = "BOM",
+    dest_city = "LON",
+    date_min = "2025-12-18",
+    date_max = "2025-12-20"
+  )
+
+  # Check it's a query object
+  expect_true(inherits(query, "flight_query") || inherits(query, "Scrape"))
+  
+  # All origins should be BOM
+  expect_true(all(unlist(query$origin) == "BOM"))
+  
+  # All destinations should be LON (city code)
+  expect_true(all(unlist(query$dest) == "LON"))
+})
+
+test_that("fa_define_query_range accepts multiple city origins", {
+  # Multiple city origins - should return list of query objects
+  queries <- fa_define_query_range(
+    origin_city = c("NYC", "BOS"),
+    dest_city = "LON",
+    date_min = "2025-12-18",
+    date_max = "2025-12-20"
+  )
+
+  # Check it's a list
+  expect_true(is.list(queries))
+  expect_equal(length(queries), 2)
+  expect_equal(names(queries), c("NYC", "BOS"))
+  
+  # Check NYC query
+  expect_true(all(unlist(queries$NYC$origin) == "NYC"))
+  expect_true(all(unlist(queries$NYC$dest) == "LON"))
+  
+  # Check BOS query
+  expect_true(all(unlist(queries$BOS$origin) == "BOS"))
+  expect_true(all(unlist(queries$BOS$dest) == "LON"))
+})
+
+test_that("fa_define_query_range allows combining origin and origin_city", {
+  # Can specify both origin and origin_city - they get combined
+  queries <- fa_define_query_range(
+    origin = "BOM",
+    origin_city = "NYC",
+    dest = "JFK",
+    date_min = "2025-12-18",
+    date_max = "2025-12-20"
+  )
+  
+  # Should return list with both BOM and NYC
+  expect_true(is.list(queries))
+  expect_equal(length(queries), 2)
+  expect_true(all(c("BOM", "NYC") %in% names(queries)))
+})
+
+test_that("fa_define_query_range removes duplicates when combining", {
+  # If same code specified in both, should only appear once
+  queries <- fa_define_query_range(
+    origin = c("BOM", "NYC"),
+    origin_city = "NYC",
+    dest = "JFK",
+    date_min = "2025-12-18",
+    date_max = "2025-12-20"
+  )
+  
+  # Should return list with BOM and NYC (NYC not duplicated)
+  expect_true(is.list(queries))
+  expect_equal(length(queries), 2)
+  expect_equal(sort(names(queries)), c("BOM", "NYC"))
+})
+
+test_that("fa_define_query_range validates at least one origin specified", {
+  # Cannot specify neither origin nor origin_city
   expect_error(
     fa_define_query_range(
       dest = "JFK",
       date_min = "2025-12-18",
       date_max = "2025-12-20"
     ),
-    "argument \"origin\" is missing"
-  )
-  
-  # Missing dest
-  expect_error(
-    fa_define_query_range(
-      origin = "BOM",
-      date_min = "2025-12-18",
-      date_max = "2025-12-20"
-    ),
-    "argument \"dest\" is missing"
+    "Must specify at least one of 'origin' or 'origin_city'"
   )
 })
 
-test_that("fa_define_query_range rejects unknown city names", {
-  # Unknown city name should throw an error
+test_that("fa_define_query_range validates at least one dest specified", {
+  # Cannot specify neither dest nor dest_city
   expect_error(
     fa_define_query_range(
       origin = "BOM",
-      dest = "New York City",
       date_min = "2025-12-18",
       date_max = "2025-12-20"
     ),
-    "not found in airport database"
+    "Must specify at least one of 'dest' or 'dest_city'"
   )
 })
 
 test_that("fa_define_query_range rejects multiple destinations", {
   # Multiple destinations not yet supported
-  # This should fail because "New York" expands to multiple airports
   expect_error(
     fa_define_query_range(
       origin = "BOM",
-      dest = "New York",
+      dest = c("JFK", "LGA"),
       date_min = "2025-12-18",
       date_max = "2025-12-20"
     ),
     "Multiple destinations are not yet supported"
   )
 })
+

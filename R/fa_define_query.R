@@ -4,14 +4,14 @@
 #' Defines a flight query for Google Flights. Supports one-way,
 #' round-trip, chain-trip, and perfect-chain trip types.
 #'
-#' Accepts both airport codes (e.g., "JFK", "LGA") and city/metropolitan codes
-#' (e.g., "NYC" for all New York City airports). City codes allow searching across
-#' multiple airports in a metropolitan area, similar to Google Flights. Common city
-#' codes include: "NYC" (New York), "LON" (London), "PAR" (Paris), "TYO" (Tokyo),
-#' "BUE" (Buenos Aires), etc.
+#' Accepts airport codes (e.g., "JFK", "LGA"), city codes (e.g., "NYC" for
+#' all New York City airports), and full city names (e.g., "New York").
+#' Full city names are automatically converted to their first associated airport code.
+#' Common city codes include: "NYC" (New York), "LON" (London), "PAR" (Paris), 
+#' "TYO" (Tokyo), "BUE" (Buenos Aires), etc.
 #'
-#' @param ... Arguments defining the trip. All location codes must be 3-letter strings
-#'   (either airport or city codes). Format depends on trip type:
+#' @param ... Arguments defining the trip. Locations can be 3-letter codes or full
+#'   city names. Format depends on trip type:
 #'   - One-way: origin, dest, date
 #'   - Round-trip: origin, dest, date_leave, date_return
 #'   - Chain-trip: org1, dest1, date1, org2, dest2, date2, ...
@@ -24,19 +24,22 @@
 #' # One-way trip with airport codes
 #' fa_define_query("JFK", "BOS", "2025-12-20")
 #'
-#' # One-way trip with city codes (searches all NYC and London airports)
+#' # One-way trip with city codes
 #' fa_define_query("NYC", "LON", "2025-12-20")
 #'
-#' # Round-trip with airport codes
-#' fa_define_query("JFK", "YUL", "2025-12-20", "2025-12-25")
+#' # One-way trip with full city names (auto-converted)
+#' fa_define_query("New York", "Istanbul", "2025-12-20")
 #'
-#' # Round-trip with city code for destination (searches all Paris airports)
-#' fa_define_query("JFK", "PAR", "2025-12-20", "2025-12-25")
+#' # Round-trip with mixed formats
+#' fa_define_query("JFK", "Paris", "2025-12-20", "2025-12-25")
 #'
 #' # Chain-trip
 #' fa_define_query("JFK", "YYZ", "2025-12-20", "RDU", "LGA", "2025-12-25")
 fa_define_query <- function(...) {
   args <- list(...)
+
+  # Pre-process arguments to normalize any city names to codes
+  args <- normalize_query_args(args)
 
   # Initialize query object
   query <- list(
@@ -53,6 +56,42 @@ fa_define_query <- function(...) {
 
   class(query) <- "flight_query"
   return(query)
+}
+
+#' Normalize Query Arguments
+#'
+#' @description
+#' Pre-processes query arguments to convert city names to airport codes.
+#' Only processes string arguments that are not dates.
+#'
+#' @param args List of query arguments
+#' @return List of normalized arguments
+#' @keywords internal
+normalize_query_args <- function(args) {
+  date_format <- "%Y-%m-%d"
+  
+  for (i in seq_along(args)) {
+    arg <- args[[i]]
+    
+    # Only process character arguments
+    if (is.character(arg)) {
+      # Check if it's a date (10 characters in YYYY-MM-DD format)
+      if (nchar(arg) == 10 && grepl("^\\d{4}-\\d{2}-\\d{2}$", arg)) {
+        # It's a date, skip
+        next
+      }
+      
+      # If it's not a 3-character code, try to convert it
+      if (nchar(arg) != 3) {
+        # Try to convert city name to code (will take first airport)
+        codes <- normalize_location_codes(arg)
+        # Use the first code for single-location queries
+        args[[i]] <- codes[1]
+      }
+    }
+  }
+  
+  return(args)
 }
 
 #' Set Query Properties

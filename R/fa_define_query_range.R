@@ -6,37 +6,26 @@
 #' without actually fetching data. Each origin gets its own query object.
 #' Similar to fa_define_query but for date ranges.
 #'
-#' Supports both airport codes (e.g., "JFK", "LGA") and city codes (e.g., "NYC" for
-#' all New York City airports). City codes allow searching across multiple airports
-#' in a metropolitan area, similar to Google Flights.
+#' Supports airport codes (e.g., "JFK", "LGA"), city codes (e.g., "NYC" for
+#' all New York City airports), and full city names (e.g., "New York").
+#' Full city names are automatically converted to all associated airport codes.
+#' You can mix formats in the same vector.
 #'
-#' @param origin Character vector of 3-letter airport codes to search from.
-#'   Can be combined with origin_city. Default is NULL.
-#' @param dest Character. 3-letter destination airport code.
-#'   Can be combined with dest_city. Default is NULL.
+#' @param origin Character vector of airport codes, city codes, or full city names
+#'   to search from. Can mix formats (e.g., c("JFK", "NYC", "New York")). 
+#'   Automatically expands city names to all associated airports and removes duplicates.
+#' @param dest Character vector of destination airport codes, city codes, or full city names.
+#'   Can mix formats. Currently only single destination is supported.
 #' @param date_min Character or Date. Start date in "YYYY-MM-DD" format.
 #' @param date_max Character or Date. End date in "YYYY-MM-DD" format.
-#' @param origin_city Character vector of 3-letter city/metropolitan codes to search from.
-#'   Examples: "NYC" (New York area), "LON" (London area), "PAR" (Paris area).
-#'   Can be combined with origin. Duplicates are automatically removed. Default is NULL.
-#' @param dest_city Character vector of 3-letter destination city/metropolitan codes.
-#'   Can be combined with dest. Duplicates are automatically removed. Default is NULL.
 #'
-#' @return If single origin/origin_city: A flight query object containing all dates.
-#'   If multiple origins/origin_cities: A named list of flight query objects, one per origin.
+#' @return If single origin: A flight query object containing all dates.
+#'   If multiple origins: A named list of flight query objects, one per origin.
 #'
 #' @export
 #'
 #' @examples
-#' # Single airport origin - returns one query object
-#' fa_define_query_range(
-#'   origin = "BOM",
-#'   dest = "JFK",
-#'   date_min = "2025-12-18",
-#'   date_max = "2025-12-20"
-#' )
-#'
-#' # Multiple airport origins - returns named list of query objects
+#' # Airport codes
 #' fa_define_query_range(
 #'   origin = c("BOM", "DEL"),
 #'   dest = "JFK",
@@ -44,79 +33,44 @@
 #'   date_max = "2025-12-20"
 #' )
 #'
-#' # City-level search - searches all airports in New York City area
+#' # City codes
 #' fa_define_query_range(
-#'   origin = "BOM",
-#'   dest_city = "NYC",
+#'   origin = "NYC",
+#'   dest = "LON",
 #'   date_min = "2025-12-18",
 #'   date_max = "2025-12-20"
 #' )
 #'
-#' # Multiple city origins to city destination
+#' # Full city names (auto-converted to airport codes)
 #' fa_define_query_range(
-#'   origin_city = c("NYC", "BOS"),
-#'   dest_city = "LON",
+#'   origin = "New York",
+#'   dest = "Istanbul",
 #'   date_min = "2025-12-18",
 #'   date_max = "2025-12-20"
 #' )
 #'
-#' # Mix airports and cities - e.g., NYC area + specific airport from another city
+#' # Mix formats - codes and city names
 #' fa_define_query_range(
-#'   origin = "BOM",
-#'   origin_city = "NYC",
+#'   origin = c("New York", "JFK", "BOM", "Patna"),
 #'   dest = "JFK",
 #'   date_min = "2025-12-18",
 #'   date_max = "2025-12-20"
 #' )
-fa_define_query_range <- function(
-  origin = NULL,
-  dest = NULL,
-  date_min,
-  date_max,
-  origin_city = NULL,
-  dest_city = NULL
-) {
-  # Validate inputs - must specify at least one origin
-  if (is.null(origin) && is.null(origin_city)) {
-    stop("Must specify at least one of 'origin' or 'origin_city'")
+fa_define_query_range <- function(origin, dest, date_min, date_max) {
+  # Validate inputs
+  if (is.null(origin) || length(origin) == 0) {
+    stop("origin must be specified")
   }
 
-  # Must specify at least one destination
-  if (is.null(dest) && is.null(dest_city)) {
-    stop("Must specify at least one of 'dest' or 'dest_city'")
+  if (is.null(dest) || length(dest) == 0) {
+    stop("dest must be specified")
   }
 
-  # Combine origin and origin_city, removing duplicates
-  combined_origin <- c(origin, origin_city)
-  if (!is.null(combined_origin)) {
-    combined_origin <- unique(combined_origin)
-  }
-  origin <- combined_origin
+  # Normalize origin (convert city names to codes, expand to all airports)
+  origin <- normalize_location_codes(origin)
 
-  # Combine dest and dest_city, removing duplicates
-  combined_dest <- c(dest, dest_city)
-  if (!is.null(combined_dest)) {
-    combined_dest <- unique(combined_dest)
-  }
-  dest <- combined_dest
-
-  # Validate origin
-  if (!is.character(origin) || length(origin) == 0) {
-    stop("origin/origin_city must be a non-empty character vector")
-  }
-
-  if (any(nchar(origin) != 3)) {
-    stop("All airport/city codes must be 3 characters")
-  }
-
-  # Validate dest
-  if (!is.character(dest) || length(dest) == 0) {
-    stop("dest/dest_city must be a non-empty character vector")
-  }
-
-  if (any(nchar(dest) != 3)) {
-    stop("All airport/city codes must be 3 characters")
-  }
+  # Normalize dest (convert city names to codes, expand to all airports)
+  dest <- normalize_location_codes(dest)
 
   # For now, only support single destination (as per the original design)
   if (length(dest) > 1) {
