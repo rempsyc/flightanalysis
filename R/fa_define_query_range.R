@@ -68,32 +68,38 @@
 #'   date_min = "2025-12-18",
 #'   date_max = "2025-12-20"
 #' )
-fa_define_query_range <- function(origin = NULL, dest = NULL, date_min, date_max,
-                                  origin_city = NULL, dest_city = NULL) {
+fa_define_query_range <- function(
+  origin = NULL,
+  dest = NULL,
+  date_min,
+  date_max,
+  origin_city = NULL,
+  dest_city = NULL
+) {
   # Validate inputs - must specify at least one origin
   if (is.null(origin) && is.null(origin_city)) {
     stop("Must specify at least one of 'origin' or 'origin_city'")
   }
-  
+
   # Must specify at least one destination
   if (is.null(dest) && is.null(dest_city)) {
     stop("Must specify at least one of 'dest' or 'dest_city'")
   }
-  
+
   # Combine origin and origin_city, removing duplicates
   combined_origin <- c(origin, origin_city)
   if (!is.null(combined_origin)) {
     combined_origin <- unique(combined_origin)
   }
   origin <- combined_origin
-  
+
   # Combine dest and dest_city, removing duplicates
   combined_dest <- c(dest, dest_city)
   if (!is.null(combined_dest)) {
     combined_dest <- unique(combined_dest)
   }
   dest <- combined_dest
-  
+
   # Validate origin
   if (!is.character(origin) || length(origin) == 0) {
     stop("origin/origin_city must be a non-empty character vector")
@@ -107,14 +113,16 @@ fa_define_query_range <- function(origin = NULL, dest = NULL, date_min, date_max
   if (!is.character(dest) || length(dest) == 0) {
     stop("dest/dest_city must be a non-empty character vector")
   }
-  
+
   if (any(nchar(dest) != 3)) {
     stop("All airport/city codes must be 3 characters")
   }
-  
+
   # For now, only support single destination (as per the original design)
   if (length(dest) > 1) {
-    stop("Multiple destinations are not yet supported. Please specify only one destination.")
+    stop(
+      "Multiple destinations are not yet supported. Please specify only one destination."
+    )
   }
 
   # Convert dates to Date objects if needed
