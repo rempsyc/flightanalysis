@@ -8,14 +8,16 @@
 #'
 #' Supports airport codes (e.g., "JFK", "LGA"), city codes (e.g., "NYC" for
 #' all New York City airports), and full city names (e.g., "New York").
-#' Full city names are automatically converted to all associated airport codes.
-#' You can mix formats in the same vector.
+#' Full city names are automatically converted to all associated airport codes
+#' (excluding heliports). You can mix formats in the same vector.
 #'
 #' @param origin Character vector of airport codes, city codes, or full city names
 #'   to search from. Can mix formats (e.g., c("JFK", "NYC", "New York")). 
-#'   Automatically expands city names to all associated airports and removes duplicates.
-#' @param dest Character vector of destination airport codes, city codes, or full city names.
-#'   Can mix formats. Currently only single destination is supported.
+#'   Automatically expands city names to all associated airports (excluding heliports)
+#'   and removes duplicates.
+#' @param dest Character or destination airport code, city code, or full city name.
+#'   If a city name expands to multiple airports, only the first airport is used.
+#'   Currently only single destination is supported.
 #' @param date_min Character or Date. Start date in "YYYY-MM-DD" format.
 #' @param date_max Character or Date. End date in "YYYY-MM-DD" format.
 #'
@@ -69,14 +71,19 @@ fa_define_query_range <- function(origin, dest, date_min, date_max) {
   # Normalize origin (convert city names to codes, expand to all airports)
   origin <- normalize_location_codes(origin)
 
-  # Normalize dest (convert city names to codes, expand to all airports)
+  # Normalize dest (convert city names to codes)
+  # For destinations, only use the first airport if a city expands to multiple
   dest <- normalize_location_codes(dest)
-
+  
   # For now, only support single destination (as per the original design)
+  # If a city name was provided and expanded to multiple airports, use only the first one
   if (length(dest) > 1) {
-    stop(
-      "Multiple destinations are not yet supported. Please specify only one destination."
-    )
+    message(sprintf(
+      "Destination '%s' has multiple airports. Using the first one: %s",
+      paste(dest, collapse = ", "),
+      dest[1]
+    ))
+    dest <- dest[1]
   }
 
   # Convert dates to Date objects if needed

@@ -193,16 +193,22 @@ test_that("fa_define_query_range rejects unknown city names", {
   )
 })
 
-test_that("fa_define_query_range rejects multiple destinations", {
-  # Multiple destinations not yet supported
-  # This should fail because "New York" expands to multiple airports
-  expect_error(
-    fa_define_query_range(
+test_that("fa_define_query_range handles multiple destination airports gracefully", {
+  # When a city name expands to multiple airports, it should use the first one
+  # and show a message (not error)
+  expect_message(
+    queries <- fa_define_query_range(
       origin = "BOM",
       dest = "New York",
       date_min = "2025-12-18",
       date_max = "2025-12-20"
     ),
-    "Multiple destinations are not yet supported"
+    "Using the first one"
   )
+  
+  # Should create a query successfully
+  expect_true(inherits(queries, "flight_query") || inherits(queries, "Scrape"))
+  
+  # Destination should be the first NY airport
+  expect_true(all(unlist(queries$dest) %in% c("LGA", "JFK")))
 })

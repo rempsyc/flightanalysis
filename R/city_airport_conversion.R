@@ -39,13 +39,14 @@ airport_to_city <- function(airport_codes, fallback = airport_codes) {
 #' @description
 #' Converts full city names to 3-letter IATA airport codes using the airportr package.
 #' Returns all valid matching airport codes for cities with multiple airports.
+#' Automatically filters out heliports to return only commercial airports.
 #' Throws an error if a city name is not found in the database.
 #'
 #' @param city_names Character vector of city names
 #'
 #' @return Character vector of 3-letter IATA airport codes. For cities with multiple
-#'   airports, all valid codes are returned (e.g., "New York" returns c("JFK", "LGA", "EWR")).
-#'   Invalid codes (like "\\N") are filtered out.
+#'   airports, all valid codes are returned (e.g., "New York" returns c("LGA", "JFK")).
+#'   Heliports and invalid codes are automatically filtered out.
 #'
 #' @export
 #'
@@ -63,13 +64,21 @@ city_name_to_code <- function(city_names) {
         city_matches <- which(tolower(ap$City) == tolower(city_names[i]))
 
         if (length(city_matches) > 0) {
-          # Get all IATA codes for this city
-          codes <- ap$IATA[city_matches]
+          # Get matching rows
+          matched_airports <- ap[city_matches, ]
+          
+          # Get IATA codes
+          codes <- matched_airports$IATA
+          names <- matched_airports$Name
 
           # Filter out invalid codes (like \\N, NA, empty strings)
-          codes <- codes[
-            !is.na(codes) & codes != "" & codes != "\\N" & nchar(codes) == 3
-          ]
+          valid_idx <- !is.na(codes) & codes != "" & codes != "\\N" & nchar(codes) == 3
+          codes <- codes[valid_idx]
+          names <- names[valid_idx]
+          
+          # Filter out heliports (check if "Heliport" is in the name)
+          not_heliport <- !grepl("heliport", tolower(names), fixed = TRUE)
+          codes <- codes[not_heliport]
 
           if (length(codes) > 0) {
             all_codes[[i]] <- codes
