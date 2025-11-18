@@ -10,7 +10,7 @@ airport_to_city(airport_codes, fallback = airport_codes)
 \item{airport_codes}{Character vector of IATA airport codes}
 
 \item{fallback}{Character vector of fallback values (same length as airport_codes).
-  Default is the original airport_codes.}
+Default is the original airport_codes.}
 }
 \value{
 Character vector of city names

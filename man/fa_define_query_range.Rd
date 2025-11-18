@@ -8,11 +8,11 @@ fa_define_query_range(origin, dest, date_min, date_max)
 }
 \arguments{
 \item{origin}{Character vector of airport codes, city codes, or full city names
-  to search from. Can mix formats (e.g., c("JFK", "NYC", "New York")). 
-  Automatically expands city names to all associated airports and removes duplicates.}
+to search from. Can mix formats (e.g., c("JFK", "NYC", "New York")). 
+Automatically expands city names to all associated airports and removes duplicates.}
 
 \item{dest}{Character vector of destination airport codes, city codes, or full city names.
-  Can mix formats. Currently only single destination is supported.}
+Can mix formats. Currently only single destination is supported.}
 
 \item{date_min}{Character or Date. Start date in "YYYY-MM-DD" format.}
 

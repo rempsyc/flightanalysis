@@ -25,7 +25,7 @@ by default (no visible GUI).
 }
 \examples{
 \dontrun{
-query <- fa_define_query("JFK", "IST", "2025-12-20", "2025-12-25")
+query <- fa_define_query("NYC", "IST", "2025-12-20", "2025-12-22")
 flights <- fa_fetch_flights(query)
 flights$data
 }
