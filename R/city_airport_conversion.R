@@ -128,12 +128,10 @@ city_name_to_code <- function(city_names) {
 get_metropolitan_code <- function(city_name) {
   # Common metropolitan area codes used by airlines and Google Flights
   metro_codes <- list(
+    # North America
     "new york" = "NYC",
-    "london" = "LON",
-    "paris" = "PAR",
-    "tokyo" = "TYO",
-    "chicago" = "CHI",
     "washington" = "WAS",
+    "chicago" = "CHI",
     "los angeles" = "LAX",
     "san francisco" = "SFO",
     "miami" = "MIA",
@@ -142,17 +140,71 @@ get_metropolitan_code <- function(city_name) {
     "atlanta" = "ATL",
     "boston" = "BOS",
     "seattle" = "SEA",
+    "detroit" = "DTT",
+    "philadelphia" = "PHL",
     "toronto" = "YTO",
     "montreal" = "YMQ",
+    
+    # Europe
+    "london" = "LON",
+    "paris" = "PAR",
+    "berlin" = "BER",
+    "rome" = "ROM",
+    "milan" = "MIL",
+    "madrid" = "MAD",
+    "barcelona" = "BCN",
+    "moscow" = "MOW",
+    "stockholm" = "STO",
+    "oslo" = "OSL",
+    "amsterdam" = "AMS",
+    "brussels" = "BRU",
+    "dublin" = "DUB",
+    "copenhagen" = "CPH",
+    "vienna" = "VIE",
+    "athens" = "ATH",
+    "lisbon" = "LIS",
+    "istanbul" = "IST",
+    "budapest" = "BUD",
+    "prague" = "PRG",
+    "warsaw" = "WAW",
+    
+    # Asia
+    "tokyo" = "TYO",
+    "beijing" = "BJS",
+    "shanghai" = "SHA",
+    "hong kong" = "HKG",
+    "singapore" = "SIN",
+    "seoul" = "SEL",
+    "bangkok" = "BKK",
+    "jakarta" = "JKT",
+    "manila" = "MNL",
+    "taipei" = "TPE",
+    "osaka" = "OSA",
+    "delhi" = "DEL",
+    "mumbai" = "BOM",
+    "dubai" = "DXB",
+    "tel aviv" = "TLV",
+    "doha" = "DOH",
+    "kuala lumpur" = "KUL",
+    
+    # South America
     "buenos aires" = "BUE",
     "rio de janeiro" = "RIO",
     "sao paulo" = "SAO",
-    "moscow" = "MOW",
-    "milan" = "MIL",
-    "rome" = "ROM",
-    "berlin" = "BER",
-    "stockholm" = "STO",
-    "oslo" = "OSL"
+    "santiago" = "SCL",
+    "lima" = "LIM",
+    "bogota" = "BOG",
+    
+    # Africa & Middle East
+    "cairo" = "CAI",
+    "johannesburg" = "JNB",
+    "cape town" = "CPT",
+    "casablanca" = "CAS",
+    
+    # Oceania
+    "sydney" = "SYD",
+    "melbourne" = "MEL",
+    "auckland" = "AKL"
   )
 
   city_lower <- tolower(trimws(city_name))

@@ -241,7 +241,9 @@ flights_to_dataframe <- function(flights) {
     arrival_date = character(),
     arrival_time = character(),
     origin = character(),
+    origin_city = character(),
     destination = character(),
+    destination_city = character(),
     airlines = character(),
     travel_time = character(),
     price = integer(),
@@ -254,6 +256,23 @@ flights_to_dataframe <- function(flights) {
   )
 
   for (flight in flights) {
+    # Get origin and destination codes
+    origin_code = ifelse(is.null(flight$origin), NA, flight$origin)
+    dest_code <- ifelse(is.null(flight$dest), NA, flight$dest)
+    
+    # Convert to city names
+    origin_city_name <- if (!is.na(origin_code)) {
+      airport_to_city(origin_code, fallback = origin_code)
+    } else {
+      NA
+    }
+    
+    dest_city_name <- if (!is.na(dest_code)) {
+      airport_to_city(dest_code, fallback = dest_code)
+    } else {
+      NA
+    }
+    
     row <- data.frame(
       departure_date = if (!is.null(flight$time_leave)) {
         format(flight$time_leave, "%Y-%m-%d")
@@ -275,8 +294,10 @@ flights_to_dataframe <- function(flights) {
       } else {
         NA
       },
-      origin = ifelse(is.null(flight$origin), NA, flight$origin),
-      destination = ifelse(is.null(flight$dest), NA, flight$dest),
+      origin = origin_code,
+      origin_city = origin_city_name,
+      destination = dest_code,
+      destination_city = dest_city_name,
       airlines = ifelse(is.null(flight$airline), NA, flight$airline),
       travel_time = ifelse(is.null(flight$flight_time), NA, flight$flight_time),
       price = ifelse(is.null(flight$price), NA, flight$price),
