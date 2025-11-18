@@ -57,6 +57,7 @@ city_name_to_code <- function(city_names) {
   result <- tryCatch(
     {
       ap <- airportr::airports
+      ap$City <- ifelse(ap$City == "Patina", "Patna", ap$City)
 
       all_codes <- list()
       for (i in seq_along(city_names)) {
@@ -66,16 +67,19 @@ city_name_to_code <- function(city_names) {
         if (length(city_matches) > 0) {
           # Get matching rows
           matched_airports <- ap[city_matches, ]
-          
+
           # Get IATA codes
           codes <- matched_airports$IATA
           names <- matched_airports$Name
 
           # Filter out invalid codes (like \\N, NA, empty strings)
-          valid_idx <- !is.na(codes) & codes != "" & codes != "\\N" & nchar(codes) == 3
+          valid_idx <- !is.na(codes) &
+            codes != "" &
+            codes != "\\N" &
+            nchar(codes) == 3
           codes <- codes[valid_idx]
           names <- names[valid_idx]
-          
+
           # Filter out heliports (check if "Heliport" is in the name)
           not_heliport <- !grepl("heliport", tolower(names), fixed = TRUE)
           codes <- codes[not_heliport]
@@ -150,10 +154,10 @@ get_metropolitan_code <- function(city_name) {
     "stockholm" = "STO",
     "oslo" = "OSL"
   )
-  
+
   city_lower <- tolower(trimws(city_name))
   metro_code <- metro_codes[[city_lower]]
-  
+
   return(metro_code)
 }
 
@@ -185,7 +189,7 @@ normalize_location_codes <- function(locations, expand_cities = FALSE) {
     } else {
       # Check if there's a metropolitan area code for this city
       metro_code <- get_metropolitan_code(loc)
-      
+
       if (!is.null(metro_code) && !expand_cities) {
         # Use the metropolitan area code
         normalized <- c(normalized, metro_code)
