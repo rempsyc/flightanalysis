@@ -199,34 +199,6 @@ extract_data_from_scrapes <- function(scrapes) {
   return(combined)
 }
 
-#' Convert Airport Codes to City Names
-#'
-#' @description
-#' Attempts to convert IATA airport codes to city names using the airportr package.
-#' Falls back to the provided fallback value if conversion fails or package is not available.
-#'
-#' @param airport_codes Character vector of IATA airport codes
-#' @param fallback Character vector of fallback values (same length as airport_codes)
-#'
-#' @return Character vector of city names
-#'
-#' @keywords internal
-airport_to_city <- function(airport_codes, fallback = airport_codes) {
-  result <- tryCatch(
-    {
-      ap <- airportr::airports
-      key <- ap$IATA
-      val <- ap$City
-      out <- val[match(airport_codes, key)]
-      ifelse(is.na(out) | out == "", fallback, out)
-    },
-    error = function(e) {
-      fallback
-    }
-  )
-  return(result)
-}
-
 #' Parse Time Duration to Minutes
 #'
 #' @description

@@ -48,11 +48,14 @@ library(flightanalysis)
 
 ### Creating Flight Queries and Fetching the Data
 
-The main scraping function that makes up the backbone of most functionalities is `fa_define_query()`. It serves as a data object, preserving the flight information as well as meta-data from your query. `fa_fetch_flights()` then fetches flight information from that query.
+The main scraping function that makes up the backbone of most functionalities is `fa_define_query()`. It serves as a data object, preserving the flight information as well as meta-data from your query. `fa_fetch_flights()` then fetches flight information from that query. Origin and destination airports can be specified as a mix of Airport 3-letter codes, city 3-letter codes, or city names.
 
 ```{r fa_define_query, eval=TRUE}
 # Round-trip
-query <- fa_define_query("JFK", "IST", "2025-12-20", "2026-01-05")
+query <- fa_define_query("NYC", "London", "2025-12-20", "2026-01-05")
+
+# Same as:
+query <- fa_define_query("New York", "LON", "2025-12-20", "2026-01-05")
 query
 
 # Fetch the flight data

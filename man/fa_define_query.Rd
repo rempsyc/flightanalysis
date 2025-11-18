@@ -7,7 +7,8 @@
 fa_define_query(...)
 }
 \arguments{
-\item{...}{Arguments defining the trip. Format depends on trip type:
+\item{...}{Arguments defining the trip. Locations can be 3-letter codes or full
+city names. Format depends on trip type:
 - One-way: origin, dest, date
 - Round-trip: origin, dest, date_leave, date_return
 - Chain-trip: org1, dest1, date1, org2, dest2, date2, ...
@@ -19,13 +20,25 @@ A flight query object (S3 class "flight_query")
 \description{
 Defines a flight query for Google Flights. Supports one-way,
 round-trip, chain-trip, and perfect-chain trip types.
+
+Accepts airport codes (e.g., "JFK", "LGA"), city codes (e.g., "NYC" for
+all New York City airports), and full city names (e.g., "New York").
+Full city names are automatically converted to their first associated airport code.
+Common city codes include: "NYC" (New York), "LON" (London), "PAR" (Paris), 
+"TYO" (Tokyo), "BUE" (Buenos Aires), etc.
 }
 \examples{
-# One-way trip
+# One-way trip with airport codes
 fa_define_query("JFK", "BOS", "2025-12-20")
 
-# Round-trip
-fa_define_query("JFK", "YUL", "2025-12-20", "2025-12-25")
+# One-way trip with city codes
+fa_define_query("NYC", "LON", "2025-12-20")
+
+# One-way trip with full city names (auto-converted)
+fa_define_query("New York", "Istanbul", "2025-12-20")
+
+# Round-trip with mixed formats
+fa_define_query("JFK", "Paris", "2025-12-20", "2025-12-25")
 
 # Chain-trip
 fa_define_query("JFK", "YYZ", "2025-12-20", "RDU", "LGA", "2025-12-25")

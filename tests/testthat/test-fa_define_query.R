@@ -115,3 +115,30 @@ test_that("URL generation has correct origin and destination order", {
   expect_equal(res2$date[[2]], "2025-12-25")
   expect_true(grepl("Flights%20to%20JFK%20from%20PAT", res2$url[[2]]))
 })
+
+test_that("fa_define_query accepts city codes", {
+  # One-way with city codes
+  res <- fa_define_query("NYC", "LON", "2025-12-20")
+  
+  expect_true(inherits(res, "flight_query") || inherits(res, "Scrape"))
+  expect_equal(res$origin[[1]], "NYC")
+  expect_equal(res$dest[[1]], "LON")
+  expect_equal(res$date[[1]], "2025-12-20")
+  expect_equal(res$type, "one-way")
+  
+  # URL should be properly formatted with city codes
+  expected_url <- "https://www.google.com/travel/flights?hl=en&q=Flights%20to%20LON%20from%20NYC%20on%202025-12-20%20oneway"
+  expect_equal(res$url[[1]], expected_url)
+})
+
+test_that("fa_define_query accepts mixed airport and city codes", {
+  # Round-trip with airport origin and city destination
+  res <- fa_define_query("JFK", "PAR", "2025-12-20", "2025-12-25")
+  
+  expect_true(inherits(res, "flight_query") || inherits(res, "Scrape"))
+  expect_equal(res$origin[[1]], "JFK")
+  expect_equal(res$dest[[1]], "PAR")
+  expect_equal(res$origin[[2]], "PAR")
+  expect_equal(res$dest[[2]], "JFK")
+  expect_equal(res$type, "round-trip")
+})

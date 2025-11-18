@@ -2,6 +2,8 @@
 
 S3method(print,flight_query)
 S3method(print,flight_results)
+export(airport_to_city)
+export(city_name_to_code)
 export(fa_define_query)
 export(fa_define_query_range)
 export(fa_fetch_flights)

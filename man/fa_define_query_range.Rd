@@ -7,9 +7,14 @@
 fa_define_query_range(origin, dest, date_min, date_max)
 }
 \arguments{
-\item{origin}{Character vector of 3-letter airport codes to search from.}
+\item{origin}{Character vector of airport codes, city codes, or full city names
+to search from. Can mix formats (e.g., c("JFK", "NYC", "New York")). 
+Automatically expands city names to all associated airports (excluding heliports)
+and removes duplicates.}
 
-\item{dest}{Character. 3-letter destination airport code.}
+\item{dest}{Character or destination airport code, city code, or full city name.
+If a city name expands to multiple airports, only the first airport is used.
+Currently only single destination is supported.}
 
 \item{date_min}{Character or Date. Start date in "YYYY-MM-DD" format.}
 
@@ -20,23 +25,44 @@ If single origin: A flight query object containing all dates.
   If multiple origins: A named list of flight query objects, one per origin.
 }
 \description{
-Creates flight queries for multiple origin airports across a date range.
+Creates flight queries for multiple origin airports/cities across a date range.
 This helper function generates all permutations of origins and dates
 without actually fetching data. Each origin gets its own query object.
 Similar to fa_define_query but for date ranges.
+
+Supports airport codes (e.g., "JFK", "LGA"), city codes (e.g., "NYC" for
+all New York City airports), and full city names (e.g., "New York").
+Full city names are automatically converted to all associated airport codes
+(excluding heliports). You can mix formats in the same vector.
 }
 \examples{
-# Single origin - returns one query object
+# Airport codes
 fa_define_query_range(
-  origin = "BOM",
+  origin = c("BOM", "DEL"),
   dest = "JFK",
   date_min = "2025-12-18",
   date_max = "2025-12-20"
 )
 
-# Multiple origins - returns named list of query objects
+# City codes
 fa_define_query_range(
-  origin = c("BOM", "DEL"),
+  origin = "NYC",
+  dest = "LON",
+  date_min = "2025-12-18",
+  date_max = "2025-12-20"
+)
+
+# Full city names (auto-converted to airport codes)
+fa_define_query_range(
+  origin = "New York",
+  dest = "Istanbul",
+  date_min = "2025-12-18",
+  date_max = "2025-12-20"
+)
+
+# Mix formats - codes and city names
+fa_define_query_range(
+  origin = c("New York", "JFK", "BOM", "Patna"),
   dest = "JFK",
   date_min = "2025-12-18",
   date_max = "2025-12-20"

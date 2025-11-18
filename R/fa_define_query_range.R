@@ -1,13 +1,23 @@
 #' Define Flight Query Range
 #'
 #' @description
-#' Creates flight queries for multiple origin airports across a date range.
+#' Creates flight queries for multiple origin airports/cities across a date range.
 #' This helper function generates all permutations of origins and dates
 #' without actually fetching data. Each origin gets its own query object.
 #' Similar to fa_define_query but for date ranges.
 #'
-#' @param origin Character vector of 3-letter airport codes to search from.
-#' @param dest Character. 3-letter destination airport code.
+#' Supports airport codes (e.g., "JFK", "LGA"), city codes (e.g., "NYC" for
+#' all New York City airports), and full city names (e.g., "New York").
+#' Full city names are automatically converted to all associated airport codes
+#' (excluding heliports). You can mix formats in the same vector.
+#'
+#' @param origin Character vector of airport codes, city codes, or full city names
+#'   to search from. Can mix formats (e.g., c("JFK", "NYC", "New York")). 
+#'   Automatically expands city names to all associated airports (excluding heliports)
+#'   and removes duplicates.
+#' @param dest Character or destination airport code, city code, or full city name.
+#'   If a city name expands to multiple airports, only the first airport is used.
+#'   Currently only single destination is supported.
 #' @param date_min Character or Date. Start date in "YYYY-MM-DD" format.
 #' @param date_max Character or Date. End date in "YYYY-MM-DD" format.
 #'
@@ -17,33 +27,65 @@
 #' @export
 #'
 #' @examples
-#' # Single origin - returns one query object
-#' fa_define_query_range(
-#'   origin = "BOM",
-#'   dest = "JFK",
-#'   date_min = "2025-12-18",
-#'   date_max = "2025-12-20"
-#' )
-#'
-#' # Multiple origins - returns named list of query objects
+#' # Airport codes
 #' fa_define_query_range(
 #'   origin = c("BOM", "DEL"),
 #'   dest = "JFK",
 #'   date_min = "2025-12-18",
 #'   date_max = "2025-12-20"
 #' )
+#'
+#' # City codes
+#' fa_define_query_range(
+#'   origin = "NYC",
+#'   dest = "LON",
+#'   date_min = "2025-12-18",
+#'   date_max = "2025-12-20"
+#' )
+#'
+#' # Full city names (auto-converted to airport codes)
+#' fa_define_query_range(
+#'   origin = "New York",
+#'   dest = "Istanbul",
+#'   date_min = "2025-12-18",
+#'   date_max = "2025-12-20"
+#' )
+#'
+#' # Mix formats - codes and city names
+#' fa_define_query_range(
+#'   origin = c("New York", "JFK", "BOM", "Patna"),
+#'   dest = "JFK",
+#'   date_min = "2025-12-18",
+#'   date_max = "2025-12-20"
+#' )
 fa_define_query_range <- function(origin, dest, date_min, date_max) {
   # Validate inputs
-  if (!is.character(origin) || length(origin) == 0) {
-    stop("origin must be a non-empty character vector")
+  if (is.null(origin) || length(origin) == 0) {
+    stop("origin must be specified")
   }
 
-  if (any(nchar(origin) != 3)) {
-    stop("All airport codes must be 3 characters")
+  if (is.null(dest) || length(dest) == 0) {
+    stop("dest must be specified")
   }
 
-  if (!is.character(dest) || length(dest) != 1 || nchar(dest) != 3) {
-    stop("dest must be a single 3-character string")
+  # Normalize origin (convert city names to metropolitan codes when available)
+  # Use expand_cities=FALSE to prefer metropolitan codes (e.g., "New York" -> "NYC")
+  # Google Flights supports these codes and will search all airports in the area
+  origin <- normalize_location_codes(origin, expand_cities = FALSE)
+
+  # Normalize dest (convert city names to codes)
+  # Also prefer metropolitan codes for destinations
+  dest <- normalize_location_codes(dest, expand_cities = FALSE)
+  
+  # For now, only support single destination (as per the original design)
+  # If a city name was provided and expanded to multiple airports, use only the first one
+  if (length(dest) > 1) {
+    message(sprintf(
+      "Destination '%s' has multiple airports. Using the first one: %s",
+      paste(dest, collapse = ", "),
+      dest[1]
+    ))
+    dest <- dest[1]
   }
 
   # Convert dates to Date objects if needed
