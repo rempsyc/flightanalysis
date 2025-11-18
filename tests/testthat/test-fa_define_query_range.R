@@ -101,8 +101,9 @@ test_that("fa_define_query_range accepts full city names for single-airport citi
   expect_true(all(unlist(query$dest) == "JFK"))
 })
 
-test_that("fa_define_query_range expands city names to multiple airports in origin", {
-  # "New York" should expand to multiple airports: JFK, LGA, EWR, etc.
+test_that("fa_define_query_range converts city names to metropolitan codes", {
+  # "New York" should convert to "NYC" (metropolitan code)
+  # Google Flights supports metropolitan codes and will search all airports in the area
   queries <- fa_define_query_range(
     origin = "New York",
     dest = "JFK",
@@ -110,12 +111,11 @@ test_that("fa_define_query_range expands city names to multiple airports in orig
     date_max = "2025-12-20"
   )
 
-  # Should return a list with multiple queries (one for each NY airport)
-  expect_true(is.list(queries))
-  expect_true(length(queries) > 1)
+  # Should return a single flight_query object (since there's only one origin: NYC)
+  expect_true(inherits(queries, "flight_query") || inherits(queries, "Scrape"))
   
-  # Names should be airport codes like LGA, JFK, etc.
-  expect_true(all(nchar(names(queries)) == 3))
+  # Origin should be NYC (metropolitan code, not individual airports)
+  expect_true(all(queries$origin == "NYC"))
 })
 
 test_that("fa_define_query_range handles mixed formats", {
@@ -193,22 +193,19 @@ test_that("fa_define_query_range rejects unknown city names", {
   )
 })
 
-test_that("fa_define_query_range handles multiple destination airports gracefully", {
-  # When a city name expands to multiple airports, it should use the first one
-  # and show a message (not error)
-  expect_message(
-    queries <- fa_define_query_range(
-      origin = "BOM",
-      dest = "New York",
-      date_min = "2025-12-18",
-      date_max = "2025-12-20"
-    ),
-    "Using the first one"
+test_that("fa_define_query_range handles city name destinations", {
+  # When a city name is provided as destination, it should convert to metropolitan code
+  # No message needed since we're using the city code, not picking one airport
+  queries <- fa_define_query_range(
+    origin = "BOM",
+    dest = "New York",
+    date_min = "2025-12-18",
+    date_max = "2025-12-20"
   )
   
   # Should create a query successfully
   expect_true(inherits(queries, "flight_query") || inherits(queries, "Scrape"))
   
-  # Destination should be the first NY airport
-  expect_true(all(unlist(queries$dest) %in% c("LGA", "JFK")))
+  # Destination should be NYC (metropolitan code)
+  expect_true(all(queries$dest == "NYC"))
 })

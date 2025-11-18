@@ -68,13 +68,14 @@ fa_define_query_range <- function(origin, dest, date_min, date_max) {
     stop("dest must be specified")
   }
 
-  # Normalize origin (convert city names to codes, expand to all airports)
-  # Use expand_cities=TRUE to get individual airports instead of metropolitan codes
-  origin <- normalize_location_codes(origin, expand_cities = TRUE)
+  # Normalize origin (convert city names to metropolitan codes when available)
+  # Use expand_cities=FALSE to prefer metropolitan codes (e.g., "New York" -> "NYC")
+  # Google Flights supports these codes and will search all airports in the area
+  origin <- normalize_location_codes(origin, expand_cities = FALSE)
 
   # Normalize dest (convert city names to codes)
-  # For destinations, expand to individual airports too so we can pick the first one
-  dest <- normalize_location_codes(dest, expand_cities = TRUE)
+  # Also prefer metropolitan codes for destinations
+  dest <- normalize_location_codes(dest, expand_cities = FALSE)
   
   # For now, only support single destination (as per the original design)
   # If a city name was provided and expanded to multiple airports, use only the first one
