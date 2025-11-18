@@ -2,6 +2,10 @@
 
 ## All functions
 
+- [`airport_to_city()`](https://rempsyc.github.io/flightanalysis/reference/airport_to_city.md)
+  : Convert Airport Codes to City Names
+- [`city_name_to_code()`](https://rempsyc.github.io/flightanalysis/reference/city_name_to_code.md)
+  : Convert City Names to Airport Codes
 - [`fa_define_query()`](https://rempsyc.github.io/flightanalysis/reference/fa_define_query.md)
   : Define Flight Query
 - [`fa_define_query_range()`](https://rempsyc.github.io/flightanalysis/reference/fa_define_query_range.md)

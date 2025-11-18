@@ -9,6 +9,7 @@
 <url><loc>https://rempsyc.github.io/flightanalysis/reference/airport_to_city.html</loc></url>
 <url><loc>https://rempsyc.github.io/flightanalysis/reference/check_chrome_installation.html</loc></url>
 <url><loc>https://rempsyc.github.io/flightanalysis/reference/check_internet_connection.html</loc></url>
+<url><loc>https://rempsyc.github.io/flightanalysis/reference/city_name_to_code.html</loc></url>
 <url><loc>https://rempsyc.github.io/flightanalysis/reference/classify_arg.html</loc></url>
 <url><loc>https://rempsyc.github.io/flightanalysis/reference/clean_results.html</loc></url>
 <url><loc>https://rempsyc.github.io/flightanalysis/reference/close_chromote_safely.html</loc></url>
@@ -26,12 +27,15 @@
 <url><loc>https://rempsyc.github.io/flightanalysis/reference/flightanalysis-package.html</loc></url>
 <url><loc>https://rempsyc.github.io/flightanalysis/reference/flights_to_dataframe.html</loc></url>
 <url><loc>https://rempsyc.github.io/flightanalysis/reference/get_flight_elements_chromote.html</loc></url>
+<url><loc>https://rempsyc.github.io/flightanalysis/reference/get_metropolitan_code.html</loc></url>
 <url><loc>https://rempsyc.github.io/flightanalysis/reference/get_results_chromote.html</loc></url>
 <url><loc>https://rempsyc.github.io/flightanalysis/reference/get_troubleshooting_tips_chromote.html</loc></url>
 <url><loc>https://rempsyc.github.io/flightanalysis/reference/index.html</loc></url>
 <url><loc>https://rempsyc.github.io/flightanalysis/reference/initialize_chromote_browser.html</loc></url>
 <url><loc>https://rempsyc.github.io/flightanalysis/reference/make_url.html</loc></url>
 <url><loc>https://rempsyc.github.io/flightanalysis/reference/make_url_request_chromote.html</loc></url>
+<url><loc>https://rempsyc.github.io/flightanalysis/reference/normalize_location_codes.html</loc></url>
+<url><loc>https://rempsyc.github.io/flightanalysis/reference/normalize_query_args.html</loc></url>
 <url><loc>https://rempsyc.github.io/flightanalysis/reference/parse_args.html</loc></url>
 <url><loc>https://rempsyc.github.io/flightanalysis/reference/parse_time_to_minutes.html</loc></url>
 <url><loc>https://rempsyc.github.io/flightanalysis/reference/print.flight_query.html</loc></url>

@@ -5,12 +5,17 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Find the best flights • flightanalysis</title>
+<title>Find the Best Flights • flightanalysis</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" sizes="any" href="favicon.ico">
+<link rel="manifest" href="site.webmanifest">
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Find the best flights">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Find the Best Flights">
 <meta name="description" content="Tools and models for users to analyze, forecast, and collect data regarding flights and prices. Features include detailed scraping and querying tools for Google Flights.">
 <meta property="og:description" content="Tools and models for users to analyze, forecast, and collect data regarding flights and prices. Features include detailed scraping and querying tools for Google Flights.">
 <meta property="og:image" content="https://rempsyc.github.io/flightanalysis/logo.png">
@@ -23,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="index.html">flightanalysis</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -89,23 +94,26 @@
 <div class="section level3">
 <h3 id="creating-flight-queries-and-fetching-the-data">Creating Flight Queries and Fetching the Data<a class="anchor" aria-label="anchor" href="#creating-flight-queries-and-fetching-the-data"></a>
 </h3>
-<p>The main scraping function that makes up the backbone of most functionalities is <code><a href="reference/fa_define_query.html">fa_define_query()</a></code>. It serves as a data object, preserving the flight information as well as meta-data from your query. <code><a href="reference/fa_fetch_flights.html">fa_fetch_flights()</a></code> then fetches flight information from that query.</p>
+<p>The main scraping function that makes up the backbone of most functionalities is <code><a href="reference/fa_define_query.html">fa_define_query()</a></code>. It serves as a data object, preserving the flight information as well as meta-data from your query. <code><a href="reference/fa_fetch_flights.html">fa_fetch_flights()</a></code> then fetches flight information from that query. Origin and destination airports can be specified as a mix of Airport 3-letter codes, city 3-letter codes, or city names.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Round-trip</span></span>
-<span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_define_query.html">fa_define_query</a></span><span class="op">(</span><span class="st">"JFK"</span>, <span class="st">"IST"</span>, <span class="st">"2025-12-20"</span>, <span class="st">"2026-01-05"</span><span class="op">)</span></span>
+<span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_define_query.html">fa_define_query</a></span><span class="op">(</span><span class="st">"NYC"</span>, <span class="st">"London"</span>, <span class="st">"2025-12-20"</span>, <span class="st">"2026-01-05"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Same as:</span></span>
+<span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_define_query.html">fa_define_query</a></span><span class="op">(</span><span class="st">"New York"</span>, <span class="st">"LON"</span>, <span class="st">"2025-12-20"</span>, <span class="st">"2026-01-05"</span><span class="op">)</span></span>
 <span><span class="va">query</span></span>
 <span><span class="co">#&gt; Flight Query( {Not Yet Fetched}</span></span>
-<span><span class="co">#&gt; 2025-12-20: JFK --&gt; IST</span></span>
-<span><span class="co">#&gt; 2026-01-05: IST --&gt; JFK</span></span>
+<span><span class="co">#&gt; 2025-12-20: NYC --&gt; LON</span></span>
+<span><span class="co">#&gt; 2026-01-05: LON --&gt; NYC</span></span>
 <span><span class="co">#&gt; )</span></span>
 <span></span>
 <span><span class="co"># Fetch the flight data</span></span>
 <span><span class="va">flights</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_fetch_flights.html">fa_fetch_flights</a></span><span class="op">(</span><span class="va">query</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   Segment 1/2: JFK -&gt; IST on 2025-12-20</span></span>
+<span><span class="co">#&gt;   Segment 1/2: NYC -&gt; LON on 2025-12-20</span></span>
 <span><span class="co">#&gt;   [OK] Successfully parsed 7 flights</span></span>
-<span><span class="co">#&gt;   Segment 2/2: IST -&gt; JFK on 2026-01-05</span></span>
-<span><span class="co">#&gt;   [OK] Successfully parsed 8 flights</span></span>
-<span><span class="co">#&gt;   [OK] Total flights retrieved: 15</span></span>
+<span><span class="co">#&gt;   Segment 2/2: LON -&gt; NYC on 2026-01-05</span></span>
+<span><span class="co">#&gt;   [OK] Successfully parsed 15 flights</span></span>
+<span><span class="co">#&gt;   [OK] Total flights retrieved: 22</span></span>
 <span></span>
 <span><span class="co"># View the flight data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">flights</span><span class="op">$</span><span class="va">data</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">11</span><span class="op">]</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -130,91 +138,91 @@
 <th align="left">arrival_date</th>
 <th align="left">arrival_time</th>
 <th align="left">origin</th>
+<th align="left">origin_city</th>
 <th align="left">destination</th>
+<th align="left">destination_city</th>
 <th align="left">airlines</th>
 <th align="left">travel_time</th>
 <th align="right">price</th>
-<th align="right">num_stops</th>
-<th align="left">layover</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td align="left">2025-12-20</td>
-<td align="left">22:35</td>
-<td align="left">2025-12-22</td>
-<td align="left">00:40</td>
-<td align="left">JFK</td>
-<td align="left">IST</td>
-<td align="left">LOT</td>
-<td align="left">18 hr 5 min</td>
-<td align="right">1475</td>
-<td align="right">1</td>
-<td align="left">6 hr 50 min WAW</td>
+<td align="left">22:40</td>
+<td align="left">2025-12-21</td>
+<td align="left">11:05</td>
+<td align="left">EWR</td>
+<td align="left">Newark</td>
+<td align="left">LHR</td>
+<td align="left">London</td>
+<td align="left">UnitedLufthansa, Austrian, Brussels Airlines</td>
+<td align="left">7 hr 25 min</td>
+<td align="right">844</td>
 </tr>
 <tr class="even">
 <td align="left">2025-12-20</td>
-<td align="left">21:20</td>
+<td align="left">18:05</td>
 <td align="left">2025-12-21</td>
-<td align="left">16:55</td>
+<td align="left">06:00</td>
 <td align="left">JFK</td>
-<td align="left">IST</td>
-<td align="left">KLM, Delta</td>
-<td align="left">11 hr 35 min</td>
-<td align="right">1770</td>
-<td align="right">1</td>
-<td align="left">1 hr 5 min AMS</td>
-</tr>
-<tr class="odd">
-<td align="left">2025-12-20</td>
-<td align="left">00:20</td>
-<td align="left">2025-12-20</td>
-<td align="left">18:10</td>
-<td align="left">JFK</td>
-<td align="left">IST</td>
-<td align="left">Turkish Airlines</td>
-<td align="left">9 hr 50 min</td>
-<td align="right">1952</td>
-<td align="right">0</td>
-<td align="left">NA</td>
-</tr>
-<tr class="even">
-<td align="left">2025-12-20</td>
-<td align="left">12:50</td>
-<td align="left">2025-12-21</td>
-<td align="left">06:45</td>
-<td align="left">JFK</td>
-<td align="left">IST</td>
-<td align="left">Turkish Airlines</td>
-<td align="left">9 hr 55 min</td>
-<td align="right">1952</td>
-<td align="right">0</td>
-<td align="left">NA</td>
-</tr>
-<tr class="odd">
-<td align="left">2025-12-20</td>
-<td align="left">20:05</td>
-<td align="left">2025-12-21</td>
-<td align="left">14:05</td>
-<td align="left">JFK</td>
-<td align="left">IST</td>
+<td align="left">New York</td>
+<td align="left">LGW</td>
+<td align="left">London</td>
 <td align="left">Price graph</td>
-<td align="left">10 hr</td>
-<td align="right">1982</td>
-<td align="right">0</td>
-<td align="left">NA</td>
+<td align="left">6 hr 55 min</td>
+<td align="right">859</td>
+</tr>
+<tr class="odd">
+<td align="left">2025-12-20</td>
+<td align="left">19:45</td>
+<td align="left">2025-12-22</td>
+<td align="left">07:10</td>
+<td align="left">LGA</td>
+<td align="left">New York</td>
+<td align="left">LHR</td>
+<td align="left">London</td>
+<td align="left">Air CanadaUnited</td>
+<td align="left">30 hr 25 min</td>
+<td align="right">354</td>
 </tr>
 <tr class="even">
 <td align="left">2025-12-20</td>
-<td align="left">23:30</td>
+<td align="left">19:20</td>
 <td align="left">2025-12-22</td>
-<td align="left">03:50</td>
+<td align="left">09:00</td>
 <td align="left">JFK</td>
-<td align="left">IST</td>
-<td align="left">Air FranceDelta, KLM</td>
-<td align="left">20 hr 20 min</td>
-<td align="right">1469</td>
-<td align="right">1</td>
-<td align="left">9 hr 40 min CDG</td>
+<td align="left">New York</td>
+<td align="left">LGW</td>
+<td align="left">London</td>
+<td align="left">American, British Airways</td>
+<td align="left">32 hr 40 min</td>
+<td align="right">480</td>
+</tr>
+<tr class="odd">
+<td align="left">2025-12-20</td>
+<td align="left">06:55</td>
+<td align="left">2025-12-21</td>
+<td align="left">07:10</td>
+<td align="left">EWR</td>
+<td align="left">Newark</td>
+<td align="left">LHR</td>
+<td align="left">London</td>
+<td align="left">Air CanadaUnited</td>
+<td align="left">19 hr 15 min</td>
+<td align="right">728</td>
+</tr>
+<tr class="even">
+<td align="left">2025-12-20</td>
+<td align="left">15:04</td>
+<td align="left">2025-12-21</td>
+<td align="left">12:40</td>
+<td align="left">LGA</td>
+<td align="left">New York</td>
+<td align="left">LCY</td>
+<td align="left">London</td>
+<td align="left">American, Aer Lingus, British AirwaysIberia, BA Cityflyer</td>
+<td align="left">16 hr 36 min</td>
+<td align="right">854</td>
 </tr>
 </tbody>
 </table>
@@ -253,27 +261,27 @@
 <span><span class="co">#&gt; Scraping 2 objects...</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; [1/2]   Segment 1/5: BOM -&gt; JFK on 2025-12-18</span></span>
-<span><span class="co">#&gt;   [OK] Successfully parsed 13 flights</span></span>
-<span><span class="co">#&gt;   Segment 2/5: BOM -&gt; JFK on 2025-12-19</span></span>
 <span><span class="co">#&gt;   [OK] Successfully parsed 11 flights</span></span>
+<span><span class="co">#&gt;   Segment 2/5: BOM -&gt; JFK on 2025-12-19</span></span>
+<span><span class="co">#&gt;   [OK] Successfully parsed 13 flights</span></span>
 <span><span class="co">#&gt;   Segment 3/5: BOM -&gt; JFK on 2025-12-20</span></span>
-<span><span class="co">#&gt;   [OK] Successfully parsed 8 flights</span></span>
-<span><span class="co">#&gt;   Segment 4/5: BOM -&gt; JFK on 2025-12-21</span></span>
-<span><span class="co">#&gt;   [OK] Successfully parsed 8 flights</span></span>
-<span><span class="co">#&gt;   Segment 5/5: BOM -&gt; JFK on 2025-12-22</span></span>
 <span><span class="co">#&gt;   [OK] Successfully parsed 9 flights</span></span>
-<span><span class="co">#&gt;   [OK] Total flights retrieved: 49</span></span>
+<span><span class="co">#&gt;   Segment 4/5: BOM -&gt; JFK on 2025-12-21</span></span>
+<span><span class="co">#&gt;   [OK] Successfully parsed 10 flights</span></span>
+<span><span class="co">#&gt;   Segment 5/5: BOM -&gt; JFK on 2025-12-22</span></span>
+<span><span class="co">#&gt;   [OK] Successfully parsed 10 flights</span></span>
+<span><span class="co">#&gt;   [OK] Total flights retrieved: 53</span></span>
 <span><span class="co">#&gt; [2/2]   Segment 1/5: DEL -&gt; JFK on 2025-12-18</span></span>
-<span><span class="co">#&gt;   [OK] Successfully parsed 8 flights</span></span>
+<span><span class="co">#&gt;   [OK] Successfully parsed 9 flights</span></span>
 <span><span class="co">#&gt;   Segment 2/5: DEL -&gt; JFK on 2025-12-19</span></span>
 <span><span class="co">#&gt;   [OK] Successfully parsed 9 flights</span></span>
 <span><span class="co">#&gt;   Segment 3/5: DEL -&gt; JFK on 2025-12-20</span></span>
 <span><span class="co">#&gt;   [OK] Successfully parsed 10 flights</span></span>
 <span><span class="co">#&gt;   Segment 4/5: DEL -&gt; JFK on 2025-12-21</span></span>
-<span><span class="co">#&gt;   [OK] Successfully parsed 8 flights</span></span>
-<span><span class="co">#&gt;   Segment 5/5: DEL -&gt; JFK on 2025-12-22</span></span>
 <span><span class="co">#&gt;   [OK] Successfully parsed 9 flights</span></span>
-<span><span class="co">#&gt;   [OK] Total flights retrieved: 44</span></span>
+<span><span class="co">#&gt;   Segment 5/5: DEL -&gt; JFK on 2025-12-22</span></span>
+<span><span class="co">#&gt;   [OK] Successfully parsed 8 flights</span></span>
+<span><span class="co">#&gt;   [OK] Total flights retrieved: 45</span></span>
 <span></span>
 <span><span class="co"># Create summary table (City × Date with prices)</span></span>
 <span><span class="fu"><a href="reference/fa_summarize_prices.html">fa_summarize_prices</a></span><span class="op">(</span><span class="va">flights</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -303,22 +311,22 @@
 <tr class="odd">
 <td align="left">Mumbai</td>
 <td align="left">BOM</td>
-<td align="left">$361</td>
-<td align="left">$365</td>
-<td align="left">$477</td>
-<td align="left">$413</td>
-<td align="left">$413</td>
-<td align="left">$406</td>
+<td align="left">$419</td>
+<td align="left">$503</td>
+<td align="left">$539</td>
+<td align="left">$465</td>
+<td align="left">$442</td>
+<td align="left">$474</td>
 </tr>
 <tr class="even">
 <td align="left">Delhi</td>
 <td align="left">DEL</td>
-<td align="left">$361</td>
-<td align="left">$361</td>
-<td align="left">$463</td>
-<td align="left">$463</td>
-<td align="left">$386</td>
-<td align="left">$407</td>
+<td align="left">$420</td>
+<td align="left">$420</td>
+<td align="left">$493</td>
+<td align="left">$510</td>
+<td align="left">$445</td>
+<td align="left">$458</td>
 </tr>
 <tr class="odd">
 <td align="left">Best</td>
@@ -376,53 +384,39 @@
 <tbody>
 <tr class="odd">
 <td align="left">2025-12-18</td>
-<td align="left">01:30</td>
+<td align="left">10:40</td>
 <td align="left">2025-12-18</td>
-<td align="left">10:45</td>
-<td align="left">DEL</td>
-<td align="right">408</td>
+<td align="left">19:30</td>
+<td align="left">BOM</td>
+<td align="right">442</td>
 <td align="right">1</td>
-<td align="left">2 hr CDG</td>
-<td align="left">19 hr 45 min</td>
-<td align="right">794</td>
-<td align="left">Air FranceDelta, KLM</td>
+<td align="left">1 hr LHR</td>
+<td align="left">19 hr 20 min</td>
+<td align="right">792</td>
+<td align="left">Virgin AtlanticDelta</td>
 <td align="right">1</td>
 </tr>
 <tr class="even">
-<td align="left">2025-12-18</td>
-<td align="left">04:40</td>
-<td align="left">2025-12-18</td>
-<td align="left">15:25</td>
+<td align="left">2025-12-19</td>
+<td align="left">19:10</td>
+<td align="left">2025-12-19</td>
+<td align="left">06:00</td>
 <td align="left">BOM</td>
-<td align="right">413</td>
+<td align="right">434</td>
 <td align="right">1</td>
-<td align="left">3 hr 15 min AUH</td>
-<td align="left">21 hr 15 min</td>
-<td align="right">852</td>
-<td align="left">Etihad</td>
+<td align="left">2 hr 40 min DEL</td>
+<td align="left">21 hr 20 min</td>
+<td align="right">991</td>
+<td align="left">IndiGo, American</td>
 <td align="right">1</td>
 </tr>
 <tr class="odd">
-<td align="left">2025-12-19</td>
-<td align="left">04:40</td>
-<td align="left">2025-12-19</td>
-<td align="left">15:25</td>
-<td align="left">BOM</td>
-<td align="right">365</td>
-<td align="right">1</td>
-<td align="left">3 hr 15 min AUH</td>
-<td align="left">21 hr 15 min</td>
-<td align="right">844</td>
-<td align="left">Etihad</td>
-<td align="right">1</td>
-</tr>
-<tr class="even">
 <td align="left">2025-12-19</td>
 <td align="left">20:55</td>
 <td align="left">2025-12-19</td>
 <td align="left">09:00</td>
 <td align="left">DEL</td>
-<td align="right">392</td>
+<td align="right">451</td>
 <td align="right">1</td>
 <td align="left">3 hr 30 min AUH</td>
 <td align="left">22 hr 35 min</td>
@@ -430,18 +424,32 @@
 <td align="left">Etihad</td>
 <td align="right">1</td>
 </tr>
-<tr class="odd">
-<td align="left">2025-12-19</td>
-<td align="left">23:15</td>
-<td align="left">2025-12-19</td>
-<td align="left">09:00</td>
+<tr class="even">
+<td align="left">2025-12-22</td>
+<td align="left">10:40</td>
+<td align="left">2025-12-22</td>
+<td align="left">22:55</td>
 <td align="left">BOM</td>
-<td align="right">413</td>
+<td align="right">442</td>
 <td align="right">1</td>
-<td align="left">2 hr 5 min AUH</td>
-<td align="left">20 hr 15 min</td>
-<td align="right">763</td>
-<td align="left">Akasa Air, Etihad</td>
+<td align="left">4 hr 25 min LHR</td>
+<td align="left">22 hr 45 min</td>
+<td align="right">796</td>
+<td align="left">Virgin AtlanticDelta</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">2025-12-23</td>
+<td align="left">20:55</td>
+<td align="left">2025-12-23</td>
+<td align="left">09:00</td>
+<td align="left">DEL</td>
+<td align="right">451</td>
+<td align="right">1</td>
+<td align="left">3 hr 30 min AUH</td>
+<td align="left">22 hr 35 min</td>
+<td align="right">802</td>
+<td align="left">Etihad</td>
 <td align="right">1</td>
 </tr>
 </tbody>

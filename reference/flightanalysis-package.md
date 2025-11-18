@@ -1,4 +1,4 @@
-# flightanalysis: Find the best flights
+# flightanalysis: Find the Best Flights
 
 Tools and models for users to analyze, forecast, and collect data
 regarding flights and prices. Features include detailed scraping and

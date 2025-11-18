@@ -42,38 +42,43 @@ functionalities is
 It serves as a data object, preserving the flight information as well as
 meta-data from your query.
 [`fa_fetch_flights()`](https://rempsyc.github.io/flightanalysis/reference/fa_fetch_flights.md)
-then fetches flight information from that query.
+then fetches flight information from that query. Origin and destination
+airports can be specified as a mix of Airport 3-letter codes, city
+3-letter codes, or city names.
 
 ``` r
 # Round-trip
-query <- fa_define_query("JFK", "IST", "2025-12-20", "2026-01-05")
+query <- fa_define_query("NYC", "London", "2025-12-20", "2026-01-05")
+
+# Same as:
+query <- fa_define_query("New York", "LON", "2025-12-20", "2026-01-05")
 query
 #> Flight Query( {Not Yet Fetched}
-#> 2025-12-20: JFK --> IST
-#> 2026-01-05: IST --> JFK
+#> 2025-12-20: NYC --> LON
+#> 2026-01-05: LON --> NYC
 #> )
 
 # Fetch the flight data
 flights <- fa_fetch_flights(query)
-#>   Segment 1/2: JFK -> IST on 2025-12-20
+#>   Segment 1/2: NYC -> LON on 2025-12-20
 #>   [OK] Successfully parsed 7 flights
-#>   Segment 2/2: IST -> JFK on 2026-01-05
-#>   [OK] Successfully parsed 8 flights
-#>   [OK] Total flights retrieved: 15
+#>   Segment 2/2: LON -> NYC on 2026-01-05
+#>   [OK] Successfully parsed 15 flights
+#>   [OK] Total flights retrieved: 22
 
 # View the flight data
 head(flights$data[1:11]) |>
   knitr::kable()
 ```
 
-| departure_date | departure_time | arrival_date | arrival_time | origin | destination | airlines             | travel_time  | price | num_stops | layover         |
-|:---------------|:---------------|:-------------|:-------------|:-------|:------------|:---------------------|:-------------|------:|----------:|:----------------|
-| 2025-12-20     | 22:35          | 2025-12-22   | 00:40        | JFK    | IST         | LOT                  | 18 hr 5 min  |  1475 |         1 | 6 hr 50 min WAW |
-| 2025-12-20     | 21:20          | 2025-12-21   | 16:55        | JFK    | IST         | KLM, Delta           | 11 hr 35 min |  1770 |         1 | 1 hr 5 min AMS  |
-| 2025-12-20     | 00:20          | 2025-12-20   | 18:10        | JFK    | IST         | Turkish Airlines     | 9 hr 50 min  |  1952 |         0 | NA              |
-| 2025-12-20     | 12:50          | 2025-12-21   | 06:45        | JFK    | IST         | Turkish Airlines     | 9 hr 55 min  |  1952 |         0 | NA              |
-| 2025-12-20     | 20:05          | 2025-12-21   | 14:05        | JFK    | IST         | Price graph          | 10 hr        |  1982 |         0 | NA              |
-| 2025-12-20     | 23:30          | 2025-12-22   | 03:50        | JFK    | IST         | Air FranceDelta, KLM | 20 hr 20 min |  1469 |         1 | 9 hr 40 min CDG |
+| departure_date | departure_time | arrival_date | arrival_time | origin | origin_city | destination | destination_city | airlines                                                  | travel_time  | price |
+|:---------------|:---------------|:-------------|:-------------|:-------|:------------|:------------|:-----------------|:----------------------------------------------------------|:-------------|------:|
+| 2025-12-20     | 22:40          | 2025-12-21   | 11:05        | EWR    | Newark      | LHR         | London           | UnitedLufthansa, Austrian, Brussels Airlines              | 7 hr 25 min  |   844 |
+| 2025-12-20     | 18:05          | 2025-12-21   | 06:00        | JFK    | New York    | LGW         | London           | Price graph                                               | 6 hr 55 min  |   859 |
+| 2025-12-20     | 19:45          | 2025-12-22   | 07:10        | LGA    | New York    | LHR         | London           | Air CanadaUnited                                          | 30 hr 25 min |   354 |
+| 2025-12-20     | 19:20          | 2025-12-22   | 09:00        | JFK    | New York    | LGW         | London           | American, British Airways                                 | 32 hr 40 min |   480 |
+| 2025-12-20     | 06:55          | 2025-12-21   | 07:10        | EWR    | Newark      | LHR         | London           | Air CanadaUnited                                          | 19 hr 15 min |   728 |
+| 2025-12-20     | 15:04          | 2025-12-21   | 12:40        | LGA    | New York    | LCY         | London           | American, Aer Lingus, British AirwaysIberia, BA Cityflyer | 16 hr 36 min |   854 |
 
 The package supports multiple trip types:
 
@@ -104,27 +109,27 @@ flights <- fa_fetch_flights(queries)
 #> Scraping 2 objects...
 #> 
 #> [1/2]   Segment 1/5: BOM -> JFK on 2025-12-18
-#>   [OK] Successfully parsed 13 flights
-#>   Segment 2/5: BOM -> JFK on 2025-12-19
 #>   [OK] Successfully parsed 11 flights
+#>   Segment 2/5: BOM -> JFK on 2025-12-19
+#>   [OK] Successfully parsed 13 flights
 #>   Segment 3/5: BOM -> JFK on 2025-12-20
-#>   [OK] Successfully parsed 8 flights
-#>   Segment 4/5: BOM -> JFK on 2025-12-21
-#>   [OK] Successfully parsed 8 flights
-#>   Segment 5/5: BOM -> JFK on 2025-12-22
 #>   [OK] Successfully parsed 9 flights
-#>   [OK] Total flights retrieved: 49
+#>   Segment 4/5: BOM -> JFK on 2025-12-21
+#>   [OK] Successfully parsed 10 flights
+#>   Segment 5/5: BOM -> JFK on 2025-12-22
+#>   [OK] Successfully parsed 10 flights
+#>   [OK] Total flights retrieved: 53
 #> [2/2]   Segment 1/5: DEL -> JFK on 2025-12-18
-#>   [OK] Successfully parsed 8 flights
+#>   [OK] Successfully parsed 9 flights
 #>   Segment 2/5: DEL -> JFK on 2025-12-19
 #>   [OK] Successfully parsed 9 flights
 #>   Segment 3/5: DEL -> JFK on 2025-12-20
 #>   [OK] Successfully parsed 10 flights
 #>   Segment 4/5: DEL -> JFK on 2025-12-21
-#>   [OK] Successfully parsed 8 flights
-#>   Segment 5/5: DEL -> JFK on 2025-12-22
 #>   [OK] Successfully parsed 9 flights
-#>   [OK] Total flights retrieved: 44
+#>   Segment 5/5: DEL -> JFK on 2025-12-22
+#>   [OK] Successfully parsed 8 flights
+#>   [OK] Total flights retrieved: 45
 
 # Create summary table (City × Date with prices)
 fa_summarize_prices(flights) |>
@@ -133,8 +138,8 @@ fa_summarize_prices(flights) |>
 
 | City   | Origin | 2025-12-18 | 2025-12-19 | 2025-12-20 | 2025-12-21 | 2025-12-22 | Average_Price |
 |:-------|:-------|:-----------|:-----------|:-----------|:-----------|:-----------|:--------------|
-| Mumbai | BOM    | \$361      | \$365      | \$477      | \$413      | \$413      | \$406         |
-| Delhi  | DEL    | \$361      | \$361      | \$463      | \$463      | \$386      | \$407         |
+| Mumbai | BOM    | \$419      | \$503      | \$539      | \$465      | \$442      | \$474         |
+| Delhi  | DEL    | \$420      | \$420      | \$493      | \$510      | \$445      | \$458         |
 | Best   | Day    | X          |            |            |            |            |               |
 
 ``` r
@@ -153,11 +158,11 @@ fa_find_best_dates(
 
 | departure_date | departure_time | arrival_date | arrival_time | origin | price | num_stops | layover         | travel_time  | co2_emission_kg | airlines             | n_routes |
 |:---------------|:---------------|:-------------|:-------------|:-------|------:|----------:|:----------------|:-------------|----------------:|:---------------------|---------:|
-| 2025-12-18     | 01:30          | 2025-12-18   | 10:45        | DEL    |   408 |         1 | 2 hr CDG        | 19 hr 45 min |             794 | Air FranceDelta, KLM |        1 |
-| 2025-12-18     | 04:40          | 2025-12-18   | 15:25        | BOM    |   413 |         1 | 3 hr 15 min AUH | 21 hr 15 min |             852 | Etihad               |        1 |
-| 2025-12-19     | 04:40          | 2025-12-19   | 15:25        | BOM    |   365 |         1 | 3 hr 15 min AUH | 21 hr 15 min |             844 | Etihad               |        1 |
-| 2025-12-19     | 20:55          | 2025-12-19   | 09:00        | DEL    |   392 |         1 | 3 hr 30 min AUH | 22 hr 35 min |             843 | Etihad               |        1 |
-| 2025-12-19     | 23:15          | 2025-12-19   | 09:00        | BOM    |   413 |         1 | 2 hr 5 min AUH  | 20 hr 15 min |             763 | Akasa Air, Etihad    |        1 |
+| 2025-12-18     | 10:40          | 2025-12-18   | 19:30        | BOM    |   442 |         1 | 1 hr LHR        | 19 hr 20 min |             792 | Virgin AtlanticDelta |        1 |
+| 2025-12-19     | 19:10          | 2025-12-19   | 06:00        | BOM    |   434 |         1 | 2 hr 40 min DEL | 21 hr 20 min |             991 | IndiGo, American     |        1 |
+| 2025-12-19     | 20:55          | 2025-12-19   | 09:00        | DEL    |   451 |         1 | 3 hr 30 min AUH | 22 hr 35 min |             843 | Etihad               |        1 |
+| 2025-12-22     | 10:40          | 2025-12-22   | 22:55        | BOM    |   442 |         1 | 4 hr 25 min LHR | 22 hr 45 min |             796 | Virgin AtlanticDelta |        1 |
+| 2025-12-23     | 20:55          | 2025-12-23   | 09:00        | DEL    |   451 |         1 | 3 hr 30 min AUH | 22 hr 35 min |             802 | Etihad               |        1 |
 
 ## Visualizing Price Data
 

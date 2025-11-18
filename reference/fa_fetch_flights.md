@@ -25,15 +25,16 @@ fa_fetch_flights(queries, verbose = TRUE)
 
 ## Value
 
-Modified query object(s) with flight data. \*\*Important:\*\* You must
-capture the return value to get the flight data: \`result \<-
+A flight_results object containing the merged flight data. Access the
+data via \`result\$data\`. \*\*Important:\*\* You must capture the
+return value to get the flight data: \`result \<-
 fa_fetch_flights(query)\`
 
 ## Examples
 
 ``` r
 if (FALSE) { # \dontrun{
-query <- fa_define_query("JFK", "IST", "2025-12-20", "2025-12-25")
+query <- fa_define_query("NYC", "IST", "2025-12-20", "2025-12-22")
 flights <- fa_fetch_flights(query)
 flights$data
 } # }
