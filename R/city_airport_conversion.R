@@ -58,6 +58,7 @@ city_name_to_code <- function(city_names) {
     {
       ap <- airportr::airports
       ap$City <- ifelse(ap$City == "Patina", "Patna", ap$City)
+      ap$City <- ifelse(ap$IATA == "EWR", "New York", ap$City)
 
       all_codes <- list()
       for (i in seq_along(city_names)) {
@@ -144,7 +145,7 @@ get_metropolitan_code <- function(city_name) {
     "philadelphia" = "PHL",
     "toronto" = "YTO",
     "montreal" = "YMQ",
-    
+
     # Europe
     "london" = "LON",
     "paris" = "PAR",
@@ -167,7 +168,7 @@ get_metropolitan_code <- function(city_name) {
     "budapest" = "BUD",
     "prague" = "PRG",
     "warsaw" = "WAW",
-    
+
     # Asia
     "tokyo" = "TYO",
     "beijing" = "BJS",
@@ -186,7 +187,7 @@ get_metropolitan_code <- function(city_name) {
     "tel aviv" = "TLV",
     "doha" = "DOH",
     "kuala lumpur" = "KUL",
-    
+
     # South America
     "buenos aires" = "BUE",
     "rio de janeiro" = "RIO",
@@ -194,13 +195,13 @@ get_metropolitan_code <- function(city_name) {
     "santiago" = "SCL",
     "lima" = "LIM",
     "bogota" = "BOG",
-    
+
     # Africa & Middle East
     "cairo" = "CAI",
     "johannesburg" = "JNB",
     "cape town" = "CPT",
     "casablanca" = "CAS",
-    
+
     # Oceania
     "sydney" = "SYD",
     "melbourne" = "MEL",
