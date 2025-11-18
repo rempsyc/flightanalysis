@@ -4,36 +4,23 @@
 \alias{fa_define_query_range}
 \title{Define Flight Query Range}
 \usage{
-fa_define_query_range(
-  origin = NULL,
-  dest = NULL,
-  date_min,
-  date_max,
-  origin_city = NULL,
-  dest_city = NULL
-)
+fa_define_query_range(origin, dest, date_min, date_max)
 }
 \arguments{
-\item{origin}{Character vector of 3-letter airport codes to search from.
-Can be combined with origin_city. Default is NULL.}
+\item{origin}{Character vector of airport codes, city codes, or full city names
+  to search from. Can mix formats (e.g., c("JFK", "NYC", "New York")). 
+  Automatically expands city names to all associated airports and removes duplicates.}
 
-\item{dest}{Character. 3-letter destination airport code.
-Can be combined with dest_city. Default is NULL.}
+\item{dest}{Character vector of destination airport codes, city codes, or full city names.
+  Can mix formats. Currently only single destination is supported.}
 
 \item{date_min}{Character or Date. Start date in "YYYY-MM-DD" format.}
 
 \item{date_max}{Character or Date. End date in "YYYY-MM-DD" format.}
-
-\item{origin_city}{Character vector of 3-letter city/metropolitan codes to search from.
-Examples: "NYC" (New York area), "LON" (London area), "PAR" (Paris area).
-Can be combined with origin. Duplicates are automatically removed. Default is NULL.}
-
-\item{dest_city}{Character vector of 3-letter destination city/metropolitan codes.
-Can be combined with dest. Duplicates are automatically removed. Default is NULL.}
 }
 \value{
-If single origin/origin_city: A flight query object containing all dates.
-  If multiple origins/origin_cities: A named list of flight query objects, one per origin.
+If single origin: A flight query object containing all dates.
+  If multiple origins: A named list of flight query objects, one per origin.
 }
 \description{
 Creates flight queries for multiple origin airports/cities across a date range.
@@ -41,20 +28,13 @@ This helper function generates all permutations of origins and dates
 without actually fetching data. Each origin gets its own query object.
 Similar to fa_define_query but for date ranges.
 
-Supports both airport codes (e.g., "JFK", "LGA") and city codes (e.g., "NYC" for
-all New York City airports). City codes allow searching across multiple airports
-in a metropolitan area, similar to Google Flights.
+Supports airport codes (e.g., "JFK", "LGA"), city codes (e.g., "NYC" for
+all New York City airports), and full city names (e.g., "New York").
+Full city names are automatically converted to all associated airport codes.
+You can mix formats in the same vector.
 }
 \examples{
-# Single airport origin - returns one query object
-fa_define_query_range(
-  origin = "BOM",
-  dest = "JFK",
-  date_min = "2025-12-18",
-  date_max = "2025-12-20"
-)
-
-# Multiple airport origins - returns named list of query objects
+# Airport codes
 fa_define_query_range(
   origin = c("BOM", "DEL"),
   dest = "JFK",
@@ -62,26 +42,25 @@ fa_define_query_range(
   date_max = "2025-12-20"
 )
 
-# City-level search - searches all airports in New York City area
+# City codes
 fa_define_query_range(
-  origin = "BOM",
-  dest_city = "NYC",
+  origin = "NYC",
+  dest = "LON",
   date_min = "2025-12-18",
   date_max = "2025-12-20"
 )
 
-# Multiple city origins to city destination
+# Full city names (auto-converted to airport codes)
 fa_define_query_range(
-  origin_city = c("NYC", "BOS"),
-  dest_city = "LON",
+  origin = "New York",
+  dest = "Istanbul",
   date_min = "2025-12-18",
   date_max = "2025-12-20"
 )
 
-# Mix airports and cities - e.g., NYC area + specific airport from another city
+# Mix formats - codes and city names
 fa_define_query_range(
-  origin = "BOM",
-  origin_city = "NYC",
+  origin = c("New York", "JFK", "BOM", "Patna"),
   dest = "JFK",
   date_min = "2025-12-18",
   date_max = "2025-12-20"
