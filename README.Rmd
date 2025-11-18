@@ -87,7 +87,7 @@ queries <- fa_define_query_range(
 )
 
 # Fetch all flights
-flights <- fa_fetch_flights(queries)
+flights <- fa_fetch_flights(queries, verbose = FALSE)
 
 # Create summary table (City × Date with prices)
 fa_summarize_prices(flights) |>
