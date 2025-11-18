@@ -85,6 +85,17 @@ normalize_query_args <- function(args) {
       if (nchar(arg) != 3) {
         # Try to convert city name to code (will take first airport)
         codes <- normalize_location_codes(arg)
+        
+        # Show message if multiple airports found
+        if (length(codes) > 1) {
+          message(sprintf(
+            "Location '%s' has multiple airports: %s. Using the first one: %s",
+            arg,
+            paste(codes, collapse = ", "),
+            codes[1]
+          ))
+        }
+        
         # Use the first code for single-location queries
         args[[i]] <- codes[1]
       }
