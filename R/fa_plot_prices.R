@@ -514,23 +514,24 @@ fa_plot_prices <- function(
     format(min_date, "%b %d")
   )
 
-  # Add annotation label info to subtitle if annotations are present
-  if (has_annotations) {
-    annot_label <- gsub("_", " ", annotate_col)
-    annot_label <- tools::toTitleCase(annot_label)
-    auto_subtitle <- sprintf(
-      "%s (Point labels: %s)",
-      auto_subtitle,
-      annot_label
-    )
-  }
-
   # Use provided title/subtitle or auto-generated ones
   if (is.null(title)) {
     title <- auto_title
   }
   if (is.null(subtitle)) {
     subtitle <- auto_subtitle
+  }
+  
+  # Add annotation label info to subtitle if annotations are present
+  # This is done after setting subtitle so it applies to both custom and auto-generated subtitles
+  if (has_annotations) {
+    annot_label <- gsub("_", " ", annotate_col)
+    annot_label <- tools::toTitleCase(annot_label)
+    subtitle <- sprintf(
+      "%s (Point labels: %s)",
+      subtitle,
+      annot_label
+    )
   }
 
   # Create the base plot with consistent data ordering
