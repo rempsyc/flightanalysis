@@ -2,7 +2,7 @@ pandoc: 3.1.11
 pkgdown: 2.2.0
 pkgdown_sha: ~
 articles: {}
-last_built: 2025-11-18T18:35Z
+last_built: 2025-11-19T01:50Z
 urls:
   reference: https://rempsyc.github.io/flightanalysis/reference
   article: https://rempsyc.github.io/flightanalysis/articles
