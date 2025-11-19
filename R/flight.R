@@ -191,10 +191,14 @@ classify_arg <- function(flight, arg) {
     airline_str <- paste(val, collapse = ",")
     
     # Add comma between concatenated airlines
-    # First handle acronyms/all-caps followed by capitalized words (e.g., "KLMDelta" -> "KLM, Delta")
-    # But avoid splitting known compound airline names like JetBlue, AirAsia, etc.
-    # Only apply splitting if we see clear concatenation patterns (all caps followed by cap+lowercase)
+    # Handle multiple concatenation patterns:
+    # 1. All-caps acronyms followed by capitalized words (e.g., "KLMDelta" -> "KLM, Delta")
     airline_str <- gsub("([A-Z]{3,})([A-Z][a-z])", "\\1, \\2", airline_str)
+    
+    # 2. Lowercase letter followed by uppercase and 4+ lowercase letters
+    #    (e.g., "UnitedLufthansa" -> "United, Lufthansa", "Air CanadaUnited" -> "Air Canada, United")
+    #    The 4+ lowercase requirement preserves compound names like JetBlue, AirAsia, SkyWest
+    airline_str <- gsub("([a-z])([A-Z][a-z]{4,})", "\\1, \\2", airline_str)
     
     flight$airline <- airline_str
   } else {
