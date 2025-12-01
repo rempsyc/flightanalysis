@@ -229,9 +229,9 @@ fa_find_best_dates <- function(
   }
 
   # Filter out excluded airports if specified
-  if (!is.null(excluded_airports) && "origin" %in% names(flight_results)) {
+  if (!is.null(excluded_airports) && "Origin" %in% names(flight_results)) {
     flight_results <- flight_results[
-      !flight_results$origin %in% excluded_airports,
+      !flight_results$Origin %in% excluded_airports,
     ]
   }
 
