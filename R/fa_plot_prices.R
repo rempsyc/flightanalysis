@@ -29,8 +29,8 @@
 #' @param show_min_annotation Logical. If TRUE, adds a data-journalism-style
 #'   annotation for the minimum price with a horizontal bar and formatted price label.
 #'   The annotation is subtle and clean (no arrows or boxes). Default is FALSE.
-#' @param ... Additional arguments passed to \code{\link{fa_summarize_prices}}
-#'   if price_summary is not already a summary table.
+#' @param ... Additional arguments passed to \code{\link{fa_summarize_prices}},
+#'   including \code{excluded_airports} to filter out specific airport codes.
 #'
 #' @return A ggplot2 plot object that can be further customized or saved.
 #'

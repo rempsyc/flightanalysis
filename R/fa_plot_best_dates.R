@@ -13,7 +13,8 @@
 #' @param title Character. Plot title. Default is "Best Travel Dates by Price".
 #' @param subtitle Character. Plot subtitle. Default is NULL (auto-generated).
 #' @param ... Additional arguments passed to \code{\link{fa_find_best_dates}}
-#'   if best_dates is a flight_results object.
+#'   if best_dates is a flight_results object, including \code{excluded_airports}
+#'   to filter out specific airport codes.
 #'
 #' @return A ggplot2 plot object that can be further customized or saved.
 #'
