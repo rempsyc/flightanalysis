@@ -145,6 +145,7 @@ fa_plot_prices <- function(
   # Drop empty date columns if requested (dates where all origins have NA prices)
   if (drop_empty_dates) {
     # Find date columns that have at least one non-NA price
+    # sapply returns TRUE for columns with at least one non-NA value
     non_empty_cols <- sapply(date_cols, function(col) {
       !all(is.na(price_data[[col]]))
     })
@@ -152,7 +153,10 @@ fa_plot_prices <- function(
     price_data <- price_data[, date_cols, drop = FALSE]
     
     if (length(date_cols) == 0) {
-      stop("No dates with price data after filtering empty dates")
+      stop(
+        "No dates with price data found. ",
+        "Try setting drop_empty_dates = FALSE to include all dates."
+      )
     }
   }
 
