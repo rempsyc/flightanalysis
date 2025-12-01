@@ -9,8 +9,7 @@
 #' colors and clear typography.
 #'
 #' @importFrom stats aggregate median
-#' @param price_summary A flight_results object from \code{\link{fa_fetch_flights}}.
-#'   This function no longer accepts pre-summarized data or data frames.
+#' @param flight_results A flight_results object from [fa_fetch_flights()].
 #' @param title Character. Plot title. Default is NULL (auto-generated with flight context).
 #' @param subtitle Character. Plot subtitle. Default is NULL (auto-generated with lowest price info).
 #' @param size_by Character. Name of column from raw flight data to use for
@@ -75,7 +74,7 @@
 #' fa_plot_prices(sample_flight_results, drop_empty_dates = TRUE)
 #' }
 fa_plot_prices <- function(
-  price_summary,
+  flight_results,
   title = NULL,
   subtitle = NULL,
   size_by = NULL,
@@ -102,42 +101,41 @@ fa_plot_prices <- function(
   }
 
   # Validate input type - only accept flight_results objects
-  if (!inherits(price_summary, "flight_results")) {
+  if (!inherits(flight_results, "flight_results")) {
     stop(
-      "price_summary must be a flight_results object from fa_fetch_flights().\n",
-      "This function no longer accepts pre-summarized data or data frames.\n",
+      "flight_results must be a flight_results object from fa_fetch_flights().\n",
       "Please use fa_fetch_flights() to create a flight_results object first."
     )
   }
 
   # Store raw data for annotations or size_by if provided
-  raw_data <- price_summary$data
+  raw_data <- flight_results$data
   has_annotations <- !is.null(annotate_col)
   has_custom_size <- !is.null(size_by) && size_by != "price"
 
   # Create summary table from flight_results
-  price_summary <- fa_summarize_prices(price_summary, ...)
+  flight_results <- fa_summarize_prices(flight_results, ...)
 
   # Remove the "Best" row if present
-  price_summary <- price_summary[price_summary$City != "Best", ]
+  flight_results <- flight_results[flight_results$City != "Best", ]
 
-  if (nrow(price_summary) == 0) {
+  if (nrow(flight_results) == 0) {
     stop("No data to plot after filtering")
   }
 
   # Identify date columns (format YYYY-MM-DD)
   date_cols <- grep(
     "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
-    names(price_summary),
+    names(flight_results),
     value = TRUE
   )
 
   if (length(date_cols) == 0) {
-    stop("No date columns found in price_summary")
+    stop("No date columns found in flight_results")
   }
 
   # Extract price values (remove currency symbols and convert to numeric)
-  price_data <- price_summary[, date_cols, drop = FALSE]
+  price_data <- flight_results[, date_cols, drop = FALSE]
   for (col in date_cols) {
     price_data[[col]] <- as.numeric(gsub("[^0-9.]", "", price_data[[col]]))
   }
@@ -151,7 +149,7 @@ fa_plot_prices <- function(
     })
     date_cols <- date_cols[non_empty_cols]
     price_data <- price_data[, date_cols, drop = FALSE]
-    
+
     if (length(date_cols) == 0) {
       stop(
         "No dates with price data found. ",
@@ -162,11 +160,11 @@ fa_plot_prices <- function(
 
   # Convert to long format for ggplot2
   plot_data <- data.frame()
-  for (i in seq_len(nrow(price_summary))) {
+  for (i in seq_len(nrow(flight_results))) {
     origin_label <- paste0(
-      price_summary$City[i],
+      flight_results$City[i],
       " (",
-      price_summary$Origin[i],
+      flight_results$Origin[i],
       ")"
     )
     for (j in seq_along(date_cols)) {
@@ -175,7 +173,7 @@ fa_plot_prices <- function(
         data.frame(
           date = as.Date(date_cols[j]),
           price = as.numeric(price_data[i, j]),
-          origin = price_summary$Origin[i],
+          origin = flight_results$Origin[i],
           origin_label = origin_label,
           stringsAsFactors = FALSE
         )
@@ -553,7 +551,7 @@ fa_plot_prices <- function(
   if (is.null(subtitle)) {
     subtitle <- auto_subtitle
   }
-  
+
   # Add annotation label info to subtitle if annotations are present
   # This is done after setting subtitle so it applies to both custom and auto-generated subtitles
   if (has_annotations) {

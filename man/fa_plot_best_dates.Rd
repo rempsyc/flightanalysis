@@ -5,19 +5,23 @@
 \title{Plot Best Travel Dates}
 \usage{
 fa_plot_best_dates(
-  best_dates,
+  flight_results,
   title = "Best Travel Dates by Price",
   subtitle = NULL,
+  x_axis_angle = 0,
   ...
 )
 }
 \arguments{
-\item{best_dates}{A flight_results object from \code{\link{fa_fetch_flights}} or
-a data frame that is the output from \code{\link{fa_find_best_dates}}.}
+\item{flight_results}{A flight_results object from [fa_fetch_flights()].}
 
 \item{title}{Character. Plot title. Default is "Best Travel Dates by Price".}
 
 \item{subtitle}{Character. Plot subtitle. Default is NULL (auto-generated).}
+
+\item{x_axis_angle}{Numeric. Angle in degrees to rotate x-axis labels for better
+readability in wide figures with many dates. Common values are 45 (diagonal) or
+90 (vertical). Default is 0 (horizontal labels).}
 
 \item{...}{Additional arguments passed to \code{\link{fa_find_best_dates}}
 if best_dates is a flight_results object, including \code{excluded_airports}
@@ -41,5 +45,8 @@ fa_plot_best_dates(sample_flight_results, n = 5)
 
 # With filters
 fa_plot_best_dates(sample_flight_results, n = 5, max_stops = 0)
+
+# Tilt x-axis labels diagonally for wide figures
+fa_plot_best_dates(sample_flight_results, n = 10, x_axis_angle = 45)
 }
 }

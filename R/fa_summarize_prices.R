@@ -8,8 +8,7 @@
 #' Supports filtering by various criteria such as departure time, airlines,
 #' travel time, stops, and emissions.
 #'
-#' @param flight_results A flight_results object from fa_fetch_flights().
-#'   This function no longer accepts data frames or query objects directly.
+#' @param flight_results A flight_results object from [fa_fetch_flights()].
 #' @param include_comment Logical. If TRUE and Comment column exists, includes
 #'   it in the output. Default is TRUE.
 #' @param currency_symbol Character. Currency symbol to use for formatting.
@@ -71,14 +70,14 @@ fa_summarize_prices <- function(
       "Please use fa_fetch_flights() to create a flight_results object first."
     )
   }
-  
+
   # Extract the merged data from flight_results object
   if (is.null(flight_results$data) || nrow(flight_results$data) == 0) {
     stop(
       "flight_results object contains no data. Please run fa_fetch_flights() first to fetch flight data."
     )
   }
-  
+
   flight_results <- extract_data_from_scrapes(flight_results)
 
   # Normalize column names from flight_results data to legacy format
