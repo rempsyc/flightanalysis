@@ -12,6 +12,9 @@
 #'   a data frame that is the output from \code{\link{fa_find_best_dates}}.
 #' @param title Character. Plot title. Default is "Best Travel Dates by Price".
 #' @param subtitle Character. Plot subtitle. Default is NULL (auto-generated).
+#' @param x_axis_angle Numeric. Angle in degrees to rotate x-axis labels for better
+#'   readability in wide figures with many dates. Common values are 45 (diagonal) or
+#'   90 (vertical). Default is 0 (horizontal labels).
 #' @param ... Additional arguments passed to \code{\link{fa_find_best_dates}}
 #'   if best_dates is a flight_results object, including \code{excluded_airports}
 #'   to filter out specific airport codes.
@@ -27,11 +30,15 @@
 #'
 #' # With filters
 #' fa_plot_best_dates(sample_flight_results, n = 5, max_stops = 0)
+#'
+#' # Tilt x-axis labels diagonally for wide figures
+#' fa_plot_best_dates(sample_flight_results, n = 10, x_axis_angle = 45)
 #' }
 fa_plot_best_dates <- function(
   best_dates,
   title = "Best Travel Dates by Price",
   subtitle = NULL,
+  x_axis_angle = 0,
   ...
 ) {
   # Check if ggplot2 is available
@@ -162,7 +169,12 @@ fa_plot_best_dates <- function(
       legend.position = "bottom",
       legend.title = ggplot2::element_text(face = "bold"),
       axis.title = ggplot2::element_text(face = "bold"),
-      axis.text.x = ggplot2::element_text(angle = 0, hjust = 0.5, size = 9),
+      axis.text.x = ggplot2::element_text(
+        angle = x_axis_angle,
+        hjust = if (x_axis_angle > 0) 1 else 0.5,
+        vjust = if (x_axis_angle >= 90) 0.5 else 1,
+        size = 9
+      ),
       plot.margin = ggplot2::margin(10, 10, 10, 10)
     )
   

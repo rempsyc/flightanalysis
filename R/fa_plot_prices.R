@@ -29,6 +29,12 @@
 #' @param show_min_annotation Logical. If TRUE, adds a data-journalism-style
 #'   annotation for the minimum price with a horizontal bar and formatted price label.
 #'   The annotation is subtle and clean (no arrows or boxes). Default is FALSE.
+#' @param x_axis_angle Numeric. Angle in degrees to rotate x-axis labels for better
+#'   readability in wide figures with many dates. Common values are 45 (diagonal) or
+#'   90 (vertical). Default is 0 (horizontal labels).
+#' @param drop_empty_dates Logical. If TRUE, removes dates that have no flight data
+#'   (all NA prices) from the plot. This is useful when querying multiple airports
+#'   where some may not have data for certain dates. Default is TRUE.
 #' @param ... Additional arguments passed to \code{\link{fa_summarize_prices}},
 #'   including \code{excluded_airports} to filter out specific airport codes.
 #'
@@ -61,6 +67,12 @@
 #'                title = "Custom Title",
 #'                show_max_annotation = TRUE,
 #'                show_min_annotation = TRUE)
+#'
+#' # Tilt x-axis labels diagonally for wide figures
+#' fa_plot_prices(sample_flight_results, x_axis_angle = 45)
+#'
+#' # Filter out dates with no flight data
+#' fa_plot_prices(sample_flight_results, drop_empty_dates = TRUE)
 #' }
 fa_plot_prices <- function(
   price_summary,
@@ -71,6 +83,8 @@ fa_plot_prices <- function(
   use_ggrepel = TRUE,
   show_max_annotation = TRUE,
   show_min_annotation = FALSE,
+  x_axis_angle = 0,
+  drop_empty_dates = TRUE,
   ...
 ) {
   # Check if ggplot2 is available
@@ -126,6 +140,20 @@ fa_plot_prices <- function(
   price_data <- price_summary[, date_cols, drop = FALSE]
   for (col in date_cols) {
     price_data[[col]] <- as.numeric(gsub("[^0-9.]", "", price_data[[col]]))
+  }
+
+  # Drop empty date columns if requested (dates where all origins have NA prices)
+  if (drop_empty_dates) {
+    # Find date columns that have at least one non-NA price
+    non_empty_cols <- sapply(date_cols, function(col) {
+      !all(is.na(price_data[[col]]))
+    })
+    date_cols <- date_cols[non_empty_cols]
+    price_data <- price_data[, date_cols, drop = FALSE]
+    
+    if (length(date_cols) == 0) {
+      stop("No dates with price data after filtering empty dates")
+    }
   }
 
   # Convert to long format for ggplot2
@@ -641,6 +669,11 @@ fa_plot_prices <- function(
       legend.position = "bottom",
       legend.title = ggplot2::element_text(face = "bold"),
       axis.title = ggplot2::element_text(face = "bold"),
+      axis.text.x = ggplot2::element_text(
+        angle = x_axis_angle,
+        hjust = if (x_axis_angle > 0) 1 else 0.5,
+        vjust = if (x_axis_angle >= 90) 0.5 else 1
+      ),
       plot.margin = ggplot2::margin(10, 10, 10, 10)
     )
 

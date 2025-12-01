@@ -276,3 +276,77 @@ test_that("fa_plot_prices errors on empty data", {
     "flight_results object contains no data"
   )
 })
+
+test_that("fa_plot_prices handles x_axis_angle parameter", {
+  skip_if_not_installed("ggplot2")
+  skip_if_not_installed("scales")
+  
+  # Create mock flight_results
+  query1 <- list(
+    data = data.frame(
+      departure_date = c("2025-12-18", "2025-12-19", "2025-12-20"),
+      departure_time = rep("10:00", 3),
+      arrival_date = c("2025-12-18", "2025-12-19", "2025-12-20"),
+      arrival_time = rep("18:00", 3),
+      origin = rep("BOM", 3),
+      destination = rep("JFK", 3),
+      airlines = rep("Air India", 3),
+      price = c(334, 388, 400),
+      stringsAsFactors = FALSE
+    )
+  )
+  class(query1) <- "flight_query"
+  
+  results <- list(
+    data = query1$data,
+    BOM = query1
+  )
+  class(results) <- "flight_results"
+  
+  # Should work with default angle (0)
+  result1 <- fa_plot_prices(results, x_axis_angle = 0)
+  expect_s3_class(result1, "gg")
+  
+  # Should work with diagonal angle (45)
+  result2 <- fa_plot_prices(results, x_axis_angle = 45)
+  expect_s3_class(result2, "gg")
+  
+  # Should work with vertical angle (90)
+  result3 <- fa_plot_prices(results, x_axis_angle = 90)
+  expect_s3_class(result3, "gg")
+})
+
+test_that("fa_plot_prices handles drop_empty_dates parameter", {
+  skip_if_not_installed("ggplot2")
+  skip_if_not_installed("scales")
+  
+  # Create mock flight_results
+  query1 <- list(
+    data = data.frame(
+      departure_date = c("2025-12-18", "2025-12-19", "2025-12-20"),
+      departure_time = rep("10:00", 3),
+      arrival_date = c("2025-12-18", "2025-12-19", "2025-12-20"),
+      arrival_time = rep("18:00", 3),
+      origin = rep("BOM", 3),
+      destination = rep("JFK", 3),
+      airlines = rep("Air India", 3),
+      price = c(334, 388, 400),
+      stringsAsFactors = FALSE
+    )
+  )
+  class(query1) <- "flight_query"
+  
+  results <- list(
+    data = query1$data,
+    BOM = query1
+  )
+  class(results) <- "flight_results"
+  
+  # Should work with drop_empty_dates = TRUE (default)
+  result1 <- fa_plot_prices(results, drop_empty_dates = TRUE)
+  expect_s3_class(result1, "gg")
+  
+  # Should work with drop_empty_dates = FALSE
+  result2 <- fa_plot_prices(results, drop_empty_dates = FALSE)
+  expect_s3_class(result2, "gg")
+})

@@ -155,3 +155,30 @@ test_that("fa_plot_best_dates handles multiple origins", {
   result <- fa_plot_best_dates(best_dates)
   expect_s3_class(result, "gg")
 })
+
+test_that("fa_plot_best_dates handles x_axis_angle parameter", {
+  skip_if_not_installed("ggplot2")
+  skip_if_not_installed("scales")
+  
+  # Create mock best_dates result
+  best_dates <- data.frame(
+    departure_date = c("2025-12-18", "2025-12-19", "2025-12-20"),
+    departure_time = c("10:00", "12:00", "14:00"),
+    origin = c("BOM", "DEL", "BOM"),
+    price = c(334, 315, 353),
+    n_routes = c(3, 3, 3),
+    stringsAsFactors = FALSE
+  )
+  
+  # Should work with default angle (0)
+  result1 <- fa_plot_best_dates(best_dates, x_axis_angle = 0)
+  expect_s3_class(result1, "gg")
+  
+  # Should work with diagonal angle (45)
+  result2 <- fa_plot_best_dates(best_dates, x_axis_angle = 45)
+  expect_s3_class(result2, "gg")
+  
+  # Should work with vertical angle (90)
+  result3 <- fa_plot_best_dates(best_dates, x_axis_angle = 90)
+  expect_s3_class(result3, "gg")
+})
