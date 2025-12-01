@@ -77,8 +77,8 @@ fa_plot_prices(
 - ...:
 
   Additional arguments passed to
-  [`fa_summarize_prices`](https://rempsyc.github.io/flightanalysis/reference/fa_summarize_prices.md)
-  if price_summary is not already a summary table.
+  [`fa_summarize_prices`](https://rempsyc.github.io/flightanalysis/reference/fa_summarize_prices.md),
+  including `excluded_airports` to filter out specific airport codes.
 
 ## Value
 

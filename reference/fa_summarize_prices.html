@@ -66,7 +66,8 @@ travel time, stops, and emissions.</p>
 <span>  travel_time_max <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  max_stops <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  max_layover <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  max_emissions <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  max_emissions <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  excluded_airports <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -133,6 +134,11 @@ Default is NULL (no filter).</p></dd>
 
 <dt id="arg-max-emissions">max_emissions<a class="anchor" aria-label="anchor" href="#arg-max-emissions"></a></dt>
 <dd><p>Numeric. Maximum CO2 emissions in kg. Default is NULL (no filter).</p></dd>
+
+
+<dt id="arg-excluded-airports">excluded_airports<a class="anchor" aria-label="anchor" href="#arg-excluded-airports"></a></dt>
+<dd><p>Character vector. Airport codes to exclude from results.
+Default is NULL (no additional filtering beyond global excluded_airports list).</p></dd>
 
 </dl></div>
     <div class="section level2">

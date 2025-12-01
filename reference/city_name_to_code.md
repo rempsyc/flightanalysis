@@ -2,9 +2,9 @@
 
 Converts full city names to 3-letter IATA airport codes using the
 airportr package. Returns all valid matching airport codes for cities
-with multiple airports. Automatically filters out heliports to return
-only commercial airports. Throws an error if a city name is not found in
-the database.
+with multiple airports. Automatically filters out heliports and excluded
+airports (those not used by Google Flights) to return only commercial
+airports. Throws an error if a city name is not found in the database.
 
 ## Usage
 
@@ -22,8 +22,8 @@ city_name_to_code(city_names)
 
 Character vector of 3-letter IATA airport codes. For cities with
 multiple airports, all valid codes are returned (e.g., "New York"
-returns c("LGA", "JFK")). Heliports and invalid codes are automatically
-filtered out.
+returns c("LGA", "JFK")). Heliports, excluded airports, and invalid
+codes are automatically filtered out.
 
 ## Examples
 

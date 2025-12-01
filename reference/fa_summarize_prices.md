@@ -23,7 +23,8 @@ fa_summarize_prices(
   travel_time_max = NULL,
   max_stops = NULL,
   max_layover = NULL,
-  max_emissions = NULL
+  max_emissions = NULL,
+  excluded_airports = NULL
 )
 ```
 
@@ -88,6 +89,11 @@ fa_summarize_prices(
 - max_emissions:
 
   Numeric. Maximum CO2 emissions in kg. Default is NULL (no filter).
+
+- excluded_airports:
+
+  Character vector. Airport codes to exclude from results. Default is
+  NULL (no additional filtering beyond global excluded_airports list).
 
 ## Value
 
