@@ -320,7 +320,8 @@ test_that("fa_plot_prices handles drop_empty_dates parameter", {
   skip_if_not_installed("ggplot2")
   skip_if_not_installed("scales")
   
-  # Create mock flight_results
+  # Create mock flight_results with multiple origins
+  # BOM has data for all 3 dates, DEL only has data for 2 dates (missing 12-20)
   query1 <- list(
     data = data.frame(
       departure_date = c("2025-12-18", "2025-12-19", "2025-12-20"),
@@ -336,9 +337,25 @@ test_that("fa_plot_prices handles drop_empty_dates parameter", {
   )
   class(query1) <- "flight_query"
   
+  query2 <- list(
+    data = data.frame(
+      departure_date = c("2025-12-18", "2025-12-19"),
+      departure_time = rep("12:00", 2),
+      arrival_date = c("2025-12-18", "2025-12-19"),
+      arrival_time = rep("20:00", 2),
+      origin = rep("DEL", 2),
+      destination = rep("JFK", 2),
+      airlines = rep("Vistara", 2),
+      price = c(315, 353),
+      stringsAsFactors = FALSE
+    )
+  )
+  class(query2) <- "flight_query"
+  
   results <- list(
-    data = query1$data,
-    BOM = query1
+    data = rbind(query1$data, query2$data),
+    BOM = query1,
+    DEL = query2
   )
   class(results) <- "flight_results"
   
@@ -347,6 +364,42 @@ test_that("fa_plot_prices handles drop_empty_dates parameter", {
   expect_s3_class(result1, "gg")
   
   # Should work with drop_empty_dates = FALSE
+  result2 <- fa_plot_prices(results, drop_empty_dates = FALSE)
+  expect_s3_class(result2, "gg")
+})
+
+test_that("fa_plot_prices filters empty dates correctly", {
+  skip_if_not_installed("ggplot2")
+  skip_if_not_installed("scales")
+  
+  # Create flight_results where one date has NA prices for ALL origins
+  # This simulates the scenario described in the issue
+  query1 <- list(
+    data = data.frame(
+      departure_date = c("2025-12-18", "2025-12-19"),
+      departure_time = rep("10:00", 2),
+      arrival_date = c("2025-12-18", "2025-12-19"),
+      arrival_time = rep("18:00", 2),
+      origin = rep("BOM", 2),
+      destination = rep("JFK", 2),
+      airlines = rep("Air India", 2),
+      price = c(334, 388),
+      stringsAsFactors = FALSE
+    )
+  )
+  class(query1) <- "flight_query"
+  
+  results <- list(
+    data = query1$data,
+    BOM = query1
+  )
+  class(results) <- "flight_results"
+  
+  # With drop_empty_dates = TRUE, empty dates should be filtered
+  result1 <- fa_plot_prices(results, drop_empty_dates = TRUE)
+  expect_s3_class(result1, "gg")
+  
+  # With drop_empty_dates = FALSE, all dates should be retained
   result2 <- fa_plot_prices(results, drop_empty_dates = FALSE)
   expect_s3_class(result2, "gg")
 })

@@ -70,8 +70,9 @@
 #' # Tilt x-axis labels diagonally for wide figures
 #' fa_plot_prices(sample_flight_results, x_axis_angle = 45)
 #'
-#' # Filter out dates with no flight data
-#' fa_plot_prices(sample_flight_results, drop_empty_dates = TRUE)
+#' # Default behavior: filter out dates with no flight data
+#' # Set drop_empty_dates = FALSE to keep all dates including empty ones
+#' fa_plot_prices(sample_flight_results, drop_empty_dates = FALSE)
 #' }
 fa_plot_prices <- function(
   flight_results,
