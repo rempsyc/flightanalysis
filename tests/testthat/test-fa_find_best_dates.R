@@ -318,3 +318,40 @@ test_that("fa_find_best_dates rejects direct data frame input", {
     "flight_results must be a flight_results object"
   )
 })
+
+test_that("fa_find_best_dates supports excluded_airports parameter", {
+  # Create mock flight_results with multiple airports
+  query <- list(
+    data = data.frame(
+      departure_date = rep("2025-12-18", 3),
+      departure_time = c("10:00", "12:00", "14:00"),
+      arrival_date = rep("2025-12-18", 3),
+      arrival_time = c("18:00", "20:00", "22:00"),
+      origin = c("BOM", "DEL", "CXH"),
+      destination = c("JFK", "JFK", "JFK"),
+      airlines = c("Air India", "Vistara", "Seaplane"),
+      price = c(500, 450, 300),
+      stringsAsFactors = FALSE
+    )
+  )
+  class(query) <- "flight_query"
+  
+  results <- list(
+    data = query$data,
+    BOM = query
+  )
+  class(results) <- "flight_results"
+
+  # Exclude CXH airport (which has the lowest price)
+  best <- fa_find_best_dates(results, n = 5, excluded_airports = c("CXH"))
+
+  expect_true(is.data.frame(best))
+  # CXH should be excluded, so the cheapest should be DEL at 450
+  expect_equal(nrow(best), 2)
+  # Neither result should be CXH
+  expect_false("CXH" %in% best$origin)
+  # The cheapest remaining should be DEL at 450
+  min_price_idx <- which.min(best$price)
+  expect_equal(best$origin[min_price_idx], "DEL")
+  expect_equal(best$price[min_price_idx], 450)
+})

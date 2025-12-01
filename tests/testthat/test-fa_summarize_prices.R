@@ -247,3 +247,39 @@ test_that("fa_summarize_prices supports filtering by stops", {
   # Should only include the direct flight
   expect_equal(gsub("[^0-9]", "", summary$`2025-12-18`[1]), "500")
 })
+
+test_that("fa_summarize_prices supports excluded_airports parameter", {
+  # Create mock flight_results with multiple airports
+  query <- list(
+    data = data.frame(
+      departure_date = rep("2025-12-18", 3),
+      departure_time = c("10:00", "12:00", "14:00"),
+      arrival_date = rep("2025-12-18", 3),
+      arrival_time = c("18:00", "20:00", "22:00"),
+      origin = c("BOM", "DEL", "CXH"),
+      destination = c("JFK", "JFK", "JFK"),
+      airlines = c("Air India", "Vistara", "Seaplane"),
+      price = c(500, 450, 600),
+      stringsAsFactors = FALSE
+    )
+  )
+  class(query) <- "flight_query"
+  
+  results <- list(
+    data = query$data,
+    BOM = query
+  )
+  class(results) <- "flight_results"
+
+  # Exclude CXH airport
+  summary <- fa_summarize_prices(results, excluded_airports = c("CXH"))
+
+  expect_true(is.data.frame(summary))
+  # Should have 2 airports + Best row (CXH excluded)
+  expect_equal(nrow(summary), 3)
+  # CXH should not be in the Origin column
+  expect_false("CXH" %in% summary$Origin)
+  # BOM and DEL should still be present
+  expect_true("BOM" %in% summary$Origin)
+  expect_true("DEL" %in% summary$Origin)
+})

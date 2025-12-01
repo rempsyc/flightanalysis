@@ -30,6 +30,8 @@
 #' @param max_layover Character. Maximum layover time in format "XX hr XX min".
 #'   Default is NULL (no filter).
 #' @param max_emissions Numeric. Maximum CO2 emissions in kg. Default is NULL (no filter).
+#' @param excluded_airports Character vector. Airport codes to exclude from results.
+#'   Default is NULL (no additional filtering beyond global excluded_airports list).
 #'
 #' @return A wide data frame with columns: City, Origin, Comment (optional),
 #'   one column per date with prices, and an Average_Price column.
@@ -58,7 +60,8 @@ fa_summarize_prices <- function(
   travel_time_max = NULL,
   max_stops = NULL,
   max_layover = NULL,
-  max_emissions = NULL
+  max_emissions = NULL,
+  excluded_airports = NULL
 ) {
   # Validate input type - only accept flight_results objects
   if (!inherits(flight_results, "flight_results")) {
@@ -227,6 +230,13 @@ fa_summarize_prices <- function(
     flight_results <- flight_results[
       !is.na(flight_results$co2_emission_kg) &
         flight_results$co2_emission_kg <= max_emissions,
+    ]
+  }
+
+  # Filter out excluded airports if specified
+  if (!is.null(excluded_airports) && "Origin" %in% names(flight_results)) {
+    flight_results <- flight_results[
+      !flight_results$Origin %in% excluded_airports,
     ]
   }
 

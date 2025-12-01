@@ -45,8 +45,8 @@ The annotation is subtle and clean (no arrows or boxes). Default is TRUE.}
 annotation for the minimum price with a horizontal bar and formatted price label.
 The annotation is subtle and clean (no arrows or boxes). Default is FALSE.}
 
-\item{...}{Additional arguments passed to \code{\link{fa_summarize_prices}}
-if price_summary is not already a summary table.}
+\item{...}{Additional arguments passed to \code{\link{fa_summarize_prices}},
+including \code{excluded_airports} to filter out specific airport codes.}
 }
 \value{
 A ggplot2 plot object that can be further customized or saved.

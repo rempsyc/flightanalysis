@@ -16,7 +16,8 @@ fa_find_best_dates(
   travel_time_max = NULL,
   max_stops = NULL,
   max_layover = NULL,
-  max_emissions = NULL
+  max_emissions = NULL,
+  excluded_airports = NULL
 )
 }
 \arguments{
@@ -51,6 +52,9 @@ Default is NULL (no filter).}
 Default is NULL (no filter).}
 
 \item{max_emissions}{Numeric. Maximum CO2 emissions in kg. Default is NULL (no filter).}
+
+\item{excluded_airports}{Character vector. Airport codes to exclude from results.
+Default is NULL (no additional filtering beyond global excluded_airports list).}
 }
 \value{
 A data frame with columns: departure_date, departure_time (or date if datetime not available),
