@@ -8,10 +8,12 @@
 #' Uses ggplot2 for a polished, publication-ready aesthetic with colorblind-friendly
 #' colors and clear typography.
 #'
-#' @param best_dates A flight_results object from \code{\link{fa_fetch_flights}} or
-#'   a data frame that is the output from \code{\link{fa_find_best_dates}}.
+#' @param flight_results A flight_results object from [fa_fetch_flights()].
 #' @param title Character. Plot title. Default is "Best Travel Dates by Price".
 #' @param subtitle Character. Plot subtitle. Default is NULL (auto-generated).
+#' @param x_axis_angle Numeric. Angle in degrees to rotate x-axis labels for better
+#'   readability in wide figures with many dates. Common values are 45 (diagonal) or
+#'   90 (vertical). Default is 0 (horizontal labels).
 #' @param ... Additional arguments passed to \code{\link{fa_find_best_dates}}
 #'   if best_dates is a flight_results object, including \code{excluded_airports}
 #'   to filter out specific airport codes.
@@ -27,11 +29,15 @@
 #'
 #' # With filters
 #' fa_plot_best_dates(sample_flight_results, n = 5, max_stops = 0)
+#'
+#' # Tilt x-axis labels diagonally for wide figures
+#' fa_plot_best_dates(sample_flight_results, n = 10, x_axis_angle = 45)
 #' }
 fa_plot_best_dates <- function(
-  best_dates,
+  flight_results,
   title = "Best Travel Dates by Price",
   subtitle = NULL,
+  x_axis_angle = 0,
   ...
 ) {
   # Check if ggplot2 is available
@@ -47,26 +53,23 @@ fa_plot_best_dates <- function(
       "Please install it with: install.packages('scales')"
     )
   }
-  
-  # If it's a flight_results object, create best_dates from it
-  # If it's already a data frame with price column, use it as-is
-  if (inherits(best_dates, "flight_results")) {
-    best_dates <- fa_find_best_dates(best_dates, ...)
-  } else if (!is.data.frame(best_dates) || !("price" %in% names(best_dates))) {
+
+  # Validate input type - only accept flight_results objects
+  if (!inherits(flight_results, "flight_results")) {
     stop(
-      "best_dates must be either:\n",
-      "  - A flight_results object from fa_fetch_flights(), or\n",
-      "  - A data frame output from fa_find_best_dates()"
+      "flight_results must be a flight_results object from fa_fetch_flights().\n",
+      "Please use fa_fetch_flights() to create a flight_results object first."
     )
   }
-  
-  if (nrow(best_dates) == 0) {
+
+  # Extract data from flight_results object
+  if (is.null(flight_results$data) || nrow(flight_results$data) == 0) {
     stop("No data to plot after filtering")
   }
-  
+
   # Prepare data for plotting
-  plot_data <- best_dates
-  
+  plot_data <- flight_results$data
+
   # Create date labels
   if ("departure_date" %in% names(plot_data)) {
     plot_data$date_label <- format(as.Date(plot_data$departure_date), "%b %d")
@@ -82,7 +85,7 @@ fa_plot_best_dates <- function(
   } else {
     plot_data$date_label <- as.character(seq_len(nrow(plot_data)))
   }
-  
+
   # Add origin label if available
   has_origin <- "origin" %in% names(plot_data)
   if (has_origin) {
@@ -90,11 +93,11 @@ fa_plot_best_dates <- function(
   } else {
     plot_data$origin_label <- "All"
   }
-  
+
   # Sort by price for better visualization
   plot_data <- plot_data[order(plot_data$price), ]
   plot_data$rank <- seq_len(nrow(plot_data))
-  
+
   # Define colorblind-friendly palette
   color_palette <- c(
     "#E69F00", # Orange
@@ -104,9 +107,9 @@ fa_plot_best_dates <- function(
     "#0072B2", # Blue
     "#D55E00", # Vermillion
     "#CC79A7", # Reddish Purple
-    "#999999"  # Gray
+    "#999999" # Gray
   )
-  
+
   # Create subtitle if not provided
   if (is.null(subtitle)) {
     min_price <- min(plot_data$price)
@@ -117,7 +120,7 @@ fa_plot_best_dates <- function(
       round(max_price)
     )
   }
-  
+
   # Create lollipop chart
   # Note: Using variables rank, price, origin_label for NSE in ggplot2
   p <- ggplot2::ggplot(
@@ -162,14 +165,19 @@ fa_plot_best_dates <- function(
       legend.position = "bottom",
       legend.title = ggplot2::element_text(face = "bold"),
       axis.title = ggplot2::element_text(face = "bold"),
-      axis.text.x = ggplot2::element_text(angle = 0, hjust = 0.5, size = 9),
+      axis.text.x = ggplot2::element_text(
+        angle = x_axis_angle,
+        hjust = if (x_axis_angle > 0) 1 else 0.5,
+        vjust = if (x_axis_angle >= 90) 0.5 else 1,
+        size = 9
+      ),
       plot.margin = ggplot2::margin(10, 10, 10, 10)
     )
-  
+
   # Hide legend if only one origin
   if (!has_origin || length(unique(plot_data$origin_label)) == 1) {
     p <- p + ggplot2::theme(legend.position = "none")
   }
-  
+
   return(p)
 }

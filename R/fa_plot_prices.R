@@ -9,8 +9,7 @@
 #' colors and clear typography.
 #'
 #' @importFrom stats aggregate median
-#' @param price_summary A flight_results object from \code{\link{fa_fetch_flights}}.
-#'   This function no longer accepts pre-summarized data or data frames.
+#' @param flight_results A flight_results object from [fa_fetch_flights()].
 #' @param title Character. Plot title. Default is NULL (auto-generated with flight context).
 #' @param subtitle Character. Plot subtitle. Default is NULL (auto-generated with lowest price info).
 #' @param size_by Character. Name of column from raw flight data to use for
@@ -29,6 +28,12 @@
 #' @param show_min_annotation Logical. If TRUE, adds a data-journalism-style
 #'   annotation for the minimum price with a horizontal bar and formatted price label.
 #'   The annotation is subtle and clean (no arrows or boxes). Default is FALSE.
+#' @param x_axis_angle Numeric. Angle in degrees to rotate x-axis labels for better
+#'   readability in wide figures with many dates. Common values are 45 (diagonal) or
+#'   90 (vertical). Default is 0 (horizontal labels).
+#' @param drop_empty_dates Logical. If TRUE, removes dates that have no flight data
+#'   (all NA prices) from the plot. This is useful when querying multiple airports
+#'   where some may not have data for certain dates. Default is TRUE.
 #' @param ... Additional arguments passed to \code{\link{fa_summarize_prices}},
 #'   including \code{excluded_airports} to filter out specific airport codes.
 #'
@@ -61,9 +66,16 @@
 #'                title = "Custom Title",
 #'                show_max_annotation = TRUE,
 #'                show_min_annotation = TRUE)
+#'
+#' # Tilt x-axis labels diagonally for wide figures
+#' fa_plot_prices(sample_flight_results, x_axis_angle = 45)
+#'
+#' # Default behavior: filter out dates with no flight data
+#' # Set drop_empty_dates = FALSE to keep all dates including empty ones
+#' fa_plot_prices(sample_flight_results, drop_empty_dates = FALSE)
 #' }
 fa_plot_prices <- function(
-  price_summary,
+  flight_results,
   title = NULL,
   subtitle = NULL,
   size_by = NULL,
@@ -71,6 +83,8 @@ fa_plot_prices <- function(
   use_ggrepel = TRUE,
   show_max_annotation = TRUE,
   show_min_annotation = FALSE,
+  x_axis_angle = 0,
+  drop_empty_dates = TRUE,
   ...
 ) {
   # Check if ggplot2 is available
@@ -88,21 +102,20 @@ fa_plot_prices <- function(
   }
 
   # Validate input type - only accept flight_results objects
-  if (!inherits(price_summary, "flight_results")) {
+  if (!inherits(flight_results, "flight_results")) {
     stop(
-      "price_summary must be a flight_results object from fa_fetch_flights().\n",
-      "This function no longer accepts pre-summarized data or data frames.\n",
+      "flight_results must be a flight_results object from fa_fetch_flights().\n",
       "Please use fa_fetch_flights() to create a flight_results object first."
     )
   }
 
   # Store raw data for annotations or size_by if provided
-  raw_data <- price_summary$data
+  raw_data <- flight_results$data
   has_annotations <- !is.null(annotate_col)
   has_custom_size <- !is.null(size_by) && size_by != "price"
 
   # Create summary table from flight_results
-  price_summary <- fa_summarize_prices(price_summary, ...)
+  price_summary <- fa_summarize_prices(flight_results, ...)
 
   # Remove the "Best" row if present
   price_summary <- price_summary[price_summary$City != "Best", ]
@@ -126,6 +139,24 @@ fa_plot_prices <- function(
   price_data <- price_summary[, date_cols, drop = FALSE]
   for (col in date_cols) {
     price_data[[col]] <- as.numeric(gsub("[^0-9.]", "", price_data[[col]]))
+  }
+
+  # Drop empty date columns if requested (dates where all origins have NA prices)
+  if (drop_empty_dates) {
+    # Find date columns that have at least one non-NA price
+    # sapply returns TRUE for columns with at least one non-NA value
+    non_empty_cols <- sapply(date_cols, function(col) {
+      !all(is.na(price_data[[col]]))
+    })
+    date_cols <- date_cols[non_empty_cols]
+    price_data <- price_data[, date_cols, drop = FALSE]
+
+    if (length(date_cols) == 0) {
+      stop(
+        "No dates with price data found. ",
+        "Try setting drop_empty_dates = FALSE to include all dates."
+      )
+    }
   }
 
   # Convert to long format for ggplot2
@@ -241,7 +272,7 @@ fa_plot_prices <- function(
     }
   }
 
-  # Add annotation data if available
+  # Add annotation data if available ####
   if (
     has_annotations &&
       !is.null(raw_data) &&
@@ -258,7 +289,7 @@ fa_plot_prices <- function(
       raw_data$date <- as.Date(raw_data$date)
     }
 
-    # Prepare origin column for merging
+    # Prepare origin column for merging ####
     if (!("origin" %in% names(raw_data))) {
       if ("Airport" %in% names(raw_data)) {
         raw_data$origin <- raw_data$Airport
@@ -277,7 +308,7 @@ fa_plot_prices <- function(
       }
     }
 
-    # Get annotation value for the cheapest flight on each date-origin combo
+    # Get annotation value for the cheapest flight on each date-origin combo ####
     if (
       "date" %in%
         names(raw_data) &&
@@ -350,7 +381,7 @@ fa_plot_prices <- function(
     }
   }
 
-  # Compute point_size column based on size_by parameter
+  # Compute point_size column based on size_by parameter ####
   # This will be used for both sizing and ordering (smaller points on top)
   if (!is.null(size_by)) {
     if (size_by == "price") {
@@ -413,7 +444,7 @@ fa_plot_prices <- function(
     plot_data$point_size <- 1
   }
 
-  # Reorder origin factor based on size_by metric for better line stacking
+  # Reorder origin factor based on size_by metric for better line stacking ####
   # This ensures lines are drawn in a semantically meaningful order
   if (!is.null(size_by) && "point_size" %in% names(plot_data)) {
     # Compute summary statistic per origin (median of point_size)
@@ -439,7 +470,7 @@ fa_plot_prices <- function(
     )
   }
 
-  # Define colorblind-friendly palette
+  # Define colorblind-friendly palette ####
   # Using a palette similar to Okabe-Ito or viridis
   color_palette <- c(
     "#E69F00", # Orange
@@ -452,7 +483,7 @@ fa_plot_prices <- function(
     "#999999" # Gray
   )
 
-  # Auto-generate title and subtitle if not provided
+  # Auto-generate title and subtitle if not provided ####
   # Title: Flight context (origins, destination, date range)
   # Subtitle: Lowest price information
   auto_title <- NULL
@@ -521,7 +552,7 @@ fa_plot_prices <- function(
   if (is.null(subtitle)) {
     subtitle <- auto_subtitle
   }
-  
+
   # Add annotation label info to subtitle if annotations are present
   # This is done after setting subtitle so it applies to both custom and auto-generated subtitles
   if (has_annotations) {
@@ -565,7 +596,7 @@ fa_plot_prices <- function(
     size_label <- NULL
   }
 
-  # Create the plot
+  # Create the plot ####
   # Note: Using variables date, price, origin_label, point_size for NSE in ggplot2
   p <- ggplot2::ggplot(
     line_data,
@@ -624,7 +655,9 @@ fa_plot_prices <- function(
     ) +
     ggplot2::scale_x_date(
       date_labels = "%b %d",
-      date_breaks = "1 day"
+      date_breaks = "1 day",
+      limits = c(min(plot_data$date), max(plot_data$date)),
+      expand = ggplot2::expansion(add = 0.5)
     ) +
     ggplot2::labs(
       title = title,
@@ -641,6 +674,11 @@ fa_plot_prices <- function(
       legend.position = "bottom",
       legend.title = ggplot2::element_text(face = "bold"),
       axis.title = ggplot2::element_text(face = "bold"),
+      axis.text.x = ggplot2::element_text(
+        angle = x_axis_angle,
+        hjust = if (x_axis_angle > 0) 1 else 0.5,
+        vjust = if (x_axis_angle >= 90) 0.5 else 1
+      ),
       plot.margin = ggplot2::margin(10, 10, 10, 10)
     )
 

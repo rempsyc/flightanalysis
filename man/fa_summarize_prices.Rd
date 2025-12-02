@@ -22,8 +22,7 @@ fa_summarize_prices(
 )
 }
 \arguments{
-\item{flight_results}{A flight_results object from fa_fetch_flights().
-This function no longer accepts data frames or query objects directly.}
+\item{flight_results}{A flight_results object from [fa_fetch_flights()].}
 
 \item{include_comment}{Logical. If TRUE and Comment column exists, includes
 it in the output. Default is TRUE.}

@@ -43,49 +43,86 @@ filter_placeholder_rows <- function(data) {
 #' Internal helper that extracts data from query objects (single or list),
 #' filters placeholder rows, and formats for use with fa_summarize_prices and fa_find_best_dates.
 #'
-#' @param scrapes A single query object, a flight_results object, or a named list of query objects
+#' @param flight_results A single query object, a flight_results object, or a named list of query objects
 #'
 #' @return A data frame with columns: Airport, Date, Price, City (if named list),
 #'   and additional columns: departure_datetime, airlines, travel_time, num_stops,
 #'   layover, co2_emission_kg (when available)
 #'
 #' @keywords internal
-extract_data_from_scrapes <- function(scrapes) {
-  # Handle flight_results objects - use the merged data and query structure
-  if (inherits(scrapes, "flight_results")) {
-    # Extract the list of queries (excluding the $data element)
-    query_list <- scrapes[setdiff(names(scrapes), "data")]
-    scrapes <- query_list
+extract_data_from_scrapes <- function(flight_results) {
+  # Handle flight_results objects - use the merged data directly
+  if (inherits(flight_results, "flight_results")) {
+    # Use the merged data directly from flight_results$data
+    if (!is.null(flight_results$data) && nrow(flight_results$data) > 0) {
+      data <- flight_results$data
+      
+      # Filter placeholder rows
+      data <- filter_placeholder_rows(data)
+      
+      if (nrow(data) == 0) {
+        return(data.frame(
+          City = character(),
+          Airport = character(),
+          Date = character(),
+          Price = numeric(),
+          departure_datetime = as.POSIXct(character()),
+          airlines = character(),
+          travel_time = character(),
+          num_stops = integer(),
+          layover = character(),
+          co2_emission_kg = numeric(),
+          stringsAsFactors = FALSE
+        ))
+      }
+      
+      # Process the data - city_name will be derived from origin column
+      return(process_query_data(data, city_name = NULL))
+    } else {
+      return(data.frame(
+        City = character(),
+        Airport = character(),
+        Date = character(),
+        Price = numeric(),
+        departure_datetime = as.POSIXct(character()),
+        airlines = character(),
+        travel_time = character(),
+        num_stops = integer(),
+        layover = character(),
+        co2_emission_kg = numeric(),
+        stringsAsFactors = FALSE
+      ))
+    }
   }
 
   # Ensure we have a list
-  if (inherits(scrapes, "flight_query")) {
+  if (inherits(flight_results, "flight_query")) {
     # For single query object, try to extract origin from the data
     # This ensures we have a named list for proper City assignment
     if (
-      !is.null(scrapes$data) &&
-        nrow(scrapes$data) > 0 &&
-        "origin" %in% names(scrapes$data)
+      !is.null(flight_results$data) &&
+        nrow(flight_results$data) > 0 &&
+        "origin" %in% names(flight_results$data)
     ) {
-      origin_code <- scrapes$data$origin[1]
-      scrapes <- list(scrapes)
-      names(scrapes) <- origin_code
+      origin_code <- flight_results$data$origin[1]
+      flight_results <- list(flight_results)
+      names(flight_results) <- origin_code
     } else {
-      scrapes <- list(scrapes)
+      flight_results <- list(flight_results)
     }
   }
 
   all_data <- list()
 
-  for (i in seq_along(scrapes)) {
-    scrape <- scrapes[[i]]
+  for (i in seq_along(flight_results)) {
+    query <- flight_results[[i]]
 
     # Extract data
-    if (is.null(scrape$data) || nrow(scrape$data) == 0) {
+    if (is.null(query$data) || nrow(query$data) == 0) {
       next
     }
 
-    data <- scrape$data
+    data <- query$data
 
     # Filter placeholder rows
     data <- filter_placeholder_rows(data)
@@ -94,86 +131,11 @@ extract_data_from_scrapes <- function(scrapes) {
       next
     }
 
-    # Extract relevant columns
-    # Use origin as the Airport (the airport we're searching FROM)
-    if ("origin" %in% names(data)) {
-      data$Airport <- data$origin
-    } else if ("destination" %in% names(data)) {
-      data$Airport <- data$destination
-    } else {
-      data$Airport <- NA_character_
-    }
-
-    if ("departure_date" %in% names(data)) {
-      data$Date <- data$departure_date
-    } else if ("departure_datetime" %in% names(data)) {
-      # Backward compatibility for old format
-      data$Date <- as.character(as.Date(data$departure_datetime))
-    } else {
-      data$Date <- NA_character_
-    }
-
-    if ("price" %in% names(data)) {
-      data$Price <- data$price
-    } else {
-      data$Price <- NA_real_
-    }
-
-    # Add City from list name if available, or try to look up from airport code
-    if (!is.null(names(scrapes)[i])) {
-      data$City <- names(scrapes)[i]
-    } else {
-      data$City <- data$Airport
-    }
-
-    # Try to convert airport codes to city names using airportr if available
-    data$City <- airport_to_city(data$Airport, data$City)
-    data$City <- ifelse(data$City == "Patina", "Patna", data$City)
-
-    # Preserve additional columns if they exist
-    additional_cols <- c()
-
-    if (
-      "departure_date" %in% names(data) && "departure_time" %in% names(data)
-    ) {
-      additional_cols <- c(additional_cols, "departure_date", "departure_time")
-    } else if ("departure_datetime" %in% names(data)) {
-      # Backward compatibility for old format
-      additional_cols <- c(additional_cols, "departure_datetime")
-    }
-
-    if ("arrival_date" %in% names(data) && "arrival_time" %in% names(data)) {
-      additional_cols <- c(additional_cols, "arrival_date", "arrival_time")
-    } else if ("arrival_datetime" %in% names(data)) {
-      # Backward compatibility for old format
-      additional_cols <- c(additional_cols, "arrival_datetime")
-    }
-
-    if ("airlines" %in% names(data)) {
-      additional_cols <- c(additional_cols, "airlines")
-    }
-
-    if ("travel_time" %in% names(data)) {
-      additional_cols <- c(additional_cols, "travel_time")
-    }
-
-    if ("num_stops" %in% names(data)) {
-      additional_cols <- c(additional_cols, "num_stops")
-    }
-
-    if ("layover" %in% names(data)) {
-      additional_cols <- c(additional_cols, "layover")
-    }
-
-    if ("co2_emission_kg" %in% names(data)) {
-      additional_cols <- c(additional_cols, "co2_emission_kg")
-    }
-
-    # Select needed columns (always include base columns, plus any additional ones available)
-    base_cols <- c("City", "Airport", "Date", "Price")
-    data <- data[, c(base_cols, additional_cols), drop = FALSE]
-
-    all_data[[i]] <- data
+    # Get city name from list name if available
+    city_name <- if (!is.null(names(flight_results)[i])) names(flight_results)[i] else NULL
+    
+    # Process the data
+    all_data[[i]] <- process_query_data(data, city_name)
   }
 
   if (length(all_data) == 0) {
@@ -197,6 +159,101 @@ extract_data_from_scrapes <- function(scrapes) {
   rownames(combined) <- NULL
 
   return(combined)
+}
+
+#' Process Query Data
+#'
+#' @description
+#' Internal helper that processes a single query's data frame, extracting and
+#' standardizing columns for use with fa_summarize_prices and fa_find_best_dates.
+#'
+#' @param data A data frame from a flight query
+#' @param city_name Optional city name to use
+#'
+#' @return A processed data frame with standardized columns
+#'
+#' @keywords internal
+process_query_data <- function(data, city_name = NULL) {
+  # Extract relevant columns
+  # Use origin as the Airport (the airport we're searching FROM)
+  if ("origin" %in% names(data)) {
+    data$Airport <- data$origin
+  } else if ("destination" %in% names(data)) {
+    data$Airport <- data$destination
+  } else {
+    data$Airport <- NA_character_
+  }
+
+  if ("departure_date" %in% names(data)) {
+    data$Date <- data$departure_date
+  } else if ("departure_datetime" %in% names(data)) {
+    # Backward compatibility for old format
+    data$Date <- as.character(as.Date(data$departure_datetime))
+  } else {
+    data$Date <- NA_character_
+  }
+
+  if ("price" %in% names(data)) {
+    data$Price <- data$price
+  } else {
+    data$Price <- NA_real_
+  }
+
+  # Add City from provided name or look up from airport code
+  if (!is.null(city_name) && !is.na(city_name)) {
+    data$City <- city_name
+  } else {
+    data$City <- data$Airport
+  }
+
+  # Try to convert airport codes to city names using airportr if available
+  data$City <- airport_to_city(data$Airport, data$City)
+  data$City <- ifelse(data$City == "Patina", "Patna", data$City)
+
+  # Preserve additional columns if they exist
+  additional_cols <- c()
+
+  if (
+    "departure_date" %in% names(data) && "departure_time" %in% names(data)
+  ) {
+    additional_cols <- c(additional_cols, "departure_date", "departure_time")
+  } else if ("departure_datetime" %in% names(data)) {
+    # Backward compatibility for old format
+    additional_cols <- c(additional_cols, "departure_datetime")
+  }
+
+  if ("arrival_date" %in% names(data) && "arrival_time" %in% names(data)) {
+    additional_cols <- c(additional_cols, "arrival_date", "arrival_time")
+  } else if ("arrival_datetime" %in% names(data)) {
+    # Backward compatibility for old format
+    additional_cols <- c(additional_cols, "arrival_datetime")
+  }
+
+  if ("airlines" %in% names(data)) {
+    additional_cols <- c(additional_cols, "airlines")
+  }
+
+  if ("travel_time" %in% names(data)) {
+    additional_cols <- c(additional_cols, "travel_time")
+  }
+
+  if ("num_stops" %in% names(data)) {
+    additional_cols <- c(additional_cols, "num_stops")
+  }
+
+  if ("layover" %in% names(data)) {
+    additional_cols <- c(additional_cols, "layover")
+  }
+
+  if ("co2_emission_kg" %in% names(data)) {
+    additional_cols <- c(additional_cols, "co2_emission_kg")
+  }
+
+  # Select needed columns (always include base columns, plus any additional ones available)
+  base_cols <- c("City", "Airport", "Date", "Price")
+  data <- data[, c(base_cols, additional_cols), drop = FALSE]
+
+  return(data)
 }
 
 #' Parse Time Duration to Minutes

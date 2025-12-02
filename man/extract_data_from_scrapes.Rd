@@ -4,10 +4,10 @@
 \alias{extract_data_from_scrapes}
 \title{Extract and Process Data from Query Objects}
 \usage{
-extract_data_from_scrapes(scrapes)
+extract_data_from_scrapes(flight_results)
 }
 \arguments{
-\item{scrapes}{A single query object, a flight_results object, or a named list of query objects}
+\item{flight_results}{A single query object, a flight_results object, or a named list of query objects}
 }
 \value{
 A data frame with columns: Airport, Date, Price, City (if named list),
