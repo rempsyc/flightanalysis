@@ -27,6 +27,9 @@ airport_to_city <- function(airport_codes, fallback = airport_codes) {
       key <- ap$IATA
       val <- ap$City
 
+      # Correct known misspellings in airportr database
+      val <- ifelse(val == "Patina", "Patna", val)
+
       # Direct IATA code lookup
       out <- val[match(airport_codes, key)]
 

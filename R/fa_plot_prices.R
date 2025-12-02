@@ -48,6 +48,9 @@
 #' @param drop_empty_dates Logical. If TRUE, removes dates that have no flight data
 #'   (all NA prices) from the plot. This is useful when querying multiple airports
 #'   where some may not have data for certain dates. Default is TRUE.
+#' @param highlight_extremes Logical. If TRUE, highlights the lowest and highest
+#'   price points by filling them with distinct colorblind-friendly colors
+#'   (bluish green for lowest, vermillion for highest). Default is TRUE.
 #' @param ... Additional arguments passed to \code{\link{fa_summarize_prices}},
 #'   including \code{excluded_airports} to filter out specific airport codes.
 #'
@@ -87,6 +90,9 @@
 #' # Default behavior: filter out dates with no flight data
 #' # Set drop_empty_dates = FALSE to keep all dates including empty ones
 #' fa_plot_prices(sample_flight_results, drop_empty_dates = FALSE)
+#'
+#' # Disable highlighting of lowest/highest price points
+#' fa_plot_prices(sample_flight_results, highlight_extremes = FALSE)
 #' }
 fa_plot_prices <- function(
   flight_results,
@@ -100,6 +106,7 @@ fa_plot_prices <- function(
   show_min_annotation = FALSE,
   x_axis_angle = 0,
   drop_empty_dates = TRUE,
+  highlight_extremes = TRUE,
   ...
 ) {
   # Check if ggplot2 is available
@@ -812,6 +819,26 @@ fa_plot_prices <- function(
   # Determine the legend title based on plot_by mode
   legend_title <- if (plot_by == "destination") "Destination" else "Origin"
 
+  # Add fill column for highlighting extreme prices
+  if (highlight_extremes) {
+    # Find min and max price values
+    min_price <- min(point_data$price, na.rm = TRUE)
+    max_price <- max(point_data$price, na.rm = TRUE)
+
+    # If all prices are identical, use neutral color for all points
+    if (min_price == max_price) {
+      point_data$point_fill <- "white"
+    } else {
+      # Create fill column: green for min, red for max, white for others
+      # Handle ties by highlighting all points with min/max price
+      point_data$point_fill <- "white"
+      point_data$point_fill[point_data$price == min_price] <- "#009E73" # Bluish Green (colorblind-friendly)
+      point_data$point_fill[point_data$price == max_price] <- "#D55E00" # Vermillion (colorblind-friendly)
+    }
+  } else {
+    point_data$point_fill <- "white"
+  }
+
   # Create the plot ####
   # Note: Using variables date, price, group_label, point_size for NSE in ggplot2
   p <- ggplot2::ggplot(
@@ -833,9 +860,8 @@ fa_plot_prices <- function(
     p <- p +
       ggplot2::geom_point(
         data = point_data,
-        ggplot2::aes(size = point_size),
+        ggplot2::aes(size = point_size, fill = I(point_fill)),
         shape = 21, # Circle with border and fill
-        fill = "white", # White fill for all points
         stroke = 2, # Thicker border
         show.legend = TRUE # Show legend for size
       ) +
@@ -854,9 +880,9 @@ fa_plot_prices <- function(
     p <- p +
       ggplot2::geom_point(
         data = point_data,
+        ggplot2::aes(fill = I(point_fill)),
         size = 5,
         shape = 21,
-        fill = "white",
         stroke = 2,
         show.legend = FALSE
       )
