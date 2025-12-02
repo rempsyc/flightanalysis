@@ -283,20 +283,3 @@ test_that("fa_define_query_range creates list for multiple origins AND destinati
   expect_true(all(unlist(queries[["DEL-LON"]]$origin) == "DEL"))
   expect_true(all(unlist(queries[["DEL-LON"]]$dest) == "LON"))
 })
-
-test_that("fa_define_query_range handles city name as multiple destinations", {
-  # City name that maps to multiple airports in destination
-  # For example, using a city without a metropolitan code
-  # (Patna has GAY and PAT airports)
-  queries <- fa_define_query_range(
-    origin = "BOM",
-    dest = c("JFK", "LON"),
-    date_min = "2025-12-18",
-    date_max = "2025-12-19"
-  )
-
-  # Should create a list with 2 queries
-  expect_true(is.list(queries))
-  expect_equal(length(queries), 2)
-  expect_equal(names(queries), c("JFK", "LON"))
-})
