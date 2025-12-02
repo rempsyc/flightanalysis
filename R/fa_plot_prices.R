@@ -293,12 +293,6 @@ fa_plot_prices <- function(
       na.rm = TRUE
     )
 
-    # Get unique dates from the destination summary
-    dest_dates <- unique(dest_summary$date)
-
-    # Get sorted date columns
-    date_cols <- as.character(sort(dest_dates))
-
     # Create plot_data for destinations
     plot_data <- data.frame()
     for (dest in unique(dest_summary$destination)) {
