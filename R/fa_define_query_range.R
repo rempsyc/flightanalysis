@@ -1,9 +1,10 @@
 #' Define Flight Query Range
 #'
 #' @description
-#' Creates flight queries for multiple origin airports/cities across a date range.
-#' This helper function generates all permutations of origins and dates
-#' without actually fetching data. Each origin gets its own query object.
+#' Creates flight queries for multiple origin and/or destination airports/cities 
+#' across a date range. This helper function generates all permutations of 
+#' origins, destinations, and dates without actually fetching data. Each 
+#' origin-destination pair gets its own query object.
 #' Similar to fa_define_query but for date ranges.
 #'
 #' Supports airport codes (e.g., "JFK", "LGA"), city codes (e.g., "NYC" for
@@ -15,14 +16,15 @@
 #'   to search from. Can mix formats (e.g., c("JFK", "NYC", "New York")). 
 #'   Automatically expands city names to all associated airports (excluding heliports)
 #'   and removes duplicates.
-#' @param dest Character or destination airport code, city code, or full city name.
-#'   If a city name expands to multiple airports, only the first airport is used.
-#'   Currently only single destination is supported.
+#' @param dest Character vector of airport codes, city codes, or full city names
+#'   to search to. Can mix formats. Multiple destinations are supported;
+#'   separate query objects will be created for each origin-destination pair.
 #' @param date_min Character or Date. Start date in "YYYY-MM-DD" format.
 #' @param date_max Character or Date. End date in "YYYY-MM-DD" format.
 #'
-#' @return If single origin: A flight query object containing all dates.
-#'   If multiple origins: A named list of flight query objects, one per origin.
+#' @return If single origin and destination: A flight query object containing all dates.
+#'   If multiple origins and/or destinations: A named list of flight query objects, 
+#'   one per origin-destination pair (named as "ORIGIN-DEST").
 #'
 #' @export
 #'
@@ -58,6 +60,14 @@
 #'   date_min = "2025-12-18",
 #'   date_max = "2025-12-20"
 #' )
+#'
+#' # Multiple destinations
+#' fa_define_query_range(
+#'   origin = "BOM",
+#'   dest = c("JFK", "LON"),
+#'   date_min = "2025-12-18",
+#'   date_max = "2025-12-20"
+#' )
 fa_define_query_range <- function(origin, dest, date_min, date_max) {
   # Validate inputs
   if (is.null(origin) || length(origin) == 0) {
@@ -76,17 +86,6 @@ fa_define_query_range <- function(origin, dest, date_min, date_max) {
   # Normalize dest (convert city names to codes)
   # Also prefer metropolitan codes for destinations
   dest <- normalize_location_codes(dest, expand_cities = FALSE)
-  
-  # For now, only support single destination (as per the original design)
-  # If a city name was provided and expanded to multiple airports, use only the first one
-  if (length(dest) > 1) {
-    message(sprintf(
-      "Destination '%s' has multiple airports. Using the first one: %s",
-      paste(dest, collapse = ", "),
-      dest[1]
-    ))
-    dest <- dest[1]
-  }
 
   # Convert dates to Date objects if needed
   if (is.character(date_min)) {
@@ -110,8 +109,8 @@ fa_define_query_range <- function(origin, dest, date_min, date_max) {
   dates <- seq(date_min, date_max, by = "day")
   dates_char <- format(dates, "%Y-%m-%d")
 
-  # If single origin, create one query object
-  if (length(origin) == 1) {
+  # If single origin AND single destination, create one query object
+  if (length(origin) == 1 && length(dest) == 1) {
     # Build chain-trip arguments: origin, dest, date1, origin, dest, date2, ...
     args <- list()
     for (date in dates_char) {
@@ -122,17 +121,29 @@ fa_define_query_range <- function(origin, dest, date_min, date_max) {
     return(query)
   }
 
-  # If multiple origins, create separate query object for each origin
+  # If multiple origins and/or destinations, create separate query object for each pair
   query_list <- list()
 
   for (orig in origin) {
-    # Build chain-trip arguments for this origin
-    args <- list()
-    for (date in dates_char) {
-      args <- c(args, list(orig, dest, date))
-    }
+    for (d in dest) {
+      # Build chain-trip arguments for this origin-destination pair
+      args <- list()
+      for (date in dates_char) {
+        args <- c(args, list(orig, d, date))
+      }
 
-    query_list[[orig]] <- do.call(fa_define_query, args)
+      # Name the query as "ORIGIN-DEST" for multiple origins/destinations
+      # or just "ORIGIN" for multiple origins with single destination (backwards compat)
+      if (length(dest) == 1) {
+        query_name <- orig
+      } else if (length(origin) == 1) {
+        query_name <- d
+      } else {
+        query_name <- paste(orig, d, sep = "-")
+      }
+
+      query_list[[query_name]] <- do.call(fa_define_query, args)
+    }
   }
 
   return(query_list)
