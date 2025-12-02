@@ -657,7 +657,7 @@ fa_plot_prices <- function(
       date_labels = "%b %d",
       date_breaks = "1 day",
       limits = c(min(plot_data$date), max(plot_data$date)),
-      expand = ggplot2::expansion(add = 0.5)
+      expand = ggplot2::expansion(add = 1)
     ) +
     ggplot2::labs(
       title = title,
