@@ -39,6 +39,7 @@ fa_plot_prices(
   show_min_annotation = FALSE,
   x_axis_angle = 0,
   drop_empty_dates = TRUE,
+  highlight_extremes = TRUE,
   ...
 )
 ```
@@ -109,6 +110,12 @@ fa_plot_prices(
   prices) from the plot. This is useful when querying multiple airports
   where some may not have data for certain dates. Default is TRUE.
 
+- highlight_extremes:
+
+  Logical. If TRUE, highlights the lowest and highest price points by
+  filling them with distinct colorblind-friendly colors (bluish green
+  for lowest, vermillion for highest). Default is TRUE.
+
 - ...:
 
   Additional arguments passed to
@@ -153,5 +160,8 @@ fa_plot_prices(sample_flight_results, x_axis_angle = 45)
 # Default behavior: filter out dates with no flight data
 # Set drop_empty_dates = FALSE to keep all dates including empty ones
 fa_plot_prices(sample_flight_results, drop_empty_dates = FALSE)
+
+# Disable highlighting of lowest/highest price points
+fa_plot_prices(sample_flight_results, highlight_extremes = FALSE)
 } # }
 ```
