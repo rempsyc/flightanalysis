@@ -1,7 +1,18 @@
 #' Plot Price Summary
 #'
 #' @description
-#' Creates a modern line plot showing price trends across dates for different origins/cities.
+#' Creates a modern line plot showing price trends across dates for different
+#' origins or destinations. The function automatically detects whether to group
+#' by origin or destination based on the data structure:
+#' \itemize{
+#'   \item When there are multiple origins and a single destination, groups by origin
+#'   \item When there is a single origin and multiple destinations, groups by destination
+#'   \item When there are multiple origins AND multiple destinations, you must specify
+#'     the \code{plot_by} parameter to choose which dimension to use for grouping
+#' }
+#'
+#' The legend title automatically updates to "Origin" or "Destination" accordingly.
+#'
 #' Requires flight_results objects from \code{\link{fa_fetch_flights}}.
 #' This function no longer accepts pre-summarized data or data frames.
 #'
@@ -10,6 +21,9 @@
 #'
 #' @importFrom stats aggregate median
 #' @param flight_results A flight_results object from [fa_fetch_flights()].
+#' @param plot_by Character. Specifies how to group the data: "origin" or "destination".
+#'   When NULL (default), automatically detected based on data structure. Required when
+#'   there are multiple origins AND multiple destinations.
 #' @param title Character. Plot title. Default is NULL (auto-generated with flight context).
 #' @param subtitle Character. Plot subtitle. Default is NULL (auto-generated with lowest price info).
 #' @param size_by Character. Name of column from raw flight data to use for
@@ -76,6 +90,7 @@
 #' }
 fa_plot_prices <- function(
   flight_results,
+  plot_by = NULL,
   title = NULL,
   subtitle = NULL,
   size_by = NULL,
@@ -113,6 +128,52 @@ fa_plot_prices <- function(
   raw_data <- flight_results$data
   has_annotations <- !is.null(annotate_col)
   has_custom_size <- !is.null(size_by) && size_by != "price"
+
+  # Detect whether to group by origin or destination
+  # Check how many unique origins and destinations exist
+  n_origins <- 1
+  n_destinations <- 1
+  origin_col <- if ("origin" %in% names(raw_data)) "origin" else "Origin"
+  dest_col <- if ("destination" %in% names(raw_data)) {
+    "destination"
+  } else {
+    "Destination"
+  }
+
+  if (origin_col %in% names(raw_data)) {
+    n_origins <- length(unique(raw_data[[origin_col]]))
+  }
+
+  if (dest_col %in% names(raw_data)) {
+    n_destinations <- length(unique(raw_data[[dest_col]]))
+  }
+
+  # Validate plot_by parameter if provided
+  if (!is.null(plot_by)) {
+    if (!plot_by %in% c("origin", "destination")) {
+      stop("plot_by must be either 'origin' or 'destination'")
+    }
+  }
+
+  # Determine plot_by based on data structure if not specified
+  if (is.null(plot_by)) {
+    if (n_origins > 1 && n_destinations > 1) {
+      # Multiple origins AND multiple destinations - require user to specify
+      message(
+        "Data contains multiple origins (",
+        n_origins,
+        ") AND multiple destinations (",
+        n_destinations,
+        "). Please specify plot_by = 'origin' or plot_by = 'destination' ",
+        "to indicate how the data should be grouped."
+      )
+      return(NULL)
+    } else if (n_origins == 1 && n_destinations > 1) {
+      plot_by <- "destination"
+    } else {
+      plot_by <- "origin"
+    }
+  }
 
   # Create summary table from flight_results
   price_summary <- fa_summarize_prices(flight_results, ...)
@@ -160,25 +221,104 @@ fa_plot_prices <- function(
   }
 
   # Convert to long format for ggplot2
-  plot_data <- data.frame()
-  for (i in seq_len(nrow(price_summary))) {
-    origin_label <- paste0(
-      price_summary$City[i],
-      " (",
-      price_summary$Origin[i],
-      ")"
-    )
-    for (j in seq_along(date_cols)) {
-      plot_data <- rbind(
-        plot_data,
-        data.frame(
-          date = as.Date(date_cols[j]),
-          price = as.numeric(price_data[i, j]),
-          origin = price_summary$Origin[i],
-          origin_label = origin_label,
-          stringsAsFactors = FALSE
-        )
+  # Handle both origin and destination grouping
+  if (plot_by == "origin") {
+    # Standard case: multiple origins to single destination
+    plot_data <- data.frame()
+    for (i in seq_len(nrow(price_summary))) {
+      group_label <- paste0(
+        price_summary$City[i],
+        " (",
+        price_summary$Origin[i],
+        ")"
       )
+      for (j in seq_along(date_cols)) {
+        plot_data <- rbind(
+          plot_data,
+          data.frame(
+            date = as.Date(date_cols[j]),
+            price = as.numeric(price_data[i, j]),
+            group_code = price_summary$Origin[i],
+            group_label = group_label,
+            stringsAsFactors = FALSE
+          )
+        )
+      }
+    }
+  } else {
+    # Multiple destinations case: single origin to multiple destinations
+    # Create summary from raw_data grouped by destination
+    data_for_dest <- raw_data
+
+    # Normalize column names
+    if (
+      !"price" %in% names(data_for_dest) && "Price" %in% names(data_for_dest)
+    ) {
+      data_for_dest$price <- data_for_dest$Price
+    }
+    if (!"date" %in% names(data_for_dest)) {
+      if ("departure_date" %in% names(data_for_dest)) {
+        data_for_dest$date <- as.Date(data_for_dest$departure_date)
+      } else if ("Date" %in% names(data_for_dest)) {
+        data_for_dest$date <- as.Date(data_for_dest$Date)
+      }
+    }
+    if (
+      !"destination" %in% names(data_for_dest) &&
+        "Destination" %in% names(data_for_dest)
+    ) {
+      data_for_dest$destination <- data_for_dest$Destination
+    }
+
+    # Get destination city names if available
+    if ("destination_city" %in% names(data_for_dest)) {
+      dest_city_map <- unique(data_for_dest[, c(
+        "destination",
+        "destination_city"
+      )])
+    } else {
+      # Use airport code as fallback
+      dest_city_map <- data.frame(
+        destination = unique(data_for_dest$destination),
+        destination_city = unique(data_for_dest$destination),
+        stringsAsFactors = FALSE
+      )
+    }
+
+    # Get minimum price for each destination-date combination
+    dest_summary <- stats::aggregate(
+      price ~ destination + date,
+      data = data_for_dest,
+      FUN = min,
+      na.rm = TRUE
+    )
+
+    # Create plot_data for destinations
+    plot_data <- data.frame()
+    for (dest in unique(dest_summary$destination)) {
+      # Get city name for this destination
+      city_name <- dest_city_map$destination_city[
+        dest_city_map$destination == dest
+      ][1]
+      if (is.na(city_name)) {
+        city_name <- dest
+      }
+
+      group_label <- paste0(city_name, " (", dest, ")")
+
+      dest_subset <- dest_summary[dest_summary$destination == dest, ]
+      for (i in seq_len(nrow(dest_subset))) {
+        plot_data <- rbind(
+          plot_data,
+          data.frame(
+            date = as.Date(dest_subset$date[i]),
+            price = dest_subset$price[i],
+            group_code = dest,
+            group_label = group_label,
+            stringsAsFactors = FALSE
+          )
+        )
+      }
     }
   }
 
@@ -186,8 +326,11 @@ fa_plot_prices <- function(
   plot_data <- plot_data[!is.na(plot_data$price), ]
 
   # Order plot_data explicitly for consistent line drawing
-  # Lines are drawn in data order, so we order by date and origin for consistency
-  plot_data <- plot_data[order(plot_data$date, plot_data$origin), ]
+  # Lines are drawn in data order, so we order by date and group_code for consistency
+  plot_data <- plot_data[order(plot_data$date, plot_data$group_code), ]
+
+  # Determine group column in raw_data for merging based on plot_by setting
+  raw_group_col <- if (plot_by == "origin") "origin" else "destination"
 
   # Add size_by data if using a custom column
   if (
@@ -206,15 +349,23 @@ fa_plot_prices <- function(
       raw_data$date <- as.Date(raw_data$date)
     }
 
-    # Prepare origin column for merging
-    if (!("origin" %in% names(raw_data))) {
-      if ("Airport" %in% names(raw_data)) {
-        raw_data$origin <- raw_data$Airport
-      } else if ("Origin" %in% names(raw_data)) {
-        raw_data$origin <- raw_data$Origin
-      } else if ("City" %in% names(raw_data)) {
-        # Fallback: use City if no origin columns
-        raw_data$origin <- raw_data$City
+    # Prepare group column for merging based on plot_by setting
+    if (plot_by == "origin") {
+      if (!("origin" %in% names(raw_data))) {
+        if ("Airport" %in% names(raw_data)) {
+          raw_data$origin <- raw_data$Airport
+        } else if ("Origin" %in% names(raw_data)) {
+          raw_data$origin <- raw_data$Origin
+        } else if ("City" %in% names(raw_data)) {
+          # Fallback: use City if no origin columns
+          raw_data$origin <- raw_data$City
+        }
+      }
+    } else {
+      if (!("destination" %in% names(raw_data))) {
+        if ("Destination" %in% names(raw_data)) {
+          raw_data$destination <- raw_data$Destination
+        }
       }
     }
 
@@ -225,24 +376,25 @@ fa_plot_prices <- function(
       }
     }
 
-    # Get size_by value for the cheapest flight on each date-origin combo
+    # Get size_by value for the cheapest flight on each date-group combo
     if (
       "date" %in%
         names(raw_data) &&
-        "origin" %in% names(raw_data) &&
+        raw_group_col %in% names(raw_data) &&
         "price" %in% names(raw_data)
     ) {
       # Select only needed columns
       size_data <- raw_data[,
-        c("date", "origin", "price", size_by),
+        c("date", raw_group_col, "price", size_by),
         drop = FALSE
       ]
+      names(size_data)[names(size_data) == raw_group_col] <- "group_code"
 
-      # Get the row with minimum price for each date-origin combo
+      # Get the row with minimum price for each date-group combo
       size_data <- do.call(
         rbind,
         lapply(
-          split(size_data, paste(size_data$date, size_data$origin)),
+          split(size_data, paste(size_data$date, size_data$group_code)),
           function(x) {
             x[which.min(x$price), ]
           }
@@ -251,7 +403,7 @@ fa_plot_prices <- function(
 
       # Create a version with just the size_by value for merging
       size_merge <- size_data[,
-        c("date", "origin", size_by),
+        c("date", "group_code", size_by),
         drop = FALSE
       ]
       names(size_merge)[3] <- "size_value"
@@ -263,12 +415,12 @@ fa_plot_prices <- function(
       plot_data <- merge(
         plot_data,
         size_merge,
-        by = c("date", "origin"),
+        by = c("date", "group_code"),
         all.x = TRUE
       )
 
       # Re-order after merge
-      plot_data <- plot_data[order(plot_data$date, plot_data$origin), ]
+      plot_data <- plot_data[order(plot_data$date, plot_data$group_code), ]
     }
   }
 
@@ -289,15 +441,23 @@ fa_plot_prices <- function(
       raw_data$date <- as.Date(raw_data$date)
     }
 
-    # Prepare origin column for merging ####
-    if (!("origin" %in% names(raw_data))) {
-      if ("Airport" %in% names(raw_data)) {
-        raw_data$origin <- raw_data$Airport
-      } else if ("Origin" %in% names(raw_data)) {
-        raw_data$origin <- raw_data$Origin
-      } else if ("City" %in% names(raw_data)) {
-        # Fallback: use City if no origin columns
-        raw_data$origin <- raw_data$City
+    # Prepare group column for merging ####
+    if (plot_by == "origin") {
+      if (!("origin" %in% names(raw_data))) {
+        if ("Airport" %in% names(raw_data)) {
+          raw_data$origin <- raw_data$Airport
+        } else if ("Origin" %in% names(raw_data)) {
+          raw_data$origin <- raw_data$Origin
+        } else if ("City" %in% names(raw_data)) {
+          # Fallback: use City if no origin columns
+          raw_data$origin <- raw_data$City
+        }
+      }
+    } else {
+      if (!("destination" %in% names(raw_data))) {
+        if ("Destination" %in% names(raw_data)) {
+          raw_data$destination <- raw_data$Destination
+        }
       }
     }
 
@@ -308,24 +468,25 @@ fa_plot_prices <- function(
       }
     }
 
-    # Get annotation value for the cheapest flight on each date-origin combo ####
+    # Get annotation value for the cheapest flight on each date-group combo ####
     if (
       "date" %in%
         names(raw_data) &&
-        "origin" %in% names(raw_data) &&
+        raw_group_col %in% names(raw_data) &&
         "price" %in% names(raw_data)
     ) {
       # Select only needed columns
       annot_data <- raw_data[,
-        c("date", "origin", "price", annotate_col),
+        c("date", raw_group_col, "price", annotate_col),
         drop = FALSE
       ]
+      names(annot_data)[names(annot_data) == raw_group_col] <- "group_code"
 
-      # Get the row with minimum price for each date-origin combo
+      # Get the row with minimum price for each date-group combo
       annot_data <- do.call(
         rbind,
         lapply(
-          split(annot_data, paste(annot_data$date, annot_data$origin)),
+          split(annot_data, paste(annot_data$date, annot_data$group_code)),
           function(x) {
             x[which.min(x$price), ]
           }
@@ -334,7 +495,7 @@ fa_plot_prices <- function(
 
       # Create a version with just the annotation for merging
       annot_merge <- annot_data[,
-        c("date", "origin", annotate_col),
+        c("date", "group_code", annotate_col),
         drop = FALSE
       ]
 
@@ -372,12 +533,12 @@ fa_plot_prices <- function(
       plot_data <- merge(
         plot_data,
         annot_merge,
-        by = c("date", "origin"),
+        by = c("date", "group_code"),
         all.x = TRUE
       )
 
       # Re-order after merge
-      plot_data <- plot_data[order(plot_data$date, plot_data$origin), ]
+      plot_data <- plot_data[order(plot_data$date, plot_data$group_code), ]
     }
   }
 
@@ -444,29 +605,29 @@ fa_plot_prices <- function(
     plot_data$point_size <- 1
   }
 
-  # Reorder origin factor based on size_by metric for better line stacking ####
+  # Reorder group factor based on size_by metric for better line stacking ####
   # This ensures lines are drawn in a semantically meaningful order
   if (!is.null(size_by) && "point_size" %in% names(plot_data)) {
-    # Compute summary statistic per origin (median of point_size)
-    origin_order <- aggregate(
-      point_size ~ origin,
+    # Compute summary statistic per group (median of point_size)
+    group_order <- aggregate(
+      point_size ~ group_code,
       data = plot_data,
       FUN = median,
       na.rm = TRUE
     )
     # Sort by the summary statistic (smaller values first for better visual order)
-    origin_order <- origin_order[order(origin_order$point_size), ]
+    group_order <- group_order[order(group_order$point_size), ]
 
-    # Reorder the origin factor in plot_data
-    plot_data$origin <- factor(
-      plot_data$origin,
-      levels = origin_order$origin
+    # Reorder the group_code factor in plot_data
+    plot_data$group_code <- factor(
+      plot_data$group_code,
+      levels = group_order$group_code
     )
 
-    # Also update origin_label to maintain the same order
-    plot_data$origin_label <- factor(
-      plot_data$origin_label,
-      levels = unique(plot_data$origin_label[order(plot_data$origin)])
+    # Also update group_label to maintain the same order
+    plot_data$group_label <- factor(
+      plot_data$group_label,
+      levels = unique(plot_data$group_label[order(plot_data$group_code)])
     )
   }
 
@@ -489,9 +650,17 @@ fa_plot_prices <- function(
   auto_title <- NULL
   auto_subtitle <- NULL
 
-  # Extract unique origins
-  origins_list <- unique(plot_data$origin)
-  origins_str <- paste(origins_list, collapse = "/")
+  # Extract unique origins from raw_data
+  origins_str <- NULL
+  if (!is.null(raw_data)) {
+    if ("origin" %in% names(raw_data)) {
+      origins <- unique(raw_data$origin)
+      if (length(origins) > 0) origins_str <- paste(origins, collapse = "/")
+    } else if ("Origin" %in% names(raw_data)) {
+      origins <- unique(raw_data$Origin)
+      if (length(origins) > 0) origins_str <- paste(origins, collapse = "/")
+    }
+  }
 
   # Try to extract destination from raw_data if available
   destination_str <- NULL
@@ -517,33 +686,73 @@ fa_plot_prices <- function(
     date_range_str <- format(dates[1], "%b %d")
   }
 
-  # Construct auto title (flight context)
-  if (!is.null(destination_str)) {
-    auto_title <- sprintf(
-      "Cheapest Flight Prices for %s to %s over %s",
-      origins_str,
-      destination_str,
-      date_range_str
-    )
+  # Construct auto title (flight context) based on plot_by mode
+  if (plot_by == "destination") {
+    # Multiple destinations mode
+    if (!is.null(origins_str) && !is.null(destination_str)) {
+      auto_title <- sprintf(
+        "Cheapest Flight Prices from %s to %s over %s",
+        origins_str,
+        destination_str,
+        date_range_str
+      )
+    } else if (!is.null(destination_str)) {
+      auto_title <- sprintf(
+        "Cheapest Flight Prices to %s over %s",
+        destination_str,
+        date_range_str
+      )
+    } else {
+      auto_title <- sprintf(
+        "Cheapest Flight Prices over %s",
+        date_range_str
+      )
+    }
   } else {
-    auto_title <- sprintf(
-      "Cheapest Flight Prices from %s over %s",
-      origins_str,
-      date_range_str
-    )
+    # Multiple origins mode (default)
+    if (!is.null(origins_str) && !is.null(destination_str)) {
+      auto_title <- sprintf(
+        "Cheapest Flight Prices for %s to %s over %s",
+        origins_str,
+        destination_str,
+        date_range_str
+      )
+    } else if (!is.null(origins_str)) {
+      auto_title <- sprintf(
+        "Cheapest Flight Prices from %s over %s",
+        origins_str,
+        date_range_str
+      )
+    } else {
+      auto_title <- sprintf(
+        "Cheapest Flight Prices over %s",
+        date_range_str
+      )
+    }
   }
 
   # Construct auto subtitle (lowest price info)
   min_idx <- which.min(plot_data$price)
-  min_origin <- plot_data$origin[min_idx]
+  min_group <- plot_data$group_code[min_idx]
   min_price <- plot_data$price[min_idx]
   min_date <- plot_data$date[min_idx]
-  auto_subtitle <- sprintf(
-    "Lowest price: $%d from %s on %s",
-    round(min_price),
-    min_origin,
-    format(min_date, "%b %d")
-  )
+
+  # Use appropriate preposition based on plot_by mode
+  if (plot_by == "destination") {
+    auto_subtitle <- sprintf(
+      "Lowest price: $%d to %s on %s",
+      round(min_price),
+      min_group,
+      format(min_date, "%b %d")
+    )
+  } else {
+    auto_subtitle <- sprintf(
+      "Lowest price: $%d from %s on %s",
+      round(min_price),
+      min_group,
+      format(min_date, "%b %d")
+    )
+  }
 
   # Use provided title/subtitle or auto-generated ones
   if (is.null(title)) {
@@ -566,24 +775,28 @@ fa_plot_prices <- function(
   }
 
   # Create the base plot with consistent data ordering
-  # Lines: use plot_data ordered by date and origin (reordered above if size_by is set)
+  # Lines: use plot_data ordered by date and group_code (reordered above if size_by is set)
   # Points: will be drawn later with ordering by point_size
 
-  # Draw lines first with explicitly ordered data by date and origin
-  # If origin was reordered above, this will reflect that order
-  line_data <- plot_data[order(plot_data$date, plot_data$origin), ]
+  # Draw lines first with explicitly ordered data by date and group_code
+  # If group_code was reordered above, this will reflect that order
+  line_data <- plot_data[order(plot_data$date, plot_data$group_code), ]
 
   # For points: arrange so smaller points are drawn last (on top)
-  # Use origin as secondary sort key to maintain consistency
+  # Use group_code as secondary sort key to maintain consistency
   if (!is.null(size_by) && size_by == "price") {
     # For price: larger point_size (expensive) drawn first, smaller (cheap) drawn last (on top)
-    point_data <- plot_data[order(-plot_data$point_size, plot_data$origin), ]
+    point_data <- plot_data[
+      order(-plot_data$point_size, plot_data$group_code),
+    ]
     size_trans <- "reverse" # Inverse relationship: high price = small point
     # Capitalize and clean up label
     size_label <- "Price"
   } else if (!is.null(size_by)) {
     # For other metrics: smaller point_size drawn last (on top)
-    point_data <- plot_data[order(-plot_data$point_size, plot_data$origin), ]
+    point_data <- plot_data[
+      order(-plot_data$point_size, plot_data$group_code),
+    ]
     size_trans <- "identity" # Direct relationship
     # Capitalize and clean up label (e.g., "travel_time" -> "Travel Time")
     clean_name <- gsub("_", " ", size_by)
@@ -596,15 +809,18 @@ fa_plot_prices <- function(
     size_label <- NULL
   }
 
+  # Determine the legend title based on plot_by mode
+  legend_title <- if (plot_by == "destination") "Destination" else "Origin"
+
   # Create the plot ####
-  # Note: Using variables date, price, origin_label, point_size for NSE in ggplot2
+  # Note: Using variables date, price, group_label, point_size for NSE in ggplot2
   p <- ggplot2::ggplot(
     line_data,
     ggplot2::aes(
       x = date,
       y = price,
-      color = origin_label,
-      group = origin_label
+      color = group_label,
+      group = group_label
     )
   ) +
     ggplot2::geom_line(linewidth = 2)
@@ -664,7 +880,7 @@ fa_plot_prices <- function(
       subtitle = subtitle,
       x = "Departure Date",
       y = "Price (USD)",
-      color = "Origin"
+      color = legend_title
     ) +
     ggplot2::theme_minimal(base_size = 13) +
     ggplot2::theme(

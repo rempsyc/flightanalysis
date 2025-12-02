@@ -1,7 +1,7 @@
 test_that("fa_plot_prices rejects summary table input", {
   skip_if_not_installed("ggplot2")
   skip_if_not_installed("scales")
-  
+
   # Create mock summary table
   summary <- data.frame(
     City = c("Mumbai", "Delhi"),
@@ -13,7 +13,7 @@ test_that("fa_plot_prices rejects summary table input", {
     check.names = FALSE,
     stringsAsFactors = FALSE
   )
-  
+
   # Should error with clear message
   expect_error(
     fa_plot_prices(summary),
@@ -24,7 +24,7 @@ test_that("fa_plot_prices rejects summary table input", {
 test_that("fa_plot_prices works with flight_results object", {
   skip_if_not_installed("ggplot2")
   skip_if_not_installed("scales")
-  
+
   # Create mock flight_results object
   query1 <- list(
     data = data.frame(
@@ -40,7 +40,7 @@ test_that("fa_plot_prices works with flight_results object", {
     )
   )
   class(query1) <- "flight_query"
-  
+
   query2 <- list(
     data = data.frame(
       departure_date = rep(c("2025-12-18", "2025-12-19", "2025-12-20"), 1),
@@ -55,14 +55,14 @@ test_that("fa_plot_prices works with flight_results object", {
     )
   )
   class(query2) <- "flight_query"
-  
+
   results <- list(
     data = rbind(query1$data, query2$data),
     BOM = query1,
     DEL = query2
   )
   class(results) <- "flight_results"
-  
+
   # Should create summary and plot
   result <- fa_plot_prices(results)
   expect_s3_class(result, "gg")
@@ -72,7 +72,7 @@ test_that("fa_plot_prices works with flight_results object", {
 test_that("fa_plot_prices handles custom title", {
   skip_if_not_installed("ggplot2")
   skip_if_not_installed("scales")
-  
+
   # Create mock flight_results
   query <- list(
     data = data.frame(
@@ -88,13 +88,13 @@ test_that("fa_plot_prices handles custom title", {
     )
   )
   class(query) <- "flight_query"
-  
+
   results <- list(
     data = query$data,
     BOM = query
   )
   class(results) <- "flight_results"
-  
+
   # Should accept custom title
   result <- fa_plot_prices(results, title = "Custom Title")
   expect_s3_class(result, "gg")
@@ -104,7 +104,7 @@ test_that("fa_plot_prices handles custom title", {
 test_that("fa_plot_prices handles max and min annotations", {
   skip_if_not_installed("ggplot2")
   skip_if_not_installed("scales")
-  
+
   # Create mock flight_results
   query <- list(
     data = data.frame(
@@ -120,38 +120,46 @@ test_that("fa_plot_prices handles max and min annotations", {
     )
   )
   class(query) <- "flight_query"
-  
+
   results <- list(
     data = query$data,
     BOM = query
   )
   class(results) <- "flight_results"
-  
+
   # Should work with show_max_annotation = TRUE (default)
   result1 <- fa_plot_prices(results, show_max_annotation = TRUE)
   expect_s3_class(result1, "gg")
-  
+
   # Should work with show_max_annotation = FALSE
   result2 <- fa_plot_prices(results, show_max_annotation = FALSE)
   expect_s3_class(result2, "gg")
-  
+
   # Should work with show_min_annotation = TRUE
   result3 <- fa_plot_prices(results, show_min_annotation = TRUE)
   expect_s3_class(result3, "gg")
-  
+
   # Should work with both annotations
-  result4 <- fa_plot_prices(results, show_max_annotation = TRUE, show_min_annotation = TRUE)
+  result4 <- fa_plot_prices(
+    results,
+    show_max_annotation = TRUE,
+    show_min_annotation = TRUE
+  )
   expect_s3_class(result4, "gg")
-  
+
   # Should work with no annotations
-  result5 <- fa_plot_prices(results, show_max_annotation = FALSE, show_min_annotation = FALSE)
+  result5 <- fa_plot_prices(
+    results,
+    show_max_annotation = FALSE,
+    show_min_annotation = FALSE
+  )
   expect_s3_class(result5, "gg")
 })
 
 test_that("fa_plot_prices handles single date", {
   skip_if_not_installed("ggplot2")
   skip_if_not_installed("scales")
-  
+
   # Create mock flight_results with single date
   query1 <- list(
     data = data.frame(
@@ -167,7 +175,7 @@ test_that("fa_plot_prices handles single date", {
     )
   )
   class(query1) <- "flight_query"
-  
+
   query2 <- list(
     data = data.frame(
       departure_date = "2025-12-18",
@@ -182,14 +190,14 @@ test_that("fa_plot_prices handles single date", {
     )
   )
   class(query2) <- "flight_query"
-  
+
   results <- list(
     data = rbind(query1$data, query2$data),
     BOM = query1,
     DEL = query2
   )
   class(results) <- "flight_results"
-  
+
   # Should work with single date
   result <- fa_plot_prices(results)
   expect_s3_class(result, "gg")
@@ -198,7 +206,7 @@ test_that("fa_plot_prices handles single date", {
 test_that("fa_plot_prices handles size_by parameter", {
   skip_if_not_installed("ggplot2")
   skip_if_not_installed("scales")
-  
+
   # Create mock flight_results
   query1 <- list(
     data = data.frame(
@@ -214,7 +222,7 @@ test_that("fa_plot_prices handles size_by parameter", {
     )
   )
   class(query1) <- "flight_query"
-  
+
   query2 <- list(
     data = data.frame(
       departure_date = c("2025-12-18", "2025-12-19"),
@@ -229,18 +237,18 @@ test_that("fa_plot_prices handles size_by parameter", {
     )
   )
   class(query2) <- "flight_query"
-  
+
   results <- list(
     data = rbind(query1$data, query2$data),
     BOM = query1,
     DEL = query2
   )
   class(results) <- "flight_results"
-  
+
   # Should work with default size_by = "price"
   result1 <- fa_plot_prices(results, size_by = "price")
   expect_s3_class(result1, "gg")
-  
+
   # Should work with size_by = NULL (uniform sizing)
   result2 <- fa_plot_prices(results, size_by = NULL)
   expect_s3_class(result2, "gg")
@@ -263,13 +271,13 @@ test_that("fa_plot_prices errors on empty data", {
     )
   )
   class(query) <- "flight_query"
-  
+
   results <- list(
     data = query$data,
     BOM = query
   )
   class(results) <- "flight_results"
-  
+
   # Should error with appropriate message about no data
   expect_error(
     fa_plot_prices(results),
@@ -280,7 +288,7 @@ test_that("fa_plot_prices errors on empty data", {
 test_that("fa_plot_prices handles x_axis_angle parameter", {
   skip_if_not_installed("ggplot2")
   skip_if_not_installed("scales")
-  
+
   # Create mock flight_results
   query1 <- list(
     data = data.frame(
@@ -296,21 +304,21 @@ test_that("fa_plot_prices handles x_axis_angle parameter", {
     )
   )
   class(query1) <- "flight_query"
-  
+
   results <- list(
     data = query1$data,
     BOM = query1
   )
   class(results) <- "flight_results"
-  
+
   # Should work with default angle (0)
   result1 <- fa_plot_prices(results, x_axis_angle = 0)
   expect_s3_class(result1, "gg")
-  
+
   # Should work with diagonal angle (45)
   result2 <- fa_plot_prices(results, x_axis_angle = 45)
   expect_s3_class(result2, "gg")
-  
+
   # Should work with vertical angle (90)
   result3 <- fa_plot_prices(results, x_axis_angle = 90)
   expect_s3_class(result3, "gg")
@@ -319,7 +327,7 @@ test_that("fa_plot_prices handles x_axis_angle parameter", {
 test_that("fa_plot_prices handles drop_empty_dates parameter", {
   skip_if_not_installed("ggplot2")
   skip_if_not_installed("scales")
-  
+
   # Create mock flight_results with multiple origins
   # BOM has data for all 3 dates, DEL only has data for 2 dates (missing 12-20)
   query1 <- list(
@@ -336,7 +344,7 @@ test_that("fa_plot_prices handles drop_empty_dates parameter", {
     )
   )
   class(query1) <- "flight_query"
-  
+
   query2 <- list(
     data = data.frame(
       departure_date = c("2025-12-18", "2025-12-19"),
@@ -351,18 +359,18 @@ test_that("fa_plot_prices handles drop_empty_dates parameter", {
     )
   )
   class(query2) <- "flight_query"
-  
+
   results <- list(
     data = rbind(query1$data, query2$data),
     BOM = query1,
     DEL = query2
   )
   class(results) <- "flight_results"
-  
+
   # Should work with drop_empty_dates = TRUE (default)
   result1 <- fa_plot_prices(results, drop_empty_dates = TRUE)
   expect_s3_class(result1, "gg")
-  
+
   # Should work with drop_empty_dates = FALSE
   result2 <- fa_plot_prices(results, drop_empty_dates = FALSE)
   expect_s3_class(result2, "gg")
@@ -371,7 +379,7 @@ test_that("fa_plot_prices handles drop_empty_dates parameter", {
 test_that("fa_plot_prices filters empty dates correctly", {
   skip_if_not_installed("ggplot2")
   skip_if_not_installed("scales")
-  
+
   # Create flight_results where one date has NA prices for ALL origins
   # This simulates the scenario described in the issue
   query1 <- list(
@@ -388,18 +396,229 @@ test_that("fa_plot_prices filters empty dates correctly", {
     )
   )
   class(query1) <- "flight_query"
-  
+
   results <- list(
     data = query1$data,
     BOM = query1
   )
   class(results) <- "flight_results"
-  
+
   # With drop_empty_dates = TRUE, empty dates should be filtered
   result1 <- fa_plot_prices(results, drop_empty_dates = TRUE)
   expect_s3_class(result1, "gg")
-  
+
   # With drop_empty_dates = FALSE, all dates should be retained
   result2 <- fa_plot_prices(results, drop_empty_dates = FALSE)
   expect_s3_class(result2, "gg")
+})
+
+test_that("fa_plot_prices handles multiple destinations", {
+  skip_if_not_installed("ggplot2")
+  skip_if_not_installed("scales")
+
+  # Create mock flight_results with single origin to multiple destinations
+  query <- list(
+    data = data.frame(
+      departure_date = rep(c("2025-12-18", "2025-12-19", "2025-12-20"), 2),
+      departure_time = rep("10:00", 6),
+      arrival_date = rep(c("2025-12-18", "2025-12-19", "2025-12-20"), 2),
+      arrival_time = rep("18:00", 6),
+      origin = rep("JFK", 6),
+      destination = c(rep("BOM", 3), rep("DEL", 3)),
+      destination_city = c(rep("Mumbai", 3), rep("New Delhi", 3)),
+      airlines = rep("Air India", 6),
+      price = c(334, 388, 400, 315, 353, 370),
+      stringsAsFactors = FALSE
+    )
+  )
+  class(query) <- "flight_query"
+
+  results <- list(
+    data = query$data,
+    JFK = query
+  )
+  class(results) <- "flight_results"
+
+  # Should detect multiple destinations and show "Destination" in legend
+  result <- fa_plot_prices(results)
+  expect_s3_class(result, "gg")
+
+  # Verify the legend title is "Destination"
+  expect_equal(result$labels$colour, "Destination")
+})
+
+test_that("fa_plot_prices defaults to origin grouping for multiple origins", {
+  skip_if_not_installed("ggplot2")
+  skip_if_not_installed("scales")
+
+  # Create mock flight_results with multiple origins to single destination
+  query1 <- list(
+    data = data.frame(
+      departure_date = c("2025-12-18", "2025-12-19"),
+      departure_time = rep("10:00", 2),
+      arrival_date = c("2025-12-18", "2025-12-19"),
+      arrival_time = rep("18:00", 2),
+      origin = rep("BOM", 2),
+      destination = rep("JFK", 2),
+      airlines = rep("Air India", 2),
+      price = c(334, 388),
+      stringsAsFactors = FALSE
+    )
+  )
+  class(query1) <- "flight_query"
+
+  query2 <- list(
+    data = data.frame(
+      departure_date = c("2025-12-18", "2025-12-19"),
+      departure_time = rep("12:00", 2),
+      arrival_date = c("2025-12-18", "2025-12-19"),
+      arrival_time = rep("20:00", 2),
+      origin = rep("DEL", 2),
+      destination = rep("JFK", 2),
+      airlines = rep("Vistara", 2),
+      price = c(315, 353),
+      stringsAsFactors = FALSE
+    )
+  )
+  class(query2) <- "flight_query"
+
+  results <- list(
+    data = rbind(query1$data, query2$data),
+    BOM = query1,
+    DEL = query2
+  )
+  class(results) <- "flight_results"
+
+  # Should detect multiple origins and show "Origin" in legend
+  result <- fa_plot_prices(results)
+  expect_s3_class(result, "gg")
+
+  # Verify the legend title is "Origin"
+  expect_equal(result$labels$colour, "Origin")
+})
+
+test_that("fa_plot_prices returns NULL with message for multiple origins and destinations", {
+  skip_if_not_installed("ggplot2")
+  skip_if_not_installed("scales")
+
+  # Create mock flight_results with multiple origins AND multiple destinations
+  query <- list(
+    data = data.frame(
+      departure_date = rep(c("2025-12-18", "2025-12-19"), 4),
+      departure_time = rep("10:00", 8),
+      arrival_date = rep(c("2025-12-18", "2025-12-19"), 4),
+      arrival_time = rep("18:00", 8),
+      origin = c(rep("JFK", 4), rep("LAX", 4)),
+      destination = c(
+        rep("BOM", 2),
+        rep("DEL", 2),
+        rep("BOM", 2),
+        rep("DEL", 2)
+      ),
+      destination_city = c(
+        rep("Mumbai", 2),
+        rep("New Delhi", 2),
+        rep("Mumbai", 2),
+        rep("New Delhi", 2)
+      ),
+      airlines = rep("Air India", 8),
+      price = c(334, 388, 315, 353, 400, 450, 380, 420),
+      stringsAsFactors = FALSE
+    )
+  )
+  class(query) <- "flight_query"
+
+  results <- list(
+    data = query$data,
+    JFK = query
+  )
+  class(results) <- "flight_results"
+
+  # Should return NULL with message when plot_by is not specified
+  expect_message(
+    result <- fa_plot_prices(results),
+    "multiple origins.*multiple destinations"
+  )
+  expect_null(result)
+})
+
+test_that("fa_plot_prices handles plot_by parameter for multiple origins and destinations", {
+  skip_if_not_installed("ggplot2")
+  skip_if_not_installed("scales")
+
+  # Create mock flight_results with multiple origins AND multiple destinations
+  query <- list(
+    data = data.frame(
+      departure_date = rep(c("2025-12-18", "2025-12-19"), 4),
+      departure_time = rep("10:00", 8),
+      arrival_date = rep(c("2025-12-18", "2025-12-19"), 4),
+      arrival_time = rep("18:00", 8),
+      origin = c(rep("JFK", 4), rep("LAX", 4)),
+      destination = c(
+        rep("BOM", 2),
+        rep("DEL", 2),
+        rep("BOM", 2),
+        rep("DEL", 2)
+      ),
+      destination_city = c(
+        rep("Mumbai", 2),
+        rep("New Delhi", 2),
+        rep("Mumbai", 2),
+        rep("New Delhi", 2)
+      ),
+      airlines = rep("Air India", 8),
+      price = c(334, 388, 315, 353, 400, 450, 380, 420),
+      stringsAsFactors = FALSE
+    )
+  )
+  class(query) <- "flight_query"
+
+  results <- list(
+    data = query$data,
+    JFK = query
+  )
+  class(results) <- "flight_results"
+
+  # Should work when plot_by = "origin" is specified
+  result_origin <- fa_plot_prices(results, plot_by = "origin")
+  expect_s3_class(result_origin, "gg")
+  expect_equal(result_origin$labels$colour, "Origin")
+
+  # Should work when plot_by = "destination" is specified
+  result_dest <- fa_plot_prices(results, plot_by = "destination")
+  expect_s3_class(result_dest, "gg")
+  expect_equal(result_dest$labels$colour, "Destination")
+})
+
+test_that("fa_plot_prices validates plot_by parameter", {
+  skip_if_not_installed("ggplot2")
+  skip_if_not_installed("scales")
+
+  # Create simple mock flight_results
+  query <- list(
+    data = data.frame(
+      departure_date = c("2025-12-18", "2025-12-19"),
+      departure_time = rep("10:00", 2),
+      arrival_date = c("2025-12-18", "2025-12-19"),
+      arrival_time = rep("18:00", 2),
+      origin = rep("JFK", 2),
+      destination = rep("BOM", 2),
+      airlines = rep("Air India", 2),
+      price = c(334, 388),
+      stringsAsFactors = FALSE
+    )
+  )
+  class(query) <- "flight_query"
+
+  results <- list(
+    data = query$data,
+    JFK = query
+  )
+  class(results) <- "flight_results"
+
+  # Should error when plot_by is invalid
+  expect_error(
+    fa_plot_prices(results, plot_by = "invalid"),
+    "plot_by must be either 'origin' or 'destination'"
+  )
 })
