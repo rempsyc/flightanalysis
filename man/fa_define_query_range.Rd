@@ -12,22 +12,24 @@ to search from. Can mix formats (e.g., c("JFK", "NYC", "New York")).
 Automatically expands city names to all associated airports (excluding heliports)
 and removes duplicates.}
 
-\item{dest}{Character or destination airport code, city code, or full city name.
-If a city name expands to multiple airports, only the first airport is used.
-Currently only single destination is supported.}
+\item{dest}{Character vector of airport codes, city codes, or full city names
+to search to. Can mix formats. Multiple destinations are supported;
+separate query objects will be created for each origin-destination pair.}
 
 \item{date_min}{Character or Date. Start date in "YYYY-MM-DD" format.}
 
 \item{date_max}{Character or Date. End date in "YYYY-MM-DD" format.}
 }
 \value{
-If single origin: A flight query object containing all dates.
-  If multiple origins: A named list of flight query objects, one per origin.
+If single origin and destination: A flight query object containing all dates.
+  If multiple origins and/or destinations: A named list of flight query objects, 
+  one per origin-destination pair (named as "ORIGIN-DEST").
 }
 \description{
-Creates flight queries for multiple origin airports/cities across a date range.
-This helper function generates all permutations of origins and dates
-without actually fetching data. Each origin gets its own query object.
+Creates flight queries for multiple origin and/or destination airports/cities 
+across a date range. This helper function generates all permutations of 
+origins, destinations, and dates without actually fetching data. Each 
+origin-destination pair gets its own query object.
 Similar to fa_define_query but for date ranges.
 
 Supports airport codes (e.g., "JFK", "LGA"), city codes (e.g., "NYC" for
@@ -64,6 +66,14 @@ fa_define_query_range(
 fa_define_query_range(
   origin = c("New York", "JFK", "BOM", "Patna"),
   dest = "JFK",
+  date_min = "2025-12-18",
+  date_max = "2025-12-20"
+)
+
+# Multiple destinations
+fa_define_query_range(
+  origin = "BOM",
+  dest = c("JFK", "LON"),
   date_min = "2025-12-18",
   date_max = "2025-12-20"
 )
