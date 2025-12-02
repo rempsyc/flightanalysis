@@ -7,6 +7,8 @@
 #' \itemize{
 #'   \item When there are multiple origins and a single destination, groups by origin
 #'   \item When there is a single origin and multiple destinations, groups by destination
+#'   \item When there are multiple origins AND multiple destinations, you must specify
+#'     the \code{group_by} parameter to choose which dimension to use for grouping
 #' }
 #'
 #' The legend title automatically updates to "Origin" or "Destination" accordingly.
@@ -19,6 +21,9 @@
 #'
 #' @importFrom stats aggregate median
 #' @param flight_results A flight_results object from [fa_fetch_flights()].
+#' @param group_by Character. Specifies how to group the data: "origin" or "destination".
+#'   When NULL (default), automatically detected based on data structure. Required when
+#'   there are multiple origins AND multiple destinations.
 #' @param title Character. Plot title. Default is NULL (auto-generated with flight context).
 #' @param subtitle Character. Plot subtitle. Default is NULL (auto-generated with lowest price info).
 #' @param size_by Character. Name of column from raw flight data to use for
@@ -85,6 +90,7 @@
 #' }
 fa_plot_prices <- function(
   flight_results,
+  group_by = NULL,
   title = NULL,
   subtitle = NULL,
   size_by = NULL,
@@ -138,9 +144,29 @@ fa_plot_prices <- function(
     n_destinations <- length(unique(raw_data[[dest_col]]))
   }
 
-  # Determine group_by: "origin" if multiple origins (or single of both),
-  # "destination" if single origin and multiple destinations
-  group_by <- if (n_origins == 1 && n_destinations > 1) "destination" else "origin"
+  # Validate group_by parameter if provided
+  if (!is.null(group_by)) {
+    if (!group_by %in% c("origin", "destination")) {
+      stop("group_by must be either 'origin' or 'destination'")
+    }
+  }
+
+  # Determine group_by based on data structure if not specified
+  if (is.null(group_by)) {
+    if (n_origins > 1 && n_destinations > 1) {
+      # Multiple origins AND multiple destinations - require user to specify
+      message(
+        "Data contains multiple origins (", n_origins, ") AND multiple destinations (",
+        n_destinations, "). Please specify group_by = 'origin' or group_by = 'destination' ",
+        "to indicate how the data should be grouped."
+      )
+      return(NULL)
+    } else if (n_origins == 1 && n_destinations > 1) {
+      group_by <- "destination"
+    } else {
+      group_by <- "origin"
+    }
+  }
 
   # Create summary table from flight_results
   price_summary <- fa_summarize_prices(flight_results, ...)

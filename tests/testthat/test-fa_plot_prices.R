@@ -488,3 +488,109 @@ test_that("fa_plot_prices defaults to origin grouping for multiple origins", {
   # Verify the legend title is "Origin"
   expect_equal(result$labels$colour, "Origin")
 })
+
+test_that("fa_plot_prices returns NULL with message for multiple origins and destinations", {
+  skip_if_not_installed("ggplot2")
+  skip_if_not_installed("scales")
+  
+  # Create mock flight_results with multiple origins AND multiple destinations
+  query <- list(
+    data = data.frame(
+      departure_date = rep(c("2025-12-18", "2025-12-19"), 4),
+      departure_time = rep("10:00", 8),
+      arrival_date = rep(c("2025-12-18", "2025-12-19"), 4),
+      arrival_time = rep("18:00", 8),
+      origin = c(rep("JFK", 4), rep("LAX", 4)),
+      destination = c(rep("BOM", 2), rep("DEL", 2), rep("BOM", 2), rep("DEL", 2)),
+      destination_city = c(rep("Mumbai", 2), rep("New Delhi", 2), rep("Mumbai", 2), rep("New Delhi", 2)),
+      airlines = rep("Air India", 8),
+      price = c(334, 388, 315, 353, 400, 450, 380, 420),
+      stringsAsFactors = FALSE
+    )
+  )
+  class(query) <- "flight_query"
+  
+  results <- list(
+    data = query$data,
+    JFK = query
+  )
+  class(results) <- "flight_results"
+  
+  # Should return NULL with message when group_by is not specified
+  expect_message(
+    result <- fa_plot_prices(results),
+    "multiple origins.*multiple destinations"
+  )
+  expect_null(result)
+})
+
+test_that("fa_plot_prices handles group_by parameter for multiple origins and destinations", {
+  skip_if_not_installed("ggplot2")
+  skip_if_not_installed("scales")
+  
+  # Create mock flight_results with multiple origins AND multiple destinations
+  query <- list(
+    data = data.frame(
+      departure_date = rep(c("2025-12-18", "2025-12-19"), 4),
+      departure_time = rep("10:00", 8),
+      arrival_date = rep(c("2025-12-18", "2025-12-19"), 4),
+      arrival_time = rep("18:00", 8),
+      origin = c(rep("JFK", 4), rep("LAX", 4)),
+      destination = c(rep("BOM", 2), rep("DEL", 2), rep("BOM", 2), rep("DEL", 2)),
+      destination_city = c(rep("Mumbai", 2), rep("New Delhi", 2), rep("Mumbai", 2), rep("New Delhi", 2)),
+      airlines = rep("Air India", 8),
+      price = c(334, 388, 315, 353, 400, 450, 380, 420),
+      stringsAsFactors = FALSE
+    )
+  )
+  class(query) <- "flight_query"
+  
+  results <- list(
+    data = query$data,
+    JFK = query
+  )
+  class(results) <- "flight_results"
+  
+  # Should work when group_by = "origin" is specified
+  result_origin <- fa_plot_prices(results, group_by = "origin")
+  expect_s3_class(result_origin, "gg")
+  expect_equal(result_origin$labels$colour, "Origin")
+  
+  # Should work when group_by = "destination" is specified
+  result_dest <- fa_plot_prices(results, group_by = "destination")
+  expect_s3_class(result_dest, "gg")
+  expect_equal(result_dest$labels$colour, "Destination")
+})
+
+test_that("fa_plot_prices validates group_by parameter", {
+  skip_if_not_installed("ggplot2")
+  skip_if_not_installed("scales")
+  
+  # Create simple mock flight_results
+  query <- list(
+    data = data.frame(
+      departure_date = c("2025-12-18", "2025-12-19"),
+      departure_time = rep("10:00", 2),
+      arrival_date = c("2025-12-18", "2025-12-19"),
+      arrival_time = rep("18:00", 2),
+      origin = rep("JFK", 2),
+      destination = rep("BOM", 2),
+      airlines = rep("Air India", 2),
+      price = c(334, 388),
+      stringsAsFactors = FALSE
+    )
+  )
+  class(query) <- "flight_query"
+  
+  results <- list(
+    data = query$data,
+    JFK = query
+  )
+  class(results) <- "flight_results"
+  
+  # Should error when group_by is invalid
+  expect_error(
+    fa_plot_prices(results, group_by = "invalid"),
+    "group_by must be either 'origin' or 'destination'"
+  )
+})
