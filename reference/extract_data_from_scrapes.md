@@ -7,12 +7,12 @@ and fa_find_best_dates.
 ## Usage
 
 ``` r
-extract_data_from_scrapes(scrapes)
+extract_data_from_scrapes(flight_results)
 ```
 
 ## Arguments
 
-- scrapes:
+- flight_results:
 
   A single query object, a flight_results object, or a named list of
   query objects

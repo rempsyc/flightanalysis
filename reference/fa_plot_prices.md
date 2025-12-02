@@ -12,7 +12,7 @@ colorblind-friendly colors and clear typography.
 
 ``` r
 fa_plot_prices(
-  price_summary,
+  flight_results,
   title = NULL,
   subtitle = NULL,
   size_by = NULL,
@@ -20,17 +20,17 @@ fa_plot_prices(
   use_ggrepel = TRUE,
   show_max_annotation = TRUE,
   show_min_annotation = FALSE,
+  x_axis_angle = 0,
+  drop_empty_dates = TRUE,
   ...
 )
 ```
 
 ## Arguments
 
-- price_summary:
+- flight_results:
 
-  A flight_results object from
-  [`fa_fetch_flights`](https://rempsyc.github.io/flightanalysis/reference/fa_fetch_flights.md).
-  This function no longer accepts pre-summarized data or data frames.
+  A flight_results object from \[fa_fetch_flights()\].
 
 - title:
 
@@ -74,6 +74,18 @@ fa_plot_prices(
   minimum price with a horizontal bar and formatted price label. The
   annotation is subtle and clean (no arrows or boxes). Default is FALSE.
 
+- x_axis_angle:
+
+  Numeric. Angle in degrees to rotate x-axis labels for better
+  readability in wide figures with many dates. Common values are 45
+  (diagonal) or 90 (vertical). Default is 0 (horizontal labels).
+
+- drop_empty_dates:
+
+  Logical. If TRUE, removes dates that have no flight data (all NA
+  prices) from the plot. This is useful when querying multiple airports
+  where some may not have data for certain dates. Default is TRUE.
+
 - ...:
 
   Additional arguments passed to
@@ -111,5 +123,12 @@ fa_plot_prices(sample_flight_results,
                title = "Custom Title",
                show_max_annotation = TRUE,
                show_min_annotation = TRUE)
+
+# Tilt x-axis labels diagonally for wide figures
+fa_plot_prices(sample_flight_results, x_axis_angle = 45)
+
+# Default behavior: filter out dates with no flight data
+# Set drop_empty_dates = FALSE to keep all dates including empty ones
+fa_plot_prices(sample_flight_results, drop_empty_dates = FALSE)
 } # }
 ```

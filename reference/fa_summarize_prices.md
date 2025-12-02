@@ -32,8 +32,7 @@ fa_summarize_prices(
 
 - flight_results:
 
-  A flight_results object from fa_fetch_flights(). This function no
-  longer accepts data frames or query objects directly.
+  A flight_results object from \[fa_fetch_flights()\].
 
 - include_comment:
 

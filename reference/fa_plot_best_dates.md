@@ -13,21 +13,19 @@ colorblind-friendly colors and clear typography.
 
 ``` r
 fa_plot_best_dates(
-  best_dates,
+  flight_results,
   title = "Best Travel Dates by Price",
   subtitle = NULL,
+  x_axis_angle = 0,
   ...
 )
 ```
 
 ## Arguments
 
-- best_dates:
+- flight_results:
 
-  A flight_results object from
-  [`fa_fetch_flights`](https://rempsyc.github.io/flightanalysis/reference/fa_fetch_flights.md)
-  or a data frame that is the output from
-  [`fa_find_best_dates`](https://rempsyc.github.io/flightanalysis/reference/fa_find_best_dates.md).
+  A flight_results object from \[fa_fetch_flights()\].
 
 - title:
 
@@ -36,6 +34,12 @@ fa_plot_best_dates(
 - subtitle:
 
   Character. Plot subtitle. Default is NULL (auto-generated).
+
+- x_axis_angle:
+
+  Numeric. Angle in degrees to rotate x-axis labels for better
+  readability in wide figures with many dates. Common values are 45
+  (diagonal) or 90 (vertical). Default is 0 (horizontal labels).
 
 - ...:
 
@@ -57,5 +61,8 @@ fa_plot_best_dates(sample_flight_results, n = 5)
 
 # With filters
 fa_plot_best_dates(sample_flight_results, n = 5, max_stops = 0)
+
+# Tilt x-axis labels diagonally for wide figures
+fa_plot_best_dates(sample_flight_results, n = 10, x_axis_angle = 45)
 } # }
 ```
