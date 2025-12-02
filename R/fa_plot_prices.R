@@ -49,8 +49,8 @@
 #'   (all NA prices) from the plot. This is useful when querying multiple airports
 #'   where some may not have data for certain dates. Default is TRUE.
 #' @param highlight_extremes Logical. If TRUE, highlights the lowest and highest
-#'   price points by filling them with distinct colors (green for lowest, red for
-#'   highest). Default is TRUE.
+#'   price points by filling them with distinct colorblind-friendly colors
+#'   (bluish green for lowest, vermillion for highest). Default is TRUE.
 #' @param ... Additional arguments passed to \code{\link{fa_summarize_prices}},
 #'   including \code{excluded_airports} to filter out specific airport codes.
 #'
@@ -821,14 +821,15 @@ fa_plot_prices <- function(
 
   # Add fill column for highlighting extreme prices
   if (highlight_extremes) {
-    # Find min and max price indices
-    min_price_idx <- which.min(point_data$price)
-    max_price_idx <- which.max(point_data$price)
+    # Find min and max price values
+    min_price <- min(point_data$price, na.rm = TRUE)
+    max_price <- max(point_data$price, na.rm = TRUE)
 
     # Create fill column: green for min, red for max, white for others
+    # Handle ties by highlighting all points with min/max price
     point_data$point_fill <- "white"
-    point_data$point_fill[min_price_idx] <- "#009E73" # Bluish Green (colorblind-friendly)
-    point_data$point_fill[max_price_idx] <- "#D55E00" # Vermillion (colorblind-friendly)
+    point_data$point_fill[point_data$price == min_price] <- "#009E73" # Bluish Green (colorblind-friendly)
+    point_data$point_fill[point_data$price == max_price] <- "#D55E00" # Vermillion (colorblind-friendly)
   } else {
     point_data$point_fill <- "white"
   }
