@@ -209,3 +209,77 @@ test_that("fa_define_query_range handles city name destinations", {
   # Destination should be NYC (metropolitan code)
   expect_true(all(queries$dest == "NYC"))
 })
+
+test_that("fa_define_query_range creates list for multiple destinations", {
+  # Multiple destinations with single origin - should return list of query objects
+  queries <- fa_define_query_range(
+    origin = "BOM",
+    dest = c("JFK", "LON"),
+    date_min = "2025-12-18",
+    date_max = "2025-12-20"
+  )
+
+  # Check it's a list
+  expect_true(is.list(queries))
+  expect_equal(length(queries), 2)
+  expect_equal(names(queries), c("JFK", "LON"))
+
+  # Check each element is a flight query object
+  expect_true(
+    inherits(queries$JFK, "flight_query") || inherits(queries$JFK, "Scrape")
+  )
+  expect_true(
+    inherits(queries$LON, "flight_query") || inherits(queries$LON, "Scrape")
+  )
+
+  # Check JFK query
+  expect_equal(queries$JFK$type, "chain-trip")
+  expect_equal(length(queries$JFK$origin), 3) # 3 dates
+  expect_true(all(unlist(queries$JFK$origin) == "BOM"))
+  expect_true(all(unlist(queries$JFK$dest) == "JFK"))
+
+  # Check LON query
+  expect_equal(queries$LON$type, "chain-trip")
+  expect_equal(length(queries$LON$origin), 3) # 3 dates
+  expect_true(all(unlist(queries$LON$origin) == "BOM"))
+  expect_true(all(unlist(queries$LON$dest) == "LON"))
+})
+
+test_that("fa_define_query_range creates list for multiple origins AND destinations", {
+  # Multiple origins AND multiple destinations
+  queries <- fa_define_query_range(
+    origin = c("BOM", "DEL"),
+    dest = c("JFK", "LON"),
+    date_min = "2025-12-18",
+    date_max = "2025-12-19"
+  )
+
+  # Check it's a list with 4 queries (2 origins * 2 destinations)
+  expect_true(is.list(queries))
+  expect_equal(length(queries), 4)
+  expect_equal(names(queries), c("BOM-JFK", "BOM-LON", "DEL-JFK", "DEL-LON"))
+
+  # Check each element is a flight query object
+  for (name in names(queries)) {
+    expect_true(
+      inherits(queries[[name]], "flight_query") || inherits(queries[[name]], "Scrape")
+    )
+    expect_equal(queries[[name]]$type, "chain-trip")
+  }
+
+  # Check BOM-JFK query
+  expect_true(all(unlist(queries[["BOM-JFK"]]$origin) == "BOM"))
+  expect_true(all(unlist(queries[["BOM-JFK"]]$dest) == "JFK"))
+
+  # Check BOM-LON query
+  expect_true(all(unlist(queries[["BOM-LON"]]$origin) == "BOM"))
+  expect_true(all(unlist(queries[["BOM-LON"]]$dest) == "LON"))
+
+  # Check DEL-JFK query
+  expect_true(all(unlist(queries[["DEL-JFK"]]$origin) == "DEL"))
+  expect_true(all(unlist(queries[["DEL-JFK"]]$dest) == "JFK"))
+
+  # Check DEL-LON query
+  expect_true(all(unlist(queries[["DEL-LON"]]$origin) == "DEL"))
+  expect_true(all(unlist(queries[["DEL-LON"]]$dest) == "LON"))
+})

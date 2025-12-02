@@ -93,7 +93,7 @@ fa_plot_prices <- function(
   plot_by = NULL,
   title = NULL,
   subtitle = NULL,
-  size_by = NULL,
+  size_by = "travel_time",
   annotate_col = NULL,
   use_ggrepel = TRUE,
   show_max_annotation = TRUE,
