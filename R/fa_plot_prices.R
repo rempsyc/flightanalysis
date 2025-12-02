@@ -115,28 +115,28 @@ fa_plot_prices <- function(
   has_custom_size <- !is.null(size_by) && size_by != "price"
 
   # Create summary table from flight_results
-  flight_results <- fa_summarize_prices(flight_results, ...)
+  price_summary <- fa_summarize_prices(flight_results, ...)
 
   # Remove the "Best" row if present
-  flight_results <- flight_results[flight_results$City != "Best", ]
+  price_summary <- price_summary[price_summary$City != "Best", ]
 
-  if (nrow(flight_results) == 0) {
+  if (nrow(price_summary) == 0) {
     stop("No data to plot after filtering")
   }
 
   # Identify date columns (format YYYY-MM-DD)
   date_cols <- grep(
     "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
-    names(flight_results),
+    names(price_summary),
     value = TRUE
   )
 
   if (length(date_cols) == 0) {
-    stop("No date columns found in flight_results")
+    stop("No date columns found in price_summary")
   }
 
   # Extract price values (remove currency symbols and convert to numeric)
-  price_data <- flight_results[, date_cols, drop = FALSE]
+  price_data <- price_summary[, date_cols, drop = FALSE]
   for (col in date_cols) {
     price_data[[col]] <- as.numeric(gsub("[^0-9.]", "", price_data[[col]]))
   }
@@ -161,11 +161,11 @@ fa_plot_prices <- function(
 
   # Convert to long format for ggplot2
   plot_data <- data.frame()
-  for (i in seq_len(nrow(flight_results))) {
+  for (i in seq_len(nrow(price_summary))) {
     origin_label <- paste0(
-      flight_results$City[i],
+      price_summary$City[i],
       " (",
-      flight_results$Origin[i],
+      price_summary$Origin[i],
       ")"
     )
     for (j in seq_along(date_cols)) {
@@ -174,7 +174,7 @@ fa_plot_prices <- function(
         data.frame(
           date = as.Date(date_cols[j]),
           price = as.numeric(price_data[i, j]),
-          origin = flight_results$Origin[i],
+          origin = price_summary$Origin[i],
           origin_label = origin_label,
           stringsAsFactors = FALSE
         )
@@ -272,7 +272,7 @@ fa_plot_prices <- function(
     }
   }
 
-  # Add annotation data if available
+  # Add annotation data if available ####
   if (
     has_annotations &&
       !is.null(raw_data) &&
@@ -289,7 +289,7 @@ fa_plot_prices <- function(
       raw_data$date <- as.Date(raw_data$date)
     }
 
-    # Prepare origin column for merging
+    # Prepare origin column for merging ####
     if (!("origin" %in% names(raw_data))) {
       if ("Airport" %in% names(raw_data)) {
         raw_data$origin <- raw_data$Airport
@@ -308,7 +308,7 @@ fa_plot_prices <- function(
       }
     }
 
-    # Get annotation value for the cheapest flight on each date-origin combo
+    # Get annotation value for the cheapest flight on each date-origin combo ####
     if (
       "date" %in%
         names(raw_data) &&
@@ -381,7 +381,7 @@ fa_plot_prices <- function(
     }
   }
 
-  # Compute point_size column based on size_by parameter
+  # Compute point_size column based on size_by parameter ####
   # This will be used for both sizing and ordering (smaller points on top)
   if (!is.null(size_by)) {
     if (size_by == "price") {
@@ -444,7 +444,7 @@ fa_plot_prices <- function(
     plot_data$point_size <- 1
   }
 
-  # Reorder origin factor based on size_by metric for better line stacking
+  # Reorder origin factor based on size_by metric for better line stacking ####
   # This ensures lines are drawn in a semantically meaningful order
   if (!is.null(size_by) && "point_size" %in% names(plot_data)) {
     # Compute summary statistic per origin (median of point_size)
@@ -470,7 +470,7 @@ fa_plot_prices <- function(
     )
   }
 
-  # Define colorblind-friendly palette
+  # Define colorblind-friendly palette ####
   # Using a palette similar to Okabe-Ito or viridis
   color_palette <- c(
     "#E69F00", # Orange
@@ -483,7 +483,7 @@ fa_plot_prices <- function(
     "#999999" # Gray
   )
 
-  # Auto-generate title and subtitle if not provided
+  # Auto-generate title and subtitle if not provided ####
   # Title: Flight context (origins, destination, date range)
   # Subtitle: Lowest price information
   auto_title <- NULL
@@ -596,7 +596,7 @@ fa_plot_prices <- function(
     size_label <- NULL
   }
 
-  # Create the plot
+  # Create the plot ####
   # Note: Using variables date, price, origin_label, point_size for NSE in ggplot2
   p <- ggplot2::ggplot(
     line_data,
