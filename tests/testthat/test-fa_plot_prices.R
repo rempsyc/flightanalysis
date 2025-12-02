@@ -622,3 +622,54 @@ test_that("fa_plot_prices validates plot_by parameter", {
     "plot_by must be either 'origin' or 'destination'"
   )
 })
+
+test_that("fa_plot_prices handles highlight_extremes parameter", {
+  skip_if_not_installed("ggplot2")
+  skip_if_not_installed("scales")
+
+  # Create mock flight_results
+  query1 <- list(
+    data = data.frame(
+      departure_date = c("2025-12-18", "2025-12-19", "2025-12-20"),
+      departure_time = rep("10:00", 3),
+      arrival_date = c("2025-12-18", "2025-12-19", "2025-12-20"),
+      arrival_time = rep("18:00", 3),
+      origin = rep("BOM", 3),
+      destination = rep("JFK", 3),
+      airlines = rep("Air India", 3),
+      price = c(334, 388, 400),
+      stringsAsFactors = FALSE
+    )
+  )
+  class(query1) <- "flight_query"
+
+  query2 <- list(
+    data = data.frame(
+      departure_date = c("2025-12-18", "2025-12-19", "2025-12-20"),
+      departure_time = rep("12:00", 3),
+      arrival_date = c("2025-12-18", "2025-12-19", "2025-12-20"),
+      arrival_time = rep("20:00", 3),
+      origin = rep("DEL", 3),
+      destination = rep("JFK", 3),
+      airlines = rep("Vistara", 3),
+      price = c(315, 353, 370),
+      stringsAsFactors = FALSE
+    )
+  )
+  class(query2) <- "flight_query"
+
+  results <- list(
+    data = rbind(query1$data, query2$data),
+    BOM = query1,
+    DEL = query2
+  )
+  class(results) <- "flight_results"
+
+  # Should work with highlight_extremes = TRUE (default)
+  result1 <- fa_plot_prices(results, highlight_extremes = TRUE)
+  expect_s3_class(result1, "gg")
+
+  # Should work with highlight_extremes = FALSE
+  result2 <- fa_plot_prices(results, highlight_extremes = FALSE)
+  expect_s3_class(result2, "gg")
+})
