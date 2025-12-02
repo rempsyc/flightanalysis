@@ -403,3 +403,88 @@ test_that("fa_plot_prices filters empty dates correctly", {
   result2 <- fa_plot_prices(results, drop_empty_dates = FALSE)
   expect_s3_class(result2, "gg")
 })
+
+test_that("fa_plot_prices handles multiple destinations", {
+  skip_if_not_installed("ggplot2")
+  skip_if_not_installed("scales")
+  
+  # Create mock flight_results with single origin to multiple destinations
+  query <- list(
+    data = data.frame(
+      departure_date = rep(c("2025-12-18", "2025-12-19", "2025-12-20"), 2),
+      departure_time = rep("10:00", 6),
+      arrival_date = rep(c("2025-12-18", "2025-12-19", "2025-12-20"), 2),
+      arrival_time = rep("18:00", 6),
+      origin = rep("JFK", 6),
+      destination = c(rep("BOM", 3), rep("DEL", 3)),
+      destination_city = c(rep("Mumbai", 3), rep("New Delhi", 3)),
+      airlines = rep("Air India", 6),
+      price = c(334, 388, 400, 315, 353, 370),
+      stringsAsFactors = FALSE
+    )
+  )
+  class(query) <- "flight_query"
+  
+  results <- list(
+    data = query$data,
+    JFK = query
+  )
+  class(results) <- "flight_results"
+  
+  # Should detect multiple destinations and show "Destination" in legend
+  result <- fa_plot_prices(results)
+  expect_s3_class(result, "gg")
+  
+  # Verify the legend title is "Destination"
+  expect_equal(result$labels$colour, "Destination")
+})
+
+test_that("fa_plot_prices defaults to origin grouping for multiple origins", {
+  skip_if_not_installed("ggplot2")
+  skip_if_not_installed("scales")
+  
+  # Create mock flight_results with multiple origins to single destination
+  query1 <- list(
+    data = data.frame(
+      departure_date = rep(c("2025-12-18", "2025-12-19"), 1),
+      departure_time = rep("10:00", 2),
+      arrival_date = rep(c("2025-12-18", "2025-12-19"), 1),
+      arrival_time = rep("18:00", 2),
+      origin = rep("BOM", 2),
+      destination = rep("JFK", 2),
+      airlines = rep("Air India", 2),
+      price = c(334, 388),
+      stringsAsFactors = FALSE
+    )
+  )
+  class(query1) <- "flight_query"
+  
+  query2 <- list(
+    data = data.frame(
+      departure_date = rep(c("2025-12-18", "2025-12-19"), 1),
+      departure_time = rep("12:00", 2),
+      arrival_date = rep(c("2025-12-18", "2025-12-19"), 1),
+      arrival_time = rep("20:00", 2),
+      origin = rep("DEL", 2),
+      destination = rep("JFK", 2),
+      airlines = rep("Vistara", 2),
+      price = c(315, 353),
+      stringsAsFactors = FALSE
+    )
+  )
+  class(query2) <- "flight_query"
+  
+  results <- list(
+    data = rbind(query1$data, query2$data),
+    BOM = query1,
+    DEL = query2
+  )
+  class(results) <- "flight_results"
+  
+  # Should detect multiple origins and show "Origin" in legend
+  result <- fa_plot_prices(results)
+  expect_s3_class(result, "gg")
+  
+  # Verify the legend title is "Origin"
+  expect_equal(result$labels$colour, "Origin")
+})
