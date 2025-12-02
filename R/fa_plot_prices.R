@@ -255,12 +255,8 @@ fa_plot_prices <- function(
     # Get unique dates from the destination summary
     dest_dates <- unique(dest_summary$date)
 
-    # Filter dates if drop_empty_dates logic applies
-    if (drop_empty_dates) {
-      date_cols <- as.character(sort(dest_dates))
-    } else {
-      date_cols <- as.character(sort(dest_dates))
-    }
+    # Get sorted date columns
+    date_cols <- as.character(sort(dest_dates))
 
     # Create plot_data for destinations
     plot_data <- data.frame()
@@ -353,7 +349,7 @@ fa_plot_prices <- function(
         c("date", raw_group_col, "price", size_by),
         drop = FALSE
       ]
-      names(size_data)[2] <- "group_code"
+      names(size_data)[names(size_data) == raw_group_col] <- "group_code"
 
       # Get the row with minimum price for each date-group combo
       size_data <- do.call(
@@ -445,7 +441,7 @@ fa_plot_prices <- function(
         c("date", raw_group_col, "price", annotate_col),
         drop = FALSE
       ]
-      names(annot_data)[2] <- "group_code"
+      names(annot_data)[names(annot_data) == raw_group_col] <- "group_code"
 
       # Get the row with minimum price for each date-group combo
       annot_data <- do.call(

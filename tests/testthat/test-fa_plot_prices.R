@@ -446,9 +446,9 @@ test_that("fa_plot_prices defaults to origin grouping for multiple origins", {
   # Create mock flight_results with multiple origins to single destination
   query1 <- list(
     data = data.frame(
-      departure_date = rep(c("2025-12-18", "2025-12-19"), 1),
+      departure_date = c("2025-12-18", "2025-12-19"),
       departure_time = rep("10:00", 2),
-      arrival_date = rep(c("2025-12-18", "2025-12-19"), 1),
+      arrival_date = c("2025-12-18", "2025-12-19"),
       arrival_time = rep("18:00", 2),
       origin = rep("BOM", 2),
       destination = rep("JFK", 2),
@@ -461,9 +461,9 @@ test_that("fa_plot_prices defaults to origin grouping for multiple origins", {
   
   query2 <- list(
     data = data.frame(
-      departure_date = rep(c("2025-12-18", "2025-12-19"), 1),
+      departure_date = c("2025-12-18", "2025-12-19"),
       departure_time = rep("12:00", 2),
-      arrival_date = rep(c("2025-12-18", "2025-12-19"), 1),
+      arrival_date = c("2025-12-18", "2025-12-19"),
       arrival_time = rep("20:00", 2),
       origin = rep("DEL", 2),
       destination = rep("JFK", 2),
