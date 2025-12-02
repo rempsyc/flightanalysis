@@ -62,12 +62,13 @@ fa_plot_best_dates <- function(
     )
   }
 
-  if (nrow(flight_results) == 0) {
+  # Extract data from flight_results object
+  if (is.null(flight_results$data) || nrow(flight_results$data) == 0) {
     stop("No data to plot after filtering")
   }
 
   # Prepare data for plotting
-  plot_data <- flight_results
+  plot_data <- flight_results$data
 
   # Create date labels
   if ("departure_date" %in% names(plot_data)) {

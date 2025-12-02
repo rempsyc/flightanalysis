@@ -17,7 +17,7 @@ test_that("fa_plot_prices rejects summary table input", {
   # Should error with clear message
   expect_error(
     fa_plot_prices(summary),
-    "price_summary must be a flight_results object"
+    "flight_results must be a flight_results object"
   )
 })
 
