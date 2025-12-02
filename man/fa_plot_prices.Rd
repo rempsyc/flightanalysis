@@ -6,6 +6,7 @@
 \usage{
 fa_plot_prices(
   flight_results,
+  plot_by = NULL,
   title = NULL,
   subtitle = NULL,
   size_by = NULL,
@@ -20,6 +21,10 @@ fa_plot_prices(
 }
 \arguments{
 \item{flight_results}{A flight_results object from [fa_fetch_flights()].}
+
+\item{plot_by}{Character. Specifies how to group the data: "origin" or "destination".
+When NULL (default), automatically detected based on data structure. Required when
+there are multiple origins AND multiple destinations.}
 
 \item{title}{Character. Plot title. Default is NULL (auto-generated with flight context).}
 
@@ -67,6 +72,8 @@ by origin or destination based on the data structure:
 \itemize{
   \item When there are multiple origins and a single destination, groups by origin
   \item When there is a single origin and multiple destinations, groups by destination
+  \item When there are multiple origins AND multiple destinations, you must specify
+    the \code{plot_by} parameter to choose which dimension to use for grouping
 }
 
 The legend title automatically updates to "Origin" or "Destination" accordingly.
