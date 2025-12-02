@@ -16,6 +16,7 @@ fa_plot_prices(
   show_min_annotation = FALSE,
   x_axis_angle = 0,
   drop_empty_dates = TRUE,
+  highlight_extremes = TRUE,
   ...
 )
 }
@@ -58,6 +59,10 @@ readability in wide figures with many dates. Common values are 45 (diagonal) or
 \item{drop_empty_dates}{Logical. If TRUE, removes dates that have no flight data
 (all NA prices) from the plot. This is useful when querying multiple airports
 where some may not have data for certain dates. Default is TRUE.}
+
+\item{highlight_extremes}{Logical. If TRUE, highlights the lowest and highest
+price points by filling them with distinct colorblind-friendly colors
+(bluish green for lowest, vermillion for highest). Default is TRUE.}
 
 \item{...}{Additional arguments passed to \code{\link{fa_summarize_prices}},
 including \code{excluded_airports} to filter out specific airport codes.}
@@ -116,5 +121,8 @@ fa_plot_prices(sample_flight_results, x_axis_angle = 45)
 # Default behavior: filter out dates with no flight data
 # Set drop_empty_dates = FALSE to keep all dates including empty ones
 fa_plot_prices(sample_flight_results, drop_empty_dates = FALSE)
+
+# Disable highlighting of lowest/highest price points
+fa_plot_prices(sample_flight_results, highlight_extremes = FALSE)
 }
 }
