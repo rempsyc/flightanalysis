@@ -825,11 +825,16 @@ fa_plot_prices <- function(
     min_price <- min(point_data$price, na.rm = TRUE)
     max_price <- max(point_data$price, na.rm = TRUE)
 
-    # Create fill column: green for min, red for max, white for others
-    # Handle ties by highlighting all points with min/max price
-    point_data$point_fill <- "white"
-    point_data$point_fill[point_data$price == min_price] <- "#009E73" # Bluish Green (colorblind-friendly)
-    point_data$point_fill[point_data$price == max_price] <- "#D55E00" # Vermillion (colorblind-friendly)
+    # If all prices are identical, use neutral color for all points
+    if (min_price == max_price) {
+      point_data$point_fill <- "white"
+    } else {
+      # Create fill column: green for min, red for max, white for others
+      # Handle ties by highlighting all points with min/max price
+      point_data$point_fill <- "white"
+      point_data$point_fill[point_data$price == min_price] <- "#009E73" # Bluish Green (colorblind-friendly)
+      point_data$point_fill[point_data$price == max_price] <- "#D55E00" # Vermillion (colorblind-friendly)
+    }
   } else {
     point_data$point_fill <- "white"
   }
