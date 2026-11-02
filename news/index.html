@@ -42,6 +42,11 @@
 <li>Add regression coverage using a captured Google Flights results page.</li>
 </ul></div>
 <div class="section level3">
+<h3 id="plot-fixes-3-1-0">Plot fixes<a class="anchor" aria-label="anchor" href="#plot-fixes-3-1-0"></a></h3>
+<ul><li>Make <code><a href="../reference/fa_plot_best_dates.html">fa_plot_best_dates()</a></code> use <code><a href="../reference/fa_find_best_dates.html">fa_find_best_dates()</a></code> so <code>n</code>, ranking, and filter arguments are respected instead of plotting every raw flight.</li>
+<li>Exclude unavailable fares before plotting, avoiding missing-price subtitles and warnings from plot layers. Show five best options in the README example.</li>
+</ul></div>
+<div class="section level3">
 <h3 id="date-validation-3-1-0">Date validation<a class="anchor" aria-label="anchor" href="#date-validation-3-1-0"></a></h3>
 <ul><li>Validate calendar dates strictly and accept <code>Date</code> objects in single queries.</li>
 <li>Before starting Chrome, check every departure date against the observed Google Flights search window: today through 330 days ahead, inclusive. Errors show the offending date and the exact allowed range. Saved queries are rechecked at fetch time. Airline availability may vary within this window.</li>

@@ -45,8 +45,8 @@ fa_plot_best_dates(
 
   Additional arguments passed to
   [`fa_find_best_dates`](https://rempsyc.github.io/flightanalysis/reference/fa_find_best_dates.md)
-  if best_dates is a flight_results object, including
-  `excluded_airports` to filter out specific airport codes.
+  including `n` (default 10), `by`, `max_stops`, and
+  `excluded_airports`. Unavailable prices are excluded before ranking.
 
 ## Value
 

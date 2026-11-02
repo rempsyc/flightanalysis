@@ -12,6 +12,18 @@
   of text.
 - Add regression coverage using a captured Google Flights results page.
 
+### Plot fixes
+
+- Make
+  [`fa_plot_best_dates()`](https://rempsyc.github.io/flightanalysis/reference/fa_plot_best_dates.md)
+  use
+  [`fa_find_best_dates()`](https://rempsyc.github.io/flightanalysis/reference/fa_find_best_dates.md)
+  so `n`, ranking, and filter arguments are respected instead of
+  plotting every raw flight.
+- Exclude unavailable fares before plotting, avoiding missing-price
+  subtitles and warnings from plot layers. Show five best options in the
+  README example.
+
 ### Date validation
 
 - Validate calendar dates strictly and accept `Date` objects in single

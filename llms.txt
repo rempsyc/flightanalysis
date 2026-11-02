@@ -66,8 +66,8 @@ flights <- fa_fetch_flights(query)
 #>   Segment 1/2: NYC -> LON on 2026-12-04
 #>   [OK] Successfully parsed 23 flights
 #>   Segment 2/2: LON -> NYC on 2026-12-20
-#>   [OK] Successfully parsed 26 flights
-#>   [OK] Total flights retrieved: 49
+#>   [OK] Successfully parsed 28 flights
+#>   [OK] Total flights retrieved: 51
 
 # View the flight data
 head(flights$data[1:11]) |>
@@ -171,26 +171,16 @@ fa_plot_prices(flights,
 #> (`geom_segment()`).
 ```
 
-![plot of chunk plots](reference/figures/README-plots-1.png)
-
-plot of chunk plots
+![](reference/figures/README-plots-1.png)
 
 ``` r
 
 
 # Plot best travel dates
-fa_plot_best_dates(flights)
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_segment()`).
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_point()`).
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_text()`).
+fa_plot_best_dates(flights, n = 5)
 ```
 
-![plot of chunk plots](reference/figures/README-plots-2.png)
-
-plot of chunk plots
+![](reference/figures/README-plots-2.png)
 
 ### Saving plots
 
