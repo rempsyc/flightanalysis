@@ -18,6 +18,7 @@ prices from Google Flights.
 You can install the development version of flightanalysis from GitHub:
 
 ``` r
+
 install.packages('flightanalysis', 
   repos = c('https://rempsyc.r-universe.dev', 'https://cloud.r-project.org'))
 
@@ -31,6 +32,7 @@ remotes::install_github("rempsyc/flightanalysis")
 ### Loading the Package
 
 ``` r
+
 library(flightanalysis)
 ```
 
@@ -47,6 +49,7 @@ airports can be specified as a mix of Airport 3-letter codes, city
 3-letter codes, or city names.
 
 ``` r
+
 # Round-trip
 query <- fa_define_query("NYC", "London", "2025-12-20", "2026-01-05")
 
@@ -71,14 +74,14 @@ head(flights$data[1:11]) |>
   knitr::kable()
 ```
 
-| departure_date | departure_time | arrival_date | arrival_time | origin | origin_city | destination | destination_city | airlines                                                    | travel_time  | price |
-|:---------------|:---------------|:-------------|:-------------|:-------|:------------|:------------|:-----------------|:------------------------------------------------------------|:-------------|------:|
-| 2025-12-20     | 22:40          | 2025-12-21   | 11:05        | EWR    | Newark      | LHR         | London           | United, Lufthansa, Austrian, Brussels Airlines              | 7 hr 25 min  |   844 |
-| 2025-12-20     | 18:05          | 2025-12-21   | 06:00        | JFK    | New York    | LGW         | London           | Price graph                                                 | 6 hr 55 min  |   859 |
-| 2025-12-20     | 19:45          | 2025-12-22   | 07:10        | LGA    | New York    | LHR         | London           | Air Canada, United                                          | 30 hr 25 min |   354 |
-| 2025-12-20     | 19:20          | 2025-12-22   | 09:00        | JFK    | New York    | LGW         | London           | American, British Airways                                   | 32 hr 40 min |   480 |
-| 2025-12-20     | 06:55          | 2025-12-21   | 07:10        | EWR    | Newark      | LHR         | London           | Air Canada, United                                          | 19 hr 15 min |   728 |
-| 2025-12-20     | 15:04          | 2025-12-21   | 12:40        | LGA    | New York    | LCY         | London           | American, Aer Lingus, British Airways, Iberia, BA Cityflyer | 16 hr 36 min |   854 |
+| departure_date | departure_time | arrival_date | arrival_time | origin | origin_city | destination | destination_city | airlines | travel_time | price |
+|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|---:|
+| 2025-12-20 | 22:40 | 2025-12-21 | 11:05 | EWR | Newark | LHR | London | United, Lufthansa, Austrian, Brussels Airlines | 7 hr 25 min | 844 |
+| 2025-12-20 | 18:05 | 2025-12-21 | 06:00 | JFK | New York | LGW | London | Price graph | 6 hr 55 min | 859 |
+| 2025-12-20 | 19:45 | 2025-12-22 | 07:10 | LGA | New York | LHR | London | Air Canada, United | 30 hr 25 min | 354 |
+| 2025-12-20 | 19:20 | 2025-12-22 | 09:00 | JFK | New York | LGW | London | American, British Airways | 32 hr 40 min | 480 |
+| 2025-12-20 | 06:55 | 2025-12-21 | 07:10 | EWR | Newark | LHR | London | Air Canada, United | 19 hr 15 min | 728 |
+| 2025-12-20 | 15:04 | 2025-12-21 | 12:40 | LGA | New York | LCY | London | American, Aer Lingus, British Airways, Iberia, BA Cityflyer | 16 hr 36 min | 854 |
 
 The package supports multiple trip types:
 
@@ -96,6 +99,7 @@ The package supports flexible date search across multiple airports and
 dates:
 
 ``` r
+
 # Create query objects for multiple origins and dates
 queries <- fa_define_query_range(
   origin = c("BOM", "DEL"),
@@ -112,13 +116,14 @@ fa_summarize_prices(flights) |>
   knitr::kable()
 ```
 
-| City   | Origin | 2025-12-18 | 2025-12-19 | 2025-12-20 | 2025-12-21 | 2025-12-22 | Average_Price |
-|:-------|:-------|:-----------|:-----------|:-----------|:-----------|:-----------|:--------------|
-| Mumbai | BOM    | \$419      | \$503      | \$539      | \$465      | \$442      | \$474         |
-| Delhi  | DEL    | \$420      | \$420      | \$493      | \$510      | \$445      | \$458         |
-| Best   | Day    | X          |            |            |            |            |               |
+| City | Origin | 2025-12-18 | 2025-12-19 | 2025-12-20 | 2025-12-21 | 2025-12-22 | Average_Price |
+|:---|:---|:---|:---|:---|:---|:---|:---|
+| Mumbai | BOM | \$419 | \$503 | \$539 | \$465 | \$442 | \$474 |
+| Delhi | DEL | \$420 | \$420 | \$493 | \$510 | \$445 | \$458 |
+| Best | Day | X |  |  |  |  |  |
 
 ``` r
+
 
 # Find the cheapest dates
 fa_find_best_dates(
@@ -132,13 +137,13 @@ fa_find_best_dates(
   knitr::kable()
 ```
 
-| departure_date | departure_time | arrival_date | arrival_time | origin | price | num_stops | layover         | travel_time  | co2_emission_kg | airlines               | n_routes |
-|:---------------|:---------------|:-------------|:-------------|:-------|------:|----------:|:----------------|:-------------|----------------:|:-----------------------|---------:|
-| 2025-12-18     | 10:40          | 2025-12-18   | 19:30        | BOM    |   442 |         1 | 1 hr LHR        | 19 hr 20 min |             792 | Virgin Atlantic, Delta |        1 |
-| 2025-12-19     | 19:10          | 2025-12-19   | 06:00        | BOM    |   434 |         1 | 2 hr 40 min DEL | 21 hr 20 min |             991 | IndiGo, American       |        1 |
-| 2025-12-19     | 20:55          | 2025-12-19   | 09:00        | DEL    |   451 |         1 | 3 hr 30 min AUH | 22 hr 35 min |             843 | Etihad                 |        1 |
-| 2025-12-21     | 18:00          | 2025-12-22   | 06:00        | BOM    |   465 |         1 | 3 hr 40 min DEL | 22 hr 30 min |             991 | IndiGo, American       |        1 |
-| 2025-12-22     | 10:40          | 2025-12-22   | 22:55        | BOM    |   442 |         1 | 4 hr 25 min LHR | 22 hr 45 min |             796 | Virgin Atlantic, Delta |        1 |
+| departure_date | departure_time | arrival_date | arrival_time | origin | price | num_stops | layover | travel_time | co2_emission_kg | airlines | n_routes |
+|:---|:---|:---|:---|:---|---:|---:|:---|:---|---:|:---|---:|
+| 2025-12-18 | 10:40 | 2025-12-18 | 19:30 | BOM | 442 | 1 | 1 hr LHR | 19 hr 20 min | 792 | Virgin Atlantic, Delta | 1 |
+| 2025-12-19 | 19:10 | 2025-12-19 | 06:00 | BOM | 434 | 1 | 2 hr 40 min DEL | 21 hr 20 min | 991 | IndiGo, American | 1 |
+| 2025-12-19 | 20:55 | 2025-12-19 | 09:00 | DEL | 451 | 1 | 3 hr 30 min AUH | 22 hr 35 min | 843 | Etihad | 1 |
+| 2025-12-21 | 18:00 | 2025-12-22 | 06:00 | BOM | 465 | 1 | 3 hr 40 min DEL | 22 hr 30 min | 991 | IndiGo, American | 1 |
+| 2025-12-22 | 10:40 | 2025-12-22 | 22:55 | BOM | 442 | 1 | 4 hr 25 min LHR | 22 hr 45 min | 796 | Virgin Atlantic, Delta | 1 |
 
 ## Visualizing Price Data
 
@@ -146,6 +151,7 @@ The package includes plotting functions to visualize price trends and
 best dates:
 
 ``` r
+
 # Plot price trends across dates
 fa_plot_prices(flights, 
                title = "Flight Prices: BOM/DEL to JFK",
@@ -156,6 +162,7 @@ fa_plot_prices(flights,
 ![](reference/figures/README-plots-1.png)
 
 ``` r
+
 
 # Plot best travel dates
 fa_plot_best_dates(flights)

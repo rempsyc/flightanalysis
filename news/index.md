@@ -71,6 +71,7 @@ functions
 #### Example
 
 ``` r
+
 # Create queries for multiple origins
 queries <- fa_define_query_range(
   origin = c("BOM", "DEL"),
@@ -124,6 +125,7 @@ Identify cheapest travel dates across routes
 #### Example Usage
 
 ``` r
+
 library(flightanalysis)
 
 # Create a query
@@ -140,6 +142,7 @@ best <- fa_find_best_dates(result, n = 5)
 #### Date Range Search
 
 ``` r
+
 # Search multiple origins over a date range
 queries <- fa_define_query_range(
   origin = c("BOM", "DEL", "VNS"),
