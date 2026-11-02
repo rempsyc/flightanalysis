@@ -73,6 +73,19 @@ safe_as_integer <- function(x) {
   if (is.na(result)) NA_integer_ else result
 }
 
+#' Check whether a bare numeric token is likely to be a ticket price
+#'
+#' @param x Character string containing digits only
+#' @return Logical scalar
+#' @keywords internal
+is_likely_price_token <- function(x) {
+  value <- safe_as_integer(x)
+
+  # Avoid treating stray "0" / tiny metadata tokens as fares. Google Flights
+  # sometimes emits standalone numeric fragments before the real "$145" price.
+  !is.na(value) && value >= 20
+}
+
 #' Classify Flight Argument
 #'
 #' @param flight Flight object being constructed
@@ -149,7 +162,8 @@ classify_arg <- function(flight, arg) {
   } else if (
     grepl("^[0-9,]+$", arg) &&
       is.null(flight$price) &&
-      !is.null(flight$flight_time)
+      !is.null(flight$flight_time) &&
+      is_likely_price_token(arg)
   ) {
     # Check for price without dollar sign (but only if flight time already parsed)
     # This helps ensure we're getting the price field, not some other number
@@ -173,6 +187,7 @@ classify_arg <- function(flight, arg) {
     nchar(arg) > 0 &&
       arg != "Separate tickets booked together" &&
       arg != "Change of airport" &&
+      !grepl("^[0-9,]+$", arg) &&
       !grepl("CO2e?", arg, ignore.case = TRUE) &&
       !grepl("carbon", arg, ignore.case = TRUE) &&
       !grepl("emission", arg, ignore.case = TRUE) &&
@@ -180,6 +195,7 @@ classify_arg <- function(flight, arg) {
       !grepl("absorb", arg, ignore.case = TRUE) &&
       !grepl("Other flights?", arg, ignore.case = TRUE) &&
       !grepl("Avoid", arg, ignore.case = TRUE) &&
+      !grepl("\\$", arg) &&
       !grepl("kg ", arg) &&
       !grepl("typical for this route", arg, ignore.case = TRUE)
   ) {
@@ -217,6 +233,7 @@ classify_arg <- function(flight, arg) {
 #' Print method for flight_record objects
 #' @param x A flight_record object
 #' @param ... Additional arguments (ignored)
+#' @export
 print.flight_record <- function(x, ...) {
   cat(sprintf(
     "flight_record(id:%d, %s-->%s on %s)\n",

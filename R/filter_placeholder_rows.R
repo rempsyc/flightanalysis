@@ -11,7 +11,13 @@
 #'
 #' @keywords internal
 filter_placeholder_rows <- function(data) {
-  if (nrow(data) == 0 || !"airlines" %in% names(data)) {
+  if (nrow(data) == 0) {
+    return(data)
+  }
+
+  data <- repair_misaligned_price_rows(data)
+
+  if (!"airlines" %in% names(data)) {
     return(data)
   }
 
@@ -24,17 +30,41 @@ filter_placeholder_rows <- function(data) {
 
   # Create filter condition
   keep_rows <- rep(TRUE, nrow(data))
+  airline_values <- ifelse(is.na(data$airlines), "__missing_airline__", data$airlines)
 
   for (pattern in placeholder_patterns) {
-    keep_rows <- keep_rows & !grepl(pattern, data$airlines, ignore.case = TRUE)
+    keep_rows <- keep_rows & !grepl(pattern, airline_values, ignore.case = TRUE)
   }
 
   # Also filter out rows with NA prices
   if ("price" %in% names(data)) {
-    keep_rows <- keep_rows & !is.na(data$price)
+    keep_rows <- keep_rows & !is.na(data$price) & data$price > 0
   }
 
   return(data[keep_rows, , drop = FALSE])
+}
+
+#' Repair rows where a fare was scraped into the airlines column
+#'
+#' @param data A flight data frame
+#' @return A repaired flight data frame
+#' @keywords internal
+repair_misaligned_price_rows <- function(data) {
+  if (!all(c("airlines", "price") %in% names(data)) || nrow(data) == 0) {
+    return(data)
+  }
+
+  airline_price_pattern <- "^\\s*\\$[0-9,]+\\s*$"
+  price_in_airlines <- grepl(airline_price_pattern, data$airlines)
+  needs_repair <- price_in_airlines & (is.na(data$price) | data$price <= 0)
+
+  if (any(needs_repair)) {
+    repaired_price <- suppressWarnings(as.numeric(gsub("[^0-9]", "", data$airlines[needs_repair])))
+    data$price[needs_repair] <- repaired_price
+    data$airlines[needs_repair] <- NA_character_
+  }
+
+  data
 }
 
 #' Extract and Process Data from Query Objects

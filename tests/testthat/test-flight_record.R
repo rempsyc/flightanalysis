@@ -31,6 +31,21 @@ test_that("Flight parses price correctly", {
   expect_equal(flight2$price, 1250)
 })
 
+test_that("Flight does not treat stray zero tokens as fare prices", {
+  flight <- flight_record(
+    "2025-07-20",
+    "JFKIST",
+    "9:00AM",
+    "10:35AM",
+    "1 hr 35 min",
+    "0",
+    "$145"
+  )
+
+  expect_equal(flight$price, 145)
+  expect_false(identical(flight$price, 0L))
+})
+
 test_that("Flight parses stops correctly", {
   flight1 <- flight_record("2025-07-20", "JFKIST", "Nonstop")
   expect_equal(flight1$num_stops, 0)

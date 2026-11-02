@@ -33,6 +33,21 @@ test_that("filter_placeholder_rows handles empty data", {
   expect_equal(nrow(filtered), 0)
 })
 
+test_that("filter_placeholder_rows repairs fares scraped into airlines", {
+  sample_data <- data.frame(
+    airlines = c("$145", "Air Canada", "Price graph"),
+    price = c(0, 220, 0),
+    stringsAsFactors = FALSE
+  )
+
+  filtered <- flightanalysis:::filter_placeholder_rows(sample_data)
+
+  expect_equal(nrow(filtered), 2)
+  expect_true(145 %in% filtered$price)
+  expect_true(220 %in% filtered$price)
+  expect_true(all(filtered$price > 0))
+})
+
 test_that("extract_data_from_scrapes processes query objects correctly", {
   # Create mock query objects with data (using real structure)
   query1 <- list(
