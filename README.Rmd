@@ -117,7 +117,7 @@ fa_find_best_dates(
 
 The package includes plotting functions to visualize price trends and best dates:
 
-```{r plots, eval=TRUE}
+```{r plots, eval=TRUE, fig.width=10, fig.height=6, fig.cap=""}
 # Plot price trends across dates
 fa_plot_prices(flights, 
                title = "Flight Prices: BOM/DEL to JFK",
@@ -125,7 +125,7 @@ fa_plot_prices(flights,
                annotate_col = "travel_time")
 
 # Plot best travel dates
-fa_plot_best_dates(flights)
+fa_plot_best_dates(flights, n = 5)
 ```
 
 ### Saving plots

@@ -1,3 +1,28 @@
+test_that("best-dates plots rank, limit, and filter the same options as the table", {
+  skip_if_not_installed("ggplot2")
+  skip_if_not_installed("scales")
+  data <- data.frame(
+    departure_date = rep("2026-12-20", 14),
+    departure_time = sprintf("%02d:00", 1:14),
+    origin = rep(c("BOM", "DEL"), 7), destination = "JFK",
+    airlines = "Airline", num_stops = rep(c(0, 1), 7),
+    price = c(NA, seq(800, 200, length.out = 12), Inf)
+  )
+  results <- structure(list(data = data), class = "flight_results")
+  plot <- fa_plot_best_dates(results)
+  expect_equal(nrow(plot$data), 10)
+  expect_true(all(is.finite(plot$data$price)))
+  expect_false(grepl("NA|Inf", plot$labels$subtitle))
+  expect_warning(ggplot2::ggplot_build(plot), NA)
+  filtered <- fa_plot_best_dates(results, n = 3, max_stops = 0)
+  expected <- fa_find_best_dates(results, n = 3, max_stops = 0)
+  expect_equal(sort(filtered$data$price), sort(expected$price))
+  expect_equal(nrow(filtered$data), 3)
+  expect_true(all(filtered$data$num_stops == 0))
+  results$data$price <- NA_real_
+  expect_error(fa_plot_best_dates(results), "no valid prices")
+})
+
 test_that("fa_plot_best_dates works with flight_results input", {
   skip_if_not_installed("ggplot2")
   skip_if_not_installed("scales")

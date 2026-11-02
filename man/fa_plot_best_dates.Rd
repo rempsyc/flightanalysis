@@ -24,8 +24,8 @@ readability in wide figures with many dates. Common values are 45 (diagonal) or
 90 (vertical). Default is 0 (horizontal labels).}
 
 \item{...}{Additional arguments passed to \code{\link{fa_find_best_dates}}
-if best_dates is a flight_results object, including \code{excluded_airports}
-to filter out specific airport codes.}
+including \code{n} (default 10), \code{by}, \code{max_stops}, and
+\code{excluded_airports}. Unavailable prices are excluded before ranking.}
 }
 \value{
 A ggplot2 plot object that can be further customized or saved.

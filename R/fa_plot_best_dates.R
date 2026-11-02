@@ -15,8 +15,8 @@
 #'   readability in wide figures with many dates. Common values are 45 (diagonal) or
 #'   90 (vertical). Default is 0 (horizontal labels).
 #' @param ... Additional arguments passed to \code{\link{fa_find_best_dates}}
-#'   if best_dates is a flight_results object, including \code{excluded_airports}
-#'   to filter out specific airport codes.
+#'   including \code{n} (default 10), \code{by}, \code{max_stops}, and
+#'   \code{excluded_airports}. Unavailable prices are excluded before ranking.
 #'
 #' @return A ggplot2 plot object that can be further customized or saved.
 #'
@@ -72,8 +72,17 @@ fa_plot_best_dates <- function(
     stop("No data to plot after filtering")
   }
 
-  # Prepare data for plotting
-  plot_data <- flight_results$data
+  # Rank and filter through the same function used for the best-dates table.
+  # Previously ... was ignored and every raw flight was plotted.
+  valid <- is.finite(flight_results$data$price) & flight_results$data$price > 0
+  flight_results$data <- flight_results$data[valid, , drop = FALSE]
+  if (nrow(flight_results$data) == 0) {
+    stop("No data to plot after filtering: no valid prices available.", call. = FALSE)
+  }
+  plot_data <- fa_find_best_dates(flight_results, ...)
+  if (nrow(plot_data) == 0) {
+    stop("No data to plot after filtering", call. = FALSE)
+  }
 
   # Create date labels
   if ("departure_date" %in% names(plot_data)) {
