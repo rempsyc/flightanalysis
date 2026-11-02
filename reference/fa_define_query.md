@@ -23,7 +23,10 @@ fa_define_query(...)
   city names. Format depends on trip type: - One-way: origin, dest,
   date - Round-trip: origin, dest, date_leave, date_return - Chain-trip:
   org1, dest1, date1, org2, dest2, date2, ... - Perfect-chain: org1,
-  date1, org2, date2, ..., final_dest
+  date1, org2, date2, ..., final_dest Dates accept Date objects or
+  strings in YYYY-MM-DD format. Query creation validates calendar dates;
+  fa_fetch_flights() checks the current search window (today through 330
+  days ahead) before accessing Google Flights.
 
 ## Value
 
@@ -33,34 +36,34 @@ A flight query object (S3 class "flight_query")
 
 ``` r
 # One-way trip with airport codes
-fa_define_query("JFK", "BOS", "2025-12-20")
+fa_define_query("JFK", "BOS", Sys.Date() + 32)
 #> Flight Query( {Not Yet Fetched}
-#> 2025-12-20: JFK --> BOS
+#> 2026-12-04: JFK --> BOS
 #> )
 
 # One-way trip with city codes
-fa_define_query("NYC", "LON", "2025-12-20")
+fa_define_query("NYC", "LON", Sys.Date() + 32)
 #> Flight Query( {Not Yet Fetched}
-#> 2025-12-20: NYC --> LON
+#> 2026-12-04: NYC --> LON
 #> )
 
 # One-way trip with full city names (auto-converted)
-fa_define_query("New York", "Istanbul", "2025-12-20")
+fa_define_query("New York", "Istanbul", Sys.Date() + 32)
 #> Flight Query( {Not Yet Fetched}
-#> 2025-12-20: NYC --> IST
+#> 2026-12-04: NYC --> IST
 #> )
 
 # Round-trip with mixed formats
-fa_define_query("JFK", "Paris", "2025-12-20", "2025-12-25")
+fa_define_query("JFK", "Paris", Sys.Date() + 32, Sys.Date() + 39)
 #> Flight Query( {Not Yet Fetched}
-#> 2025-12-20: JFK --> PAR
-#> 2025-12-25: PAR --> JFK
+#> 2026-12-04: JFK --> PAR
+#> 2026-12-11: PAR --> JFK
 #> )
 
 # Chain-trip
-fa_define_query("JFK", "YYZ", "2025-12-20", "RDU", "LGA", "2025-12-25")
+fa_define_query("JFK", "YYZ", Sys.Date() + 32, "RDU", "LGA", Sys.Date() + 39)
 #> Flight Query( {Not Yet Fetched}
-#> 2025-12-20: JFK --> YYZ
-#> 2025-12-25: RDU --> LGA
+#> 2026-12-04: JFK --> YYZ
+#> 2026-12-11: RDU --> LGA
 #> )
 ```

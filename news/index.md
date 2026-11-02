@@ -1,6 +1,41 @@
 # Changelog
 
-## flightanalysis 3.0.0 (Development)
+## flightanalysis 3.1.0
+
+### Scraper fixes
+
+- Parse dollar fares with currency prefixes such as `CA$` and `US$`.
+- Keep Google Flights history panels and price insights out of airline
+  labels.
+- Include the final result and support pages containing only one flight.
+- Wait for flight time fields rather than requiring more than 100 lines
+  of text.
+- Add regression coverage using a captured Google Flights results page.
+
+### Date validation
+
+- Validate calendar dates strictly and accept `Date` objects in single
+  queries.
+- Before starting Chrome, check every departure date against the
+  observed Google Flights search window: today through 330 days ahead,
+  inclusive. Errors show the offending date and the exact allowed range.
+  Saved queries are rechecked at fetch time. Airline availability may
+  vary within this window.
+- Add tests for window boundaries, leap years, invalid dates, and
+  expired queries.
+
+### Documentation
+
+- Use relative dates in runnable examples so they remain valid over
+  time.
+- Refresh fixed offline test dates to 2026 and regenerate README results
+  and plots.
+- Explain how to save plots as PNG and PDF with
+  [`ggplot2::ggsave()`](https://ggplot2.tidyverse.org/reference/ggsave.html),
+  including dimensions, resolution, output folders, and overwriting
+  existing files.
+
+## flightanalysis 3.0.0
 
 ### Breaking Changes
 

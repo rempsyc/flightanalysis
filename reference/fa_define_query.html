@@ -19,7 +19,7 @@ Common city codes include: &quot;NYC&quot; (New York), &quot;LON&quot; (London),
 
     <a class="navbar-brand me-2" href="../index.html">flightanalysis</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,7 +69,10 @@ city names. Format depends on trip type:
 - One-way: origin, dest, date
 - Round-trip: origin, dest, date_leave, date_return
 - Chain-trip: org1, dest1, date1, org2, dest2, date2, ...
-- Perfect-chain: org1, date1, org2, date2, ..., final_dest</p></dd>
+- Perfect-chain: org1, date1, org2, date2, ..., final_dest
+Dates accept Date objects or strings in YYYY-MM-DD format. Query creation
+validates calendar dates; fa_fetch_flights() checks the current search
+window (today through 330 days ahead) before accessing Google Flights.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -80,35 +83,35 @@ city names. Format depends on trip type:
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># One-way trip with airport codes</span></span></span>
-<span class="r-in"><span><span class="fu">fa_define_query</span><span class="op">(</span><span class="st">"JFK"</span>, <span class="st">"BOS"</span>, <span class="st">"2025-12-20"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">fa_define_query</span><span class="op">(</span><span class="st">"JFK"</span>, <span class="st">"BOS"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">32</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Flight Query( {Not Yet Fetched}</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-20: JFK --&gt; BOS</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-04: JFK --&gt; BOS</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> )</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># One-way trip with city codes</span></span></span>
-<span class="r-in"><span><span class="fu">fa_define_query</span><span class="op">(</span><span class="st">"NYC"</span>, <span class="st">"LON"</span>, <span class="st">"2025-12-20"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">fa_define_query</span><span class="op">(</span><span class="st">"NYC"</span>, <span class="st">"LON"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">32</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Flight Query( {Not Yet Fetched}</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-20: NYC --&gt; LON</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-04: NYC --&gt; LON</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> )</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># One-way trip with full city names (auto-converted)</span></span></span>
-<span class="r-in"><span><span class="fu">fa_define_query</span><span class="op">(</span><span class="st">"New York"</span>, <span class="st">"Istanbul"</span>, <span class="st">"2025-12-20"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">fa_define_query</span><span class="op">(</span><span class="st">"New York"</span>, <span class="st">"Istanbul"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">32</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Flight Query( {Not Yet Fetched}</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-20: NYC --&gt; IST</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-04: NYC --&gt; IST</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> )</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Round-trip with mixed formats</span></span></span>
-<span class="r-in"><span><span class="fu">fa_define_query</span><span class="op">(</span><span class="st">"JFK"</span>, <span class="st">"Paris"</span>, <span class="st">"2025-12-20"</span>, <span class="st">"2025-12-25"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">fa_define_query</span><span class="op">(</span><span class="st">"JFK"</span>, <span class="st">"Paris"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">32</span>, <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">39</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Flight Query( {Not Yet Fetched}</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-20: JFK --&gt; PAR</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-25: PAR --&gt; JFK</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-04: JFK --&gt; PAR</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-11: PAR --&gt; JFK</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> )</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Chain-trip</span></span></span>
-<span class="r-in"><span><span class="fu">fa_define_query</span><span class="op">(</span><span class="st">"JFK"</span>, <span class="st">"YYZ"</span>, <span class="st">"2025-12-20"</span>, <span class="st">"RDU"</span>, <span class="st">"LGA"</span>, <span class="st">"2025-12-25"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">fa_define_query</span><span class="op">(</span><span class="st">"JFK"</span>, <span class="st">"YYZ"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">32</span>, <span class="st">"RDU"</span>, <span class="st">"LGA"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">39</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Flight Query( {Not Yet Fetched}</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-20: JFK --&gt; YYZ</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-25: RDU --&gt; LGA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-04: JFK --&gt; YYZ</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-11: RDU --&gt; LGA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> )</span>
 </code></pre></div>
     </div>

@@ -19,7 +19,7 @@ You can install the development version of flightanalysis from GitHub:
 
 ``` r
 
-install.packages('flightanalysis', 
+install.packages('flightanalysis',
   repos = c('https://rempsyc.r-universe.dev', 'https://cloud.r-project.org'))
 
 # Or if you need the version from the last hour, install through `remotes`
@@ -51,23 +51,23 @@ airports can be specified as a mix of Airport 3-letter codes, city
 ``` r
 
 # Round-trip
-query <- fa_define_query("NYC", "London", "2025-12-20", "2026-01-05")
+query <- fa_define_query("NYC", "London", Sys.Date() + 32, Sys.Date() + 48)
 
 # Same as:
-query <- fa_define_query("New York", "LON", "2025-12-20", "2026-01-05")
+query <- fa_define_query("New York", "LON", Sys.Date() + 32, Sys.Date() + 48)
 query
 #> Flight Query( {Not Yet Fetched}
-#> 2025-12-20: NYC --> LON
-#> 2026-01-05: LON --> NYC
+#> 2026-12-04: NYC --> LON
+#> 2026-12-20: LON --> NYC
 #> )
 
 # Fetch the flight data
 flights <- fa_fetch_flights(query)
-#>   Segment 1/2: NYC -> LON on 2025-12-20
-#>   [OK] Successfully parsed 7 flights
-#>   Segment 2/2: LON -> NYC on 2026-01-05
-#>   [OK] Successfully parsed 18 flights
-#>   [OK] Total flights retrieved: 25
+#>   Segment 1/2: NYC -> LON on 2026-12-04
+#>   [OK] Successfully parsed 23 flights
+#>   Segment 2/2: LON -> NYC on 2026-12-20
+#>   [OK] Successfully parsed 26 flights
+#>   [OK] Total flights retrieved: 49
 
 # View the flight data
 head(flights$data[1:11]) |>
@@ -76,24 +76,34 @@ head(flights$data[1:11]) |>
 
 | departure_date | departure_time | arrival_date | arrival_time | origin | origin_city | destination | destination_city | airlines | travel_time | price |
 |:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|---:|
-| 2025-12-20 | 22:40 | 2025-12-21 | 11:05 | EWR | Newark | LHR | London | United, Lufthansa, Austrian, Brussels Airlines | 7 hr 25 min | 844 |
-| 2025-12-20 | 18:05 | 2025-12-21 | 06:00 | JFK | New York | LGW | London | Price graph | 6 hr 55 min | 859 |
-| 2025-12-20 | 19:45 | 2025-12-22 | 07:10 | LGA | New York | LHR | London | Air Canada, United | 30 hr 25 min | 354 |
-| 2025-12-20 | 19:20 | 2025-12-22 | 09:00 | JFK | New York | LGW | London | American, British Airways | 32 hr 40 min | 480 |
-| 2025-12-20 | 06:55 | 2025-12-21 | 07:10 | EWR | Newark | LHR | London | Air Canada, United | 19 hr 15 min | 728 |
-| 2025-12-20 | 15:04 | 2025-12-21 | 12:40 | LGA | New York | LCY | London | American, Aer Lingus, British Airways, Iberia, BA Cityflyer | 16 hr 36 min | 854 |
+| 2026-12-04 | 18:00 | 2026-12-05 | 06:20 | EWR | Newark | LHR | London | United, Lufthansa, Austrian, Brussels Airlines | 7 hr 20 min | 419 |
+| 2026-12-04 | 18:25 | 2026-12-05 | 06:20 | JFK | New York | LHR | London | American, British Airways, Iberia, Finnair, Alaska | 6 hr 55 min | 419 |
+| 2026-12-04 | 18:40 | 2026-12-05 | 06:40 | JFK | New York | LHR | London | British Airways, American, Finnair, Iberia, Alaska | 7 hr | 419 |
+| 2026-12-04 | 19:01 | 2026-12-05 | 07:15 | JFK | New York | LHR | London | Virgin AtlanticAir France, Delta, KLM | 7 hr 14 min | 419 |
+| 2026-12-04 | 20:00 | 2026-12-05 | 08:05 | JFK | New York | LHR | London | DeltaKLM, Virgin Atlantic | 7 hr 5 min | 419 |
+| 2026-12-04 | 17:02 | 2026-12-05 | 10:30 | LGA | New York | LHR | London | American, British Airways | 12 hr 28 min | 377 |
 
 The package supports multiple trip types:
 
-- **One-way**: `fa_define_query("JFK", "IST", "2025-07-20")`
+- **One-way**: `fa_define_query("JFK", "IST", Sys.Date() + 30)`
 - **Round-trip**:
-  `fa_define_query("JFK", "IST", "2025-07-20", "2025-08-20")`
+  `fa_define_query("JFK", "IST", Sys.Date() + 30, Sys.Date() + 60)`
 - **Chain-trip**:
-  `fa_define_query("JFK", "IST", "2025-08-20", "RDU", "LGA", "2025-12-25")`
+  `fa_define_query("JFK", "IST", Sys.Date() + 60, "RDU", "LGA", Sys.Date() + 90)`
 - **Perfect-chain**:
-  `fa_define_query("JFK", "2025-09-20", "IST", "2025-09-25", "JFK")`
+  `fa_define_query("JFK", Sys.Date() + 30, "IST", Sys.Date() + 35, "JFK")`
 
 ## Flexible Date Search
+
+Examples use dates relative to today so they stay runnable. Both `Date`
+objects (such as `Sys.Date() + 30`) and `"YYYY-MM-DD"` strings are
+accepted. Dates must be valid calendar dates. Before opening Chrome,
+[`fa_fetch_flights()`](https://rempsyc.github.io/flightanalysis/reference/fa_fetch_flights.md)
+checks every segment against today’s Google Flights search window: today
+through 330 days ahead, inclusive. Its error reports the offending date
+and the exact allowed range. Saved queries are checked again when
+fetched. Airline schedules and fares may be unavailable even inside this
+window; the observed Google limit may change.
 
 The package supports flexible date search across multiple airports and
 dates:
@@ -104,8 +114,8 @@ dates:
 queries <- fa_define_query_range(
   origin = c("BOM", "DEL"),
   dest = "JFK",
-  date_min = "2025-12-18",
-  date_max = "2025-12-22"
+  date_min = Sys.Date() + 30,
+  date_max = Sys.Date() + 34
 )
 
 # Fetch all flights
@@ -116,18 +126,18 @@ fa_summarize_prices(flights) |>
   knitr::kable()
 ```
 
-| City | Origin | 2025-12-18 | 2025-12-19 | 2025-12-20 | 2025-12-21 | 2025-12-22 | Average_Price |
+| City | Origin | 2026-12-02 | 2026-12-03 | 2026-12-04 | 2026-12-05 | 2026-12-06 | Average_Price |
 |:---|:---|:---|:---|:---|:---|:---|:---|
-| Mumbai | BOM | \$419 | \$503 | \$539 | \$465 | \$442 | \$474 |
-| Delhi | DEL | \$420 | \$420 | \$493 | \$510 | \$445 | \$458 |
-| Best | Day | X |  |  |  |  |  |
+| Mumbai | BOM | \$793 | \$764 | \$793 | \$793 | \$878 | \$804 |
+| Delhi | DEL | \$777 | \$765 | \$765 | \$835 | \$737 | \$776 |
+| Best | Day |  |  |  |  | X |  |
 
 ``` r
 
 
 # Find the cheapest dates
 fa_find_best_dates(
-  flights, 
+  flights,
   n = 5,
   by = "min",
   price_max = 1400,
@@ -139,11 +149,11 @@ fa_find_best_dates(
 
 | departure_date | departure_time | arrival_date | arrival_time | origin | price | num_stops | layover | travel_time | co2_emission_kg | airlines | n_routes |
 |:---|:---|:---|:---|:---|---:|---:|:---|:---|---:|:---|---:|
-| 2025-12-18 | 10:40 | 2025-12-18 | 19:30 | BOM | 442 | 1 | 1 hr LHR | 19 hr 20 min | 792 | Virgin Atlantic, Delta | 1 |
-| 2025-12-19 | 19:10 | 2025-12-19 | 06:00 | BOM | 434 | 1 | 2 hr 40 min DEL | 21 hr 20 min | 991 | IndiGo, American | 1 |
-| 2025-12-19 | 20:55 | 2025-12-19 | 09:00 | DEL | 451 | 1 | 3 hr 30 min AUH | 22 hr 35 min | 843 | Etihad | 1 |
-| 2025-12-21 | 18:00 | 2025-12-22 | 06:00 | BOM | 465 | 1 | 3 hr 40 min DEL | 22 hr 30 min | 991 | IndiGo, American | 1 |
-| 2025-12-22 | 10:40 | 2025-12-22 | 22:55 | BOM | 442 | 1 | 4 hr 25 min LHR | 22 hr 45 min | 796 | Virgin Atlantic, Delta | 1 |
+| 2026-12-03 | 02:00 | 2026-12-03 | 15:05 | BOM | 769 | 1 | 4 hr 45 min CDG | 23 hr 35 min | 794 | Air France, Delta | 2 |
+| 2026-12-03 | 02:30 | 2026-12-03 | 11:24 | BOM | 764 | 1 | 1 hr 10 min AMS | 19 hr 24 min | 823 | KLM, Delta | 1 |
+| 2026-12-03 | 05:10 | 2026-12-03 | 15:05 | DEL | 765 | 1 | 2 hr 10 min CDG | 20 hr 25 min | 783 | Air France, Delta | 3 |
+| 2026-12-04 | 01:25 | 2026-12-04 | 10:55 | DEL | 765 | 1 | 1 hr 50 min CDG | 20 hr | 778 | Air France, Delta | 3 |
+| 2026-12-07 | 20:05 | 2026-12-07 | 09:00 | DEL | 737 | 1 | 3 hr 45 min JED | 23 hr 25 min | 943 | Saudia | 1 |
 
 ## Visualizing Price Data
 
@@ -153,22 +163,75 @@ best dates:
 ``` r
 
 # Plot price trends across dates
-fa_plot_prices(flights, 
+fa_plot_prices(flights,
                title = "Flight Prices: BOM/DEL to JFK",
                size_by = "travel_time",
                annotate_col = "travel_time")
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_segment()`).
 ```
 
-![](reference/figures/README-plots-1.png)
+![plot of chunk plots](reference/figures/README-plots-1.png)
+
+plot of chunk plots
 
 ``` r
 
 
 # Plot best travel dates
 fa_plot_best_dates(flights)
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_segment()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_point()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_text()`).
 ```
 
-![](reference/figures/README-plots-2.png)
+![plot of chunk plots](reference/figures/README-plots-2.png)
+
+plot of chunk plots
+
+### Saving plots
+
+Both plotting functions return a ggplot object. Save the plot in a
+variable, then pass it explicitly to
+[`ggplot2::ggsave()`](https://ggplot2.tidyverse.org/reference/ggsave.html)
+so you save the intended plot. The examples below use the `flights`
+results created above.
+
+``` r
+
+# Save a PNG image for a report or presentation
+price_plot <- fa_plot_prices(flights)
+ggplot2::ggsave(
+  "flight-prices.png", plot = price_plot,
+  width = 10, height = 6, units = "in", dpi = 300, bg = "white"
+)
+
+# Save the same plot as a PDF, which stays sharp when resized
+ggplot2::ggsave(
+  "flight-prices.pdf", plot = price_plot,
+  width = 10, height = 6, units = "in", bg = "white"
+)
+
+# Save a plot from the other plotting function
+best_dates_plot <- fa_plot_best_dates(flights)
+ggplot2::ggsave(
+  "best-travel-dates.png", plot = best_dates_plot,
+  width = 10, height = 6, units = "in", dpi = 300, bg = "white"
+)
+```
+
+Files are saved in your current working folder; run
+[`getwd()`](https://rdrr.io/r/base/getwd.html) to see its location. To
+choose a different folder, create it first and supply its path, for
+example `"C:/Users/your-name/Pictures/flight-prices.png"`. Saving to an
+existing filename overwrites that file. Change `width` and `height` to
+adjust the plot size; `dpi = 300` sets the PNG resolution. The filename
+extension selects the format. See the [ggsave
+documentation](https://ggplot2.tidyverse.org/reference/ggsave.html) for
+more options.
 
 ## Original Python Package
 

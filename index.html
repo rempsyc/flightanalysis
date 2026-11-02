@@ -27,7 +27,7 @@
 
     <a class="navbar-brand me-2" href="index.html">flightanalysis</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,7 +74,7 @@
 </h2>
 <p>You can install the development version of flightanalysis from GitHub:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'flightanalysis'</span>, </span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'flightanalysis'</span>,</span>
 <span>  repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'https://rempsyc.r-universe.dev'</span>, <span class="st">'https://cloud.r-project.org'</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Or if you need the version from the last hour, install through `remotes`</span></span>
@@ -96,40 +96,40 @@
 <p>The main scraping function that makes up the backbone of most functionalities is <code><a href="reference/fa_define_query.html">fa_define_query()</a></code>. It serves as a data object, preserving the flight information as well as meta-data from your query. <code><a href="reference/fa_fetch_flights.html">fa_fetch_flights()</a></code> then fetches flight information from that query. Origin and destination airports can be specified as a mix of Airport 3-letter codes, city 3-letter codes, or city names.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Round-trip</span></span>
-<span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_define_query.html">fa_define_query</a></span><span class="op">(</span><span class="st">"NYC"</span>, <span class="st">"London"</span>, <span class="st">"2025-12-20"</span>, <span class="st">"2026-01-05"</span><span class="op">)</span></span>
+<span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_define_query.html">fa_define_query</a></span><span class="op">(</span><span class="st">"NYC"</span>, <span class="st">"London"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">32</span>, <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">48</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Same as:</span></span>
-<span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_define_query.html">fa_define_query</a></span><span class="op">(</span><span class="st">"New York"</span>, <span class="st">"LON"</span>, <span class="st">"2025-12-20"</span>, <span class="st">"2026-01-05"</span><span class="op">)</span></span>
+<span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_define_query.html">fa_define_query</a></span><span class="op">(</span><span class="st">"New York"</span>, <span class="st">"LON"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">32</span>, <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">48</span><span class="op">)</span></span>
 <span><span class="va">query</span></span>
 <span><span class="co">#&gt; Flight Query( {Not Yet Fetched}</span></span>
-<span><span class="co">#&gt; 2025-12-20: NYC --&gt; LON</span></span>
-<span><span class="co">#&gt; 2026-01-05: LON --&gt; NYC</span></span>
+<span><span class="co">#&gt; 2026-12-04: NYC --&gt; LON</span></span>
+<span><span class="co">#&gt; 2026-12-20: LON --&gt; NYC</span></span>
 <span><span class="co">#&gt; )</span></span>
 <span></span>
 <span><span class="co"># Fetch the flight data</span></span>
 <span><span class="va">flights</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_fetch_flights.html">fa_fetch_flights</a></span><span class="op">(</span><span class="va">query</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   Segment 1/2: NYC -&gt; LON on 2025-12-20</span></span>
-<span><span class="co">#&gt;   [OK] Successfully parsed 7 flights</span></span>
-<span><span class="co">#&gt;   Segment 2/2: LON -&gt; NYC on 2026-01-05</span></span>
-<span><span class="co">#&gt;   [OK] Successfully parsed 18 flights</span></span>
-<span><span class="co">#&gt;   [OK] Total flights retrieved: 25</span></span>
+<span><span class="co">#&gt;   Segment 1/2: NYC -&gt; LON on 2026-12-04</span></span>
+<span><span class="co">#&gt;   [OK] Successfully parsed 23 flights</span></span>
+<span><span class="co">#&gt;   Segment 2/2: LON -&gt; NYC on 2026-12-20</span></span>
+<span><span class="co">#&gt;   [OK] Successfully parsed 26 flights</span></span>
+<span><span class="co">#&gt;   [OK] Total flights retrieved: 49</span></span>
 <span></span>
 <span><span class="co"># View the flight data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">flights</span><span class="op">$</span><span class="va">data</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">11</span><span class="op">]</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
+<table style="width:100%;" class="table">
 <colgroup>
+<col width="8%">
+<col width="8%">
+<col width="7%">
+<col width="7%">
+<col width="4%">
+<col width="6%">
+<col width="6%">
 <col width="9%">
-<col width="9%">
-<col width="9%">
-<col width="9%">
-<col width="9%">
-<col width="9%">
-<col width="9%">
-<col width="9%">
-<col width="9%">
-<col width="9%">
-<col width="9%">
+<col width="29%">
+<col width="7%">
+<col width="3%">
 </colgroup>
 <thead><tr>
 <th align="left">departure_date</th>
@@ -146,98 +146,98 @@
 </tr></thead>
 <tbody>
 <tr>
-<td align="left">2025-12-20</td>
-<td align="left">22:40</td>
-<td align="left">2025-12-21</td>
-<td align="left">11:05</td>
+<td align="left">2026-12-04</td>
+<td align="left">18:00</td>
+<td align="left">2026-12-05</td>
+<td align="left">06:20</td>
 <td align="left">EWR</td>
 <td align="left">Newark</td>
 <td align="left">LHR</td>
 <td align="left">London</td>
 <td align="left">United, Lufthansa, Austrian, Brussels Airlines</td>
-<td align="left">7 hr 25 min</td>
-<td align="right">844</td>
+<td align="left">7 hr 20 min</td>
+<td align="right">419</td>
 </tr>
 <tr>
-<td align="left">2025-12-20</td>
-<td align="left">18:05</td>
-<td align="left">2025-12-21</td>
-<td align="left">06:00</td>
+<td align="left">2026-12-04</td>
+<td align="left">18:25</td>
+<td align="left">2026-12-05</td>
+<td align="left">06:20</td>
 <td align="left">JFK</td>
-<td align="left">New York</td>
-<td align="left">LGW</td>
-<td align="left">London</td>
-<td align="left">Price graph</td>
-<td align="left">6 hr 55 min</td>
-<td align="right">859</td>
-</tr>
-<tr>
-<td align="left">2025-12-20</td>
-<td align="left">19:45</td>
-<td align="left">2025-12-22</td>
-<td align="left">07:10</td>
-<td align="left">LGA</td>
 <td align="left">New York</td>
 <td align="left">LHR</td>
 <td align="left">London</td>
-<td align="left">Air Canada, United</td>
-<td align="left">30 hr 25 min</td>
-<td align="right">354</td>
+<td align="left">American, British Airways, Iberia, Finnair, Alaska</td>
+<td align="left">6 hr 55 min</td>
+<td align="right">419</td>
 </tr>
 <tr>
-<td align="left">2025-12-20</td>
-<td align="left">19:20</td>
-<td align="left">2025-12-22</td>
-<td align="left">09:00</td>
+<td align="left">2026-12-04</td>
+<td align="left">18:40</td>
+<td align="left">2026-12-05</td>
+<td align="left">06:40</td>
 <td align="left">JFK</td>
 <td align="left">New York</td>
-<td align="left">LGW</td>
+<td align="left">LHR</td>
+<td align="left">London</td>
+<td align="left">British Airways, American, Finnair, Iberia, Alaska</td>
+<td align="left">7 hr</td>
+<td align="right">419</td>
+</tr>
+<tr>
+<td align="left">2026-12-04</td>
+<td align="left">19:01</td>
+<td align="left">2026-12-05</td>
+<td align="left">07:15</td>
+<td align="left">JFK</td>
+<td align="left">New York</td>
+<td align="left">LHR</td>
+<td align="left">London</td>
+<td align="left">Virgin AtlanticAir France, Delta, KLM</td>
+<td align="left">7 hr 14 min</td>
+<td align="right">419</td>
+</tr>
+<tr>
+<td align="left">2026-12-04</td>
+<td align="left">20:00</td>
+<td align="left">2026-12-05</td>
+<td align="left">08:05</td>
+<td align="left">JFK</td>
+<td align="left">New York</td>
+<td align="left">LHR</td>
+<td align="left">London</td>
+<td align="left">DeltaKLM, Virgin Atlantic</td>
+<td align="left">7 hr 5 min</td>
+<td align="right">419</td>
+</tr>
+<tr>
+<td align="left">2026-12-04</td>
+<td align="left">17:02</td>
+<td align="left">2026-12-05</td>
+<td align="left">10:30</td>
+<td align="left">LGA</td>
+<td align="left">New York</td>
+<td align="left">LHR</td>
 <td align="left">London</td>
 <td align="left">American, British Airways</td>
-<td align="left">32 hr 40 min</td>
-<td align="right">480</td>
-</tr>
-<tr>
-<td align="left">2025-12-20</td>
-<td align="left">06:55</td>
-<td align="left">2025-12-21</td>
-<td align="left">07:10</td>
-<td align="left">EWR</td>
-<td align="left">Newark</td>
-<td align="left">LHR</td>
-<td align="left">London</td>
-<td align="left">Air Canada, United</td>
-<td align="left">19 hr 15 min</td>
-<td align="right">728</td>
-</tr>
-<tr>
-<td align="left">2025-12-20</td>
-<td align="left">15:04</td>
-<td align="left">2025-12-21</td>
-<td align="left">12:40</td>
-<td align="left">LGA</td>
-<td align="left">New York</td>
-<td align="left">LCY</td>
-<td align="left">London</td>
-<td align="left">American, Aer Lingus, British Airways, Iberia, BA Cityflyer</td>
-<td align="left">16 hr 36 min</td>
-<td align="right">854</td>
+<td align="left">12 hr 28 min</td>
+<td align="right">377</td>
 </tr>
 </tbody>
 </table>
 <p>The package supports multiple trip types:</p>
 <ul>
 <li>
-<strong>One-way</strong>: <code>fa_define_query("JFK", "IST", "2025-07-20")</code>
+<strong>One-way</strong>: <code>fa_define_query("JFK", "IST", Sys.Date() + 30)</code>
 </li>
 <li>
-<strong>Round-trip</strong>: <code>fa_define_query("JFK", "IST", "2025-07-20", "2025-08-20")</code>
+<strong>Round-trip</strong>: <code>fa_define_query("JFK", "IST", Sys.Date() + 30, Sys.Date() + 60)</code>
 </li>
 <li>
-<strong>Chain-trip</strong>: <code>fa_define_query("JFK", "IST", "2025-08-20", "RDU", "LGA", "2025-12-25")</code>
+<strong>Chain-trip</strong>: <code>fa_define_query("JFK", "IST", Sys.Date() + 60, "RDU", "LGA", Sys.Date() + 90)</code>
 </li>
 <li>
-<strong>Perfect-chain</strong>: <code>fa_define_query("JFK", "2025-09-20", "IST", "2025-09-25", "JFK")</code>
+<strong>Perfect-chain</strong>: <code>fa_define_query("JFK", Sys.Date() + 30, "IST", Sys.Date() + 35, "JFK")</code>
 </li>
 </ul>
 </div>
@@ -245,14 +245,15 @@
 <div class="section level2">
 <h2 id="flexible-date-search">Flexible Date Search<a class="anchor" aria-label="anchor" href="#flexible-date-search"></a>
 </h2>
+<p>Examples use dates relative to today so they stay runnable. Both <code>Date</code> objects (such as <code>Sys.Date() + 30</code>) and <code>"YYYY-MM-DD"</code> strings are accepted. Dates must be valid calendar dates. Before opening Chrome, <code><a href="reference/fa_fetch_flights.html">fa_fetch_flights()</a></code> checks every segment against today’s Google Flights search window: today through 330 days ahead, inclusive. Its error reports the offending date and the exact allowed range. Saved queries are checked again when fetched. Airline schedules and fares may be unavailable even inside this window; the observed Google limit may change.</p>
 <p>The package supports flexible date search across multiple airports and dates:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create query objects for multiple origins and dates</span></span>
 <span><span class="va">queries</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_define_query_range.html">fa_define_query_range</a></span><span class="op">(</span></span>
 <span>  origin <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BOM"</span>, <span class="st">"DEL"</span><span class="op">)</span>,</span>
 <span>  dest <span class="op">=</span> <span class="st">"JFK"</span>,</span>
-<span>  date_min <span class="op">=</span> <span class="st">"2025-12-18"</span>,</span>
-<span>  date_max <span class="op">=</span> <span class="st">"2025-12-22"</span></span>
+<span>  date_min <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">30</span>,</span>
+<span>  date_max <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">34</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Fetch all flights</span></span>
@@ -261,56 +262,56 @@
 <span><span class="co"># Create summary table (City × Date with prices)</span></span>
 <span><span class="fu"><a href="reference/fa_summarize_prices.html">fa_summarize_prices</a></span><span class="op">(</span><span class="va">flights</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
+<table style="width:100%;" class="table">
 <colgroup>
-<col width="12%">
-<col width="12%">
-<col width="12%">
-<col width="12%">
-<col width="12%">
-<col width="12%">
-<col width="12%">
-<col width="12%">
+<col width="8%">
+<col width="8%">
+<col width="13%">
+<col width="13%">
+<col width="13%">
+<col width="13%">
+<col width="13%">
+<col width="16%">
 </colgroup>
 <thead><tr>
 <th align="left">City</th>
 <th align="left">Origin</th>
-<th align="left">2025-12-18</th>
-<th align="left">2025-12-19</th>
-<th align="left">2025-12-20</th>
-<th align="left">2025-12-21</th>
-<th align="left">2025-12-22</th>
+<th align="left">2026-12-02</th>
+<th align="left">2026-12-03</th>
+<th align="left">2026-12-04</th>
+<th align="left">2026-12-05</th>
+<th align="left">2026-12-06</th>
 <th align="left">Average_Price</th>
 </tr></thead>
 <tbody>
 <tr>
 <td align="left">Mumbai</td>
 <td align="left">BOM</td>
-<td align="left">$419</td>
-<td align="left">$503</td>
-<td align="left">$539</td>
-<td align="left">$465</td>
-<td align="left">$442</td>
-<td align="left">$474</td>
+<td align="left">$793</td>
+<td align="left">$764</td>
+<td align="left">$793</td>
+<td align="left">$793</td>
+<td align="left">$878</td>
+<td align="left">$804</td>
 </tr>
 <tr>
 <td align="left">Delhi</td>
 <td align="left">DEL</td>
-<td align="left">$420</td>
-<td align="left">$420</td>
-<td align="left">$493</td>
-<td align="left">$510</td>
-<td align="left">$445</td>
-<td align="left">$458</td>
+<td align="left">$777</td>
+<td align="left">$765</td>
+<td align="left">$765</td>
+<td align="left">$835</td>
+<td align="left">$737</td>
+<td align="left">$776</td>
 </tr>
 <tr>
 <td align="left">Best</td>
 <td align="left">Day</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
 <td align="left">X</td>
-<td align="left"></td>
-<td align="left"></td>
-<td align="left"></td>
-<td align="left"></td>
 <td align="left"></td>
 </tr>
 </tbody>
@@ -319,7 +320,7 @@
 <code class="sourceCode R"><span></span>
 <span><span class="co"># Find the cheapest dates</span></span>
 <span><span class="fu"><a href="reference/fa_find_best_dates.html">fa_find_best_dates</a></span><span class="op">(</span></span>
-<span>  <span class="va">flights</span>, </span>
+<span>  <span class="va">flights</span>,</span>
 <span>  n <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  by <span class="op">=</span> <span class="st">"min"</span>,</span>
 <span>  price_max <span class="op">=</span> <span class="fl">1400</span>,</span>
@@ -327,20 +328,20 @@
 <span>  travel_time_max <span class="op">=</span> <span class="fl">26</span>  <span class="co"># 26 hours (numeric = hours, or use "26 hr" format)</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
+<table style="width:100%;" class="table">
 <colgroup>
+<col width="9%">
+<col width="9%">
 <col width="8%">
 <col width="8%">
+<col width="4%">
+<col width="3%">
+<col width="6%">
+<col width="10%">
 <col width="8%">
-<col width="8%">
-<col width="8%">
-<col width="8%">
-<col width="8%">
-<col width="8%">
-<col width="8%">
-<col width="8%">
-<col width="8%">
-<col width="8%">
+<col width="10%">
+<col width="11%">
+<col width="5%">
 </colgroup>
 <thead><tr>
 <th align="left">departure_date</th>
@@ -358,73 +359,73 @@
 </tr></thead>
 <tbody>
 <tr>
-<td align="left">2025-12-18</td>
-<td align="left">10:40</td>
-<td align="left">2025-12-18</td>
-<td align="left">19:30</td>
+<td align="left">2026-12-03</td>
+<td align="left">02:00</td>
+<td align="left">2026-12-03</td>
+<td align="left">15:05</td>
 <td align="left">BOM</td>
-<td align="right">442</td>
+<td align="right">769</td>
 <td align="right">1</td>
-<td align="left">1 hr LHR</td>
-<td align="left">19 hr 20 min</td>
-<td align="right">792</td>
-<td align="left">Virgin Atlantic, Delta</td>
+<td align="left">4 hr 45 min CDG</td>
+<td align="left">23 hr 35 min</td>
+<td align="right">794</td>
+<td align="left">Air France, Delta</td>
+<td align="right">2</td>
+</tr>
+<tr>
+<td align="left">2026-12-03</td>
+<td align="left">02:30</td>
+<td align="left">2026-12-03</td>
+<td align="left">11:24</td>
+<td align="left">BOM</td>
+<td align="right">764</td>
+<td align="right">1</td>
+<td align="left">1 hr 10 min AMS</td>
+<td align="left">19 hr 24 min</td>
+<td align="right">823</td>
+<td align="left">KLM, Delta</td>
 <td align="right">1</td>
 </tr>
 <tr>
-<td align="left">2025-12-19</td>
-<td align="left">19:10</td>
-<td align="left">2025-12-19</td>
-<td align="left">06:00</td>
-<td align="left">BOM</td>
-<td align="right">434</td>
+<td align="left">2026-12-03</td>
+<td align="left">05:10</td>
+<td align="left">2026-12-03</td>
+<td align="left">15:05</td>
+<td align="left">DEL</td>
+<td align="right">765</td>
 <td align="right">1</td>
-<td align="left">2 hr 40 min DEL</td>
-<td align="left">21 hr 20 min</td>
-<td align="right">991</td>
-<td align="left">IndiGo, American</td>
-<td align="right">1</td>
+<td align="left">2 hr 10 min CDG</td>
+<td align="left">20 hr 25 min</td>
+<td align="right">783</td>
+<td align="left">Air France, Delta</td>
+<td align="right">3</td>
 </tr>
 <tr>
-<td align="left">2025-12-19</td>
-<td align="left">20:55</td>
-<td align="left">2025-12-19</td>
+<td align="left">2026-12-04</td>
+<td align="left">01:25</td>
+<td align="left">2026-12-04</td>
+<td align="left">10:55</td>
+<td align="left">DEL</td>
+<td align="right">765</td>
+<td align="right">1</td>
+<td align="left">1 hr 50 min CDG</td>
+<td align="left">20 hr</td>
+<td align="right">778</td>
+<td align="left">Air France, Delta</td>
+<td align="right">3</td>
+</tr>
+<tr>
+<td align="left">2026-12-07</td>
+<td align="left">20:05</td>
+<td align="left">2026-12-07</td>
 <td align="left">09:00</td>
 <td align="left">DEL</td>
-<td align="right">451</td>
+<td align="right">737</td>
 <td align="right">1</td>
-<td align="left">3 hr 30 min AUH</td>
-<td align="left">22 hr 35 min</td>
-<td align="right">843</td>
-<td align="left">Etihad</td>
-<td align="right">1</td>
-</tr>
-<tr>
-<td align="left">2025-12-21</td>
-<td align="left">18:00</td>
-<td align="left">2025-12-22</td>
-<td align="left">06:00</td>
-<td align="left">BOM</td>
-<td align="right">465</td>
-<td align="right">1</td>
-<td align="left">3 hr 40 min DEL</td>
-<td align="left">22 hr 30 min</td>
-<td align="right">991</td>
-<td align="left">IndiGo, American</td>
-<td align="right">1</td>
-</tr>
-<tr>
-<td align="left">2025-12-22</td>
-<td align="left">10:40</td>
-<td align="left">2025-12-22</td>
-<td align="left">22:55</td>
-<td align="left">BOM</td>
-<td align="right">442</td>
-<td align="right">1</td>
-<td align="left">4 hr 25 min LHR</td>
-<td align="left">22 hr 45 min</td>
-<td align="right">796</td>
-<td align="left">Virgin Atlantic, Delta</td>
+<td align="left">3 hr 45 min JED</td>
+<td align="left">23 hr 25 min</td>
+<td align="right">943</td>
+<td align="left">Saudia</td>
 <td align="right">1</td>
 </tr>
 </tbody>
@@ -436,16 +437,58 @@
 <p>The package includes plotting functions to visualize price trends and best dates:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Plot price trends across dates</span></span>
-<span><span class="fu"><a href="reference/fa_plot_prices.html">fa_plot_prices</a></span><span class="op">(</span><span class="va">flights</span>, </span>
+<span><span class="fu"><a href="reference/fa_plot_prices.html">fa_plot_prices</a></span><span class="op">(</span><span class="va">flights</span>,</span>
 <span>               title <span class="op">=</span> <span class="st">"Flight Prices: BOM/DEL to JFK"</span>,</span>
 <span>               size_by <span class="op">=</span> <span class="st">"travel_time"</span>,</span>
-<span>               annotate_col <span class="op">=</span> <span class="st">"travel_time"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-plots-1.png" width="100%"></p>
+<span>               annotate_col <span class="op">=</span> <span class="st">"travel_time"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: Removed 1 row containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_segment()`).</span></span></code></pre></div>
+<div class="figure">
+<img src="reference/figures/README-plots-1.png" alt="plot of chunk plots" width="100%"><p class="caption">
+plot of chunk plots
+</p>
+</div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># Plot best travel dates</span></span>
-<span><span class="fu"><a href="reference/fa_plot_best_dates.html">fa_plot_best_dates</a></span><span class="op">(</span><span class="va">flights</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-plots-2.png" width="100%"></p>
+<span><span class="fu"><a href="reference/fa_plot_best_dates.html">fa_plot_best_dates</a></span><span class="op">(</span><span class="va">flights</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: Removed 1 row containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_segment()`).</span></span>
+<span><span class="co">#&gt; Warning: Removed 1 row containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_point()`).</span></span>
+<span><span class="co">#&gt; Warning: Removed 1 row containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_text()`).</span></span></code></pre></div>
+<div class="figure">
+<img src="reference/figures/README-plots-2.png" alt="plot of chunk plots" width="100%"><p class="caption">
+plot of chunk plots
+</p>
+</div>
+<div class="section level3">
+<h3 id="saving-plots">Saving plots<a class="anchor" aria-label="anchor" href="#saving-plots"></a>
+</h3>
+<p>Both plotting functions return a ggplot object. Save the plot in a variable, then pass it explicitly to <code><a href="https://ggplot2.tidyverse.org/reference/ggsave.html" class="external-link">ggplot2::ggsave()</a></code> so you save the intended plot. The examples below use the <code>flights</code> results created above.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Save a PNG image for a report or presentation</span></span>
+<span><span class="va">price_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_plot_prices.html">fa_plot_prices</a></span><span class="op">(</span><span class="va">flights</span><span class="op">)</span></span>
+<span><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html" class="external-link">ggsave</a></span><span class="op">(</span></span>
+<span>  <span class="st">"flight-prices.png"</span>, plot <span class="op">=</span> <span class="va">price_plot</span>,</span>
+<span>  width <span class="op">=</span> <span class="fl">10</span>, height <span class="op">=</span> <span class="fl">6</span>, units <span class="op">=</span> <span class="st">"in"</span>, dpi <span class="op">=</span> <span class="fl">300</span>, bg <span class="op">=</span> <span class="st">"white"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Save the same plot as a PDF, which stays sharp when resized</span></span>
+<span><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html" class="external-link">ggsave</a></span><span class="op">(</span></span>
+<span>  <span class="st">"flight-prices.pdf"</span>, plot <span class="op">=</span> <span class="va">price_plot</span>,</span>
+<span>  width <span class="op">=</span> <span class="fl">10</span>, height <span class="op">=</span> <span class="fl">6</span>, units <span class="op">=</span> <span class="st">"in"</span>, bg <span class="op">=</span> <span class="st">"white"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Save a plot from the other plotting function</span></span>
+<span><span class="va">best_dates_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fa_plot_best_dates.html">fa_plot_best_dates</a></span><span class="op">(</span><span class="va">flights</span><span class="op">)</span></span>
+<span><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html" class="external-link">ggsave</a></span><span class="op">(</span></span>
+<span>  <span class="st">"best-travel-dates.png"</span>, plot <span class="op">=</span> <span class="va">best_dates_plot</span>,</span>
+<span>  width <span class="op">=</span> <span class="fl">10</span>, height <span class="op">=</span> <span class="fl">6</span>, units <span class="op">=</span> <span class="st">"in"</span>, dpi <span class="op">=</span> <span class="fl">300</span>, bg <span class="op">=</span> <span class="st">"white"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Files are saved in your current working folder; run <code><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd()</a></code> to see its location. To choose a different folder, create it first and supply its path, for example <code>"C:/Users/your-name/Pictures/flight-prices.png"</code>. Saving to an existing filename overwrites that file. Change <code>width</code> and <code>height</code> to adjust the plot size; <code>dpi = 300</code> sets the PNG resolution. The filename extension selects the format. See the <a href="https://ggplot2.tidyverse.org/reference/ggsave.html" class="external-link">ggsave documentation</a> for more options.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="original-python-package">Original Python Package<a class="anchor" aria-label="anchor" href="#original-python-package"></a>

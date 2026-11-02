@@ -54,97 +54,97 @@ query objects, one per origin-destination pair (named as "ORIGIN-DEST").
 fa_define_query_range(
   origin = c("BOM", "DEL"),
   dest = "JFK",
-  date_min = "2025-12-18",
-  date_max = "2025-12-20"
+  date_min = Sys.Date() + 30,
+  date_max = Sys.Date() + 32
 )
 #> $BOM
 #> Flight Query( {Not Yet Fetched}
-#> 2025-12-18: BOM --> JFK
-#> 2025-12-19: BOM --> JFK
-#> 2025-12-20: BOM --> JFK
+#> 2026-12-02: BOM --> JFK
+#> 2026-12-03: BOM --> JFK
+#> 2026-12-04: BOM --> JFK
 #> )
 #> $DEL
 #> Flight Query( {Not Yet Fetched}
-#> 2025-12-18: DEL --> JFK
-#> 2025-12-19: DEL --> JFK
-#> 2025-12-20: DEL --> JFK
+#> 2026-12-02: DEL --> JFK
+#> 2026-12-03: DEL --> JFK
+#> 2026-12-04: DEL --> JFK
 #> )
 
 # City codes
 fa_define_query_range(
   origin = "NYC",
   dest = "LON",
-  date_min = "2025-12-18",
-  date_max = "2025-12-20"
+  date_min = Sys.Date() + 30,
+  date_max = Sys.Date() + 32
 )
 #> Flight Query( {Not Yet Fetched}
-#> 2025-12-18: NYC --> LON
-#> 2025-12-19: NYC --> LON
-#> 2025-12-20: NYC --> LON
+#> 2026-12-02: NYC --> LON
+#> 2026-12-03: NYC --> LON
+#> 2026-12-04: NYC --> LON
 #> )
 
 # Full city names (auto-converted to airport codes)
 fa_define_query_range(
   origin = "New York",
   dest = "Istanbul",
-  date_min = "2025-12-18",
-  date_max = "2025-12-20"
+  date_min = Sys.Date() + 30,
+  date_max = Sys.Date() + 32
 )
 #> Flight Query( {Not Yet Fetched}
-#> 2025-12-18: NYC --> IST
-#> 2025-12-19: NYC --> IST
-#> 2025-12-20: NYC --> IST
+#> 2026-12-02: NYC --> IST
+#> 2026-12-03: NYC --> IST
+#> 2026-12-04: NYC --> IST
 #> )
 
 # Mix formats - codes and city names
 fa_define_query_range(
   origin = c("New York", "JFK", "BOM", "Patna"),
   dest = "JFK",
-  date_min = "2025-12-18",
-  date_max = "2025-12-20"
+  date_min = Sys.Date() + 30,
+  date_max = Sys.Date() + 32
 )
 #> $NYC
 #> Flight Query( {Not Yet Fetched}
-#> 2025-12-18: NYC --> JFK
-#> 2025-12-19: NYC --> JFK
-#> 2025-12-20: NYC --> JFK
+#> 2026-12-02: NYC --> JFK
+#> 2026-12-03: NYC --> JFK
+#> 2026-12-04: NYC --> JFK
 #> )
 #> $JFK
 #> Flight Query( {Not Yet Fetched}
-#> 2025-12-18: JFK --> JFK
-#> 2025-12-19: JFK --> JFK
-#> 2025-12-20: JFK --> JFK
+#> 2026-12-02: JFK --> JFK
+#> 2026-12-03: JFK --> JFK
+#> 2026-12-04: JFK --> JFK
 #> )
 #> $BOM
 #> Flight Query( {Not Yet Fetched}
-#> 2025-12-18: BOM --> JFK
-#> 2025-12-19: BOM --> JFK
-#> 2025-12-20: BOM --> JFK
+#> 2026-12-02: BOM --> JFK
+#> 2026-12-03: BOM --> JFK
+#> 2026-12-04: BOM --> JFK
 #> )
 #> $PAT
 #> Flight Query( {Not Yet Fetched}
-#> 2025-12-18: PAT --> JFK
-#> 2025-12-19: PAT --> JFK
-#> 2025-12-20: PAT --> JFK
+#> 2026-12-02: PAT --> JFK
+#> 2026-12-03: PAT --> JFK
+#> 2026-12-04: PAT --> JFK
 #> )
 
 # Multiple destinations
 fa_define_query_range(
   origin = "BOM",
   dest = c("JFK", "LON"),
-  date_min = "2025-12-18",
-  date_max = "2025-12-20"
+  date_min = Sys.Date() + 30,
+  date_max = Sys.Date() + 32
 )
 #> $JFK
 #> Flight Query( {Not Yet Fetched}
-#> 2025-12-18: BOM --> JFK
-#> 2025-12-19: BOM --> JFK
-#> 2025-12-20: BOM --> JFK
+#> 2026-12-02: BOM --> JFK
+#> 2026-12-03: BOM --> JFK
+#> 2026-12-04: BOM --> JFK
 #> )
 #> $LON
 #> Flight Query( {Not Yet Fetched}
-#> 2025-12-18: BOM --> LON
-#> 2025-12-19: BOM --> LON
-#> 2025-12-20: BOM --> LON
+#> 2026-12-02: BOM --> LON
+#> 2026-12-03: BOM --> LON
+#> 2026-12-04: BOM --> LON
 #> )
 ```

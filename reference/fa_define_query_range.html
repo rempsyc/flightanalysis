@@ -23,7 +23,7 @@ Full city names are automatically converted to all associated airport codes
 
     <a class="navbar-brand me-2" href="../index.html">flightanalysis</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -103,98 +103,98 @@ separate query objects will be created for each origin-destination pair.</p></dd
 <span class="r-in"><span><span class="fu">fa_define_query_range</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  origin <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BOM"</span>, <span class="st">"DEL"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  dest <span class="op">=</span> <span class="st">"JFK"</span>,</span></span>
-<span class="r-in"><span>  date_min <span class="op">=</span> <span class="st">"2025-12-18"</span>,</span></span>
-<span class="r-in"><span>  date_max <span class="op">=</span> <span class="st">"2025-12-20"</span></span></span>
+<span class="r-in"><span>  date_min <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">30</span>,</span></span>
+<span class="r-in"><span>  date_max <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">32</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $BOM</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Flight Query( {Not Yet Fetched}</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-18: BOM --&gt; JFK</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-19: BOM --&gt; JFK</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-20: BOM --&gt; JFK</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-02: BOM --&gt; JFK</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-03: BOM --&gt; JFK</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-04: BOM --&gt; JFK</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> )</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $DEL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Flight Query( {Not Yet Fetched}</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-18: DEL --&gt; JFK</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-19: DEL --&gt; JFK</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-20: DEL --&gt; JFK</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-02: DEL --&gt; JFK</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-03: DEL --&gt; JFK</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-04: DEL --&gt; JFK</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> )</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># City codes</span></span></span>
 <span class="r-in"><span><span class="fu">fa_define_query_range</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  origin <span class="op">=</span> <span class="st">"NYC"</span>,</span></span>
 <span class="r-in"><span>  dest <span class="op">=</span> <span class="st">"LON"</span>,</span></span>
-<span class="r-in"><span>  date_min <span class="op">=</span> <span class="st">"2025-12-18"</span>,</span></span>
-<span class="r-in"><span>  date_max <span class="op">=</span> <span class="st">"2025-12-20"</span></span></span>
+<span class="r-in"><span>  date_min <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">30</span>,</span></span>
+<span class="r-in"><span>  date_max <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">32</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Flight Query( {Not Yet Fetched}</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-18: NYC --&gt; LON</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-19: NYC --&gt; LON</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-20: NYC --&gt; LON</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-02: NYC --&gt; LON</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-03: NYC --&gt; LON</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-04: NYC --&gt; LON</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> )</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Full city names (auto-converted to airport codes)</span></span></span>
 <span class="r-in"><span><span class="fu">fa_define_query_range</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  origin <span class="op">=</span> <span class="st">"New York"</span>,</span></span>
 <span class="r-in"><span>  dest <span class="op">=</span> <span class="st">"Istanbul"</span>,</span></span>
-<span class="r-in"><span>  date_min <span class="op">=</span> <span class="st">"2025-12-18"</span>,</span></span>
-<span class="r-in"><span>  date_max <span class="op">=</span> <span class="st">"2025-12-20"</span></span></span>
+<span class="r-in"><span>  date_min <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">30</span>,</span></span>
+<span class="r-in"><span>  date_max <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">32</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Flight Query( {Not Yet Fetched}</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-18: NYC --&gt; IST</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-19: NYC --&gt; IST</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-20: NYC --&gt; IST</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-02: NYC --&gt; IST</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-03: NYC --&gt; IST</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-04: NYC --&gt; IST</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> )</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Mix formats - codes and city names</span></span></span>
 <span class="r-in"><span><span class="fu">fa_define_query_range</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  origin <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"New York"</span>, <span class="st">"JFK"</span>, <span class="st">"BOM"</span>, <span class="st">"Patna"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  dest <span class="op">=</span> <span class="st">"JFK"</span>,</span></span>
-<span class="r-in"><span>  date_min <span class="op">=</span> <span class="st">"2025-12-18"</span>,</span></span>
-<span class="r-in"><span>  date_max <span class="op">=</span> <span class="st">"2025-12-20"</span></span></span>
+<span class="r-in"><span>  date_min <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">30</span>,</span></span>
+<span class="r-in"><span>  date_max <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">32</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $NYC</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Flight Query( {Not Yet Fetched}</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-18: NYC --&gt; JFK</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-19: NYC --&gt; JFK</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-20: NYC --&gt; JFK</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-02: NYC --&gt; JFK</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-03: NYC --&gt; JFK</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-04: NYC --&gt; JFK</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> )</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $JFK</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Flight Query( {Not Yet Fetched}</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-18: JFK --&gt; JFK</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-19: JFK --&gt; JFK</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-20: JFK --&gt; JFK</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-02: JFK --&gt; JFK</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-03: JFK --&gt; JFK</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-04: JFK --&gt; JFK</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> )</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $BOM</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Flight Query( {Not Yet Fetched}</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-18: BOM --&gt; JFK</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-19: BOM --&gt; JFK</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-20: BOM --&gt; JFK</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-02: BOM --&gt; JFK</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-03: BOM --&gt; JFK</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-04: BOM --&gt; JFK</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> )</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $PAT</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Flight Query( {Not Yet Fetched}</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-18: PAT --&gt; JFK</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-19: PAT --&gt; JFK</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-20: PAT --&gt; JFK</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-02: PAT --&gt; JFK</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-03: PAT --&gt; JFK</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-04: PAT --&gt; JFK</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> )</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Multiple destinations</span></span></span>
 <span class="r-in"><span><span class="fu">fa_define_query_range</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  origin <span class="op">=</span> <span class="st">"BOM"</span>,</span></span>
 <span class="r-in"><span>  dest <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JFK"</span>, <span class="st">"LON"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  date_min <span class="op">=</span> <span class="st">"2025-12-18"</span>,</span></span>
-<span class="r-in"><span>  date_max <span class="op">=</span> <span class="st">"2025-12-20"</span></span></span>
+<span class="r-in"><span>  date_min <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">30</span>,</span></span>
+<span class="r-in"><span>  date_max <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">32</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $JFK</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Flight Query( {Not Yet Fetched}</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-18: BOM --&gt; JFK</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-19: BOM --&gt; JFK</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-20: BOM --&gt; JFK</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-02: BOM --&gt; JFK</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-03: BOM --&gt; JFK</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-04: BOM --&gt; JFK</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> )</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $LON</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Flight Query( {Not Yet Fetched}</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-18: BOM --&gt; LON</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-19: BOM --&gt; LON</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2025-12-20: BOM --&gt; LON</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-02: BOM --&gt; LON</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-03: BOM --&gt; LON</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-12-04: BOM --&gt; LON</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> )</span>
 </code></pre></div>
     </div>

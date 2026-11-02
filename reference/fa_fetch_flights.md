@@ -17,7 +17,9 @@ fa_fetch_flights(queries, verbose = TRUE)
 - queries:
 
   A flight query object or list of query objects (from
-  fa_define_query())
+  fa_define_query()). All departure dates must be between today and 330
+  days ahead (inclusive). This is checked again at fetch time, so saved
+  queries may expire.
 
 - verbose:
 
@@ -34,7 +36,9 @@ fa_fetch_flights(query)\`
 
 ``` r
 if (FALSE) { # \dontrun{
-query <- fa_define_query("NYC", "IST", "2025-12-20", "2025-12-22")
+departure <- Sys.Date() + 30
+query <- fa_define_query("NYC", "IST", as.character(departure),
+                         as.character(departure + 7))
 flights <- fa_fetch_flights(query)
 flights$data
 } # }

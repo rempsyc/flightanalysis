@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">flightanalysis</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,7 +32,30 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="3.0.0" id="flightanalysis-300-development">flightanalysis 3.0.0 (Development)<a class="anchor" aria-label="anchor" href="#flightanalysis-300-development"></a></h2>
+<h2 class="pkg-version" data-toc-text="3.1.0" id="flightanalysis-310">flightanalysis 3.1.0<a class="anchor" aria-label="anchor" href="#flightanalysis-310"></a></h2>
+<div class="section level3">
+<h3 id="scraper-fixes-3-1-0">Scraper fixes<a class="anchor" aria-label="anchor" href="#scraper-fixes-3-1-0"></a></h3>
+<ul><li>Parse dollar fares with currency prefixes such as <code>CA$</code> and <code>US$</code>.</li>
+<li>Keep Google Flights history panels and price insights out of airline labels.</li>
+<li>Include the final result and support pages containing only one flight.</li>
+<li>Wait for flight time fields rather than requiring more than 100 lines of text.</li>
+<li>Add regression coverage using a captured Google Flights results page.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="date-validation-3-1-0">Date validation<a class="anchor" aria-label="anchor" href="#date-validation-3-1-0"></a></h3>
+<ul><li>Validate calendar dates strictly and accept <code>Date</code> objects in single queries.</li>
+<li>Before starting Chrome, check every departure date against the observed Google Flights search window: today through 330 days ahead, inclusive. Errors show the offending date and the exact allowed range. Saved queries are rechecked at fetch time. Airline availability may vary within this window.</li>
+<li>Add tests for window boundaries, leap years, invalid dates, and expired queries.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-3-1-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-3-1-0"></a></h3>
+<ul><li>Use relative dates in runnable examples so they remain valid over time.</li>
+<li>Refresh fixed offline test dates to 2026 and regenerate README results and plots.</li>
+<li>Explain how to save plots as PNG and PDF with <code><a href="https://ggplot2.tidyverse.org/reference/ggsave.html" class="external-link">ggplot2::ggsave()</a></code>, including dimensions, resolution, output folders, and overwriting existing files.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="3.0.0" id="flightanalysis-300">flightanalysis 3.0.0<a class="anchor" aria-label="anchor" href="#flightanalysis-300"></a></h2>
 <div class="section level3">
 <h3 id="breaking-changes-3-0-0">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-3-0-0"></a></h3>
 <ul><li>
