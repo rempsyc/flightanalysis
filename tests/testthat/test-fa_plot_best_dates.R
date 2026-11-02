@@ -5,9 +5,9 @@ test_that("fa_plot_best_dates works with flight_results input", {
   # Create mock flight_results object
   query1 <- list(
     data = data.frame(
-      departure_date = c("2025-12-18", "2025-12-19", "2025-12-20"),
+      departure_date = c("2026-12-18", "2026-12-19", "2026-12-20"),
       departure_time = c("10:00", "12:00", "14:00"),
-      arrival_date = c("2025-12-18", "2025-12-19", "2025-12-20"),
+      arrival_date = c("2026-12-18", "2026-12-19", "2026-12-20"),
       arrival_time = rep("18:00", 3),
       origin = rep("BOM", 3),
       destination = rep("JFK", 3),
@@ -37,9 +37,9 @@ test_that("fa_plot_best_dates works with flight_results object", {
   # Create mock flight_results object
   query1 <- list(
     data = data.frame(
-      departure_date = c("2025-12-18", "2025-12-19", "2025-12-20"),
+      departure_date = c("2026-12-18", "2026-12-19", "2026-12-20"),
       departure_time = rep("10:00", 3),
-      arrival_date = c("2025-12-18", "2025-12-19", "2025-12-20"),
+      arrival_date = c("2026-12-18", "2026-12-19", "2026-12-20"),
       arrival_time = rep("18:00", 3),
       origin = rep("BOM", 3),
       destination = rep("JFK", 3),
@@ -52,9 +52,9 @@ test_that("fa_plot_best_dates works with flight_results object", {
 
   query2 <- list(
     data = data.frame(
-      departure_date = c("2025-12-18", "2025-12-19", "2025-12-20"),
+      departure_date = c("2026-12-18", "2026-12-19", "2026-12-20"),
       departure_time = rep("12:00", 3),
-      arrival_date = c("2025-12-18", "2025-12-19", "2025-12-20"),
+      arrival_date = c("2026-12-18", "2026-12-19", "2026-12-20"),
       arrival_time = rep("20:00", 3),
       origin = rep("DEL", 3),
       destination = rep("JFK", 3),
@@ -84,9 +84,9 @@ test_that("fa_plot_best_dates handles custom title", {
   # Create mock flight_results object
   query1 <- list(
     data = data.frame(
-      departure_date = c("2025-12-18"),
+      departure_date = c("2026-12-18"),
       departure_time = c("10:00"),
-      arrival_date = c("2025-12-18"),
+      arrival_date = c("2026-12-18"),
       arrival_time = c("18:00"),
       origin = c("BOM"),
       destination = c("JFK"),
@@ -116,9 +116,9 @@ test_that("fa_plot_best_dates handles single date", {
   # Create mock flight_results object
   query1 <- list(
     data = data.frame(
-      departure_date = c("2025-12-18"),
+      departure_date = c("2026-12-18"),
       departure_time = c("10:00"),
-      arrival_date = c("2025-12-18"),
+      arrival_date = c("2026-12-18"),
       arrival_time = c("18:00"),
       origin = c("BOM"),
       destination = c("JFK"),
@@ -180,9 +180,9 @@ test_that("fa_plot_best_dates handles multiple origins", {
   # Create flight_results with multiple origins
   query1 <- list(
     data = data.frame(
-      departure_date = c("2025-12-18", "2025-12-19"),
+      departure_date = c("2026-12-18", "2026-12-19"),
       departure_time = c("10:00", "14:00"),
-      arrival_date = c("2025-12-18", "2025-12-19"),
+      arrival_date = c("2026-12-18", "2026-12-19"),
       arrival_time = c("18:00", "22:00"),
       origin = c("BOM", "BOM"),
       destination = c("JFK", "JFK"),
@@ -195,9 +195,9 @@ test_that("fa_plot_best_dates handles multiple origins", {
 
   query2 <- list(
     data = data.frame(
-      departure_date = c("2025-12-18", "2025-12-19"),
+      departure_date = c("2026-12-18", "2026-12-19"),
       departure_time = c("12:00", "16:00"),
-      arrival_date = c("2025-12-18", "2025-12-19"),
+      arrival_date = c("2026-12-18", "2026-12-19"),
       arrival_time = c("20:00", "00:00"),
       origin = c("DEL", "DEL"),
       destination = c("JFK", "JFK"),
@@ -227,9 +227,9 @@ test_that("fa_plot_best_dates handles x_axis_angle parameter", {
   # Create mock flight_results object
   query1 <- list(
     data = data.frame(
-      departure_date = c("2025-12-18", "2025-12-19", "2025-12-20"),
+      departure_date = c("2026-12-18", "2026-12-19", "2026-12-20"),
       departure_time = c("10:00", "12:00", "14:00"),
-      arrival_date = c("2025-12-18", "2025-12-19", "2025-12-20"),
+      arrival_date = c("2026-12-18", "2026-12-19", "2026-12-20"),
       arrival_time = rep("18:00", 3),
       origin = rep("BOM", 3),
       destination = rep("JFK", 3),

@@ -43,6 +43,11 @@ colors and clear typography.
 # Plot best dates
 fa_plot_best_dates(sample_flight_results, n = 5)
 
+# Save a plot to the current working folder (see getwd())
+best_dates_plot <- fa_plot_best_dates(sample_flight_results)
+ggplot2::ggsave("best-travel-dates.png", plot = best_dates_plot,
+                width = 10, height = 6, units = "in", dpi = 300, bg = "white")
+
 # With filters
 fa_plot_best_dates(sample_flight_results, n = 5, max_stops = 0)
 

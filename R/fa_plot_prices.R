@@ -60,6 +60,13 @@
 #'
 #' @examples
 #' \dontrun{
+#' # Save a plot (flights is the result of fa_fetch_flights())
+#' price_plot <- fa_plot_prices(flights)
+#' ggplot2::ggsave("flight-prices.png", plot = price_plot,
+#'                 width = 10, height = 6, units = "in", dpi = 300, bg = "white")
+#' }
+#'
+#' \dontrun{
 #' # Basic plot with auto-generated title and subtitle
 #' fa_plot_prices(sample_flight_results)
 #'

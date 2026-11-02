@@ -3,8 +3,8 @@ test_that("fa_define_query_range creates valid query object for single origin", 
   query <- fa_define_query_range(
     origin = "BOM",
     dest = "JFK",
-    date_min = "2025-12-18",
-    date_max = "2025-12-20"
+    date_min = "2026-12-18",
+    date_max = "2026-12-20"
   )
 
   # Check it's a query object
@@ -34,8 +34,8 @@ test_that("fa_define_query_range creates list for multiple origins", {
   queries <- fa_define_query_range(
     origin = c("BOM", "DEL"),
     dest = "JFK",
-    date_min = "2025-12-18",
-    date_max = "2025-12-20"
+    date_min = "2026-12-18",
+    date_max = "2026-12-20"
   )
 
   # Check it's a list
@@ -76,8 +76,8 @@ test_that("fa_define_query_range accepts city codes", {
   query <- fa_define_query_range(
     origin = "NYC",
     dest = "JFK",
-    date_min = "2025-12-18",
-    date_max = "2025-12-20"
+    date_min = "2026-12-18",
+    date_max = "2026-12-20"
   )
 
   expect_true(inherits(query, "flight_query") || inherits(query, "Scrape"))
@@ -92,8 +92,8 @@ test_that("fa_define_query_range accepts full city names for single-airport citi
   query <- fa_define_query_range(
     origin = "Mumbai",
     dest = "JFK",
-    date_min = "2025-12-18",
-    date_max = "2025-12-20"
+    date_min = "2026-12-18",
+    date_max = "2026-12-20"
   )
 
   expect_true(inherits(query, "flight_query") || inherits(query, "Scrape"))
@@ -107,8 +107,8 @@ test_that("fa_define_query_range converts city names to metropolitan codes", {
   queries <- fa_define_query_range(
     origin = "New York",
     dest = "JFK",
-    date_min = "2025-12-18",
-    date_max = "2025-12-20"
+    date_min = "2026-12-18",
+    date_max = "2026-12-20"
   )
 
   # Should return a single flight_query object (since there's only one origin: NYC)
@@ -123,8 +123,8 @@ test_that("fa_define_query_range handles mixed formats", {
   queries <- fa_define_query_range(
     origin = c("NYC", "BOM"),
     dest = "JFK",
-    date_min = "2025-12-18",
-    date_max = "2025-12-19"
+    date_min = "2026-12-18",
+    date_max = "2026-12-19"
   )
 
   expect_true(is.list(queries))
@@ -137,8 +137,8 @@ test_that("fa_define_query_range removes duplicates", {
   queries <- fa_define_query_range(
     origin = c("BOM", "NYC", "NYC"),
     dest = "JFK",
-    date_min = "2025-12-18",
-    date_max = "2025-12-20"
+    date_min = "2026-12-18",
+    date_max = "2026-12-20"
   )
 
   # Should return list with BOM and NYC (NYC not duplicated)
@@ -153,8 +153,8 @@ test_that("fa_define_query_range validates inputs", {
     fa_define_query_range(
       origin = "BOM",
       dest = "JFK",
-      date_min = "2025-12-20",
-      date_max = "2025-12-18"
+      date_min = "2026-12-20",
+      date_max = "2026-12-18"
     ),
     "date_min must be before or equal to date_max"
   )
@@ -163,8 +163,8 @@ test_that("fa_define_query_range validates inputs", {
   expect_error(
     fa_define_query_range(
       dest = "JFK",
-      date_min = "2025-12-18",
-      date_max = "2025-12-20"
+      date_min = "2026-12-18",
+      date_max = "2026-12-20"
     ),
     "argument \"origin\" is missing"
   )
@@ -173,8 +173,8 @@ test_that("fa_define_query_range validates inputs", {
   expect_error(
     fa_define_query_range(
       origin = "BOM",
-      date_min = "2025-12-18",
-      date_max = "2025-12-20"
+      date_min = "2026-12-18",
+      date_max = "2026-12-20"
     ),
     "argument \"dest\" is missing"
   )
@@ -186,8 +186,8 @@ test_that("fa_define_query_range rejects unknown city names", {
     fa_define_query_range(
       origin = "BOM",
       dest = "New York City",
-      date_min = "2025-12-18",
-      date_max = "2025-12-20"
+      date_min = "2026-12-18",
+      date_max = "2026-12-20"
     ),
     "not found in airport database"
   )
@@ -199,8 +199,8 @@ test_that("fa_define_query_range handles city name destinations", {
   queries <- fa_define_query_range(
     origin = "BOM",
     dest = "New York",
-    date_min = "2025-12-18",
-    date_max = "2025-12-20"
+    date_min = "2026-12-18",
+    date_max = "2026-12-20"
   )
   
   # Should create a query successfully
@@ -215,8 +215,8 @@ test_that("fa_define_query_range creates list for multiple destinations", {
   queries <- fa_define_query_range(
     origin = "BOM",
     dest = c("JFK", "LON"),
-    date_min = "2025-12-18",
-    date_max = "2025-12-20"
+    date_min = "2026-12-18",
+    date_max = "2026-12-20"
   )
 
   # Check it's a list
@@ -250,8 +250,8 @@ test_that("fa_define_query_range creates list for multiple origins AND destinati
   queries <- fa_define_query_range(
     origin = c("BOM", "DEL"),
     dest = c("JFK", "LON"),
-    date_min = "2025-12-18",
-    date_max = "2025-12-19"
+    date_min = "2026-12-18",
+    date_max = "2026-12-19"
   )
 
   # Check it's a list with 4 queries (2 origins * 2 destinations)

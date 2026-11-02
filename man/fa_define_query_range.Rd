@@ -42,39 +42,39 @@ Full city names are automatically converted to all associated airport codes
 fa_define_query_range(
   origin = c("BOM", "DEL"),
   dest = "JFK",
-  date_min = "2025-12-18",
-  date_max = "2025-12-20"
+  date_min = Sys.Date() + 30,
+  date_max = Sys.Date() + 32
 )
 
 # City codes
 fa_define_query_range(
   origin = "NYC",
   dest = "LON",
-  date_min = "2025-12-18",
-  date_max = "2025-12-20"
+  date_min = Sys.Date() + 30,
+  date_max = Sys.Date() + 32
 )
 
 # Full city names (auto-converted to airport codes)
 fa_define_query_range(
   origin = "New York",
   dest = "Istanbul",
-  date_min = "2025-12-18",
-  date_max = "2025-12-20"
+  date_min = Sys.Date() + 30,
+  date_max = Sys.Date() + 32
 )
 
 # Mix formats - codes and city names
 fa_define_query_range(
   origin = c("New York", "JFK", "BOM", "Patna"),
   dest = "JFK",
-  date_min = "2025-12-18",
-  date_max = "2025-12-20"
+  date_min = Sys.Date() + 30,
+  date_max = Sys.Date() + 32
 )
 
 # Multiple destinations
 fa_define_query_range(
   origin = "BOM",
   dest = c("JFK", "LON"),
-  date_min = "2025-12-18",
-  date_max = "2025-12-20"
+  date_min = Sys.Date() + 30,
+  date_max = Sys.Date() + 32
 )
 }

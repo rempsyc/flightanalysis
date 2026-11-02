@@ -158,7 +158,7 @@ classify_arg <- function(flight, arg) {
     }
   } else if (grepl("\\$", arg) && is.null(flight$price)) {
     # Check for price with dollar sign
-    flight$price <- safe_as_integer(gsub("[\\$,]", "", arg))
+    flight$price <- safe_as_integer(sub("^([A-Z]{1,3})?\\$ *", "", arg))
   } else if (
     grepl("^[0-9,]+$", arg) &&
       is.null(flight$price) &&
@@ -184,6 +184,7 @@ classify_arg <- function(flight, arg) {
     # Check for stops with time
     flight$stops <- arg
   } else if (
+    is.null(flight$airline) &&
     nchar(arg) > 0 &&
       arg != "Separate tickets booked together" &&
       arg != "Change of airport" &&

@@ -33,40 +33,40 @@
 #' fa_define_query_range(
 #'   origin = c("BOM", "DEL"),
 #'   dest = "JFK",
-#'   date_min = "2025-12-18",
-#'   date_max = "2025-12-20"
+#'   date_min = Sys.Date() + 30,
+#'   date_max = Sys.Date() + 32
 #' )
 #'
 #' # City codes
 #' fa_define_query_range(
 #'   origin = "NYC",
 #'   dest = "LON",
-#'   date_min = "2025-12-18",
-#'   date_max = "2025-12-20"
+#'   date_min = Sys.Date() + 30,
+#'   date_max = Sys.Date() + 32
 #' )
 #'
 #' # Full city names (auto-converted to airport codes)
 #' fa_define_query_range(
 #'   origin = "New York",
 #'   dest = "Istanbul",
-#'   date_min = "2025-12-18",
-#'   date_max = "2025-12-20"
+#'   date_min = Sys.Date() + 30,
+#'   date_max = Sys.Date() + 32
 #' )
 #'
 #' # Mix formats - codes and city names
 #' fa_define_query_range(
 #'   origin = c("New York", "JFK", "BOM", "Patna"),
 #'   dest = "JFK",
-#'   date_min = "2025-12-18",
-#'   date_max = "2025-12-20"
+#'   date_min = Sys.Date() + 30,
+#'   date_max = Sys.Date() + 32
 #' )
 #'
 #' # Multiple destinations
 #' fa_define_query_range(
 #'   origin = "BOM",
 #'   dest = c("JFK", "LON"),
-#'   date_min = "2025-12-18",
-#'   date_max = "2025-12-20"
+#'   date_min = Sys.Date() + 30,
+#'   date_max = Sys.Date() + 32
 #' )
 fa_define_query_range <- function(origin, dest, date_min, date_max) {
   # Validate inputs
@@ -87,18 +87,10 @@ fa_define_query_range <- function(origin, dest, date_min, date_max) {
   # Also prefer metropolitan codes for destinations
   dest <- normalize_location_codes(dest, expand_cities = FALSE)
 
-  # Convert dates to Date objects if needed
-  if (is.character(date_min)) {
-    date_min <- as.Date(date_min)
-  }
-  if (is.character(date_max)) {
-    date_max <- as.Date(date_max)
-  }
-
-  if (!inherits(date_min, "Date") || !inherits(date_max, "Date")) {
-    stop(
-      "date_min and date_max must be Date objects or character strings in YYYY-MM-DD format"
-    )
+  date_min <- parse_flight_dates(date_min, "date_min")
+  date_max <- parse_flight_dates(date_max, "date_max")
+  if (length(date_min) != 1L || length(date_max) != 1L) {
+    stop("date_min and date_max must each be a single date", call. = FALSE)
   }
 
   if (date_min > date_max) {

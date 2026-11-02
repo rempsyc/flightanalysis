@@ -12,7 +12,10 @@ city names. Format depends on trip type:
 - One-way: origin, dest, date
 - Round-trip: origin, dest, date_leave, date_return
 - Chain-trip: org1, dest1, date1, org2, dest2, date2, ...
-- Perfect-chain: org1, date1, org2, date2, ..., final_dest}
+- Perfect-chain: org1, date1, org2, date2, ..., final_dest
+Dates accept Date objects or strings in YYYY-MM-DD format. Query creation
+validates calendar dates; fa_fetch_flights() checks the current search
+window (today through 330 days ahead) before accessing Google Flights.}
 }
 \value{
 A flight query object (S3 class "flight_query")
@@ -29,17 +32,17 @@ Common city codes include: "NYC" (New York), "LON" (London), "PAR" (Paris),
 }
 \examples{
 # One-way trip with airport codes
-fa_define_query("JFK", "BOS", "2025-12-20")
+fa_define_query("JFK", "BOS", Sys.Date() + 32)
 
 # One-way trip with city codes
-fa_define_query("NYC", "LON", "2025-12-20")
+fa_define_query("NYC", "LON", Sys.Date() + 32)
 
 # One-way trip with full city names (auto-converted)
-fa_define_query("New York", "Istanbul", "2025-12-20")
+fa_define_query("New York", "Istanbul", Sys.Date() + 32)
 
 # Round-trip with mixed formats
-fa_define_query("JFK", "Paris", "2025-12-20", "2025-12-25")
+fa_define_query("JFK", "Paris", Sys.Date() + 32, Sys.Date() + 39)
 
 # Chain-trip
-fa_define_query("JFK", "YYZ", "2025-12-20", "RDU", "LGA", "2025-12-25")
+fa_define_query("JFK", "YYZ", Sys.Date() + 32, "RDU", "LGA", Sys.Date() + 39)
 }

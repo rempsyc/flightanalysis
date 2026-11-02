@@ -53,12 +53,12 @@ test_that("extract_data_from_scrapes processes query objects correctly", {
   query1 <- list(
     data = data.frame(
       departure_datetime = as.POSIXct(c(
-        "2025-12-18 10:00:00",
-        "2025-12-19 11:00:00"
+        "2026-12-18 10:00:00",
+        "2026-12-19 11:00:00"
       )),
       arrival_datetime = as.POSIXct(c(
-        "2025-12-18 18:00:00",
-        "2025-12-19 19:00:00"
+        "2026-12-18 18:00:00",
+        "2026-12-19 19:00:00"
       )),
       origin = c("BOM", "BOM"),
       destination = c("JFK", "JFK"),
@@ -72,12 +72,12 @@ test_that("extract_data_from_scrapes processes query objects correctly", {
   query2 <- list(
     data = data.frame(
       departure_datetime = as.POSIXct(c(
-        "2025-12-18 12:00:00",
-        "2025-12-19 13:00:00"
+        "2026-12-18 12:00:00",
+        "2026-12-19 13:00:00"
       )),
       arrival_datetime = as.POSIXct(c(
-        "2025-12-18 20:00:00",
-        "2025-12-19 21:00:00"
+        "2026-12-18 20:00:00",
+        "2026-12-19 21:00:00"
       )),
       origin = c("DEL", "DEL"),
       destination = c("JFK", "JFK"),

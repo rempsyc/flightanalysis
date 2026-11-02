@@ -6,9 +6,9 @@ test_that("fa_plot_prices rejects summary table input", {
   summary <- data.frame(
     City = c("Mumbai", "Delhi"),
     Origin = c("BOM", "DEL"),
-    `2025-12-18` = c("$334", "$315"),
-    `2025-12-19` = c("$388", "$353"),
-    `2025-12-20` = c("$400", "$370"),
+    `2026-12-18` = c("$334", "$315"),
+    `2026-12-19` = c("$388", "$353"),
+    `2026-12-20` = c("$400", "$370"),
     Average_Price = c("$374", "$346"),
     check.names = FALSE,
     stringsAsFactors = FALSE
@@ -28,9 +28,9 @@ test_that("fa_plot_prices works with flight_results object", {
   # Create mock flight_results object
   query1 <- list(
     data = data.frame(
-      departure_date = rep(c("2025-12-18", "2025-12-19", "2025-12-20"), 1),
+      departure_date = rep(c("2026-12-18", "2026-12-19", "2026-12-20"), 1),
       departure_time = rep("10:00", 3),
-      arrival_date = rep(c("2025-12-18", "2025-12-19", "2025-12-20"), 1),
+      arrival_date = rep(c("2026-12-18", "2026-12-19", "2026-12-20"), 1),
       arrival_time = rep("18:00", 3),
       origin = rep("BOM", 3),
       destination = rep("JFK", 3),
@@ -43,9 +43,9 @@ test_that("fa_plot_prices works with flight_results object", {
 
   query2 <- list(
     data = data.frame(
-      departure_date = rep(c("2025-12-18", "2025-12-19", "2025-12-20"), 1),
+      departure_date = rep(c("2026-12-18", "2026-12-19", "2026-12-20"), 1),
       departure_time = rep("12:00", 3),
-      arrival_date = rep(c("2025-12-18", "2025-12-19", "2025-12-20"), 1),
+      arrival_date = rep(c("2026-12-18", "2026-12-19", "2026-12-20"), 1),
       arrival_time = rep("20:00", 3),
       origin = rep("DEL", 3),
       destination = rep("JFK", 3),
@@ -76,9 +76,9 @@ test_that("fa_plot_prices handles custom title", {
   # Create mock flight_results
   query <- list(
     data = data.frame(
-      departure_date = c("2025-12-18", "2025-12-19"),
+      departure_date = c("2026-12-18", "2026-12-19"),
       departure_time = rep("10:00", 2),
-      arrival_date = c("2025-12-18", "2025-12-19"),
+      arrival_date = c("2026-12-18", "2026-12-19"),
       arrival_time = rep("18:00", 2),
       origin = rep("BOM", 2),
       destination = rep("JFK", 2),
@@ -108,9 +108,9 @@ test_that("fa_plot_prices handles max and min annotations", {
   # Create mock flight_results
   query <- list(
     data = data.frame(
-      departure_date = c("2025-12-18", "2025-12-19"),
+      departure_date = c("2026-12-18", "2026-12-19"),
       departure_time = rep("10:00", 2),
-      arrival_date = c("2025-12-18", "2025-12-19"),
+      arrival_date = c("2026-12-18", "2026-12-19"),
       arrival_time = rep("18:00", 2),
       origin = rep("BOM", 2),
       destination = rep("JFK", 2),
@@ -163,9 +163,9 @@ test_that("fa_plot_prices handles single date", {
   # Create mock flight_results with single date
   query1 <- list(
     data = data.frame(
-      departure_date = "2025-12-18",
+      departure_date = "2026-12-18",
       departure_time = "10:00",
-      arrival_date = "2025-12-18",
+      arrival_date = "2026-12-18",
       arrival_time = "18:00",
       origin = "BOM",
       destination = "JFK",
@@ -178,9 +178,9 @@ test_that("fa_plot_prices handles single date", {
 
   query2 <- list(
     data = data.frame(
-      departure_date = "2025-12-18",
+      departure_date = "2026-12-18",
       departure_time = "12:00",
-      arrival_date = "2025-12-18",
+      arrival_date = "2026-12-18",
       arrival_time = "20:00",
       origin = "DEL",
       destination = "JFK",
@@ -210,9 +210,9 @@ test_that("fa_plot_prices handles size_by parameter", {
   # Create mock flight_results
   query1 <- list(
     data = data.frame(
-      departure_date = c("2025-12-18", "2025-12-19"),
+      departure_date = c("2026-12-18", "2026-12-19"),
       departure_time = rep("10:00", 2),
-      arrival_date = c("2025-12-18", "2025-12-19"),
+      arrival_date = c("2026-12-18", "2026-12-19"),
       arrival_time = rep("18:00", 2),
       origin = rep("BOM", 2),
       destination = rep("JFK", 2),
@@ -225,9 +225,9 @@ test_that("fa_plot_prices handles size_by parameter", {
 
   query2 <- list(
     data = data.frame(
-      departure_date = c("2025-12-18", "2025-12-19"),
+      departure_date = c("2026-12-18", "2026-12-19"),
       departure_time = rep("12:00", 2),
-      arrival_date = c("2025-12-18", "2025-12-19"),
+      arrival_date = c("2026-12-18", "2026-12-19"),
       arrival_time = rep("20:00", 2),
       origin = rep("DEL", 2),
       destination = rep("JFK", 2),
@@ -292,9 +292,9 @@ test_that("fa_plot_prices handles x_axis_angle parameter", {
   # Create mock flight_results
   query1 <- list(
     data = data.frame(
-      departure_date = c("2025-12-18", "2025-12-19", "2025-12-20"),
+      departure_date = c("2026-12-18", "2026-12-19", "2026-12-20"),
       departure_time = rep("10:00", 3),
-      arrival_date = c("2025-12-18", "2025-12-19", "2025-12-20"),
+      arrival_date = c("2026-12-18", "2026-12-19", "2026-12-20"),
       arrival_time = rep("18:00", 3),
       origin = rep("BOM", 3),
       destination = rep("JFK", 3),
@@ -332,9 +332,9 @@ test_that("fa_plot_prices handles drop_empty_dates parameter", {
   # BOM has data for all 3 dates, DEL only has data for 2 dates (missing 12-20)
   query1 <- list(
     data = data.frame(
-      departure_date = c("2025-12-18", "2025-12-19", "2025-12-20"),
+      departure_date = c("2026-12-18", "2026-12-19", "2026-12-20"),
       departure_time = rep("10:00", 3),
-      arrival_date = c("2025-12-18", "2025-12-19", "2025-12-20"),
+      arrival_date = c("2026-12-18", "2026-12-19", "2026-12-20"),
       arrival_time = rep("18:00", 3),
       origin = rep("BOM", 3),
       destination = rep("JFK", 3),
@@ -347,9 +347,9 @@ test_that("fa_plot_prices handles drop_empty_dates parameter", {
 
   query2 <- list(
     data = data.frame(
-      departure_date = c("2025-12-18", "2025-12-19"),
+      departure_date = c("2026-12-18", "2026-12-19"),
       departure_time = rep("12:00", 2),
-      arrival_date = c("2025-12-18", "2025-12-19"),
+      arrival_date = c("2026-12-18", "2026-12-19"),
       arrival_time = rep("20:00", 2),
       origin = rep("DEL", 2),
       destination = rep("JFK", 2),
@@ -384,9 +384,9 @@ test_that("fa_plot_prices filters empty dates correctly", {
   # This simulates the scenario described in the issue
   query1 <- list(
     data = data.frame(
-      departure_date = c("2025-12-18", "2025-12-19"),
+      departure_date = c("2026-12-18", "2026-12-19"),
       departure_time = rep("10:00", 2),
-      arrival_date = c("2025-12-18", "2025-12-19"),
+      arrival_date = c("2026-12-18", "2026-12-19"),
       arrival_time = rep("18:00", 2),
       origin = rep("BOM", 2),
       destination = rep("JFK", 2),
@@ -419,9 +419,9 @@ test_that("fa_plot_prices handles multiple destinations", {
   # Create mock flight_results with single origin to multiple destinations
   query <- list(
     data = data.frame(
-      departure_date = rep(c("2025-12-18", "2025-12-19", "2025-12-20"), 2),
+      departure_date = rep(c("2026-12-18", "2026-12-19", "2026-12-20"), 2),
       departure_time = rep("10:00", 6),
-      arrival_date = rep(c("2025-12-18", "2025-12-19", "2025-12-20"), 2),
+      arrival_date = rep(c("2026-12-18", "2026-12-19", "2026-12-20"), 2),
       arrival_time = rep("18:00", 6),
       origin = rep("JFK", 6),
       destination = c(rep("BOM", 3), rep("DEL", 3)),
@@ -454,9 +454,9 @@ test_that("fa_plot_prices defaults to origin grouping for multiple origins", {
   # Create mock flight_results with multiple origins to single destination
   query1 <- list(
     data = data.frame(
-      departure_date = c("2025-12-18", "2025-12-19"),
+      departure_date = c("2026-12-18", "2026-12-19"),
       departure_time = rep("10:00", 2),
-      arrival_date = c("2025-12-18", "2025-12-19"),
+      arrival_date = c("2026-12-18", "2026-12-19"),
       arrival_time = rep("18:00", 2),
       origin = rep("BOM", 2),
       destination = rep("JFK", 2),
@@ -469,9 +469,9 @@ test_that("fa_plot_prices defaults to origin grouping for multiple origins", {
 
   query2 <- list(
     data = data.frame(
-      departure_date = c("2025-12-18", "2025-12-19"),
+      departure_date = c("2026-12-18", "2026-12-19"),
       departure_time = rep("12:00", 2),
-      arrival_date = c("2025-12-18", "2025-12-19"),
+      arrival_date = c("2026-12-18", "2026-12-19"),
       arrival_time = rep("20:00", 2),
       origin = rep("DEL", 2),
       destination = rep("JFK", 2),
@@ -504,9 +504,9 @@ test_that("fa_plot_prices returns NULL with message for multiple origins and des
   # Create mock flight_results with multiple origins AND multiple destinations
   query <- list(
     data = data.frame(
-      departure_date = rep(c("2025-12-18", "2025-12-19"), 4),
+      departure_date = rep(c("2026-12-18", "2026-12-19"), 4),
       departure_time = rep("10:00", 8),
-      arrival_date = rep(c("2025-12-18", "2025-12-19"), 4),
+      arrival_date = rep(c("2026-12-18", "2026-12-19"), 4),
       arrival_time = rep("18:00", 8),
       origin = c(rep("JFK", 4), rep("LAX", 4)),
       destination = c(
@@ -549,9 +549,9 @@ test_that("fa_plot_prices handles plot_by parameter for multiple origins and des
   # Create mock flight_results with multiple origins AND multiple destinations
   query <- list(
     data = data.frame(
-      departure_date = rep(c("2025-12-18", "2025-12-19"), 4),
+      departure_date = rep(c("2026-12-18", "2026-12-19"), 4),
       departure_time = rep("10:00", 8),
-      arrival_date = rep(c("2025-12-18", "2025-12-19"), 4),
+      arrival_date = rep(c("2026-12-18", "2026-12-19"), 4),
       arrival_time = rep("18:00", 8),
       origin = c(rep("JFK", 4), rep("LAX", 4)),
       destination = c(
@@ -597,9 +597,9 @@ test_that("fa_plot_prices validates plot_by parameter", {
   # Create simple mock flight_results
   query <- list(
     data = data.frame(
-      departure_date = c("2025-12-18", "2025-12-19"),
+      departure_date = c("2026-12-18", "2026-12-19"),
       departure_time = rep("10:00", 2),
-      arrival_date = c("2025-12-18", "2025-12-19"),
+      arrival_date = c("2026-12-18", "2026-12-19"),
       arrival_time = rep("18:00", 2),
       origin = rep("JFK", 2),
       destination = rep("BOM", 2),
@@ -630,9 +630,9 @@ test_that("fa_plot_prices handles highlight_extremes parameter", {
   # Create mock flight_results
   query1 <- list(
     data = data.frame(
-      departure_date = c("2025-12-18", "2025-12-19", "2025-12-20"),
+      departure_date = c("2026-12-18", "2026-12-19", "2026-12-20"),
       departure_time = rep("10:00", 3),
-      arrival_date = c("2025-12-18", "2025-12-19", "2025-12-20"),
+      arrival_date = c("2026-12-18", "2026-12-19", "2026-12-20"),
       arrival_time = rep("18:00", 3),
       origin = rep("BOM", 3),
       destination = rep("JFK", 3),
@@ -645,9 +645,9 @@ test_that("fa_plot_prices handles highlight_extremes parameter", {
 
   query2 <- list(
     data = data.frame(
-      departure_date = c("2025-12-18", "2025-12-19", "2025-12-20"),
+      departure_date = c("2026-12-18", "2026-12-19", "2026-12-20"),
       departure_time = rep("12:00", 3),
-      arrival_date = c("2025-12-18", "2025-12-19", "2025-12-20"),
+      arrival_date = c("2026-12-18", "2026-12-19", "2026-12-20"),
       arrival_time = rep("20:00", 3),
       origin = rep("DEL", 3),
       destination = rep("JFK", 3),

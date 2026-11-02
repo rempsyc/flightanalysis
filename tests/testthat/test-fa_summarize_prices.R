@@ -2,9 +2,9 @@ test_that("fa_summarize_prices creates correct structure with flight_results", {
   # Create mock flight_results object
   query1 <- list(
     data = data.frame(
-      departure_date = rep(c("2025-12-18", "2025-12-19", "2025-12-20"), 1),
+      departure_date = rep(c("2026-12-18", "2026-12-19", "2026-12-20"), 1),
       departure_time = rep("10:00", 3),
-      arrival_date = rep(c("2025-12-18", "2025-12-19", "2025-12-20"), 1),
+      arrival_date = rep(c("2026-12-18", "2026-12-19", "2026-12-20"), 1),
       arrival_time = rep("18:00", 3),
       origin = rep("BOM", 3),
       destination = rep("JFK", 3),
@@ -17,9 +17,9 @@ test_that("fa_summarize_prices creates correct structure with flight_results", {
   
   query2 <- list(
     data = data.frame(
-      departure_date = rep(c("2025-12-18", "2025-12-19", "2025-12-20"), 1),
+      departure_date = rep(c("2026-12-18", "2026-12-19", "2026-12-20"), 1),
       departure_time = rep("12:00", 3),
-      arrival_date = rep(c("2025-12-18", "2025-12-19", "2025-12-20"), 1),
+      arrival_date = rep(c("2026-12-18", "2026-12-19", "2026-12-20"), 1),
       arrival_time = rep("20:00", 3),
       origin = rep("DEL", 3),
       destination = rep("JFK", 3),
@@ -68,7 +68,7 @@ test_that("fa_summarize_prices rejects data frame input", {
     City = c("Mumbai", "Delhi"),
     Airport = c("BOM", "DEL"),
     Dest = c("JFK", "JFK"),
-    Date = c("2025-12-18", "2025-12-18"),
+    Date = c("2026-12-18", "2026-12-18"),
     Price = c(334, 315),
     stringsAsFactors = FALSE
   )
@@ -85,12 +85,12 @@ test_that("fa_summarize_prices rejects list of query objects", {
   query1 <- list(
     data = data.frame(
       departure_datetime = as.POSIXct(c(
-        "2025-12-18 10:00:00",
-        "2025-12-19 11:00:00"
+        "2026-12-18 10:00:00",
+        "2026-12-19 11:00:00"
       )),
       arrival_datetime = as.POSIXct(c(
-        "2025-12-18 18:00:00",
-        "2025-12-19 19:00:00"
+        "2026-12-18 18:00:00",
+        "2026-12-19 19:00:00"
       )),
       origin = c("BOM", "BOM"),
       destination = c("JFK", "JFK"),
@@ -104,12 +104,12 @@ test_that("fa_summarize_prices rejects list of query objects", {
   query2 <- list(
     data = data.frame(
       departure_datetime = as.POSIXct(c(
-        "2025-12-18 12:00:00",
-        "2025-12-19 13:00:00"
+        "2026-12-18 12:00:00",
+        "2026-12-19 13:00:00"
       )),
       arrival_datetime = as.POSIXct(c(
-        "2025-12-18 20:00:00",
-        "2025-12-19 21:00:00"
+        "2026-12-18 20:00:00",
+        "2026-12-19 21:00:00"
       )),
       origin = c("DEL", "DEL"),
       destination = c("JFK", "JFK"),
@@ -134,12 +134,12 @@ test_that("fa_find_best_dates rejects list of query objects", {
   query1 <- list(
     data = data.frame(
       departure_datetime = as.POSIXct(c(
-        "2025-12-18 10:00:00",
-        "2025-12-19 11:00:00"
+        "2026-12-18 10:00:00",
+        "2026-12-19 11:00:00"
       )),
       arrival_datetime = as.POSIXct(c(
-        "2025-12-18 18:00:00",
-        "2025-12-19 19:00:00"
+        "2026-12-18 18:00:00",
+        "2026-12-19 19:00:00"
       )),
       origin = c("BOM", "BOM"),
       destination = c("JFK", "JFK"),
@@ -153,12 +153,12 @@ test_that("fa_find_best_dates rejects list of query objects", {
   query2 <- list(
     data = data.frame(
       departure_datetime = as.POSIXct(c(
-        "2025-12-18 12:00:00",
-        "2025-12-19 13:00:00"
+        "2026-12-18 12:00:00",
+        "2026-12-19 13:00:00"
       )),
       arrival_datetime = as.POSIXct(c(
-        "2025-12-18 20:00:00",
-        "2025-12-19 21:00:00"
+        "2026-12-18 20:00:00",
+        "2026-12-19 21:00:00"
       )),
       origin = c("DEL", "DEL"),
       destination = c("JFK", "JFK"),
@@ -183,9 +183,9 @@ test_that("fa_summarize_prices supports filtering by time", {
   # Create mock flight_results with departure times
   query <- list(
     data = data.frame(
-      departure_date = rep("2025-12-18", 3),
+      departure_date = rep("2026-12-18", 3),
       departure_time = c("06:00", "12:00", "20:00"),
-      arrival_date = rep("2025-12-18", 3),
+      arrival_date = rep("2026-12-18", 3),
       arrival_time = c("14:00", "20:00", "04:00"),
       origin = rep("BOM", 3),
       destination = rep("JFK", 3),
@@ -211,17 +211,17 @@ test_that("fa_summarize_prices supports filtering by time", {
 
   expect_true(is.data.frame(summary))
   expect_equal(nrow(summary), 2) # 1 airport + Best row
-  # The price for 2025-12-18 should be from the 12:00 flight (350) - check first row (before Best)
-  expect_equal(gsub("[^0-9]", "", summary$`2025-12-18`[1]), "350")
+  # The price for 2026-12-18 should be from the 12:00 flight (350) - check first row (before Best)
+  expect_equal(gsub("[^0-9]", "", summary$`2026-12-18`[1]), "350")
 })
 
 test_that("fa_summarize_prices supports filtering by stops", {
   # Create mock flight_results with num_stops
   query <- list(
     data = data.frame(
-      departure_date = rep("2025-12-18", 2),
+      departure_date = rep("2026-12-18", 2),
       departure_time = c("10:00", "12:00"),
-      arrival_date = rep("2025-12-18", 2),
+      arrival_date = rep("2026-12-18", 2),
       arrival_time = c("18:00", "20:00"),
       origin = c("BOM", "BOM"),
       destination = c("JFK", "JFK"),
@@ -245,16 +245,16 @@ test_that("fa_summarize_prices supports filtering by stops", {
   expect_true(is.data.frame(summary))
   expect_equal(nrow(summary), 2) # 1 airport + Best row
   # Should only include the direct flight
-  expect_equal(gsub("[^0-9]", "", summary$`2025-12-18`[1]), "500")
+  expect_equal(gsub("[^0-9]", "", summary$`2026-12-18`[1]), "500")
 })
 
 test_that("fa_summarize_prices supports excluded_airports parameter", {
   # Create mock flight_results with multiple airports
   query <- list(
     data = data.frame(
-      departure_date = rep("2025-12-18", 3),
+      departure_date = rep("2026-12-18", 3),
       departure_time = c("10:00", "12:00", "14:00"),
-      arrival_date = rep("2025-12-18", 3),
+      arrival_date = rep("2026-12-18", 3),
       arrival_time = c("18:00", "20:00", "22:00"),
       origin = c("BOM", "DEL", "CXH"),
       destination = c("JFK", "JFK", "JFK"),

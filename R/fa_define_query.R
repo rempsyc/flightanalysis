@@ -16,25 +16,28 @@
 #'   - Round-trip: origin, dest, date_leave, date_return
 #'   - Chain-trip: org1, dest1, date1, org2, dest2, date2, ...
 #'   - Perfect-chain: org1, date1, org2, date2, ..., final_dest
+#'   Dates accept Date objects or strings in YYYY-MM-DD format. Query creation
+#'   validates calendar dates; fa_fetch_flights() checks the current search
+#'   window (today through 330 days ahead) before accessing Google Flights.
 #'
 #' @return A flight query object (S3 class "flight_query")
 #' @export
 #'
 #' @examples
 #' # One-way trip with airport codes
-#' fa_define_query("JFK", "BOS", "2025-12-20")
+#' fa_define_query("JFK", "BOS", Sys.Date() + 32)
 #'
 #' # One-way trip with city codes
-#' fa_define_query("NYC", "LON", "2025-12-20")
+#' fa_define_query("NYC", "LON", Sys.Date() + 32)
 #'
 #' # One-way trip with full city names (auto-converted)
-#' fa_define_query("New York", "Istanbul", "2025-12-20")
+#' fa_define_query("New York", "Istanbul", Sys.Date() + 32)
 #'
 #' # Round-trip with mixed formats
-#' fa_define_query("JFK", "Paris", "2025-12-20", "2025-12-25")
+#' fa_define_query("JFK", "Paris", Sys.Date() + 32, Sys.Date() + 39)
 #'
 #' # Chain-trip
-#' fa_define_query("JFK", "YYZ", "2025-12-20", "RDU", "LGA", "2025-12-25")
+#' fa_define_query("JFK", "YYZ", Sys.Date() + 32, "RDU", "LGA", Sys.Date() + 39)
 fa_define_query <- function(...) {
   args <- list(...)
 
@@ -68,15 +71,24 @@ fa_define_query <- function(...) {
 #' @return List of normalized arguments
 #' @keywords internal
 normalize_query_args <- function(args) {
-  date_format <- "%Y-%m-%d"
+  n <- length(args)
+  date_indices <- if (n == 3L) 3L else if (n == 4L) 3:4 else integer()
   
   for (i in seq_along(args)) {
     arg <- args[[i]]
+    if (inherits(arg, "Date")) {
+      arg <- as.character(arg)
+      args[[i]] <- arg
+    }
+    if (!is.character(arg) || length(arg) != 1L || is.na(arg)) {
+      stop("Each location or date must be a single non-missing character string or Date.",
+           call. = FALSE)
+    }
     
     # Only process character arguments
     if (is.character(arg)) {
       # Check if it's a date (10 characters in YYYY-MM-DD format)
-      if (nchar(arg) == 10 && grepl("^\\d{4}-\\d{2}-\\d{2}$", arg)) {
+      if (i %in% date_indices || grepl("^[0-9]{4}[-/]", arg)) {
         # It's a date, skip
         next
       }
@@ -122,35 +134,9 @@ set_properties <- function(query, args) {
   n_args <- length(args)
   date_format <- "%Y-%m-%d"
 
-  # Helper function to validate date format
   validate_date <- function(date_str, arg_name = "Date") {
-    if (!(nchar(date_str) == 10 && is.character(date_str))) {
-      stop(sprintf("%s must be in YYYY-MM-DD format", arg_name))
-    }
-    # Try to parse the date
-    parsed_date <- tryCatch(
-      {
-        as.Date(date_str, date_format)
-      },
-      error = function(e) {
-        stop(sprintf(
-          "%s '%s' is not a valid date in YYYY-MM-DD format",
-          arg_name,
-          date_str
-        ))
-      }
-    )
-    # Check if parsed successfully
-    if (is.na(parsed_date)) {
-      stop(sprintf(
-        "%s '%s' is not a valid date in YYYY-MM-DD format",
-        arg_name,
-        date_str
-      ))
-    }
-    return(parsed_date)
+    parse_flight_dates(date_str, arg_name)
   }
-
   # One-way trip (3 arguments)
   if (n_args == 3) {
     if (!(nchar(args[[1]]) == 3 && is.character(args[[1]]))) {

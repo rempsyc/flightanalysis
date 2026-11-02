@@ -9,7 +9,7 @@ test_that("flight_results object is created with merged data", {
     ),
     origin = list("BOM", "BOM"),
     dest = list("JFK", "JFK"),
-    date = list("2025-12-18", "2025-12-19")
+    date = list("2026-12-18", "2026-12-19")
   )
   class(query1) <- "flight_query"
   
@@ -22,7 +22,7 @@ test_that("flight_results object is created with merged data", {
     ),
     origin = list("DEL", "DEL"),
     dest = list("JFK", "JFK"),
-    date = list("2025-12-18", "2025-12-19")
+    date = list("2026-12-18", "2026-12-19")
   )
   class(query2) <- "flight_query"
   
@@ -86,8 +86,8 @@ test_that("fa_summarize_prices accepts flight_results object", {
   # Create mock flight_results object
   query1 <- list(
     data = data.frame(
-      departure_datetime = as.POSIXct(c("2025-12-18 10:00:00", "2025-12-19 11:00:00")),
-      arrival_datetime = as.POSIXct(c("2025-12-18 18:00:00", "2025-12-19 19:00:00")),
+      departure_datetime = as.POSIXct(c("2026-12-18 10:00:00", "2026-12-19 11:00:00")),
+      arrival_datetime = as.POSIXct(c("2026-12-18 18:00:00", "2026-12-19 19:00:00")),
       origin = c("BOM", "BOM"),
       destination = c("JFK", "JFK"),
       airlines = c("Air India", "Emirates"),
@@ -99,8 +99,8 @@ test_that("fa_summarize_prices accepts flight_results object", {
   
   query2 <- list(
     data = data.frame(
-      departure_datetime = as.POSIXct(c("2025-12-18 12:00:00", "2025-12-19 13:00:00")),
-      arrival_datetime = as.POSIXct(c("2025-12-18 20:00:00", "2025-12-19 21:00:00")),
+      departure_datetime = as.POSIXct(c("2026-12-18 12:00:00", "2026-12-19 13:00:00")),
+      arrival_datetime = as.POSIXct(c("2026-12-18 20:00:00", "2026-12-19 21:00:00")),
       origin = c("DEL", "DEL"),
       destination = c("JFK", "JFK"),
       airlines = c("Vistara", "IndiGo"),
@@ -125,8 +125,8 @@ test_that("fa_find_best_dates accepts flight_results object", {
   # Create mock flight_results object
   query1 <- list(
     data = data.frame(
-      departure_datetime = as.POSIXct(c("2025-12-18 10:00:00", "2025-12-19 11:00:00")),
-      arrival_datetime = as.POSIXct(c("2025-12-18 18:00:00", "2025-12-19 19:00:00")),
+      departure_datetime = as.POSIXct(c("2026-12-18 10:00:00", "2026-12-19 11:00:00")),
+      arrival_datetime = as.POSIXct(c("2026-12-18 18:00:00", "2026-12-19 19:00:00")),
       origin = c("BOM", "BOM"),
       destination = c("JFK", "JFK"),
       airlines = c("Air India", "Emirates"),

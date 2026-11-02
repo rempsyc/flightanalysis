@@ -7,7 +7,9 @@
 #' reliable, driver-free browser automation. The browser runs in headless mode
 #' by default (no visible GUI).
 #'
-#' @param queries A flight query object or list of query objects (from fa_define_query())
+#' @param queries A flight query object or list of query objects (from fa_define_query()).
+#'   All departure dates must be between today and 330 days ahead (inclusive).
+#'   This is checked again at fetch time, so saved queries may expire.
 #' @param verbose Logical. If TRUE, shows detailed progress information (default)
 #'
 #' @return A flight_results object containing the merged flight data.
@@ -17,7 +19,9 @@
 #'
 #' @examples
 #' \dontrun{
-#' query <- fa_define_query("NYC", "IST", "2025-12-20", "2025-12-22")
+#' departure <- Sys.Date() + 30
+#' query <- fa_define_query("NYC", "IST", as.character(departure),
+#'                          as.character(departure + 7))
 #' flights <- fa_fetch_flights(query)
 #' flights$data
 #' }
@@ -31,6 +35,11 @@ fa_fetch_flights <- function(
   # Ensure queries is a list
   if (single_object) {
     queries <- list(queries)
+  }
+
+  # Validate every segment before opening Chrome or making network requests.
+  for (query in queries) {
+    validate_flight_date_window(unlist(query$date))
   }
 
   # Pre-flight checks
@@ -429,8 +438,13 @@ make_url_request_chromote <- function(url, browser, verbose = TRUE) {
   for (attempt in 1:max_attempts) {
     results <- get_flight_elements_chromote(browser)
 
-    # Check if we have substantial content
-    if (length(results) > 100) {
+    if (any(grepl("Requested flight date is too far in the future", results, fixed = TRUE))) {
+      stop("Google Flights rejected this date as too far in the future. Use a departure date within 330 days of today.",
+           call. = FALSE)
+    }
+
+    # A short page with a single flight is a valid result.
+    if (sum(is_flight_time(results)) >= 2) {
       break
     }
 
@@ -438,9 +452,9 @@ make_url_request_chromote <- function(url, browser, verbose = TRUE) {
     Sys.sleep(1)
   }
 
-  if (length(results) <= 100) {
+  if (sum(is_flight_time(results)) < 2) {
     stop(
-      "Page did not load sufficient content. Check your internet connection or verify flights exist for this query."
+      "No flight results appeared. Flights may be unavailable, or Google may require consent or block automated access."
     )
   }
 
@@ -467,78 +481,50 @@ get_flight_elements_chromote <- function(browser) {
   )
 }
 
+# Match complete time fields, rather than times embedded in commentary.
+is_flight_time <- function(x) {
+  !is.na(x) & grepl("^[0-9]{1,2}:[0-9]{2} *[APap][Mm](\\+[0-9]+)?$", trimws(x))
+}
+
 #' Clean and parse results from page
 #' @keywords internal
 clean_results <- function(result, date, verbose = TRUE) {
-  # Clean results - remove non-ASCII and strip whitespace
-  res2 <- sapply(result, function(x) {
-    iconv(x, from = "UTF-8", to = "ASCII", sub = "")
-  })
-  res2 <- trimws(res2)
-
-  # Find flight time markers (entries ending with AM or PM, or with + offset)
-  # These are more stable than UI text markers
-  # Support both uppercase (AM/PM) and lowercase (am/pm) formats
-  is_time_marker <- function(x) {
-    if (nchar(x) <= 2) {
-      return(FALSE)
-    }
-    has_colon <- grepl(":", x)
-    ends_ampm <- grepl("(AM|PM|am|pm)$", x)
-    has_plus <- substr(x, nchar(x) - 1, nchar(x) - 1) == "+"
-    return(has_colon && (ends_ampm || has_plus))
-  }
-
-  matches <- which(sapply(res2, is_time_marker))
-
-  if (length(matches) == 0) {
-    if (verbose) {
-      cat("  [!] No flight time markers found in page content\n")
-    }
-    warning(
-      "Could not find any flight data. Page may not have loaded properly or no flights available."
-    )
-    return(list())
-  }
-
-  # Take every other match (departure times, not arrival times shown separately)
-  matches <- matches[seq(1, length(matches), by = 2)]
-
-  if (length(matches) <= 1) {
-    if (verbose) {
-      cat("  [!] Not enough flight data to parse\n")
-    }
-    warning("Insufficient flight data found")
-    return(list())
-  }
-
-  # Create Flight objects from matched sections
+  res <- trimws(iconv(result, from = "UTF-8", to = "ASCII", sub = ""))
+  res <- res[!is.na(res) & nzchar(res)]
+  times <- which(is_flight_time(res))
   flights <- list()
-  for (i in seq_along(matches[-length(matches)])) {
-    start <- matches[i]
-    end <- matches[i + 1] - 1
-    flight_data <- res2[start:end]
 
-    tryCatch(
-      {
-        # Use do.call to unpack the vector so each element becomes a separate argument
-        flights[[i]] <- do.call(
-          flight_record,
-          c(list(date), as.list(flight_data))
-        )
-      },
-      error = function(e) {
-        # Silent failure for individual flights - they'll be filtered out
+  # Include the final card and single-result pages without requiring another
+  # departure marker after them.
+  if (length(times) >= 2) {
+    for (i in seq.int(1L, length(times) - 1L, by = 2L)) {
+      end <- if (i + 2L <= length(times)) times[i + 2L] - 1L else length(res)
+      card <- res[times[i]:end]
+      duration <- which(grepl("^([0-9]+ hr( [0-9]+ min)?|[0-9]+ min)$", card))
+      route <- which(grepl("^[A-Z]{6}$", card))
+      if (!length(duration) || !length(route) || duration[1] < 2L) next
+      duration <- duration[1]
+      route <- route[1]
+      if (route <= duration) next
+
+      # Airline labels precede duration. Exclude interleaved history panels and
+      # footers, and stop at the first fare instead of reading price insights.
+      details <- card[route:length(card)]
+      fare <- which(grepl("^([A-Z]{1,3})?\\$ *[0-9][0-9,]*$", details) |
+                      details == "Price unavailable")
+      if (length(fare)) details <- details[seq_len(fare[1])]
+      record <- do.call(flight_record, c(list(date), as.list(c(
+        card[is_flight_time(card)][1:2], card[duration - 1L],
+        card[duration], details
+      ))))
+      if (!is.null(record$time_leave) && !is.null(record$time_arrive)) {
+        flights[[length(flights) + 1L]] <- record
       }
-    )
+    }
   }
-
-  # Remove NULL entries (failed parses)
-  flights <- flights[!sapply(flights, is.null)]
-
-  if (verbose) {
-    cat(sprintf("  [OK] Successfully parsed %d flights\n", length(flights)))
+  if (!length(flights)) {
+    warning("Could not find any flight data. Page may not have loaded properly or no flights available.")
   }
-
+  if (verbose) cat(sprintf("  [OK] Successfully parsed %d flights\n", length(flights)))
   flights
 }
